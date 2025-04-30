@@ -61,4 +61,16 @@ Limiting us are mostly:
 3. Imperfections in the photonic polarization measurement and detector dark counts (3%)
 4. Small probability of having more than one photon in the impinging laser pulses (2%)
 
-<!-- TODO: Finish writing notes about this paper -->
+Another characteristic of quantum gates is the generation of entangled cluster states like the `GHZ` state.
+In order to create that particular state, the gate is applied to the photons contained in two sequentially impinging laser pulses, giving us:
+![ghz_state_quantum_gate.png](assets/imgs/ghz_state_quantum_gate.png)
+![ghz_state_quantum_gate_state_topogrophy.png](assets/imgs/ghz_state_quantum_gate_state__topogrophy.png)
+
+Here we see genuine three-particle (atom-photon-photon) entanglement, with a fidelity of 61(2)%.
+
+Lastly, this gate is also able to mediate photon-photon interaction. For this a quantum erasor protocol is employed, which creates a maximally entangled state out of two seperable input photons.
+In order to do this we generate a `GHZ` state and then rotate our photon qubit by $\frac{1}{\sqrt{2}}$ giving us:
+![photon_photon_interaction_quantum_gate.png](assets/imgs/photon_photon_interaction_quantum_gate.png)
+![photon_photon_interaction_quantum_gate_state_topogrophy.png](assets/imgs/photon_photon_interaction_quantum_gate_state_topogrophy.png)
+
+In order to be able to generate this particular state, the two photons must be stored during the time required to rotate and read out the atomic state (about $3 \mu s$) which can be implemented with an optical fibre less than one kilometre in length.
