@@ -8,8 +8,7 @@ tags:
 
 # quantum_gate_between_flying_photon_and_trapped_atom
 
-This is going to be my summarization of the paper `A quantum gate between a flying optical photon and a single trapped atom` 
-(DOI:[10.1038/nature13177](https://www.nature.com/articles/nature13177))
+This is going to be my summarization of the paper `A quantum gate between a flying optical photon and a single trapped atom`  (DOI:[10.1038/nature13177](https://www.nature.com/articles/nature13177))
 
 ## Intro
 
@@ -64,7 +63,7 @@ Limiting us are mostly:
 Another characteristic of quantum gates is the generation of entangled cluster states like the `GHZ` state.
 In order to create that particular state, the gate is applied to the photons contained in two sequentially impinging laser pulses, giving us:
 ![ghz_state_quantum_gate.png](assets/imgs/ghz_state_quantum_gate.png)
-![ghz_state_quantum_gate_state_topogrophy.png](assets/imgs/ghz_state_quantum_gate_state__topogrophy.png)
+![ghz_state_quantum_gate_state_topogrophy.png](assets/imgs/ghz_state_quantum_gate_state_topogrophy.png)
 
 Here we see genuine three-particle (atom-photon-photon) entanglement, with a fidelity of 61(2)%.
 
