@@ -9,8 +9,7 @@ tags:
 
 # Sisyphus_Cooling
 
-This is going to be a summarization of what `Sisyphus Cooling` is and how it works and whatnot
-This summarization is going to be based on the book `Atomic Physics by Christopher J.Foot (2005)`
+This is going to be a summarization of what `Sisyphus Cooling` is and how it works and whatnot.
 
 ---
 
@@ -40,3 +39,6 @@ The idea is now that our atom has a certain amount of kinetic energy, it can tak
 Sisyphus cooling stops working when the loss in energy in going from teh top of a hill (in the potential energy) to the valley bottom is balanced by the recoil energy acquired in spontaneous emission, $U_0 \simeq E_r$.
 For this condition there is no net loss of energy in optical pumping between $M_J$ states. Thus the lowest temperatures achieved are equivalent to a few recoil energy, $T\simeq\frac{E_r}{k_b}$. At this recoild limit the temperature is given by:
 ![sisyphus_recoil_limit.png](assets/imgs/sisyphus_recoil_limit.png)
+
+##### References
+ Foot, C J, Atomic Physics (Oxford, 2004; online edn, Oxford Academic, 31 Oct. 2023), https://doi.org/10.1093/oso/9780198506959.001.0001, accessed 18 Apr. 2025. 

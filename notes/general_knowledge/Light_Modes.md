@@ -89,3 +89,6 @@ Plugging all of this into the equation for our complex amplitude we get:
 
 This equation has the following intensity profile:
 ![intensity_profile_hermite_gaussian_beam.png](assets/imgs/intensity_profile_hermite_gaussian_beam.png)
+
+##### References
+Saleh, Bahaa & Teich, Malvin. (1991). Fundamentals of Photonics. 

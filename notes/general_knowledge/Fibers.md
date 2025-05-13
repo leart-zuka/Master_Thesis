@@ -32,3 +32,6 @@ What differentiates a multi-mode fiber and a single-mode fiber is the diameter o
 
 The reason why one would never use PM fibers over single-mode fibers in Quantum-Teleportation protocol experiments, is because you need that extra degree of freedom in the form of polarization in these experiments.
 Using a PM fiber would destroy your qubit state, thus ruining the experiment
+
+##### References
+Paschotta, R. (2025). Modes. 2025 RP Photonics AG. https://www.rp-photonics.com/modes.html

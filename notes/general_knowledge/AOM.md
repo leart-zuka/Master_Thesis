@@ -26,3 +26,6 @@ Most notably the frequency is modulated since the light scatters off of moving p
 $f\rightarrow f + m\Lambda$
 
 This frequency shift can also be understood by the fact that energy and momentum are conserved in the scattering process.
+
+##### References
+Wikipedia contributors. (2024b, September 20). Acousto-optic modulator. Wikipedia. https://en.wikipedia.org/wiki/Acousto-optic_modulator
