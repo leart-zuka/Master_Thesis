@@ -90,5 +90,96 @@ Plugging all of this into the equation for our complex amplitude we get:
 This equation has the following intensity profile:
 ![intensity_profile_hermite_gaussian_beam.png](assets/imgs/intensity_profile_hermite_gaussian_beam.png)
 
+## Fiber Modes
+
+Again just like in free space, our electric and magnetic fields must satisfy the Helmholtz equation:
+
+$$\nabla^2U+ n^2k^2_0U=0$$
+
+where $n=n_1$ in the core ($r < a$) and $n=n_2$ in the cladding ($ r > a $) and $k_0 = \frac{2\pi}{\lambda_0}$.
+Assuming radius b of the cladding is sufficiently large so we can assume it's infinitely large, in cylinder coordinates the Helmholtz equation is:
+![helmholtz_equation_in_fiber.png](assets/imgs/helmholtz_equation_in_fiber.png)
+
+A function for our complex amplitude `U` which solves this equation is of the form:
+$U(r,\phi,z) = u(r)e^{-il\phi}e^{-i\beta z},\quad l=0,\pm1, \pm2$
+
+Writing down now the ordinary differential equation for $u(r)$ for both the cladding and core seperately we get:
+![ode_core_cladding.png](assets/imgs/ode_core_cladding.png)
+
+We can see that the ODEs get solved by `Bessel functions`, where the parameters $k_T$ and $\gamma$ need to fullfill the following relation:
+$$k_T^2 + \gamma^2 = (n_1^2 - n_2^2)k_0^2 = NA^2\cdot k_0^2$$
+
+The two parameters can then be redefined into the parameters $X=k_Ta$ and $Y=\gamma a$, finally giving us the equation:
+$$X^2 + Y^2 = V^2$$
+
+with $V=2\pi\frac{a}{\lambda_0}NA$ being the `fiber parameter` or `V parameter`, which is an important parameter that governs the number of modes of the fiber and their propagation constant.
+
+Now using the equation for the complex amplitude for the z components of our electric and magnetic field and inserting the boundary condition $r=a$, allows us to establish a relation between the coefficients of proportionality between the function for the cladding and the one for the core. Using Maxwell's equations we ge the radial components.
+
+For each azimuthal index `l`, the characteristic equation has multiple solutions yielding discrete propagation constant $\beta_{lm}, m=1,2,...$, each solution representing a mode, with each corresponding $k_T$ and $\gamma$ governing the spatial distributions in the core and in the cladding respectively.
+
+Now in a weakly guiding fiber (i.e., $n_1 \approx n_2$ or $\Delta \ll 1$) so that guided rays are paraxial. The longitudinal components of the electric and magnetic fields are then much weaker than the transverse components and the guided waves are approximately transverse electromagnetic (TEM).
+Linear polarized modes are usually denoted as $LP_{lm}$.
+We can then get the characteristic equation obtained just like before, with the addition that the functions need to have a continuous derivative at $r = a$, thus giving us:
+![weakly_guiding_fibers_relation_equation_bessel_equations.png](assets/imgs/weakly_guiding_fibers_relation_equation_bessel_equations.png)
+
+Using the relations for the derivatives of the Bessel functions and using the normalized parameters defined before we get the `characteristic equation`:
+![characteristic_equation_weakly_guiding_fiber.png](assets/imgs/characteristic_equation_weakly_guiding_fiber.png)
+
+This equation can then be solved graphically and thus giving us distributions for each mode.
+
+
+## Cavity/Resonator Modes
+
+Looking at the simplest case (i.e. Planar-Mirrow Resonators), we know that our EM-wave and its complex amplitude both have to satisfy the Helmholtz equation.
+Furthermore we note that at the boundaries ($z=0$ and $z=d$), the transverse component of the electric field vanishes, so that $U(\vec{r})=0$, thus giving us:
+
+$$U(\vec{r})=A \cdot sin(kz)$$
+
+From this we know, that in order to satisfy the boundary conditions our k must be equal to:
+
+$$k_q = \frac{q\pi}{d}$$
+
+in order for our wave to gain a phase of $2\pi$ after a full roundtrip, and maintain its shape.
+`q` in this case is called the `mode number`.
+Since our k is limited to certain values of q, it follows that the frequency is restricted to discrete values:
+$$\nu_q = q\frac{c}{2d}$$,
+which are the resonance frequencies of the resonator, which are seperated by a constant frequency difference of:
+$$\nu_f = \frac{c}{2d}$$
+
+### Resonance Frequencies of Spherical-Mirror Resonators
+
+#### Guassian Modes
+
+Spherical mirror resonators behave a bit more differently. We know that the guassian beam (check [light_Modes](general_knowledge/Light_Modes.md)) has a phase of:
+
+$$\varphi(\rho,z) = kz - \xi(z) + \frac{k\rho^2}{2R(z)}$$
+
+with $\xi(z) = tan^{-1}(\frac{z}{z_0})$ and $\rho^2 = x^2+y^2$.
+Looking at the phase difference at mirror 1 ($z=z_1$) and mirror 2 ($z=z_2$) which is:
+
+$$\varphi(0,z_0) - \varphi(0,z_1) = k(z_2-z_1) - [\xi(z_2) - \xi(z_1)] \newline 
+kd-\Delta\xi$$
+
+where $\Delta\xi=\xi(z_2)-\xi(z_1)$.
+
+Since our beam does this trip twice before returning to its original position our phase difference times 2, which then needs to be equal to $2\pi q, q=0,\pm1,\pm2,...$.
+The condition then becomes:
+$$\nu_q=q\nu_F + \frac{\Delta\xi}{\pi}\nu_F$$
+
+#### Hermite-Gaussian Modes
+
+For a Hermite-Gaussian beam, the situation is similar however with a little bit of an extra on top.
+The phase of the (l,m) mode on the beam axis is:
+$$\varphi(0,z) = kz - (l+m+1)\xi(z)$$
+
+Doing basically the same steps again we get the following resonance frequencies:
+$$\nu_{l,m,q} = q\nu_F + (l+m+1)\frac{\Delta\xi}{\pi}\nu_F$$
+
+`NOTE: 
+        Modes of different q, but the same (l,m), have identical intensity distributions. They are known as longitudinal or axial modes.
+        The indices (l,m) label different spatial dependences on the transverse coordinates x,y; these represent different transverse modes`
+
+
 ##### References
 Saleh, Bahaa & Teich, Malvin. (1991). Fundamentals of Photonics. 

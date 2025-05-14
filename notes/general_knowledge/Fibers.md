@@ -25,7 +25,7 @@ There are 3 main different types of fibers:
     - Polarization-Maintaining Fibers (PM Fibers) ![pm_fiber.png](assets/imgs/pm_fiber.png)
     - Multi-Mode Fibers 
 
-What differentiates a multi-mode fiber and a single-mode fiber is the diameter of the core layer, as a bigger core allows for modes to enter the fiber and form these Hermite-Gaussian modes:
+What differentiates a multi-mode fiber and a single-mode fiber is the diameter of the core layer, as a bigger core allows for modes to enter the fiber and form these [Hermite-Guassian](general_knowledge/Light_Modes.md) modes:
 ![difference_single_mode_multi_mode.png](assets/imgs/difference_single_mode_multi_mode.png)
 
 ### Notes
