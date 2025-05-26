@@ -523,7 +523,7 @@ class AtomAnalysis:
         )
 
         print("Duty cycle: %d %%" % (dutyCycle))
-        return averageTrapTime, averageTrapTime_err, averageTrapTime, dutyCycle
+        return averageTrapTime, averageTrapTime_err, trappingProbability, dutyCycle
 
 
 if __name__ == "__main__":
@@ -531,7 +531,13 @@ if __name__ == "__main__":
         This script analyzes the trap time and trapping probability
     """
 
-    # ------ Definition of data sources and destinations------
+    # --- Definition of plotting stuff --- #
+    mot_load_times = [0.6, 0.7, 0.8, 0.9, 1.0]
+    trap_times = []
+    trap_times_stderr = []
+    trap_probabilities = []
+
+    # --- Definition of data sources and destinations --- #
     path = "./data/"
     measurements = "old_trapping"
 
@@ -540,13 +546,51 @@ if __name__ == "__main__":
 
     filetype: str = ".h5"
 
-    # ------ Begin Analysis ------
+    # --- Begin Analysis --- #
 
     analysis = AtomAnalysis()
 
-    # ------ Data evaluation ------
+    # --- Data evaluation --- #
     for measurement in measurements:
         goodAtomsDic, atomInHisto, atomOutHisto = analysis.dataEv_postSelection(
             path, measurement, filetype
         )
-        analysis.getTrapTimes(goodAtomsDic, atomInHisto, atomOutHisto)
+        trap_time, trap_time_stderr, trap_probability, _ = analysis.getTrapTimes(
+            goodAtomsDic, atomInHisto, atomOutHisto
+        )
+        trap_times.append(trap_time)
+        trap_times_stderr.append(trap_time_stderr)
+        trap_probabilities.append(trap_probability)
+
+    trap_times = np.nan_to_num(trap_times, nan=0.0)
+    trap_times_stderr = np.nan_to_num(trap_times_stderr, nan=0.0)
+
+    plt.close("all")
+    plt.style.use("seaborn-v0_8-whitegrid")
+    # Create the figure and subplots
+    fig, (ax0, ax1) = plt.subplots(nrows=2, sharex=True, figsize=(8, 6))
+    fig.suptitle("MOT Load Time Effects", fontsize=14, fontweight="bold")
+    # Top subplot: Trap Times with error bars
+    ax0.errorbar(
+        mot_load_times,
+        trap_times,
+        yerr=trap_times_stderr,
+        fmt="o-",
+        capsize=4,
+        color="tab:blue",
+        ecolor="gray",
+    )
+    ax0.set_title("Trap Times", fontsize=12)
+    ax0.set_ylabel("Trap Time (s)")
+    ax0.grid(True)
+    # Bottom subplot: Trap Probability
+    ax1.plot(
+        mot_load_times, trap_probabilities, marker="o", linestyle="-", color="tab:green"
+    )
+    ax1.set_title("Trap Probability", fontsize=12)
+    ax1.set_xlabel("MOT Load Time (s)")
+    ax1.set_ylabel("Probability (a.u.)")
+    ax1.grid(True)
+    # Tight layout with space for suptitle
+    plt.tight_layout(rect=[0, 0, 1, 0.96])
+    plt.savefig("new_trapping.png")
