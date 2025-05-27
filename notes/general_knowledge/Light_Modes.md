@@ -27,7 +27,7 @@ There are now different kinds of waves which solve the Helmholtz equation, which
 
 ### Plane Waves
 
-The mathemtically easiest special wave that solves the Helmholtz equation is the so called `Plane Wave` 
+The mathematically easiest special wave that solves the Helmholtz equation is the so called `Plane Wave` 
 ![plane_wave.png](assets/imgs/plane_wave.png)
 
 It has the form:
