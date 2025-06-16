@@ -9,6 +9,8 @@ trapping_times = [27.50, 30.10, 22.85, 23.54, 28.86, 21.66, 25.18, 18.73]  # s
 trapping_time_errors = [7.08, 4.97, 5.07, 5.57, 5.30, 4.21, 6.53, 4.30]  # s
 trapping_probs = [17, 20, 16, 22, 25, 13, 17, 12]  # %
 duty_cycles = [66, 70, 54, 63, 69, 46, 55, 22]  # %
+g2 = [0.0158,0.0212,0.0059,0.0145,0.0101,0.0158,0.0072,0.0585]
+g2_errors = [0.65e-2,0.55e-2,0.34e-2,0.44e-2,0.32e-2,0.65e-2,0.36e-2,1.38e-2]
 
 # Identify the index of the old algorithm
 old_idx = 0
@@ -84,7 +86,7 @@ plot_common(
 )
 plt.savefig("trapping_probability.png")
 
-# Plot 3: Duty cycle vs Trap loading time
+# Plot 3: Duty cycle vs MOT loading time
 plt.figure(figsize=(8, 6))
 plt.plot(
     mot_load_times,
@@ -105,5 +107,41 @@ plt.plot(
 )
 plot_common("MOT loading time (s)", "Duty cycle (%)", "Duty Cycle vs MOT Loading Time")
 plt.savefig("duty_cycle.png")
+
+# Plot 4: g2 vs MOT loading time
+plt.figure(figsize=(8, 6))
+plt.errorbar(
+    mot_load_times,
+    g2,
+    yerr=g2_errors,
+    fmt="o-",
+    color="tab:blue",
+    ecolor="tab:blue",
+    elinewidth=2,
+    capsize=6,
+    alpha=0.8,
+    markersize=8,
+    label="New Algorithm",
+)
+plt.errorbar(
+    mot_load_times[old_idx],
+    g2[old_idx],
+    yerr=g2_errors[old_idx],
+    fmt="o",
+    color="red",
+    ecolor="red",
+    elinewidth=2,
+    capsize=6,
+    markersize=12,
+    label="Old Algorithm",
+)
+plot_common(
+    "MOT loading time (s)",
+    "g2 (a.u.)",
+    "g2 vs MOT Loading Time",
+)
+plt.savefig("g2.png")
+
+
 
 plt.show()
