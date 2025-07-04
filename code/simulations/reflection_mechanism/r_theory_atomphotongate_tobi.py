@@ -109,35 +109,35 @@ df2 = pd.DataFrame(r_data, columns=headers2)
 
 print(df2)
 #%% Plotting
-# image_pi_up = plt.imread('r_pi_up.png')
-# image_sp_up = plt.imread('r_sp_up.png')
-# image_pi_down = plt.imread('r_pi_down.png')
-# image_sp_down = plt.imread('r_sp_down.png')
+image_pi_up = plt.imread('r_pi_up.png')
+image_sp_up = plt.imread('r_sp_up.png')
+image_pi_down = plt.imread('r_pi_down.png')
+image_sp_down = plt.imread('r_sp_down.png')
 #
 fig, ax = plt.subplots(2, 2,figsize= (18,9))
 
 ax[0, 0].plot(d_list,r_up_sp_list, 'r') #row=0, col=0
 ax[0, 0].axvline(x=0.0)
-# ax[0, 0].add_artist(AnnotationBbox(OffsetImage(image_sp_up,zoom=0.34), (0.42,0.35),frameon=True))
+ax[0, 0].add_artist(AnnotationBbox(OffsetImage(image_sp_up,zoom=0.34), (0.42,0.35),frameon=True))
 ax[0, 0].set_xlabel('detuning in (GHz)')
 ax[0, 0].set_ylabel('reflectivity')
 # ax[0, 0].text(r_list[0],fontsize=40)
 
 ax[1, 0].plot(d_list,r_up_pi_list, 'b') #row=1, col=0
 ax[1, 0].axvline(x=0.0)
-# ax[1, 0].add_artist(AnnotationBbox(OffsetImage(image_pi_up,zoom=0.34), (0.42,0.35),frameon=True))
+ax[1, 0].add_artist(AnnotationBbox(OffsetImage(image_pi_up,zoom=0.34), (0.42,0.35),frameon=True))
 ax[1, 0].set_xlabel('detuning in (GHz)')
 ax[1, 0].set_ylabel('reflectivity')
 
 ax[0, 1].plot(d_list,r_down_sp_list, 'g') #row=0, col=1
 ax[0, 1].axvline(x=0.0)
-# ax[0, 1].add_artist(AnnotationBbox(OffsetImage(image_sp_down,zoom=0.34), (0.42,0.35),frameon=True))
+ax[0, 1].add_artist(AnnotationBbox(OffsetImage(image_sp_down,zoom=0.34), (0.42,0.35),frameon=True))
 ax[0, 1].set_xlabel('detuning in (GHz)')
 ax[0, 1].set_ylabel('reflectivity')
 
 ax[1, 1].plot(d_list,r_down_pi_list, 'k') #row=1, col=1
 ax[1, 1].axvline(x=0.0)
-# ax[1, 1].add_artist(AnnotationBbox(OffsetImage(image_pi_down,zoom=0.34), (0.42,0.35),frameon=True))
+ax[1, 1].add_artist(AnnotationBbox(OffsetImage(image_pi_down,zoom=0.34), (0.42,0.35),frameon=True))
 ax[1, 1].set_xlabel('detuning in (GHz)')
 ax[1, 1].set_ylabel('reflectivity')
 
