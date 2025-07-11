@@ -18,19 +18,41 @@ class CavityQEDSystem:
 
     def __init__(self, photon_dimensions: List[int], atom_dimensions: int) -> None:
         """
-        Initialize the system with photon mode dimensions and atom level count.
+        Initialize the Cavity QED system with specified photon mode dimensions and atomic levels.
 
-        Parameters:
+        Parameters
         ----------
         photon_dimensions : List[int]
-            List of integers specifying truncation levels of each photon mode.
+            A list of integers, where each integer specifies the truncation level (Hilbert space dimension) 
+            of a single cavity photon mode. For example, [2, 3] represents two modes: one truncated at 2 levels, 
+            the other at 3.
+
         atom_dimensions : int
-            Integer specifying the number of levels in the atom.
+            An integer representing the number of energy levels in the atom (e.g., 3 for a Λ-type or ladder-type atom).
+
+        Attributes
+        ----------
+        photon_dimensions : List[int]
+            Stores the dimensionality of each photon mode.
+
+        atom_dimensions : int
+            Number of discrete atomic energy levels in the system.
+
+        annihilation_operators : List[qt.Qobj]
+            List of annihilation operators, one per photon mode, properly tensor-extended to act on the full system Hilbert space.
+
+        projection_operators : Dict[Tuple[int, int], qt.Qobj]
+            Dictionary mapping atomic level pairs (i, j) to projection or transition operators |i⟩⟨j| tensor-extended 
+            with identity operators over the photon modes.
+
+        atomic_states : List[qt.Qobj]
+            List of atomic basis states |0⟩, |1⟩, ..., |n⟩ represented as `qutip.basis` vectors, each extended with 
+            photon Hilbert space identity.
         """
         self.photon_dimensions = photon_dimensions
         self.atom_dimensions = atom_dimensions 
-        self.a = self.annihilation_operator()
-        self.S = self.projection_operator()
+        self.annihilation_operators = self.annihilation_operator()
+        self.projection_operators = self.projection_operator()
         self.atomic_states = self.atom_states()
 
     def annihilation_operator(self) -> Dict[str,qt.Qobj]:

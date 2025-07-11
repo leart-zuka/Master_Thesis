@@ -44,7 +44,7 @@ for d in d_list:
     in_cavity_phase.append(np.abs(cmath.phase(val)/np.pi))
 
 # --------------------------------
-# ------ Atom not in Cavity ------
+# ----- Atom "not" in Cavity -----
 # --------------------------------
 
 d_c_pi = 2 * np.pi * 0

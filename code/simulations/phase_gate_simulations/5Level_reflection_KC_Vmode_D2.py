@@ -137,9 +137,8 @@ for d in D:
     r_th_sigmaM.append(r_theory(d*2* np.pi,g2_KC,kappa, kappa_oc, MM_rf, MM_fc,gamma_5P32_5S/2))
     R_th_sigmaM.append(abs(r_theory(d*2* np.pi,g2_KC,kappa, kappa_oc, MM_rf, MM_fc,gamma_5P32_5S/2))**2)
     print(R_sigmaP[-1])
-
-
-
+#
+#
 d = 0.5
 H_D = 2* np.pi * d * (a[0].dag()*a[0] - S[0][0][0])
 H_g = g1_KC * S[0][1][0] * a[0] #+ g2_KC * S[0][2][0] * a[1] + g3_KC * S[0][3][2] * a[0]
