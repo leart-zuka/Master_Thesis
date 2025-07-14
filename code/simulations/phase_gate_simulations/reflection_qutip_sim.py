@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 import qutip as qt
@@ -24,10 +24,11 @@ Gamma_5P32_5S = 2 * np.pi * 0.006065 / 2  # atom dissipation rate
 Mu_rf = 1
 Mu_fc = 0.9
 
-Atom_dimensions = 3  # |0>, |1>, |e>
+Atom_dimensions = 5  # |F=1,m_f=0>,|F=2,m_f=0>,|F=2,m_f=-1>,|F=2,m_f=+1>,|F'=3,m_f=0>
 Photon_dimensions = [2]  # only π-pol. light is able to enter our cavity
 
-tlist = np.linspace(0, 2000, 1000)
+tlist = np.linspace(0, 5000, 1000)
+args = {"t0": 1000.0, "tau": 100.0, "tau_start": 6.0}
 
 
 def r_non_empty_cavity(
@@ -44,12 +45,19 @@ def r_non_empty_cavity(
     return mu_rf - mu_fc**2 * (2 * kappa_m1) / (kappa + 1j * d_c) * 1 / (2 * C_c + 1)
 
 
-args = {"t0": 1000}
-
-
 def input_shape(t: float, args: Dict[str, float]) -> float:
     t0 = args["t0"]
     return np.exp(-((t - t0 / 2) ** 2) / (t0 / 5) ** 2)
+
+
+def real_input_shape(t: float, args: Dict[str, float]) -> float:
+    t0 = args["t0"]
+    tau = args["tau"]
+    tau_start = args["tau_start"]
+    time_shifted = t - t0
+    pulse = np.exp(-time_shifted / tau) * (1 - np.exp(-time_shifted / tau_start)) ** 4
+    pulse = pulse * (t >= t0)  # Apply Heaviside
+    return pulse
 
 
 qced = CavityQEDSystem(
@@ -58,14 +66,18 @@ qced = CavityQEDSystem(
 
 c_obs = [
     np.sqrt(2 * Kappa) * qced.annihilation_operators["a0"],
-    np.sqrt(2 * Gamma_5P32_5S * 1 / 5) * qced.projection_operators[(2, 1)],
+    np.sqrt(2 * Gamma_5P32_5S * 1 / 10)
+    * qced.projection_operators[(4, 2)],  # |F'=3,m_f=0> -> |F=2,m_f=-1>
+    np.sqrt(2 * Gamma_5P32_5S * 1 / 10)
+    * qced.projection_operators[(4, 3)],  # |F'=3,m_f=0> -> |F=2,m_f=+1>
 ]
 
 obs = [
-    qced.projection_operators[(0, 0)],
-    qced.projection_operators[(1, 1)],
-    qced.projection_operators[(2, 2)],
-    qced.annihilation_operators["a0"].dag() * qced.annihilation_operators["a0"],
+    qced.projection_operators[(0, 0)],  # |F=1,m_f=0><F=1,m_f=0|
+    qced.projection_operators[(1, 1)],  # |F=2,m_f=0><F=2,m_f=0|
+    qced.projection_operators[(4, 4)],  # |F'=3,m_f=0><F'=3,m_f=0|
+    qced.annihilation_operators["a0"].dag()
+    * qced.annihilation_operators["a0"],  # a.dag*a=n
     qced.annihilation_operators["a0"],
 ]
 
@@ -76,13 +88,13 @@ def simulate(initial_atom_state_index):
     )
     H_jc = (
         G_pi_KC
-        * qced.projection_operators[(1, 2)]
+        * qced.projection_operators[(1, 4)]
         * qced.annihilation_operators["a0"].dag()
     )
     H_drive = np.sqrt(2 * Kappa_oc) * (
         qced.annihilation_operators["a0"] + qced.annihilation_operators["a0"].dag()
     )
-    H = [H_jc + H_jc.dag(), [H_drive, input_shape]]
+    H = [H_jc + H_jc.dag(), [H_drive, real_input_shape]]
     return qt.mesolve(H, psi0, tlist, c_obs, obs, args)
 
 
@@ -91,7 +103,7 @@ result_1 = simulate(1)
 
 
 def compute_output_field(result):
-    a_expect = result.expect[4]
+    a_expect = result.expect[-1]
     a_in = np.array([input_shape(t, args) for t in tlist])
     a_out = a_in - 0.8 * 1j * np.sqrt(2 * Kappa_oc) * a_expect
     return a_out, a_expect
@@ -123,12 +135,16 @@ axs[0, 1].grid()
 
 # --- Photon Number ---
 axs[1, 0].plot(tlist, result_0.expect[3], color="purple")
-axs[1, 0].set_title("Atom in |0⟩: ⟨a†a⟩")
+axs[1, 0].set_title(
+    "Atom in |0⟩: " + r"$\langle a^{\dagger}a\rangle = \langle n \rangle$"
+)
 axs[1, 0].set_ylabel("Photon Number")
 axs[1, 0].grid()
 
 axs[1, 1].plot(tlist, result_1.expect[3], color="purple")
-axs[1, 1].set_title("Atom in |1⟩: ⟨a†a⟩")
+axs[1, 1].set_title(
+    "Atom in |1⟩: " + r"$\langle a^{\dagger}a\rangle = \langle n \rangle$"
+)
 axs[1, 1].grid()
 
 # --- Cavity Field Re/Im ---
@@ -156,7 +172,7 @@ axs[3, 1].set_title("Atom in |1⟩: Phase of Output Field")
 axs[3, 1].grid()
 
 # --- Input Envelope ---
-input_env = input_shape(tlist, args)
+input_env = real_input_shape(tlist, args)
 axs[4, 0].plot(tlist, input_env, color="gray")
 axs[4, 0].set_title("Input Pulse Envelope")
 axs[4, 0].set_ylabel("Amplitude")
