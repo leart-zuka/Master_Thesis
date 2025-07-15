@@ -1,17 +1,17 @@
 import numpy as np
+import qutip as qt
 import matplotlib.pyplot as plt
-from qutip import Result
-from typing import Callable
+from typing import Callable, Dict, Any
 
 
 def plot_qswitch_dynamics(
-    tlist: np.ndarray,
-    result_0: Result,
-    result_1: Result,
+    tlist: np.ndarray[Any, np.dtype[np.float32]],
+    result_0: qt.Result,
+    result_1: qt.Result,
     a_out_0: np.ndarray,
     a_out_1: np.ndarray,
-    real_input_shape: Callable[[np.ndarray, dict], np.ndarray],
-    args: dict,
+    real_input_shape: Callable[[np.ndarray, Dict[str, float]], np.ndarray],
+    args: Dict[str, float],
 ) -> None:
     """
     Plot the dynamics of the quantum switch simulation.

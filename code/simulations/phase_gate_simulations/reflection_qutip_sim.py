@@ -25,7 +25,7 @@ Mu_fc = 0.9
 Atom_dimensions = 5  # |F=1,m_f=0>,|F=2,m_f=0>,|F=2,m_f=-1>,|F=2,m_f=+1>,|F'=3,m_f=0>
 Photon_dimensions = [2]  # only π-pol. light is able to enter our cavity
 
-tlist = np.linspace(0, 5000, 1000)
+tlist = np.linspace(0, 5000, 1000, dtype=np.float32)
 args = {"t0": 1000.0, "tau": 70.0, "tau_start": 91.0}
 
 # -----------------------
