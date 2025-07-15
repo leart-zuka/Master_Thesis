@@ -16,6 +16,7 @@ g0_KC = (
     2 * np.pi * 0.0438
 )  # coupling strength (F2mf2 -> F'3mf2) # reference transition measured value from M. Brekenfeld thesis
 g_pi_KC = g0_KC * (mu1 / mu0)  # coupling strength (F2mf0 -> F'3mf0) sigma- good
+print(g_pi_KC / (2 * np.pi))
 mu_rf = 0.99
 mu_fc = 0.9
 d_list = np.linspace(-0.5, 0.5, 1000)
@@ -96,26 +97,28 @@ for d in d_list:
 # ------- Plotting -------
 # ------------------------
 
-image_pi_up = plt.imread("pictures/r_pi_up.png")
-image_pi_down = plt.imread("pictures/r_pi_down.png")
+# image_pi_up = plt.imread("pictures/r_pi_up.png")
+# image_pi_down = plt.imread("pictures/r_pi_down.png")
 
 fig, ax = plt.subplots(2, 2, figsize=(18, 9))
 
 ax[0, 0].plot(d_list, in_cavity, "r")
+ax[0, 0].set_ylim(0, 1)
 ax[0, 0].axvline(x=0.0)
-ax[0, 0].add_artist(
-    AnnotationBbox(OffsetImage(image_pi_up, zoom=0.34), (0.42, 0.35), frameon=True)
-)
+# ax[0, 0].add_artist(
+# AnnotationBbox(OffsetImage(image_pi_up, zoom=0.34), (0.42, 0.35), frameon=True)
+# )
 ax[0, 0].set_xlabel("detuning in (GHz)")
 ax[0, 0].set_ylabel("reflectivity")
 
 ax[0, 1].plot(d_list, not_in_cavity, "b")
+ax[0, 1].set_ylim(0, 1)
 ax[0, 1].axvline(x=0.0)
-ax[0, 1].add_artist(
-    AnnotationBbox(
-        OffsetImage(image_pi_down, zoom=0.34), (0.42, 0.35), frameon=True, zorder=10
-    )
-)
+# ax[0, 1].add_artist(
+#     AnnotationBbox(
+#         OffsetImage(image_pi_down, zoom=0.34), (0.42, 0.35), frameon=True, zorder=10
+#     )
+# )
 ax[0, 1].set_xlabel("detuning in (GHz)")
 ax[0, 1].set_ylabel("reflectivity")
 

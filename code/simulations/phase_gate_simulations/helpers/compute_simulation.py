@@ -1,4 +1,4 @@
-from typing import Callable, Dict, Tuple, List
+from typing import Callable, Dict, Tuple, List, Any
 import numpy as np
 import qutip as qt
 
@@ -12,7 +12,7 @@ def simulate(
     G_pi_KC: float,
     Kappa_oc: float,
     real_input_shape: Callable[[float, Dict[str, float]], float],
-    tlist: np.ndarray,
+    tlist: np.ndarray[Any, np.dtype[np.float32]],
     c_ops: List[qt.Qobj],
     observables: List[qt.Qobj],
     args: Dict[str, float],
@@ -46,7 +46,15 @@ def simulate(
     )
     H = [H_jc + H_jc.dag(), [H_drive, real_input_shape]]
 
-    return qt.mesolve(H, psi0, tlist, c_ops, observables, args)
+    return qt.mesolve(
+        H,
+        psi0,
+        tlist,
+        c_ops,
+        observables,
+        args,
+        options=qt.Options(store_states=True),
+    )
 
 
 def compute_output_field(
@@ -55,7 +63,7 @@ def compute_output_field(
     args: Dict[str, float],
     tlist: np.ndarray,
     Kappa_oc: float,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> np.ndarray:
     """
     Compute the output field from simulation results.
 
@@ -67,9 +75,9 @@ def compute_output_field(
         Kappa_oc (float): Cavity decay rate.
 
     Returns:
-        Tuple[np.ndarray, np.ndarray]: Output field a_out(t), and cavity expectation ⟨a⟩(t).
+        np.ndarray: Output field a_out(t)
     """
     a_expect = result.expect[-1]
     a_in = np.array([input(t, args) for t in tlist])
-    a_out = a_in - 0.8j * np.sqrt(2 * Kappa_oc) * a_expect
-    return a_out, a_expect
+    a_out = a_in - np.sqrt(2 * Kappa_oc) * a_expect
+    return a_out

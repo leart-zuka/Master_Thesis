@@ -89,12 +89,8 @@ result_1 = simulate(
 )
 
 
-a_out_0, a_expect_0 = compute_output_field(
-    result_0, real_input_shape, args, tlist, Kappa_oc
-)
-a_out_1, a_expect_1 = compute_output_field(
-    result_1, real_input_shape, args, tlist, Kappa_oc
-)
+a_out_0 = compute_output_field(result_0, real_input_shape, args, tlist, Kappa_oc)
+a_out_1 = compute_output_field(result_1, real_input_shape, args, tlist, Kappa_oc)
 
 # -------------------------------
 # --- Plotting the Dynamics -----
