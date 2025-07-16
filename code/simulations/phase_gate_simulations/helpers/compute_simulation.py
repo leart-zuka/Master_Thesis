@@ -4,7 +4,7 @@ import qutip as qt
 
 
 def simulate(
-    initial_atom_state_index: int,
+    initial_atom_state: int,
     atomic_states: List[qt.Qobj],
     projection_operators: Dict[Tuple[int, int], qt.Qobj],
     annihilation_operators: Dict[str, qt.Qobj],
@@ -21,7 +21,7 @@ def simulate(
     Simulate the evolution of the quantum system for a given initial atomic state.
 
     Parameters:
-        initial_atom_state_index (int): Index of the initial atomic state (e.g., 0 for |0⟩, 1 for |1⟩).
+        initial_atom_state (int): Index of the initial atomic state (e.g., 0 for |0⟩, 1 for |1⟩).
         atomic_states (List[qt.Qobj]): Basis states of the atom.
         projection_operators (Dict[Tuple[int, int], qt.Qobj]): Atomic projection operators.
         annihilation_operators (Dict[str, qt.Qobj]): Dictionary of annihilation operators (e.g., {"a0": ...}).
@@ -38,7 +38,7 @@ def simulate(
         qt.Result: Result of the quantum simulation.
     """
     psi0 = qt.tensor(
-        atomic_states[initial_atom_state_index], qt.basis(Photon_dimensions[0], 0)
+        atomic_states[initial_atom_state], qt.basis(Photon_dimensions[0], 0)
     )
     H_jc = G_pi_KC * projection_operators[(1, 4)] * annihilation_operators["a0"].dag()
     H_drive = np.sqrt(2 * Kappa_oc) * (
@@ -79,5 +79,5 @@ def compute_output_field(
     """
     a_expect = result.expect[-1]
     a_in = np.array([input(t, args) for t in tlist])
-    a_out = a_in - np.sqrt(2 * Kappa_oc) * a_expect
+    a_out = a_in - 0.8j * np.sqrt(2 * Kappa_oc) * a_expect
     return a_out
