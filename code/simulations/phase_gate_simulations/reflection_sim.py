@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.signal import find_peaks
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 import cmath
 
@@ -101,8 +102,12 @@ for d in d_list:
 # image_pi_down = plt.imread("pictures/r_pi_down.png")
 
 fig, ax = plt.subplots(2, 2, figsize=(18, 9))
-
 ax[0, 0].plot(d_list, in_cavity, "r")
+n = 558
+n1 = 442
+print(f"Distance between two peak in GHz: {d_list[n] - d_list[n1]}")
+ax[0, 0].scatter(d_list[n], in_cavity[n])
+ax[0, 0].scatter(d_list[n1], in_cavity[n1])
 ax[0, 0].set_ylim(0, 1)
 ax[0, 0].axvline(x=0.0)
 # ax[0, 0].add_artist(
