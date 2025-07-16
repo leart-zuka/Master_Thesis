@@ -58,8 +58,7 @@ Light is then focused onto an AOM.
 
 ---
 
-`NOTE: The focused beam reduces clipping losses at the AOM aperture and decreases time taken to turn laser pulse on and off. However a smaller beam diameter causes a lower diffraction efficiency. Ergo there's a tradeoff
-      between switching time and diffraction efficiency.`
+`NOTE: The focused beam reduces clipping losses at the AOM aperture and decreases time taken to turn laser pulse on and off. However a smaller beam diameter causes a lower diffraction efficiency. Ergo there's a tradeoff between switching time and diffraction efficiency.`
 
 ---
 
