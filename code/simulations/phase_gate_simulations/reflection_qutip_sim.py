@@ -59,7 +59,7 @@ c_obs = [
 # -----------------------
 
 result_0 = simulate(
-    0,
+    0,  # Initial atomic state index for |0>
     qced.atomic_states,
     qced.projection_operators,
     qced.annihilation_operators,
