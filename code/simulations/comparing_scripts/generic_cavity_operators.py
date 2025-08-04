@@ -81,9 +81,11 @@ class CavityQEDSystem:
                 else:
                     tensor_factors.append(qt.qeye(dimension))
             annihilation_ops[f"a{mode_index_i}"] = qt.tensor(tensor_factors)
+
+        print(annihilation_ops)
         return annihilation_ops
 
-    def projection_operator(self) -> Dict[Tuple[int, int, int], qt.Qobj]:
+    def projection_operator(self) -> Dict[Tuple[int, int], qt.Qobj]:
         """
         Constructs atomic transition operators |i⟩⟨j| embedded in the full system Hilbert space.
 

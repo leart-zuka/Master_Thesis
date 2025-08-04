@@ -23,10 +23,10 @@ Mu_rf = 1
 Mu_fc = 0.9
 
 Atom_dimensions = 5  # |F=1,m_f=0>,|F=2,m_f=0>,|F=2,m_f=-1>,|F=2,m_f=+1>,|F'=3,m_f=0>
-Photon_dimensions = [2]  # only π-pol. light is able to enter our cavity
+Photon_dimensions = [2, 2]  # only π-pol. light is able to enter our cavity
 
-tlist = np.linspace(0, 5000, 10000, dtype=np.float32)
-args = {"t0": 1000.0, "tau": 70.0, "tau_start": 91.0}
+tlist = np.linspace(0, 1000, 10000, dtype=np.float32)
+args = {"t0": 100.0, "tau": 70.0, "tau_start": 91.0}
 
 # -----------------------
 # ---- System Params-----
@@ -60,7 +60,6 @@ c_obs = [
 
 result_0 = simulate(
     qced.atomic_states[0],  # Initial atomic state index for |0>
-    qced.atomic_states,
     qced.projection_operators,
     qced.annihilation_operators,
     Photon_dimensions,
@@ -75,7 +74,6 @@ result_0 = simulate(
 
 result_1 = simulate(
     qced.atomic_states[1],  # Initial atomic state index for |1⟩
-    qced.atomic_states,
     qced.projection_operators,
     qced.annihilation_operators,
     Photon_dimensions,
@@ -87,30 +85,6 @@ result_1 = simulate(
     obs,
     args,
 )
-
-# Extract final states
-final_state_0 = result_0.states[-1]
-final_state_1 = result_1.states[-1]
-
-# Print the full state vector
-print("Final state with atom initially in |0⟩:")
-print(final_state_0.full())
-
-print("\nFinal state with atom initially in |1⟩:")
-print(final_state_1.full())
-
-# Trace out atom to get photonic reduced density matrix
-rho_photon_0 = final_state_0.ptrace(1)
-rho_photon_1 = final_state_1.ptrace(1)
-
-# Print the photonic density matrices
-print("Photonic state when atom started in |0⟩:")
-print(rho_photon_0)
-print(final_state_0.ptrace(0))
-
-print("\nPhotonic state when atom started in |1⟩:")
-print(rho_photon_1)
-
 
 a_out_0 = compute_output_field(result_0, real_input_shape, args, tlist, Kappa_oc)
 a_out_1 = compute_output_field(result_1, real_input_shape, args, tlist, Kappa_oc)

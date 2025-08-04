@@ -36,7 +36,11 @@ def simulate(
     Returns:
         qt.Result: Result of the quantum simulation.
     """
-    psi0 = qt.tensor(initial_atom_state, qt.basis(Photon_dimensions[0], 0))
+    psi0 = qt.tensor(
+        initial_atom_state,
+        qt.basis(Photon_dimensions[0], 0),
+        qt.basis(Photon_dimensions[1], 0),
+    )
     H_jc = G_pi_KC * projection_operators[(1, 4)] * annihilation_operators["a0"].dag()
     H_drive = np.sqrt(2 * Kappa_oc) * (
         annihilation_operators["a0"] + annihilation_operators["a0"].dag()
