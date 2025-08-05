@@ -7,7 +7,6 @@ Created on Wed May 15 18:12:56 2024
 
 from qutip import *
 import pandas as pd
-from datetime import datetime
 
 import matplotlib.pyplot as plt
 import numpy as np

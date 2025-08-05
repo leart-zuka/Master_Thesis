@@ -4,19 +4,14 @@ import time
 import h5py
 from tqdm import tqdm
 import matplotlib.pyplot as plt
-import matplotlib.colors
-from matplotlib import colormaps
 import numpy as np
 import lmfit
-from scipy.optimize import curve_fit, minimize
+from scipy.optimize import minimize
 import pandas as pd
 import pickle
-from openpyxl import load_workbook
-from datetime import datetime
 import matplotlib.colors as mcolors
 from typing import List
 from qutip import *
-from qutip import gates
 
 
 class DataLoading:
