@@ -11,6 +11,7 @@ def plot_qswitch_dynamics(
     a_out_0: np.ndarray,
     a_out_1: np.ndarray,
     real_input_shape: Callable[[np.ndarray, Dict[str, float]], np.ndarray],
+    polarization: str,
     args: Dict[str, float],
 ) -> None:
     """
@@ -94,5 +95,6 @@ def plot_qswitch_dynamics(
     axs[4, 1].set_xlabel("Time")
     axs[4, 1].grid()
 
-    plt.tight_layout()
+    fig.suptitle(f"Polarization of Photon: {polarization}", fontsize=16)
+    plt.tight_layout(rect=[0, 0, 1, 0.96])
     plt.show()

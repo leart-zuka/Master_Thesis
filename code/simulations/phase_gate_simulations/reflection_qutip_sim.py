@@ -3,6 +3,10 @@ from helpers.generic_cavity_operators import CavityQEDSystem
 from helpers.input_shapes import real_input_shape
 from helpers.compute_simulation import simulate, compute_output_field
 from helpers.plotting import plot_qswitch_dynamics
+import warnings
+
+warnings.filterwarnings("ignore", category=FutureWarning)
+
 
 # -----------------------
 # ------ Constants ------
@@ -25,8 +29,8 @@ Mu_fc = 0.9
 Atom_dimensions = 5  # |F=1,m_f=0>,|F=2,m_f=0>,|F=2,m_f=-1>,|F=2,m_f=+1>,|F'=3,m_f=0>
 Photon_dimensions = [2, 2]  # only π-pol. light is able to enter our cavity
 
-tlist = np.linspace(0, 1000, 10000, dtype=np.float32)
-args = {"t0": 100.0, "tau": 70.0, "tau_start": 91.0}
+tlist = np.linspace(0, 10000, 20000, dtype=np.float32)
+args = {"t0": 1000.0, "tau": 70.0, "tau_start": 91.0}
 
 # -----------------------
 # ---- System Params-----
@@ -58,40 +62,52 @@ c_obs = [
 # ------ Results --------
 # -----------------------
 
-result_0 = simulate(
-    qced.atomic_states[0],  # Initial atomic state index for |0>
-    qced.projection_operators,
-    qced.annihilation_operators,
-    Photon_dimensions,
-    G_pi_KC,
-    Kappa_oc,
-    real_input_shape,
-    tlist,
-    c_obs,
-    obs,
-    args,
-)
+params = {"pi": "a0", "V": "a1"}
 
-result_1 = simulate(
-    qced.atomic_states[1],  # Initial atomic state index for |1⟩
-    qced.projection_operators,
-    qced.annihilation_operators,
-    Photon_dimensions,
-    G_pi_KC,
-    Kappa_oc,
-    real_input_shape,
-    tlist,
-    c_obs,
-    obs,
-    args,
-)
+for polarization, cavity_mode in params.items():
+    result_0 = simulate(
+        qced.atomic_states[0],  # Initial atomic state index for |0>
+        qced.projection_operators,
+        qced.annihilation_operators,
+        Photon_dimensions,
+        cavity_mode,
+        G_pi_KC,
+        Kappa_oc,
+        real_input_shape,
+        tlist,
+        c_obs,
+        obs,
+        args,
+    )
 
-a_out_0 = compute_output_field(result_0, real_input_shape, args, tlist, Kappa_oc)
-a_out_1 = compute_output_field(result_1, real_input_shape, args, tlist, Kappa_oc)
+    result_1 = simulate(
+        qced.atomic_states[1],  # Initial atomic state index for |1⟩
+        qced.projection_operators,
+        qced.annihilation_operators,
+        Photon_dimensions,
+        cavity_mode,
+        G_pi_KC,
+        Kappa_oc,
+        real_input_shape,
+        tlist,
+        c_obs,
+        obs,
+        args,
+    )
 
-# -------------------------------
-# --- Plotting the Dynamics -----
-# -------------------------------
-plot_qswitch_dynamics(
-    tlist, result_0, result_1, a_out_0, a_out_1, real_input_shape, args
-)
+    a_out_0 = compute_output_field(result_0, real_input_shape, args, tlist, Kappa_oc)
+    a_out_1 = compute_output_field(result_1, real_input_shape, args, tlist, Kappa_oc)
+
+    # -------------------------------
+    # --- Plotting the Dynamics -----
+    # -------------------------------
+    plot_qswitch_dynamics(
+        tlist,
+        result_0,
+        result_1,
+        a_out_0,
+        a_out_1,
+        real_input_shape,
+        polarization,
+        args,
+    )
