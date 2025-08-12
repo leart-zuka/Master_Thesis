@@ -20,25 +20,24 @@ atomdim = [5]
 specifies a five-state atom and two modes up to two photons
 """
 
-
-
 from qutip import *
 import numpy
 
-def field_operators(photondim,atomdim):
+
+def field_operators(photondim, atomdim):
     modes = numpy.size(photondim)
     ops = []
-    for i in range(0,numpy.size(atomdim)):
+    for i in range(0, numpy.size(atomdim)):
         ops.append(qeye(atomdim[i]))
-    
+
     idatoms = tensor(ops)
-    
+
     a = []
-    for i in range(0,modes):
+    for i in range(0, modes):
         ops = []
         ops.append(idatoms)
-        for j in range(0,modes):
-            if j==i:
+        for j in range(0, modes):
+            if j == i:
                 ops.append(destroy(photondim[j]))
             else:
                 ops.append(qeye(photondim[j]))
@@ -46,39 +45,40 @@ def field_operators(photondim,atomdim):
 
     ops = []
 
-    
     return a
-    
+
+
 def atom_operators(photondim, atomdim):
-    ops = []    
-    for i in range(0,numpy.size(photondim)):
+    ops = []
+    for i in range(0, numpy.size(photondim)):
         ops.append(qeye(photondim[i]))
-    
+
     idfields = tensor(ops)
-    
+
     astates = []
-    for i in range(0,numpy.size(atomdim)):
+    for i in range(0, numpy.size(atomdim)):
         tempstate = []
-        for j in range(0,atomdim[i]):
-            tempstate.append(basis(atomdim[i],j))
+        for j in range(0, atomdim[i]):
+            tempstate.append(basis(atomdim[i], j))
         astates.append(tempstate)
-    
-    S = []   
-    for k in range(0,numpy.size(atomdim)):
+
+    S = []
+    for k in range(0, numpy.size(atomdim)):
         tempS = [[None] * atomdim[k] for i in range(atomdim[k])]
-        for i in range(0,atomdim[k]):
-            for j in range(0,atomdim[k]):
+        for i in range(0, atomdim[k]):
+            for j in range(0, atomdim[k]):
                 ops = []
-                for l in range(0,numpy.size(atomdim)):
-                    if l==k:
+                for l in range(0, numpy.size(atomdim)):
+                    if l == k:
                         ops.append(astates[k][i] * astates[k][j].dag())
                     else:
                         ops.append(qeye(atomdim[l]))
                 ops.append(idfields)
                 tempS[i][j] = tensor(ops)
         S.append(tempS)
-    return astates,S
-    
+    return astates, S
+
+
 def operators(photondim, atomdim):
     """The function builds the operators for a cavity-atom system with (potentially) multiple atoms and multiple modes
     photondim must be a list of integers, which describe at which occupation state to truncate the Hilbert space for each mode.
@@ -88,10 +88,6 @@ def operators(photondim, atomdim):
     S returns a list of two-dimensional lists of operators for each atom. For example S[0][1][2] couples level 2 to level 1 for the 0th atom.
     atomstates is a list of lists, describing the basis states for each atom. atomstates[0][1] is the state 1 of atom 0.
     """
-    a = field_operators(photondim,atomdim)
-    atomstates, S = atom_operators(photondim,atomdim)
-    return a,S,atomstates
-    
-        
-        
-    
+    a = field_operators(photondim, atomdim)
+    atomstates, S = atom_operators(photondim, atomdim)
+    return a, S, atomstates

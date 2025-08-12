@@ -3,7 +3,6 @@ import qutip as qt
 from helpers.generic_cavity_operators import CavityQEDSystem
 from helpers.input_shapes import real_input_shape
 from helpers.compute_simulation import simulate_v2, compute_output_field
-import matplotlib.pyplot as plt
 import warnings
 
 warnings.filterwarnings("ignore", category=FutureWarning)
@@ -40,6 +39,12 @@ qced = CavityQEDSystem(
     photon_dimensions=Photon_dimensions, atom_dimensions=Atom_dimensions
 )
 
+a_super = (
+    qced.annihilation_operators["a0"] + np.exp(0) * qced.annihilation_operators["a1"]
+) / np.sqrt(2)
+X = a_super + a_super.dag()
+P = -1j * (a_super - a_super.dag())
+
 obs = [
     qced.projection_operators[(0, 0)],  # |F=1,m_f=0><F=1,m_f=0|
     qced.projection_operators[(1, 1)],  # |F=2,m_f=0><F=2,m_f=0|
@@ -47,6 +52,8 @@ obs = [
     qced.annihilation_operators["a0"].dag()
     * qced.annihilation_operators["a0"],  # a.dag*a=n
     qced.annihilation_operators["a0"],
+    # X,
+    # P,
 ]
 
 c_obs = [
@@ -102,8 +109,7 @@ fidelity_matrix = []
 
 def compute_phase_shift(a_in: np.ndarray, a_out: np.ndarray) -> float:
     # Compute average complex phase shift
-    ratio = a_out / a_in
-    return np.angle(np.mean(ratio[np.abs(a_in) > 1e-3]))
+    return np.angle(a_out[-1])
 
 
 for label, psi in params.items():
@@ -128,45 +134,47 @@ for label, psi in params.items():
         )
 
         final_state = result.states[-1]
-        print(final_state.ptrace([1, 2]))
-        fidelities = [
-            qt.fidelity(qt.ket2dm(output), final_state) for output in psi["outputs"]
-        ]
-        fidelity_matrix.append(fidelities)
+        # fidelities = [
+        #     qt.fidelity(qt.ket2dm(output), final_state) for output in psi["outputs"]
+        # ]
+        # fidelity_matrix.append(fidelities)
 
         a_out, a_in = compute_output_field(
             result, real_input_shape, args, tlist, Kappa_oc
         )
         phase_shift = compute_phase_shift(a_in, a_out)
+
+        # alpha_t = (result.expect[-2][-1] + 1j * result.expect[-1][-1]) / 2.0
+        # phase_shift = np.angle(alpha_t)
         print(f"{label} -> phase shift: {phase_shift:.2f} rad")
 
 # Convert to numpy array
-fidelity_matrix = np.array(fidelity_matrix)
-
-# === Plotting ===
-fig, ax = plt.subplots(figsize=(6, 5), constrained_layout=True)
-
-# Display the matrix
-im = ax.imshow(fidelity_matrix, cmap="viridis", vmin=0, vmax=1, aspect="auto")
-
-# Add colorbar
-cbar = fig.colorbar(im, ax=ax)
-cbar.set_label("Fidelity")
-
-# Set tick positions and labels
-ax.set_xticks(np.arange(len(output_labels)))
-ax.set_yticks(np.arange(len(input_labels)))
-ax.set_xticklabels(output_labels, rotation=45, ha="right")
-ax.set_yticklabels(input_labels)
-
-# Add fidelity values to each cell
-for i in range(fidelity_matrix.shape[0]):
-    for j in range(fidelity_matrix.shape[1]):
-        val = fidelity_matrix[i, j]
-        text_color = "white" if val < 0.5 else "black"
-        ax.text(j, i, f"{val:.2f}", ha="center", va="center", color=text_color)
-
-# Title
-ax.set_title("Quantum Truth Table (Fidelity Matrix)")
-
-plt.show()
+# fidelity_matrix = np.array(fidelity_matrix)
+#
+# # === Plotting ===
+# fig, ax = plt.subplots(figsize=(6, 5), constrained_layout=True)
+#
+# # Display the matrix
+# im = ax.imshow(fidelity_matrix, cmap="viridis", vmin=0, vmax=1, aspect="auto")
+#
+# # Add colorbar
+# cbar = fig.colorbar(im, ax=ax)
+# cbar.set_label("Fidelity")
+#
+# # Set tick positions and labels
+# ax.set_xticks(np.arange(len(output_labels)))
+# ax.set_yticks(np.arange(len(input_labels)))
+# ax.set_xticklabels(output_labels, rotation=45, ha="right")
+# ax.set_yticklabels(input_labels)
+#
+# # Add fidelity values to each cell
+# for i in range(fidelity_matrix.shape[0]):
+#     for j in range(fidelity_matrix.shape[1]):
+#         val = fidelity_matrix[i, j]
+#         text_color = "white" if val < 0.5 else "black"
+#         ax.text(j, i, f"{val:.2f}", ha="center", va="center", color=text_color)
+#
+# # Title
+# ax.set_title("Quantum Truth Table (Fidelity Matrix)")
+#
+# plt.show()

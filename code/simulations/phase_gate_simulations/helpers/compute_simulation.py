@@ -1,7 +1,6 @@
 from typing import Callable, Dict, Tuple, List, Any
 import numpy as np
 import qutip as qt
-from time import sleep
 
 
 def simulate(

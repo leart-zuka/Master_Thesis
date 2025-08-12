@@ -90,8 +90,7 @@ class DataLoading:
                 # index of the time before timeEnd
                 right = np.searchsorted(dataD[ch][1], timeEnd)
 
-                dataVD[ch][1] = np.append(
-                    dataVD[ch][1], dataD[ch][1][left:right])
+                dataVD[ch][1] = np.append(dataVD[ch][1], dataD[ch][1][left:right])
 
         return dataVD
 
@@ -114,7 +113,16 @@ class AtomAnalysis:
             self.syncFast,
             self.sdTrig,
             self.kcV,
-        ) = "ch0", "ch1", "ch2", "ch3", "ch4", "ch5", "ch6", "ch7"
+        ) = (
+            "ch0",
+            "ch1",
+            "ch2",
+            "ch3",
+            "ch4",
+            "ch5",
+            "ch6",
+            "ch7",
+        )
 
         self.adt = (
             0.13  # s - minimum atom trapping duration to be considered "good atom"
@@ -200,12 +208,12 @@ class AtomAnalysis:
             timeStamps = dataDic[self.syncFast][1][1:-1]
             for timeStamp in timeStamps:
                 """
-                    Idea here is that all the timeStamps for events, be it detector events from the
-                    short or long cavity, pulses we send to the qTau via the FPGA are being stored as
-                    time stamps, with of course a certain delay in between the events.
+                Idea here is that all the timeStamps for events, be it detector events from the
+                short or long cavity, pulses we send to the qTau via the FPGA are being stored as
+                time stamps, with of course a certain delay in between the events.
 
-                    Counting up how many timeStamps we've had in an inteval, will tell us how
-                    many events there were.
+                Counting up how many timeStamps we've had in an inteval, will tell us how
+                many events there were.
 
                 """
                 timeStamp = timeStamp + fsdelay
@@ -226,17 +234,17 @@ class AtomAnalysis:
             current_dataTime_grouped = []
             for current in range(0, len(dataPhotonKC) - no, no):
                 """
-                    Groups up KC counts
+                Groups up KC counts
                 """
                 current_dataPhoton_grouped.append(
-                    sum(dataPhotonKC[current: current + no]) / no
+                    sum(dataPhotonKC[current : current + no]) / no
                 )
 
             dataPhoton_grouped = dataPhoton_grouped + current_dataPhoton_grouped
 
             for current in range(0, len(dataPhotonKC) - no, no):
                 """
-                    Groups up KC timestamps
+                Groups up KC timestamps
                 """
                 current_dataTime_grouped.append(dataTimeKC[current])
             dataTime_grouped = dataTime_grouped + current_dataTime_grouped
@@ -260,7 +268,7 @@ class AtomAnalysis:
                 dataTimeLC.append(timeStamp)
 
             current_dataPhoton_groupedLC = [
-                sum(dataPhotonLC[current: current + no]) / no
+                sum(dataPhotonLC[current : current + no]) / no
                 for current in range(0, len(dataPhotonLC) - no, no)
             ]
             dataPhoton_groupedLC = dataPhoton_groupedLC + current_dataPhoton_groupedLC
@@ -289,26 +297,26 @@ class AtomAnalysis:
                 # check if our counts are above the witness threshold and below the two atom threshold
                 if inAtom == False and j >= wt_kc and j >= wt_lc and j <= twot:
                     """
-                        if that is the case then we have an atom and detect that
-                        an atom has entered the cavity, and we thus set atomIn_index to the index
-                        where our atom is in and set inAtom to True since
-                        there is an atom in the cavity
+                    if that is the case then we have an atom and detect that
+                    an atom has entered the cavity, and we thus set atomIn_index to the index
+                    where our atom is in and set inAtom to True since
+                    there is an atom in the cavity
                     """
                     atomIn_index = n
                     inAtom = True
 
                 if inAtom:
                     """
-                        if our atom is still in, then we just update our atomOut
-                        index to the current iteration
+                    if our atom is still in, then we just update our atomOut
+                    index to the current iteration
                     """
                     atomOut_index = n
 
                 if inAtom == True and (j < wt_kc or j < wt_lc):
                     """
-                        if our atom for some reason though gets below the witness threshold
-                        we exit out of our loop and and tell the code that we lost the atom
-                        by setting the atomOut index to our latest iteration
+                    if our atom for some reason though gets below the witness threshold
+                    we exit out of our loop and and tell the code that we lost the atom
+                    by setting the atomOut index to our latest iteration
                     """
                     atomOut_index = n
                     inAtom == False
@@ -316,8 +324,8 @@ class AtomAnalysis:
 
                 if inAtom == True and (j > twot):
                     """
-                        Something similar happens for the case where are atom (or maybe there were two)
-                        goes/go above the two atom threshold, which leads to an early exit aswell
+                    Something similar happens for the case where are atom (or maybe there were two)
+                    goes/go above the two atom threshold, which leads to an early exit aswell
                     """
                     atomOut_index = atomIn_index
                     inAtom == False
@@ -330,18 +338,18 @@ class AtomAnalysis:
 
             try:
                 """
-                    now we need to put allat in something we can iterate over in
-                    order to be able to plot it later
+                now we need to put allat in something we can iterate over in
+                order to be able to plot it later
 
-                    logic here is:
-                        timeStamps[atomIn_index] -> gives a time
-                        that time - start time from syncSlow signal
-                        => gives time when atom entered the cavity
+                logic here is:
+                    timeStamps[atomIn_index] -> gives a time
+                    that time - start time from syncSlow signal
+                    => gives time when atom entered the cavity
 
 
-                        timeStamps[atomOut_index] -> gives a time
-                        that time - start time from syncSlow signal
-                        => gives total lifetime of atom
+                    timeStamps[atomOut_index] -> gives a time
+                    that time - start time from syncSlow signal
+                    => gives total lifetime of atom
                 """
                 # --- Normal Times --- #
                 atomIn.append(
@@ -362,15 +370,13 @@ class AtomAnalysis:
                     current_dataTime_grouped[atomInNog2_index]
                     - dataDic[self.syncSlow][1][0]
                 )
-                atomInNog2Histo.append(
-                    current_dataTime_grouped[atomInNog2_index])
+                atomInNog2Histo.append(current_dataTime_grouped[atomInNog2_index])
 
                 atomOutNog2.append(
                     current_dataTime_grouped[atomOutNog2_index]
                     - dataDic[self.syncSlow][1][0]
                 )
-                atomOutNog2Histo.append(
-                    current_dataTime_grouped[atomOutNog2_index])
+                atomOutNog2Histo.append(current_dataTime_grouped[atomOutNog2_index])
             except:
                 atomIn.append(0)
                 atomInHisto.append(dataDic[self.syncSlow][1][0])
@@ -432,8 +438,7 @@ class AtomAnalysis:
         ax1.hlines(
             [wt_kc], atomInHisto[0], atomOutHisto[-1], color="tab:green", alpha=0.2
         )
-        ax1.hlines([twot], atomInHisto[0], atomOutHisto[-1],
-                   color="tab:red", alpha=0.2)
+        ax1.hlines([twot], atomInHisto[0], atomOutHisto[-1], color="tab:red", alpha=0.2)
 
         # --- lc counts plot --- #
         ax2.plot(
@@ -456,8 +461,8 @@ class AtomAnalysis:
 
         for i in range(len(atomInHisto)):
             """
-                if an atom is in the cavity and lives long enough the
-                background will be dyed in a color in specific color
+            if an atom is in the cavity and lives long enough the
+            background will be dyed in a color in specific color
             """
             if atomOutHisto[i] - atomInHisto[i] >= self.adt:
                 ax1.axvspan(
@@ -498,8 +503,7 @@ class AtomAnalysis:
     def getTrapTimes(self, goodAtomsDic, atomInHisto, atomOutHisto):
         list_trappingDuration = []
         for key in goodAtomsDic:
-            list_trappingDuration.append(
-                goodAtomsDic[key][1] - goodAtomsDic[key][0])
+            list_trappingDuration.append(goodAtomsDic[key][1] - goodAtomsDic[key][0])
 
         averageTrapTime = np.mean(list_trappingDuration)
         averageTrapTime_err = np.std(list_trappingDuration) / np.sqrt(
@@ -511,14 +515,12 @@ class AtomAnalysis:
             % (averageTrapTime, averageTrapTime_err)
         )
 
-        trappingProbability = len(
-            list_trappingDuration) / len(atomInHisto) * 100
+        trappingProbability = len(list_trappingDuration) / len(atomInHisto) * 100
 
         print("Atom trapping probability : %d %%" % (trappingProbability))
 
         dutyCycle = (
-            sum(list_trappingDuration) /
-            (atomOutHisto[-1] - atomInHisto[0]) * 100
+            sum(list_trappingDuration) / (atomOutHisto[-1] - atomInHisto[0]) * 100
         )
 
         print("Duty cycle: %d %%" % (dutyCycle))
@@ -527,7 +529,7 @@ class AtomAnalysis:
 
 if __name__ == "__main__":
     """
-        This script analyzes the trap time and trapping probability
+    This script analyzes the trap time and trapping probability
     """
 
     # --- Definition of plotting stuff --- #

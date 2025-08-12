@@ -96,5 +96,5 @@ def plot_qswitch_dynamics(
     axs[4, 1].grid()
 
     fig.suptitle(f"Polarization of Photon: {polarization}", fontsize=16)
-    plt.tight_layout(rect=[0, 0, 1, 0.96])
+    # plt.tight_layout(rect=[0, 0, 1, 0.96])
     plt.show()

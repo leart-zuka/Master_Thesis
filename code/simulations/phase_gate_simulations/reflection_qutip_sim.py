@@ -95,8 +95,13 @@ for polarization, cavity_mode in params.items():
         args,
     )
 
-    a_out_0 = compute_output_field(result_0, real_input_shape, args, tlist, Kappa_oc)
-    a_out_1 = compute_output_field(result_1, real_input_shape, args, tlist, Kappa_oc)
+    a_out_0, a_in_0 = compute_output_field(
+        result_0, real_input_shape, args, tlist, Kappa_oc
+    )
+
+    a_out_1, a_in_1 = compute_output_field(
+        result_1, real_input_shape, args, tlist, Kappa_oc
+    )
 
     # -------------------------------
     # --- Plotting the Dynamics -----

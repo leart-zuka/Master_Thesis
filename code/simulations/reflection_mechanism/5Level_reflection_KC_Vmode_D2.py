@@ -66,9 +66,6 @@ tlist = np.linspace(0, 2000, 100)
 # creating operators
 a, S, astate = operators(photondim, atomdim)
 
-print(a)
-exit()
-
 # JC Hamiltonian in dipole interaction form and rotating wave approximation
 args = {"sigma": 100, "t0": 1000}
 
