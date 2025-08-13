@@ -4,6 +4,7 @@ from helpers.generic_cavity_operators import CavityQEDSystem
 from helpers.input_shapes import real_input_shape
 from helpers.compute_simulation import simulate_v2, compute_output_field
 import warnings
+import matplotlib.pyplot as plt
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 
@@ -25,11 +26,12 @@ Gamma_5P32_5S = 2 * np.pi * 0.006065 / 2  # atom dissipation rate
 Mu_rf = 1
 Mu_fc = 0.9
 
-Atom_dimensions = 3  # |F=1,m_f=0>,|F=2,m_f=0>,|F=2,m_f=-1>,|F=2,m_f=+1>,|F'=3,m_f=0>
+Atom_dimensions = 5  # |F=1,m_f=0>,|F=2,m_f=0>,|F=2,m_f=-1>,|F=2,m_f=+1>,|F'=3,m_f=0>
 Photon_dimensions = [2, 2]  # two different dimensions, for two different polarizations
 
 tlist = np.linspace(0, 5000, 10000, dtype=np.float32)
-args = {"t0": 100.0, "tau": 70.0, "tau_start": 91.0}
+args = {"t0": 1000.0, "tau": 70.0, "tau_start": 91.0}
+
 
 # -----------------------
 # ---- System Params-----
@@ -38,36 +40,6 @@ args = {"t0": 100.0, "tau": 70.0, "tau_start": 91.0}
 qced = CavityQEDSystem(
     photon_dimensions=Photon_dimensions, atom_dimensions=Atom_dimensions
 )
-
-a_super = (
-    qced.annihilation_operators["a0"] + np.exp(0) * qced.annihilation_operators["a1"]
-) / np.sqrt(2)
-X = a_super + a_super.dag()
-P = -1j * (a_super - a_super.dag())
-
-obs = [
-    qced.projection_operators[(0, 0)],  # |F=1,m_f=0><F=1,m_f=0|
-    qced.projection_operators[(1, 1)],  # |F=2,m_f=0><F=2,m_f=0|
-    qced.projection_operators[(2, 2)],  # |F'=3,m_f=0><F'=3,m_f=0|
-    qced.annihilation_operators["a0"].dag()
-    * qced.annihilation_operators["a0"],  # a.dag*a=n
-    qced.annihilation_operators["a0"],
-    # X,
-    # P,
-]
-
-c_obs = [
-    np.sqrt(2 * Kappa) * qced.annihilation_operators["a0"],
-    # np.sqrt(2 * Gamma_5P32_5S * 1 / 10)
-    # * qced.projection_operators[(2, 4)],  # |F'=3,m_f=0> -> |F=2,m_f=-1>
-    # np.sqrt(2 * Gamma_5P32_5S * 1 / 10)
-    # * qced.projection_operators[(3, 4)],  # |F'=3,m_f=0> -> |F=2,m_f=+1>
-]
-
-
-# -----------------------
-# ------ Results --------
-# -----------------------
 
 gs = qced.atomic_states[0]
 es = qced.atomic_states[1]
@@ -90,6 +62,35 @@ down_total_1 = qt.tensor(es, down)
 
 outputs = [up_total_0, down_total_0, up_total_1, down_total_1]
 
+obs = [
+    qced.projection_operators[(0, 0)],  # |F=1,m_f=0><F=1,m_f=0|
+    qced.projection_operators[(1, 1)],  # |F=2,m_f=0><F=2,m_f=0|
+    qced.projection_operators[(4, 4)],  # |F'=3,m_f=0><F'=3,m_f=0|
+    up_total_0 * up_total_0.dag(),
+    up_total_1 * up_total_1.dag(),
+    down_total_0 * down_total_0.dag(),
+    down_total_1 * down_total_1.dag(),
+    qced.annihilation_operators["a0"].dag()
+    * qced.annihilation_operators["a0"],  # a.dag*a=n
+    qced.annihilation_operators["a0"],
+]
+
+c_obs = [
+    np.sqrt(2 * Kappa) * qced.annihilation_operators["a0"],
+    np.sqrt(2 * Kappa) * qced.annihilation_operators["a1"],
+    np.sqrt(2 * Gamma_5P32_5S * 1 / 10)
+    * qced.projection_operators[(2, 4)],  # |F'=3,m_f=0> -> |F=2,m_f=-1>
+    np.sqrt(2 * Gamma_5P32_5S * 1 / 10)
+    * qced.projection_operators[(3, 4)],  # |F'=3,m_f=0> -> |F=2,m_f=+1>
+]
+
+
+# -----------------------
+# ------ Results --------
+# -----------------------
+
+outputs = [up_total_0, down_total_0, up_total_1, down_total_1]
+
 params = {
     "0": {"state": qced.atomic_states[0], "outputs": outputs, "signs": [1, -1]},
     "1": {"state": qced.atomic_states[1], "outputs": outputs, "signs": [1, -1]},
@@ -108,8 +109,10 @@ fidelity_matrix = []
 
 
 def compute_phase_shift(a_in: np.ndarray, a_out: np.ndarray) -> float:
-    # Compute average complex phase shift
-    return np.angle(a_out[-1])
+    # Compute complex phase shift
+    time = -1
+    # return np.angle(a_out[time] / a_in[time])
+    return np.angle(a_out[time])
 
 
 for label, psi in params.items():
@@ -134,10 +137,8 @@ for label, psi in params.items():
         )
 
         final_state = result.states[-1]
-        # fidelities = [
-        #     qt.fidelity(qt.ket2dm(output), final_state) for output in psi["outputs"]
-        # ]
-        # fidelity_matrix.append(fidelities)
+        fidelities = [qt.fidelity(output, final_state) for output in psi["outputs"]]
+        fidelity_matrix.append(fidelities)
 
         a_out, a_in = compute_output_field(
             result, real_input_shape, args, tlist, Kappa_oc
@@ -148,33 +149,64 @@ for label, psi in params.items():
         # phase_shift = np.angle(alpha_t)
         print(f"{label} -> phase shift: {phase_shift:.2f} rad")
 
-# Convert to numpy array
+
+# result = simulate_v2(
+#     1,  # pi + v
+#     qced.atomic_states[0],  # |0>
+#     qced.projection_operators,
+#     qced.annihilation_operators,
+#     Photon_dimensions,
+#     G_pi_KC,
+#     Kappa_oc,
+#     real_input_shape,
+#     tlist,
+#     c_obs,
+#     obs,
+#     args,
+# )
+#
+# fidelities_up = []
+# fidelities_down = []
+# for state in result.states:
+#     fidelities_up.append(qt.fidelity(qt.tensor(qced.atomic_states[0], up), state))
+#     fidelities_down.append(qt.fidelity(qt.tensor(qced.atomic_states[0], down), state))
+#
+#
+# plt.plot(tlist, fidelities_up, label="up")
+# plt.plot(tlist, fidelities_down, label="down")
+# plt.legend()
+# plt.show()
+#
+# # print(qt.fidelity(qt.tensor(qced.atomic_states[0], up),result.states[500]))
+#
+#
+# # Convert to numpy array
 # fidelity_matrix = np.array(fidelity_matrix)
-#
-# # === Plotting ===
+# #
+# # # === Plotting ===
 # fig, ax = plt.subplots(figsize=(6, 5), constrained_layout=True)
-#
-# # Display the matrix
+# #
+# # # Display the matrix
 # im = ax.imshow(fidelity_matrix, cmap="viridis", vmin=0, vmax=1, aspect="auto")
-#
-# # Add colorbar
+# #
+# # # Add colorbar
 # cbar = fig.colorbar(im, ax=ax)
 # cbar.set_label("Fidelity")
-#
-# # Set tick positions and labels
+# #
+# # # Set tick positions and labels
 # ax.set_xticks(np.arange(len(output_labels)))
 # ax.set_yticks(np.arange(len(input_labels)))
 # ax.set_xticklabels(output_labels, rotation=45, ha="right")
 # ax.set_yticklabels(input_labels)
-#
-# # Add fidelity values to each cell
+# #
+# # # Add fidelity values to each cell
 # for i in range(fidelity_matrix.shape[0]):
 #     for j in range(fidelity_matrix.shape[1]):
 #         val = fidelity_matrix[i, j]
 #         text_color = "white" if val < 0.5 else "black"
 #         ax.text(j, i, f"{val:.2f}", ha="center", va="center", color=text_color)
-#
-# # Title
+# #
+# # # Title
 # ax.set_title("Quantum Truth Table (Fidelity Matrix)")
-#
+# #
 # plt.show()
