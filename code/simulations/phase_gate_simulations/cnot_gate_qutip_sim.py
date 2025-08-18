@@ -1,7 +1,7 @@
 import numpy as np
 import qutip as qt
 from helpers.generic_cavity_operators import CavityQEDSystem
-from helpers.input_shapes import real_input_shape
+from helpers.input_shapes import real_input_shape, input_shape
 from helpers.compute_simulation import simulate_v2, compute_output_field
 import warnings
 import matplotlib.pyplot as plt
@@ -52,8 +52,8 @@ v = qt.tensor(
     qt.basis(qced.photon_dimensions[0], 0), qt.basis(qced.photon_dimensions[1], 1)
 )
 
-up = (pi + v).unit()
-down = (-pi + v).unit()
+up = (v + pi).unit()
+down = (v - pi).unit()
 
 up_total_0 = qt.tensor(gs, up)
 down_total_0 = qt.tensor(gs, down)
@@ -66,13 +66,13 @@ obs = [
     qced.projection_operators[(0, 0)],  # |F=1,m_f=0><F=1,m_f=0|
     qced.projection_operators[(1, 1)],  # |F=2,m_f=0><F=2,m_f=0|
     qced.projection_operators[(4, 4)],  # |F'=3,m_f=0><F'=3,m_f=0|
-    up_total_0 * up_total_0.dag(),
-    up_total_1 * up_total_1.dag(),
-    down_total_0 * down_total_0.dag(),
-    down_total_1 * down_total_1.dag(),
+    # up_total_0 * up_total_0.dag(),
+    # up_total_1 * up_total_1.dag(),
+    # down_total_0 * down_total_0.dag(),
+    # down_total_1 * down_total_1.dag(),
     qced.annihilation_operators["a0"].dag()
     * qced.annihilation_operators["a0"],  # a.dag*a=n
-    qced.annihilation_operators["a0"],
+    (qced.annihilation_operators["a1"] + qced.annihilation_operators["a0"]),
 ]
 
 c_obs = [
@@ -111,8 +111,8 @@ fidelity_matrix = []
 def compute_phase_shift(a_in: np.ndarray, a_out: np.ndarray) -> float:
     # Compute complex phase shift
     time = -1
-    # return np.angle(a_out[time] / a_in[time])
-    return np.angle(a_out[time])
+    return np.angle(a_out[time] / a_in[time])
+    # return np.angle(a_out[time])
 
 
 for label, psi in params.items():
@@ -129,7 +129,7 @@ for label, psi in params.items():
             Photon_dimensions,
             G_pi_KC,
             Kappa_oc,
-            real_input_shape,
+            input_shape,
             tlist,
             c_obs,
             obs,
@@ -145,9 +145,14 @@ for label, psi in params.items():
         )
         phase_shift = compute_phase_shift(a_in, a_out)
 
-        # alpha_t = (result.expect[-2][-1] + 1j * result.expect[-1][-1]) / 2.0
-        # phase_shift = np.angle(alpha_t)
         print(f"{label} -> phase shift: {phase_shift:.2f} rad")
+        # plt.plot(tlist, result.expect[3], label=r"$|0,\uparrow\rangle$")
+        # plt.plot(tlist, result.expect[5], label=r"$|0,\downarrow\rangle$")
+        # plt.plot(tlist, result.expect[4], label=r"$|1,\uparrow\rangle$")
+        # plt.plot(tlist, result.expect[6], label=r"$|1,\downarrow\rangle$")
+        # plt.legend()
+        # plt.title(f"Sending {input_label} in")
+        # plt.show()
 
 
 # result = simulate_v2(

@@ -107,9 +107,9 @@ def simulate_v2(
     photon_states = [qt.basis(dim, 0) for dim in Photon_dimensions]
     initial_states = [initial_atom_state] + photon_states
     psi0 = qt.tensor(initial_states)
-    H_jc = G_pi_KC * projection_operators[(1, 2)] * annihilation_operators["a0"].dag()
+    H_jc = G_pi_KC * projection_operators[(1, 4)] * annihilation_operators["a0"].dag()
     a_super = (
-        annihilation_operators["a0"] + sign * annihilation_operators["a1"]
+        annihilation_operators["a1"] + sign * annihilation_operators["a0"]
     ) / np.sqrt(2)
     H_drive = np.sqrt(2 * Kappa_oc) * (a_super + a_super.dag())
     H = [

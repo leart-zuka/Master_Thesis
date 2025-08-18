@@ -1,6 +1,6 @@
 import numpy as np
 from helpers.generic_cavity_operators import CavityQEDSystem
-from helpers.input_shapes import real_input_shape
+from helpers.input_shapes import input_shape, real_input_shape
 from helpers.compute_simulation import simulate, compute_output_field
 from helpers.plotting import plot_qswitch_dynamics
 import warnings
@@ -29,7 +29,7 @@ Mu_fc = 0.9
 Atom_dimensions = 5  # |F=1,m_f=0>,|F=2,m_f=0>,|F=2,m_f=-1>,|F=2,m_f=+1>,|F'=3,m_f=0>
 Photon_dimensions = [2, 2]  # only π-pol. light is able to enter our cavity
 
-tlist = np.linspace(0, 10000, 20000, dtype=np.float32)
+tlist = np.linspace(0, 5000, 10000, dtype=np.float32)
 args = {"t0": 1000.0, "tau": 70.0, "tau_start": 91.0}
 
 # -----------------------
@@ -51,6 +51,7 @@ obs = [
 
 c_obs = [
     np.sqrt(2 * Kappa) * qced.annihilation_operators["a0"],
+    np.sqrt(2 * Kappa) * qced.annihilation_operators["a1"],
     np.sqrt(2 * Gamma_5P32_5S * 1 / 10)
     * qced.projection_operators[(2, 4)],  # |F'=3,m_f=0> -> |F=2,m_f=-1>
     np.sqrt(2 * Gamma_5P32_5S * 1 / 10)
