@@ -129,7 +129,7 @@ def simulate_v2(
 
 
 def compute_output_field(
-    result: qt.Result,
+    e_op: qt.Qobj,
     input: Callable[[float, Dict[str, float]], float],
     args: Dict[str, float],
     tlist: np.ndarray,
@@ -148,7 +148,7 @@ def compute_output_field(
     Returns:
         np.ndarray: Output field a_out(t)
     """
-    a_expect = result.expect[-1]
+    a_expect = e_op
     a_in = np.array([input(t, args) for t in tlist])
     a_out = a_in - 0.8j * np.sqrt(2 * Kappa_oc) * a_expect
     return a_out, a_in
