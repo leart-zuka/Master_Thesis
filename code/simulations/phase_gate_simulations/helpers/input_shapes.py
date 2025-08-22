@@ -4,7 +4,7 @@ from typing import Dict
 
 def input_shape(t: float, args: Dict[str, float]) -> float:
     t0 = args["t0"]
-    return np.exp(-((t - t0 / 2) ** 2) / (t0 / 5) ** 2)
+    return 0.05 * np.exp(-((t - t0 / 2) ** 2) / (t0 / 5) ** 2)
 
 
 def real_input_shape(t: float, args: Dict[str, float]) -> float:
