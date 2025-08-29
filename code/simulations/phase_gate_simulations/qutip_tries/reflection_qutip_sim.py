@@ -1,9 +1,34 @@
 import numpy as np
 from helpers.generic_cavity_operators import CavityQEDSystem
-from helpers.input_shapes import input_shape, real_input_shape
+from helpers.input_shapes import real_input_shape, input_shape
 from helpers.compute_simulation import simulate, compute_output_field
 from helpers.plotting import plot_qswitch_dynamics
+import matplotlib.pyplot as plt
+import qutip as qt
 import warnings
+
+
+from qutip import displace, destroy, basis, wigner
+
+
+def normalize_temporal_mode(f_t, tlist):
+    dt = np.diff(tlist).mean()
+    norm = np.sqrt(np.sum(np.abs(f_t) ** 2) * dt)
+    return f_t / norm, dt
+
+
+def project_output_to_mode(alpha_out_t, f_t, tlist):
+    f_norm, dt = normalize_temporal_mode(f_t, tlist)
+    beta = np.sum(np.conjugate(f_norm) * alpha_out_t) * dt
+    return beta, np.angle(beta)
+
+
+def coherent_mode_state(beta, cutoff=15):
+    a = destroy(cutoff)
+    rho0 = basis(cutoff, 0) * basis(cutoff, 0).dag()
+    D = displace(cutoff, beta)
+    return D * rho0 * D.dag()
+
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 
@@ -30,7 +55,7 @@ Atom_dimensions = 5  # |F=1,m_f=0>,|F=2,m_f=0>,|F=2,m_f=-1>,|F=2,m_f=+1>,|F'=3,m
 Photon_dimensions = [2, 2]  # only π-pol. light is able to enter our cavity
 
 tlist = np.linspace(0, 5000, 10000, dtype=np.float32)
-args = {"t0": 1000.0, "tau": 70.0, "tau_start": 91.0}
+args = {"t0": 1000, "tau": 70.0, "tau_start": 91.0, "sigma": 1.0}
 
 # -----------------------
 # ---- System Params-----
@@ -47,15 +72,16 @@ obs = [
     qced.annihilation_operators["a0"].dag()
     * qced.annihilation_operators["a0"],  # a.dag*a=n
     qced.annihilation_operators["a0"],
+    qced.annihilation_operators["a1"],
 ]
 
 c_obs = [
     np.sqrt(2 * Kappa) * qced.annihilation_operators["a0"],
     np.sqrt(2 * Kappa) * qced.annihilation_operators["a1"],
     np.sqrt(2 * Gamma_5P32_5S * 1 / 10)
-    * qced.projection_operators[(2, 4)],  # |F'=3,m_f=0> -> |F=2,m_f=-1>
+    * qced.projection_operators[(2, 4)],  # |F=2,m_f=-1><F'=3,m_f=0|
     np.sqrt(2 * Gamma_5P32_5S * 1 / 10)
-    * qced.projection_operators[(3, 4)],  # |F'=3,m_f=0> -> |F=2,m_f=+1>
+    * qced.projection_operators[(3, 4)],  # |F=2,m_f=+1><F'=3,m_f=0|
 ]
 
 
@@ -64,6 +90,22 @@ c_obs = [
 # -----------------------
 
 params = {"pi": "a0", "V": "a1"}
+
+gs = qced.atomic_states[0]
+es = qced.atomic_states[1]
+
+pi = qt.tensor(
+    qt.basis(qced.photon_dimensions[0], 1), qt.basis(qced.photon_dimensions[1], 0)
+)
+
+v = qt.tensor(
+    qt.basis(qced.photon_dimensions[0], 0), qt.basis(qced.photon_dimensions[1], 1)
+)
+
+pi_0 = qt.tensor(gs, pi)
+gs_0 = qt.tensor(gs, qt.tensor(qt.basis(2, 0), qt.basis(2, 0)))
+es_0 = qt.tensor(es, qt.tensor(qt.basis(2, 0), qt.basis(2, 0)))
+
 
 for polarization, cavity_mode in params.items():
     result_0 = simulate(
@@ -96,13 +138,23 @@ for polarization, cavity_mode in params.items():
         args,
     )
 
+    e_ob = 0
+    if polarization == "pi":
+        e_ob = -2
+    else:
+        e_ob = -1
+
     a_out_0, a_in_0 = compute_output_field(
-        result_0, real_input_shape, args, tlist, Kappa_oc
+        result_0.expect[e_ob], real_input_shape, args, tlist, Kappa_oc
     )
 
     a_out_1, a_in_1 = compute_output_field(
-        result_1, real_input_shape, args, tlist, Kappa_oc
+        result_1.expect[e_ob], real_input_shape, args, tlist, Kappa_oc
     )
+
+    print(a_out_0[-1])
+    print(a_out_1[-1])
+    exit()
 
     # -------------------------------
     # --- Plotting the Dynamics -----

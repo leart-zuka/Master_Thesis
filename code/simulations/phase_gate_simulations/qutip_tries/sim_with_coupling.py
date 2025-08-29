@@ -29,7 +29,7 @@ a = [2, 2]  # Cavity modes: One for pi and one for V
 b = [2, 2]  # External Light modes: Same logic here
 # 2 because then the states will be |0> or |1>, which would be the cases for either having 0 or 1 photon in your cavity or light field
 
-N_env = 2  # Number of frequency bins
+N_env = 1  # Number of frequency bins
 
 a_pi = qt.destroy(a[0])
 a_v = qt.destroy(a[1])
@@ -97,7 +97,7 @@ b_v_embedded = [
 H_couple = []
 
 for i in range(N_env):
-    H_couple += (
+    H_couple.append(
         1j
         * np.sqrt(Kappa_oc / 2 * np.pi)
         * (
@@ -105,7 +105,7 @@ for i in range(N_env):
             - a_pi_embedded * b_pi_embedded[i].dag()
         )
     )
-    H_couple += (
+    H_couple.append(
         1j
         * np.sqrt(Kappa_oc / 2 * np.pi)
         * (a_v_embedded.dag() * b_v_embedded[i] - a_v_embedded * b_v_embedded[i].dag())
@@ -134,12 +134,14 @@ c_obs = [
     * transition_ops[(3, 4)],  # |F=2,m_f=+1><F'=3,m_f=0|
 ]
 
+e_obs = [transition_ops[(1, 1)], transition_ops[(2, 2)]]
+
 result = qt.mesolve(
     H,
     full_initial_state,
     tlist,
     c_obs,
-    [],
+    e_obs,
     args,
     options=qt.Options(store_states=True, progress_bar="enhanced"),
 )
