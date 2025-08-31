@@ -24,19 +24,16 @@ Delta_c = 0.0
 Delta_a = 0.0
 
 
-t_span = (0.0, 100.0)
+t_span = (0.0, 250.0)
 t_eval = np.linspace(*t_span, 10000)
-args = {"t0": 1000, "tau": 70.0, "tau_start": 91.0, "sigma": 1.0}
+args = {"amp": 0.2, "t0": 150, "tau": 70.0, "tau_start": 91.0, "sigma": 1.0}
 
 
 # Input shape
 def a_in(t):
-    # t0 = args["t0"]
-    # return np.exp(-((t - t0 / 2) ** 2) / (t0 / 5) ** 2)
-    t0 = 6.0
-    sigma_t = 1.0
-    amp = 0.3
-    return amp * np.exp(-0.5 * ((t - t0) / sigma_t) ** 2)
+    t0 = args["t0"]
+    amp = args["amp"]
+    return amp * np.exp(-((t - (t0 / 2)) ** 2) / (t0 / 5) ** 2)
 
 
 def a_in_real(t):
@@ -53,26 +50,18 @@ def maxwell_bloch_equation(t, y):
     """
     y = [Re(a),Im(a),Re(s),Im(s),s_z]
     """
-    # a = y[0] + 1j * y[1]
-    # s = y[2] + 1j * y[3]
-    # s_z = y[4]
-    # da = -(1j * Delta_c + Kappa / 2) * a - 1j * G_pi_KC * s - np.sqrt(Kappa) * a_in(t)
-    # ds = -(1j * Delta_a + Gamma_5P32_5S / 2) * s - 1j * G_pi_KC * s_z * a
-    # ds_z = -2j * Gamma_5P32_5S * (s * np.conj(a) - np.conj(s) * a) + Gamma_5P32_5S * (
-    #     1 - s_z
-    # )
-    #
-    # return np.array([da.real, da.imag, ds.real, ds.imag, ds_z])
-    #
-
-    # y = [Re(a), Im(a), Re(s), Im(s), z]
     a = y[0] + 1j * y[1]
     s = y[2] + 1j * y[3]
-    z = y[4]
-    da = -(1j * Delta_c + 0.5 * Kappa) * a - 1j * G_pi_KC * s - np.sqrt(Kappa) * a_in(t)
-    ds = -(1j * Delta_a + 0.5 * Gamma_5P32_5S) * s - 1j * G_pi_KC * z * a
-    dz = -2j * G_pi_KC * (s * np.conj(a) - np.conj(s) * a) + Gamma_5P32_5S * (1 - z)
-    return np.array([da.real, da.imag, ds.real, ds.imag, dz.real])
+    s_z = y[4]
+    da = (
+        -(1j * Delta_c + Kappa / 2) * a - 1j * G_pi_KC * s - np.sqrt(Kappa_oc) * a_in(t)
+    )
+    ds = -(1j * Delta_a + Gamma_5P32_5S / 2) * s - 1j * G_pi_KC * s_z * a
+    ds_z = -2j * Gamma_5P32_5S * (s * np.conj(a) - np.conj(s) * a) + Gamma_5P32_5S * (
+        1 - s_z
+    )
+
+    return np.array([da.real, da.imag, ds.real, ds.imag, ds_z])
 
 
 # ------------------
@@ -100,9 +89,9 @@ s_t = result.y[2] + result.y[3]
 s_z_t = result.y[4]
 
 a_in_t = a_in(t)
-a_out_t = a_in_t - np.sqrt(Kappa) * a_t
+a_out_t = a_in_t + np.sqrt(Kappa_oc) * a_t
 
-print(np.angle(a_out_t[-1]))
+print(a_out_t[-1] / a_in_t[-1])
 
 plt.figure()
 plt.plot(t, np.abs(a_t))
@@ -111,22 +100,10 @@ plt.ylabel("|⟨a⟩|")
 plt.title("Intracavity field amplitude")
 
 plt.figure()
-plt.plot(t, np.abs(s_t))
-plt.xlabel("t")
-plt.ylabel("|⟨σ⟩|")
-plt.title("Atomic coherence magnitude")
-
-plt.figure()
 plt.plot(t, s_z_t)
 plt.xlabel("t")
 plt.ylabel("⟨σ_z⟩")
 plt.title("Atomic inversion")
-
-plt.figure()
-plt.plot(t, np.abs(a_out_t))
-plt.xlabel("t")
-plt.ylabel("|a_out|")
-plt.title("Output field magnitude")
 
 plt.figure()
 plt.plot(t, a_out_t.imag, label="Im(a)")
