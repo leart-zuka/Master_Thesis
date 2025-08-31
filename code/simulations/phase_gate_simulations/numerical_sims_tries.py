@@ -12,6 +12,7 @@ Mu1 = -np.sqrt(3 / 10)  # pi (mf0 -> mf0)
 
 G0_kc = 2 * np.pi * 0.0438  # coupling strength (F2mf2 -> F'3mf2)
 G_pi_KC = G0_kc * (Mu1 / Mu0)  # coupling strength (F2mf0 -> F'3mf0)
+# G_pi_KC = 0  # coupling strength (F2mf0 -> F'3mf0)
 
 Kappa = 2 * np.pi * 0.063  # cavity dissipation rate
 Kappa_oc = 2 * np.pi * 0.054
@@ -20,13 +21,23 @@ Gamma_5P32_5S = 2 * np.pi * 0.006065 / 2  # atom dissipation rate
 Mu_rf = 1
 Mu_fc = 0.9
 
-Delta_c = 0.0
+# Delta_c = 0.0
+Delta_c = 1e6
 Delta_a = 0.0
 
 
 t_span = (0.0, 250.0)
 t_eval = np.linspace(*t_span, 10000)
-args = {"amp": 0.2, "t0": 150, "tau": 70.0, "tau_start": 91.0, "sigma": 1.0}
+args = {"amp": 0.4, "t0": 150, "tau": 70.0, "tau_start": 91.0, "sigma": 1.0}
+
+
+def phase_shift_overlap(a_in_t, a_out_t, thresh=1e-6):
+    # weight times where input is present
+    w = np.abs(a_in_t) ** 2
+    mask = w > thresh * np.max(w)
+    num = np.vdot(a_in_t[mask], a_out_t[mask])  # = sum a_in* · a_out
+    # vdot does conjugate on the first argument, so it's ∑ a_in^*(t) a_out(t)
+    return np.angle(num)  # phase of reflection relative to input
 
 
 # Input shape
@@ -91,7 +102,8 @@ s_z_t = result.y[4]
 a_in_t = a_in(t)
 a_out_t = a_in_t + np.sqrt(Kappa_oc) * a_t
 
-print(a_out_t[-1] / a_in_t[-1])
+phi = phase_shift_overlap(a_in_t, a_out_t)
+print(phi)
 
 plt.figure()
 plt.plot(t, np.abs(a_t))
