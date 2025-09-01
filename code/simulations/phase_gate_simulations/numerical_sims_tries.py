@@ -22,14 +22,14 @@ Mu_rf = 1
 Mu_fc = 0.9
 
 Delta_c = 2 * np.pi * 0.0
-# Delta_c = 2*np.pi*300e6
-# Delta_a = 2 * np.pi * 0.0
-Delta_a = 2 * np.pi * 6.835e9
+# Delta_c = 2 * np.pi * 300e6
+Delta_a = 2 * np.pi * 0.0
+# Delta_a = 2 * np.pi * 6.835e9
 
 
 t_span = (0.0, 250.0)
 t_eval = np.linspace(*t_span, 10000)
-args = {"amp": 0.3, "t0": 150, "tau": 70.0, "tau_start": 91.0, "sigma": 1.0}
+args = {"amp": 0.3, "t0": 100, "tau": 70.0, "tau_start": 91.0, "sigma": 1.0}
 
 
 # Input shape
@@ -57,7 +57,9 @@ def maxwell_bloch_equation(t, y):
     s = y[2] + 1j * y[3]
     s_z = y[4]
     da = (
-        -(1j * Delta_c + Kappa / 2) * a - 1j * G_pi_KC * s - np.sqrt(Kappa_oc) * a_in(t)
+        -(1j * Delta_c + 2 * Kappa / 2) * a
+        - 1j * G_pi_KC * s
+        - np.sqrt(2 * Kappa_oc) * a_in(t)
     )
     ds = -(1j * Delta_a + Gamma_5P32_5S / 2) * s - 1j * G_pi_KC * s_z * a
     ds_z = -2j * Gamma_5P32_5S * (s * np.conj(a) - np.conj(s) * a) + Gamma_5P32_5S * (
@@ -92,14 +94,15 @@ s_t = result.y[2] + result.y[3]
 s_z_t = result.y[4]
 
 a_in_t = a_in(t)
-a_out_t = a_in_t + np.sqrt(Kappa_oc) * a_t
+a_out_t = a_in_t + np.sqrt(2 * Kappa_oc) * a_t
 
-print((np.min(a_out_t) / np.max(a_in_t)))
+# print((np.min(a_out_t) / np.max(a_in_t)))
 
 plt.figure()
-plt.plot(t, np.abs(a_t))
+plt.plot(t, np.abs(a_t), label="Tot")
 plt.xlabel("t")
 plt.ylabel("|⟨a⟩|")
+plt.legend()
 plt.title("Intracavity field amplitude")
 
 plt.figure()
@@ -108,10 +111,29 @@ plt.xlabel("t")
 plt.ylabel("⟨σ_z⟩")
 plt.title("Atomic inversion")
 
+max_out = np.min(a_out_t)
+index_max_out = np.where(a_out_t == max_out)
+max_in = np.max(a_in_t)
+index_max_in = np.where(a_in_t == max_in)
+max_intra = np.min(a_t)
+index_intra = np.where(a_t == max_intra)
+
+print(t[index_max_in])
+print(t[index_intra])
+print(t[index_max_out])
+
 plt.figure()
-plt.plot(t, a_out_t.imag, label="Im(a)")
-plt.plot(t, a_out_t.real, label="Re(a)")
-plt.plot(t, a_in_t, label="Input")
+# plt.plot(t, a_out_t.imag, label="Im(a)")
+# plt.plot(t, a_out_t.real, label="Re(a)")
+plt.plot(t, np.abs(a_out_t), label="Output")
+plt.scatter(t[index_max_out], np.abs(a_out_t[index_max_out]))
+plt.plot(t, np.abs(a_t), label="Intracav. Field")
+plt.scatter(t[index_intra], np.abs(a_t[index_intra]))
+plt.plot(t, np.abs(a_in_t), label="Input")
+plt.axvline(t[index_max_out])
+plt.axvline(t[index_max_in])
+plt.axvline(t[index_intra])
+plt.scatter(t[index_max_in], np.abs(a_in_t[index_max_in]))
 plt.xlabel("t")
 plt.ylabel("a_out")
 plt.legend()
