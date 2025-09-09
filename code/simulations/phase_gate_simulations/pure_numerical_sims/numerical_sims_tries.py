@@ -11,7 +11,7 @@ Mu0 = -np.sqrt(1 / 6)  # pi (mf2 -> mf2)
 Mu1 = -np.sqrt(3 / 10)  # pi (mf0 -> mf0)
 
 G0_kc = 2 * np.pi * 0.0438  # coupling strength (F2mf2 -> F'3mf2)
-G0_kc = 2 * np.pi * 0.2  # coupling strength (F2mf2 -> F'3mf2)
+# G0_kc = 2 * np.pi * 0.2  # coupling strength (F2mf2 -> F'3mf2)
 G_pi_KC = G0_kc * (Mu1 / Mu0)  # coupling strength (F2mf0 -> F'3mf0)
 
 Kappa = 2 * np.pi * 0.063  # cavity dissipation rate
@@ -21,10 +21,10 @@ Gamma_5P32_5S = 2 * np.pi * 0.006065 / 2  # atom dissipation rate
 Mu_rf = 1
 Mu_fc = 0.9
 
-Delta_c = 2 * np.pi * 0.0
-# Delta_c = 2 * np.pi * 300e6
-Delta_a = 2 * np.pi * 0.0
-# Delta_a = 2 * np.pi * 6.835e9
+Delta_c = 2 * np.pi * 0.0  # [GHz]
+# Delta_a = 2 * np.pi * 0.5 # Light isn't resonant with cavity aka light is V polarized
+Delta_a = 2 * np.pi * 0.0  # [GHz]
+# Delta_a = 2 * np.pi * 6.835  # Atom isn't coupled to cavity aka atom in |0>
 
 
 t_span = (0.0, 250.0)
@@ -125,15 +125,15 @@ print(t[index_max_out])
 plt.figure()
 # plt.plot(t, a_out_t.imag, label="Im(a)")
 # plt.plot(t, a_out_t.real, label="Re(a)")
-plt.plot(t, np.abs(a_out_t), label="Output")
-plt.scatter(t[index_max_out], np.abs(a_out_t[index_max_out]))
-plt.plot(t, np.abs(a_t), label="Intracav. Field")
-plt.scatter(t[index_intra], np.abs(a_t[index_intra]))
-plt.plot(t, np.abs(a_in_t), label="Input")
-plt.axvline(t[index_max_out])
-plt.axvline(t[index_max_in])
-plt.axvline(t[index_intra])
-plt.scatter(t[index_max_in], np.abs(a_in_t[index_max_in]))
+plt.plot(t, a_out_t, label="Output")
+# plt.scatter(t[index_max_out], np.abs(a_out_t[index_max_out]))
+# plt.plot(t, np.abs(a_t), label="Intracav. Field")
+# plt.scatter(t[index_intra], np.abs(a_t[index_intra]))
+plt.plot(t, a_in_t, label="Input")
+# plt.axvline(t[index_max_out])
+# plt.axvline(t[index_max_in])
+# plt.axvline(t[index_intra])
+# plt.scatter(t[index_max_in], np.abs(a_in_t[index_max_in]))
 plt.xlabel("t")
 plt.ylabel("a_out")
 plt.legend()
