@@ -15,7 +15,7 @@ total_reduction, reduction_1, reduction_2 = calculate_total_reduction(
 
 frequency = 384227.843e9  # Rb87 D2 line F=2 <-> F'=2
 mean_photon_number = 0.2
-power_from_cavity = 166.0e-9 * total_reduction
+power_from_cavity = 495.0e-9 * total_reduction
 
 required_pulse_length = calculate_pulse_length(
     frequency, mean_photon_number, power_from_cavity
