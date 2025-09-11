@@ -7,11 +7,11 @@ from scipy.integrate import solve_ivp
 # ---------
 
 # Clebsch-Gorden coefficient D2 line (F2 -> F'3)
-Mu0 = -np.sqrt(1 / 6)  # pi (mf2 -> mf2)
-Mu1 = -np.sqrt(3 / 10)  # pi (mf0 -> mf0)
+Mu0 = -np.sqrt(1 / 24)  # pi (mf2 -> mf2)
+Mu1 = -np.sqrt(1 / 3)  # pi (mf0 -> mf0)
 
-G0_kc = 2 * np.pi * 0.0438  # coupling strength (F2mf2 -> F'3mf2)
-# G0_kc = 2 * np.pi * 0.2  # coupling strength (F2mf2 -> F'3mf2)
+# G0_kc = 2 * np.pi * 0.0438  # coupling strength (F2mf2 -> F'3mf2)
+G0_kc = 2 * np.pi * 0.032  # coupling strength (F2mf2 -> F'2mf2)
 G_pi_KC = G0_kc * (Mu1 / Mu0)  # coupling strength (F2mf0 -> F'3mf0)
 
 Kappa = 2 * np.pi * 0.063  # cavity dissipation rate
