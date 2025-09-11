@@ -253,6 +253,7 @@ class AtomAnalysis:
 
             dataPhotonLC = []
             dataTimeLC = []
+
             # We calculate the number of photons per trial for the Long Cavity
             for k, timeStamp in enumerate(dataDic[self.syncFast][1][:-1]):
                 timeStamp = timeStamp + fsdelay
@@ -279,8 +280,8 @@ class AtomAnalysis:
 
             # print("Mean ph number = ", np.mean(current_dataPhoton_grouped))
 
-            wt_kc = 0.6 * kcCounts  # wt = witness threshold
-            wt_lc = -1  # wt = witness threshold
+            wt_kc = 0.6 * kcCounts  # wt_kc = witness threshold short cavity
+            wt_lc = -1  # wt_lc = witness threshold long cavity
             # twot = 1.4 * kcCounts  # twot = two atom threshold
             twot = 2 * kcCounts  # twot = two atom threshold
             inAtom = False
