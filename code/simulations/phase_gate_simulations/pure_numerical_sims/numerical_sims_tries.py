@@ -8,21 +8,21 @@ from scipy.integrate import solve_ivp
 
 # Clebsch-Gorden coefficient D2 line (F2 -> F'3)
 Mu0 = -np.sqrt(1 / 24)  # pi (mf2 -> mf2)
-Mu1 = -np.sqrt(1 / 3)  # pi (mf0 -> mf0)
+Mu1 = -np.sqrt(1 / 30)  # pi (mf0 -> mf0)
 
-# G0_kc = 2 * np.pi * 0.0438  # coupling strength (F2mf2 -> F'3mf2)
 G0_kc = 2 * np.pi * 0.032  # coupling strength (F2mf2 -> F'2mf2)
 G_pi_KC = G0_kc * (Mu1 / Mu0)  # coupling strength (F2mf0 -> F'3mf0)
 
 Kappa = 2 * np.pi * 0.063  # cavity dissipation rate
 Kappa_oc = 2 * np.pi * 0.054
 Gamma_5P32_5S = 2 * np.pi * 0.006065 / 2  # atom dissipation rate
+Gamma_b = 2 * np.pi * 0.01 / 2
 
 Mu_rf = 1
 Mu_fc = 0.9
 
 Delta_c = 2 * np.pi * 0.0  # [GHz]
-# Delta_a = 2 * np.pi * 0.5 # Light isn't resonant with cavity aka light is V polarized
+# Delta_c = 2 * np.pi * 0.5  # Light isn't resonant with cavity aka light is V polarized
 Delta_a = 2 * np.pi * 0.0  # [GHz]
 # Delta_a = 2 * np.pi * 6.835  # Atom isn't coupled to cavity aka atom in |0>
 
@@ -51,22 +51,29 @@ def a_in_real(t):
 
 def maxwell_bloch_equation(t, y):
     """
-    y = [Re(a),Im(a),Re(s),Im(s),s_z]
+    y = [Re(a),Im(a),Re(s),Im(s),s_z, s_b,s_b1]
     """
     a = y[0] + 1j * y[1]
     s = y[2] + 1j * y[3]
     s_z = y[4]
+    s_b = y[5]
+    s_b1 = y[6]
+
     da = (
         -(1j * Delta_c + 2 * Kappa / 2) * a
         - 1j * G_pi_KC * s
         - np.sqrt(2 * Kappa_oc) * a_in(t)
     )
-    ds = -(1j * Delta_a + Gamma_5P32_5S / 2) * s - 1j * G_pi_KC * s_z * a
-    ds_z = -2j * Gamma_5P32_5S * (s * np.conj(a) - np.conj(s) * a) + Gamma_5P32_5S * (
-        1 - s_z
+    ds = -(1j * Delta_a + Gamma_5P32_5S / 2 + Gamma_b / 2) * s - 1j * G_pi_KC * s_z * a
+    ds_z = (
+        -2j * Gamma_5P32_5S * (s * np.conj(a) - np.conj(s) * a)
+        + Gamma_5P32_5S * (1 - s_z)
+        + Gamma_b / 2 * (1 - s_z)
     )
+    ds_b = Delta_a * s_b + G_pi_KC * s_b1
+    ds_b1 = G_pi_KC * ds_b * np.conj(a)
 
-    return np.array([da.real, da.imag, ds.real, ds.imag, ds_z])
+    return np.array([da.real, da.imag, ds.real, ds.imag, ds_z, ds_b, ds_b1])
 
 
 # ------------------
@@ -76,7 +83,9 @@ def maxwell_bloch_equation(t, y):
 a0 = 0.0 + 0.0j
 s0 = 0.0 + 0.0j
 z0 = 1.0
-y0 = np.array([a0.real, a0.imag, s0.real, s0.imag, z0])
+s_b_0 = 0
+s_b1_0 = 0
+y0 = np.array([a0.real, a0.imag, s0.real, s0.imag, z0, s_b_0, s_b1_0])
 
 result = solve_ivp(
     maxwell_bloch_equation,
@@ -118,9 +127,9 @@ index_max_in = np.where(a_in_t == max_in)
 max_intra = np.min(a_t)
 index_intra = np.where(a_t == max_intra)
 
-print(t[index_max_in])
-print(t[index_intra])
-print(t[index_max_out])
+# print(t[index_max_in])
+# print(t[index_intra])
+# print(t[index_max_out])
 
 plt.figure()
 # plt.plot(t, a_out_t.imag, label="Im(a)")
