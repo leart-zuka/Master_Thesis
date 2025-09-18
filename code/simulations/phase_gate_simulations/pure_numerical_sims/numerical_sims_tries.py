@@ -29,7 +29,7 @@ Delta_a = 2 * np.pi * 0.0  # [GHz]
 
 t_span = (0.0, 250.0)
 t_eval = np.linspace(*t_span, 10000)
-args = {"amp": 0.3, "t0": 100, "tau": 70.0, "tau_start": 91.0, "sigma": 1.0}
+args = {"amp": 0.1, "t0": 200, "tau": 70.0, "tau_start": 91.0, "sigma": 1.0}
 
 
 # Input shape
@@ -51,29 +51,19 @@ def a_in_real(t):
 
 def maxwell_bloch_equation(t, y):
     """
-    y = [Re(a),Im(a),Re(s),Im(s),s_z, s_b,s_b1]
+    y = [Re(a),Im(a),Re(s),Im(s),s_z]
     """
     a = y[0] + 1j * y[1]
     s = y[2] + 1j * y[3]
     s_z = y[4]
-    s_b = y[5]
-    s_b1 = y[6]
 
     da = (
-        -(1j * Delta_c + 2 * Kappa / 2) * a
-        - 1j * G_pi_KC * s
-        - np.sqrt(2 * Kappa_oc) * a_in(t)
+        -(1j * Delta_c + Kappa / 2) * a - 1j * G_pi_KC * s - np.sqrt(Kappa_oc) * a_in(t)
     )
-    ds = -(1j * Delta_a + Gamma_5P32_5S / 2 + Gamma_b / 2) * s - 1j * G_pi_KC * s_z * a
-    ds_z = (
-        -2j * Gamma_5P32_5S * (s * np.conj(a) - np.conj(s) * a)
-        + Gamma_5P32_5S * (1 - s_z)
-        + Gamma_b / 2 * (1 - s_z)
-    )
-    ds_b = Delta_a * s_b + G_pi_KC * s_b1
-    ds_b1 = G_pi_KC * ds_b * np.conj(a)
+    ds = -(1j * Delta_a + Gamma_5P32_5S / 2) * s - 1j * G_pi_KC * s_z * a
+    ds_z = -2j * G_pi_KC * (np.conj(a) * s - a * np.conj(s)) + Gamma_5P32_5S * (1 - s_z)
 
-    return np.array([da.real, da.imag, ds.real, ds.imag, ds_z, ds_b, ds_b1])
+    return np.array([da.real, da.imag, ds.real, ds.imag, ds_z])
 
 
 # ------------------
@@ -83,9 +73,7 @@ def maxwell_bloch_equation(t, y):
 a0 = 0.0 + 0.0j
 s0 = 0.0 + 0.0j
 z0 = 1.0
-s_b_0 = 0
-s_b1_0 = 0
-y0 = np.array([a0.real, a0.imag, s0.real, s0.imag, z0, s_b_0, s_b1_0])
+y0 = np.array([a0.real, a0.imag, s0.real, s0.imag, z0], dtype=float)
 
 result = solve_ivp(
     maxwell_bloch_equation,
@@ -98,14 +86,13 @@ result = solve_ivp(
 )
 
 t = result.t
-a_t = result.y[0] + result.y[1]
-s_t = result.y[2] + result.y[3]
+a_t = result.y[0] + 1j * result.y[1]
+s_t = result.y[2] + 1j * result.y[3]
 s_z_t = result.y[4]
 
 a_in_t = a_in(t)
-a_out_t = a_in_t + np.sqrt(2 * Kappa_oc) * a_t
+a_out_t = a_in_t + np.sqrt(Kappa_oc) * a_t
 
-# print((np.min(a_out_t) / np.max(a_in_t)))
 
 plt.figure()
 plt.plot(t, np.abs(a_t), label="Tot")
@@ -132,9 +119,9 @@ index_intra = np.where(a_t == max_intra)
 # print(t[index_max_out])
 
 plt.figure()
-# plt.plot(t, a_out_t.imag, label="Im(a)")
-# plt.plot(t, a_out_t.real, label="Re(a)")
-plt.plot(t, a_out_t, label="Output")
+plt.plot(t, a_out_t.imag, label="Im(a)")
+plt.plot(t, a_out_t.real, label="Re(a)")
+# plt.plot(t, a_out_t, label="Output")
 # plt.scatter(t[index_max_out], np.abs(a_out_t[index_max_out]))
 # plt.plot(t, np.abs(a_t), label="Intracav. Field")
 # plt.scatter(t[index_intra], np.abs(a_t[index_intra]))
