@@ -27,9 +27,9 @@ Delta_a = 2 * np.pi * 0.0  # [GHz]
 # Delta_a = 2 * np.pi * 6.835  # Atom isn't coupled to cavity aka atom in |0>
 
 
-t_span = (0.0, 250.0)
+t_span = (0.0, 400.0)
 t_eval = np.linspace(*t_span, 10000)
-args = {"amp": 0.1, "t0": 200, "tau": 70.0, "tau_start": 91.0, "sigma": 1.0}
+args = {"amp": 1, "t0": 200, "tau": 70.0, "tau_start": 91.0, "sigma": 1.0}
 
 
 # Input shape
@@ -60,8 +60,12 @@ def maxwell_bloch_equation(t, y):
     da = (
         -(1j * Delta_c + Kappa / 2) * a - 1j * G_pi_KC * s - np.sqrt(Kappa_oc) * a_in(t)
     )
-    ds = -(1j * Delta_a + Gamma_5P32_5S / 2) * s - 1j * G_pi_KC * s_z * a
-    ds_z = -2j * G_pi_KC * (np.conj(a) * s - a * np.conj(s)) + Gamma_5P32_5S * (1 - s_z)
+    ds = -(1j * Delta_a + (Gamma_5P32_5S + Gamma_b) / 2) * s - 1j * G_pi_KC * s_z * a
+    ds_z = (
+        -2j * G_pi_KC * (np.conj(a) * s - a * np.conj(s))
+        + (Gamma_5P32_5S) * (1 - s_z)
+        + Gamma_b / 2 * (s_z - 1)
+    )
 
     return np.array([da.real, da.imag, ds.real, ds.imag, ds_z])
 
