@@ -1,0 +1,62 @@
+import os
+from typing import List
+from helper.handler import Analysis_Handler
+
+if __name__ == "__main__":
+    """
+        This script will be the groundwork for setting up an analysis framework for my master thesis data, so I don't
+        have to constantly use some very janky and hard to read code that leaves me wondering what's even going on
+
+        Rules:
+            - Globalization: Make the script be able to analyze files that sit in a different folder so I don't have to copy the same analysis file to different folders thus increasing confusion on why one script was working for one measurement date and not the other.
+            - Centralization: There are different types of analyses which need to be performed (linearization of the trap, microwave spectroscopy, rabi flopping, ...) and it would be best to create a framework where all these different types are centralized in one script
+            - Variability and Reproduction: Be able to change certain measurement parameters on the fly and log them in a specific way in order to be able to reanalyze files from past measurements. Sidenote: make sure that all logs are associated with the data when the MEASUREMENT was taken, not when the analysis was performed
+    """
+
+    log_dir = "./"  # <- unix file type convention as windows can deal with it, but not the other way around
+    base_data_dir = "/home/lz/Documents/uni/master/master_thesis/code/data"
+    # This bad boy is gonna be our main workhorse
+    handler = Analysis_Handler(log_dir=log_dir, base_data_dir=base_data_dir)
+    data_dir = handler.return_folder_path(2025, 9, "10 - KC Spectroscopy")
+
+    """
+        Globalization:
+            There are three things that need to be taken into concideration:
+                - The filetype (always gonna be h5, but make it a variable anyways for when we change it)
+                - The folder in which our measurements sit in 
+                - The file names of our measurement files (not just singular name, for since we may have multiple files to analyze)
+
+            Doesn't make sense to have multiple folders similar to multiple file names, as we usually only analyze stuff from one day, and for when we want to analyze something from a different day in order to compare it, we care about specific measurements anyways
+
+            Datatypes:
+                - filetype: str
+                - folder: str (but will need to be constructed from multiple variables in order to keep it ✨variable✨)
+                - file_names: List[str]
+    """
+    folder = handler.return_and_load_folder_path(2025, 9, "10 - KC Spectroscopy")
+    file_list: List[str] = ["24_09_25_KC_Spectroscopy_2_1_pi_75_375_MHz_100_points_3"]
+
+    # ------ Setting flags------
+    loadFromDir: bool = False  # if True, counts dictionary is loaded from the directory
+
+    # ------ Definition of data sources and destinations------
+    path: str = os.path.abspath(os.path.dirname(__file__))
+    file_list = ["24_09_25_KC_Spectroscopy_2_1_pi_75_375_MHz_100_points_3"]
+    filetype: str = ".h5"
+
+    # ------ Printout of flags and measurement ------
+    print("Load coincidences from pickle file in Directory : ", loadFromDir)
+
+    # ------ Begin Analysis ------
+    # analysis = AtomAnalysis()
+    #
+    # ParamDic = {
+    #     "freqSpan": 250,  # in MHz
+    #     "PointsPerScan": 200,  # including up and down ramp
+    #     "TrialsPerPoint": 40,
+    #     "freqCenter": 200,
+    # }
+    #
+    # analysis.dataEval_noramlModeSpectroscopy(
+    #     path, file_list, filetype, ParamDic=ParamDic
+    # )
