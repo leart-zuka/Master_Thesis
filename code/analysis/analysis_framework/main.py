@@ -1,6 +1,5 @@
-import os
 from typing import List
-from helper.handler import Analysis_Handler
+from helper.handler import AnalysisHandler
 
 if __name__ == "__main__":
     """
@@ -13,11 +12,16 @@ if __name__ == "__main__":
             - Variability and Reproduction: Be able to change certain measurement parameters on the fly and log them in a specific way in order to be able to reanalyze files from past measurements. Sidenote: make sure that all logs are associated with the data when the MEASUREMENT was taken, not when the analysis was performed
     """
 
-    log_dir = "./"  # <- unix file type convention as windows can deal with it, but not the other way around
+    log_dir = "./"  # unix file type convention as windows can deal with it, but not the other way around
     base_data_dir = "/home/lz/Documents/uni/master/master_thesis/code/data"
-    # This bad boy is gonna be our main workhorse
-    handler = Analysis_Handler(log_dir=log_dir, base_data_dir=base_data_dir)
-    data_dir = handler.return_folder_path(2025, 9, "10 - KC Spectroscopy")
+    base_data_dir = "/mnt/lab_results/Results"
+    handler = AnalysisHandler(
+        log_dir=log_dir,
+        base_data_dir=base_data_dir,
+        year=2025,
+        month=9,
+        day_topic="24 - KC Normal Mode Spectroscopy 2-1",
+    )
 
     """
         Globalization:
@@ -33,19 +37,13 @@ if __name__ == "__main__":
                 - folder: str (but will need to be constructed from multiple variables in order to keep it ✨variable✨)
                 - file_names: List[str]
     """
-    folder = handler.return_and_load_folder_path(2025, 9, "10 - KC Spectroscopy")
     file_list: List[str] = ["24_09_25_KC_Spectroscopy_2_1_pi_75_375_MHz_100_points_3"]
+
+    bla = handler.analzer.data_loading(file_list[0], 0, None)
+    print(bla)
 
     # ------ Setting flags------
     loadFromDir: bool = False  # if True, counts dictionary is loaded from the directory
-
-    # ------ Definition of data sources and destinations------
-    path: str = os.path.abspath(os.path.dirname(__file__))
-    file_list = ["24_09_25_KC_Spectroscopy_2_1_pi_75_375_MHz_100_points_3"]
-    filetype: str = ".h5"
-
-    # ------ Printout of flags and measurement ------
-    print("Load coincidences from pickle file in Directory : ", loadFromDir)
 
     # ------ Begin Analysis ------
     # analysis = AtomAnalysis()
