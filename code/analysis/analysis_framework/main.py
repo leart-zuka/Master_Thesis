@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
     log_dir = "./"  # unix file type convention as windows can deal with it, but not the other way around
     base_data_dir = "/home/lz/Documents/uni/master/master_thesis/code/data"
-    base_data_dir = "/mnt/lab_results/Results"
+    # base_data_dir = "/mnt/lab_results/Results"
     handler = AnalysisHandler(
         log_dir=log_dir,
         base_data_dir=base_data_dir,
@@ -39,8 +39,8 @@ if __name__ == "__main__":
     """
     file_list: List[str] = ["24_09_25_KC_Spectroscopy_2_1_pi_75_375_MHz_100_points_3"]
 
-    bla = handler.analzer.data_loading(file_list[0], 0, None)
-    print(bla)
+    # bla = handler.analzer.data_loading(file_list[0], 0, None)
+    cunt = handler.analzer.dataEv_postSelection(file_list[0], None, ".h5", 2000)
 
     # ------ Setting flags------
     loadFromDir: bool = False  # if True, counts dictionary is loaded from the directory

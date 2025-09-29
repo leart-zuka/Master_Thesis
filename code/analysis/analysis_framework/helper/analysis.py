@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 import matplotlib.pyplot as plt
-from typing import TypedDict
+from typing import List, Tuple, TypedDict
 from pathlib import Path
 
 
@@ -43,6 +43,9 @@ class Analyzer:
         self.ad_t = (
             0.13  # s - minimum atom trapping duration to be considered "good atom"
         )
+
+        self.cooling_time = 25e-3
+        self.fs_delay = 0.7e-6
 
         self.ps_save = True  # post selection save
         self.data_save = True
@@ -108,6 +111,64 @@ class Analyzer:
 
         return self.dataDic
 
+    def loop_over_time_stamps(
+        self, dataDic: DataDic, time_stamps: Tuple[np.ndarray]
+    ) -> tuple[List[float], List[float]]:
+        photon_numbers = []
+        photon_detection_times = []
+        """
+            Idea here is that all the timeStamps for events, be it detector events from the
+            short or long cavity, pulses we send to the qTau via the FPGA are being stored as
+            time stamps, with of course a certain delay in between the events.
+
+            Counting up how many timeStamps we've had in an inteval, will tell us how
+            many events there were.
+
+        """
+        for timeStamp in time_stamps:
+            timeStamp = timeStamp + self.fs_delay
+
+            start_kc_h, end_kc_h = np.searchsorted(
+                dataDic[self.kc_h], [timeStamp, timeStamp + self.cooling_time]
+            )
+            start_kc_v, end_kv_v = np.searchsorted(
+                dataDic[self.kc_v], [timeStamp, timeStamp + self.cooling_time]
+            )
+
+            # save total number of counts in both cavities at a certain time stamp
+            tot_number_in_interval = (start_kc_h - end_kc_h) + (end_kv_v - start_kc_v)
+            photon_numbers.append(tot_number_in_interval)
+            photon_detection_times.append(timeStamp)
+
+        return photon_numbers, photon_detection_times
+
+    def group_data_array(self, data_array, no):
+        data_array_grouped = [
+            sum(data_array[current : current + no]) / no
+            for current in range(0, len(data_array) - no, no)
+        ]
+        return data_array_grouped
+
+    def get_atom_in_and_out_index(
+        self, current_data_photon_grouped, whitness_count_kc, two_atom_threshold_kc
+    ):
+        atom_is_in = False
+        atom_in_index = 0
+        atom_out_index = 0
+        for n, j in enumerate(current_data_photon_grouped, start=1):
+            if not atom_is_in and (two_atom_threshold_kc <= j <= whitness_count_kc):
+                atom_in_index = n
+                atom_is_in = True
+
+            if atom_is_in:
+                if j < whitness_count_kc or j > two_atom_threshold_kc:
+                    atom_out_index = n
+                    atom_is_in = False
+                    break
+
+            atom_out_index = n
+        return atom_in_index, atom_out_index
+
     def dataEv_postSelection(
         self,
         file_name: str,
@@ -122,10 +183,6 @@ class Analyzer:
         base = Path(path or self.data_dir)
         file_path = base / file_name
 
-        if not file_path.exists():
-            print(f"Wasn't able to find file with path: \033[93m{file_path}\033[00m")
-            exit()
-
         # ------ We get the data ------
         try:
             with h5py.File(f"{file_path}{filetype}", "r") as f:
@@ -135,9 +192,7 @@ class Analyzer:
             exit()
 
         # We define and initialize variables before entering the atom loop
-        atom_list = range(0, atom_number)
-        cooling_time = 25e-3
-        fs_delay = 0.7e-6
+        atom_list = list(range(0, atom_number))
         wt_kc = 0.6 * mean_kc_counts  # wt_kc = witness threshold short cavity
         twot = 2 * mean_kc_counts  # twot = two atom threshold
         wt_lc = -1  # wt_lc = witness threshold long cavity
@@ -153,8 +208,9 @@ class Analyzer:
         atoms_duration = []
 
         # ------ We enter the atom loop ------
-        for i in tqdm(atom_list, file=sys.stdout):
-            dataDic = self.data_loading(file_name, i, base)
+        for j in atom_list:
+            # print(j)
+            dataDic = self.data_loading(file_name, j, base)
             """
                     Really we just count all the all the counts in the short cavity for a run, and then we save:
                         counts in KC -> dataPhotonKC
@@ -163,111 +219,24 @@ class Analyzer:
                     timeStamps are all the time stamps in seconds
                 """
             # --- Short Cavity --- #
-
-            data_photon_kc = []
-            data_time_kc = []
             time_stamps = dataDic[self.sync_fast][1:-1]
-            for timeStamp in time_stamps:
-                """
-                    Idea here is that all the timeStamps for events, be it detector events from the
-                    short or long cavity, pulses we send to the qTau via the FPGA are being stored as
-                    time stamps, with of course a certain delay in between the events.
+            data_photon_kc, data_time_kc = self.loop_over_time_stamps(
+                dataDic, time_stamps
+            )
 
-                    Counting up how many timeStamps we've had in an inteval, will tell us how
-                    many events there were.
+            current_data_photon_grouped = self.group_data_array(data_photon_kc, no)
+            current_data_time_grouped = self.group_data_array(data_time_kc, no)
 
-                    """
-                timeStamp = timeStamp + fs_delay
+            data_photon_grouped = np.concatenate(
+                [data_photon_grouped, current_data_photon_grouped]
+            )
+            data_time_grouped = np.concatenate(
+                [data_time_grouped, current_data_time_grouped]
+            )
 
-                start_kc_h, end_kc_h = np.searchsorted(
-                    dataDic[self.kc_h], [timeStamp, timeStamp + cooling_time]
-                )
-                start_kc_v, end_kv_v = np.searchsorted(
-                    dataDic[self.kc_v], [timeStamp, timeStamp + cooling_time]
-                )
-
-                # save total number of counts in both cavities at a certain time stamp
-                tot_number_in_interval = (start_kc_h - end_kc_h) + (
-                    end_kv_v - start_kc_v
-                )
-                data_photon_kc.append(tot_number_in_interval)
-                # saves time stamp
-                data_time_kc.append(timeStamp)
-
-            current_dataPhoton_grouped = []
-            current_dataTime_grouped = []
-            for current in range(0, len(data_photon_kc) - no, no):
-                """
-                    Groups up KC counts and Times
-                """
-                current_dataPhoton_grouped.append(
-                    sum(data_photon_kc[current : current + no]) / no
-                )
-                current_dataTime_grouped.append(data_time_kc[current])
-
-            data_photon_grouped = data_photon_grouped + current_dataPhoton_grouped
-            data_time_grouped = data_time_grouped + current_dataTime_grouped
-
-            atom_is_in = False
-            atom_in_index = 0
-            atom_out_index = 0
-
-            """
-                    Now we want to figure out if the counts are in the right range
-                    so what we do is we're going to iterate over all the grouped
-                    counts and
-            """
-            for n, j in enumerate(current_dataPhoton_grouped, start=1):
-                if not atom_is_in and (twot <= j <= wt_kc):
-                    atom_in_index = n
-                    atom_is_in = True
-
-                if atom_is_in:
-                    if j < wt_kc or j > twot:
-                        atom_out_index = n
-                        atom_is_in = False
-                        break
-
-                atom_out_index = n
-            #
-            # for n, j in enumerate(current_dataPhoton_grouped[1:]):
-            #     n = n + 1
-            #     # check if our counts are above the witness threshold and below the two atom threshold
-            #     if inAtom is False and j >= wt_kc and j <= twot:
-            #         """
-            #             if that is the case then we have an atom and detect that
-            #             an atom has entered the cavity, and we thus set atomIn_index to the index
-            #             where our atom is in and set inAtom to True since
-            #             there is an atom in the cavity
-            #             """
-            #         atom_in_index = n
-            #         inAtom = True
-            #
-            #     if inAtom:
-            #         """
-            #             if our atom is still in, then we just update our atomOut
-            #             index to the current iteration
-            #             """
-            #         atom_out_index = n
-            #
-            #     if inAtom is True and (j < wt_kc):
-            #         """
-            #             if our atom for some reason though gets below the witness threshold
-            #             we exit out of our loop and and tell the code that we lost the atom
-            #             by setting the atomOut index to our latest iteration
-            #             """
-            #         atom_out_index = n
-            #         inAtom == False
-            #         break
-            #
-            #     if inAtom is True and (j > twot):
-            #         """
-            #             Something similar happens for the case where are atom (or maybe there were two)
-            #             goes/go above the two atom threshold, which leads to an early exit aswell
-            #             """
-            #         atom_out_index = atom_in_index
-            #         inAtom == False
-            #         break
+            atom_in_index, atom_out_index = self.get_atom_in_and_out_index(
+                current_data_photon_grouped, wt_kc, twot
+            )
 
             try:
                 """
@@ -286,27 +255,34 @@ class Analyzer:
                     """
                 # --- Normal Times --- #
                 atom_in.append(
-                    current_dataTime_grouped[atom_in_index] - dataDic[self.sync_slow][0]
-                )
-                atom_in_histo.append(current_dataTime_grouped[atom_in_index])
-
-                atom_out.append(
-                    current_dataTime_grouped[atom_out_index]
+                    current_data_time_grouped[atom_in_index]
                     - dataDic[self.sync_slow][0]
                 )
-                atom_out_histo.append(current_dataTime_grouped[atom_out_index])
+                atom_in_histo.append(current_data_time_grouped[atom_in_index])
+
+                atom_out.append(
+                    current_data_time_grouped[atom_out_index]
+                    - dataDic[self.sync_slow][0]
+                )
+                atom_out_histo.append(current_data_time_grouped[atom_out_index])
                 atoms_duration.append(atom_out[-1] - atom_in[-1])
 
             except:
                 atom_in.append(0)
-                atom_in_histo.append(dataDic[self.sync_slow][1][0])
+                atom_in_histo.append(dataDic[self.sync_slow][0])
                 atom_out.append(0)
-                atom_out_histo.append(dataDic[self.sync_slow][1][0])
+                atom_out_histo.append(dataDic[self.sync_slow][0])
                 atoms_duration.append(atom_out[-1] - atom_in[-1])
+            print(len(atom_in))
+            print("---------------")
 
         # %% - DATA ALLOCATION IN A DATA FRAME
 
         # We add the relevant parameters to a data frame
+        exit()
+        print(len(atom_in))
+        print(len(atoms_duration))
+        print(len(atom_out))
         atom_df["atomsDuration"] = atoms_duration
         atom_df["atomsIn"] = atom_in
         atom_df["atomsOut"] = atom_out
@@ -400,12 +376,13 @@ class Analyzer:
         ax2.legend()
 
         plt.tight_layout()
+        plt.show()
 
         # %% - DATA SAVING
         if self.ps_save is True:
             f.savefig(f"{file_path}.png")
 
-        return goodAtomsDic, atom_in_histo, atom_out_histo
+        # return goodAtomsDic, atom_in_histo, atom_out_histo
 
 
 if __name__ == "__main__":
