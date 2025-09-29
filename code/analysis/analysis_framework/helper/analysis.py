@@ -126,7 +126,7 @@ class Analyzer:
 
         """
         for timeStamp in time_stamps:
-            timeStamp = timeStamp + self.fs_delay
+            timeStamp += self.fs_delay
 
             start_kc_h, end_kc_h = np.searchsorted(
                 dataDic[self.kc_h], [timeStamp, timeStamp + self.cooling_time]
@@ -136,7 +136,7 @@ class Analyzer:
             )
 
             # save total number of counts in both cavities at a certain time stamp
-            tot_number_in_interval = (start_kc_h - end_kc_h) + (end_kv_v - start_kc_v)
+            tot_number_in_interval = end_kc_h - start_kc_h + end_kv_v - start_kc_v
             photon_numbers.append(tot_number_in_interval)
             photon_detection_times.append(timeStamp)
 
@@ -155,7 +155,7 @@ class Analyzer:
         atom_is_in = False
         atom_in_index = 0
         atom_out_index = 0
-        for n, j in enumerate(current_data_photon_grouped, start=1):
+        for n, j in enumerate(current_data_photon_grouped[1:]):
             if not atom_is_in and (two_atom_threshold_kc <= j <= whitness_count_kc):
                 atom_in_index = n
                 atom_is_in = True
@@ -195,12 +195,9 @@ class Analyzer:
         atom_list = list(range(0, atom_number))
         wt_kc = 0.6 * mean_kc_counts  # wt_kc = witness threshold short cavity
         twot = 2 * mean_kc_counts  # twot = two atom threshold
-        wt_lc = -1  # wt_lc = witness threshold long cavity
         atom_df = pd.DataFrame()
         data_photon_grouped = []
         data_time_grouped = []
-        data_photon_groupedLC = []
-        data_time_groupedLC = []
         atom_in = []
         atom_out = []
         atom_in_histo = []
@@ -208,9 +205,8 @@ class Analyzer:
         atoms_duration = []
 
         # ------ We enter the atom loop ------
-        for j in atom_list:
-            # print(j)
-            dataDic = self.data_loading(file_name, j, base)
+        for i in atom_list:
+            dataDic = self.data_loading(file_name, i, base)
             """
                     Really we just count all the all the counts in the short cavity for a run, and then we save:
                         counts in KC -> dataPhotonKC
@@ -239,50 +235,34 @@ class Analyzer:
             )
 
             try:
-                """
-                    now we need to put allat in something we can iterate over in
-                    order to be able to plot it later
-
-                    logic here is:
-                        timeStamps[atomIn_index] -> gives a time
-                        that time - start time from syncSlow signal
-                        => gives time when atom entered the cavity
-
-
-                        timeStamps[atomOut_index] -> gives a time
-                        that time - start time from syncSlow signal
-                        => gives total lifetime of atom
-                    """
-                # --- Normal Times --- #
-                atom_in.append(
+                in_val = (
                     current_data_time_grouped[atom_in_index]
                     - dataDic[self.sync_slow][0]
                 )
-                atom_in_histo.append(current_data_time_grouped[atom_in_index])
+                in_histo_val = current_data_time_grouped[atom_in_index]
+            except Exception:
+                in_val = 0
+                in_histo_val = dataDic[self.sync_slow][0]
 
-                atom_out.append(
+            atom_in.append(in_val)
+            atom_in_histo.append(in_histo_val)
+
+            try:
+                out_val = (
                     current_data_time_grouped[atom_out_index]
                     - dataDic[self.sync_slow][0]
                 )
-                atom_out_histo.append(current_data_time_grouped[atom_out_index])
-                atoms_duration.append(atom_out[-1] - atom_in[-1])
+                out_histo_val = current_data_time_grouped[atom_out_index]
+            except Exception:
+                out_val = 0
+                out_histo_val = dataDic[self.sync_slow][0]
 
-            except:
-                atom_in.append(0)
-                atom_in_histo.append(dataDic[self.sync_slow][0])
-                atom_out.append(0)
-                atom_out_histo.append(dataDic[self.sync_slow][0])
-                atoms_duration.append(atom_out[-1] - atom_in[-1])
-            print(len(atom_in))
-            print("---------------")
+            atom_out.append(out_val)
+            atom_out_histo.append(out_histo_val)
+
+            atoms_duration.append(atom_out[-1] - atom_in[-1])
 
         # %% - DATA ALLOCATION IN A DATA FRAME
-
-        # We add the relevant parameters to a data frame
-        exit()
-        print(len(atom_in))
-        print(len(atoms_duration))
-        print(len(atom_out))
         atom_df["atomsDuration"] = atoms_duration
         atom_df["atomsIn"] = atom_in
         atom_df["atomsOut"] = atom_out
@@ -307,13 +287,13 @@ class Analyzer:
         plt.close("all")
 
         f = plt.figure(file_name, figsize=[17, 14])
-        f.suptitle("%s, atom %d, binning = %d" % (file_name, i, no))
+        # f.suptitle("%s, atom %d, binning = %d" % (file_name, 'cun, no))
 
-        ax1 = f.add_subplot(211)
-        ax2 = f.add_subplot(212)
+        # ax1 = f.add_subplot(211)
+        # ax2 = f.add_subplot(212)
 
         # --- kc counts plot --- #
-        ax1.plot(
+        plt.plot(
             data_time_grouped,
             data_photon_grouped,
             color="tab:orange",
@@ -321,59 +301,60 @@ class Analyzer:
             ls="None",
             marker=".",
         )
-        ax1.vlines(
+        plt.vlines(
             atom_in_histo, -20, 0, color="grey", linestyle="--", label="atom start time"
         )
-        ax1.vlines(
+        plt.vlines(
             atom_out_histo, -20, 0, color="red", linestyle="--", label="atom out time"
         )
-        ax1.hlines(
+        plt.hlines(
             wt_kc, atom_in_histo[0], atom_out_histo[-1], color="tab:green", alpha=0.2
         )
-        ax1.hlines(
+        plt.hlines(
             twot, atom_in_histo[0], atom_out_histo[-1], color="tab:red", alpha=0.2
         )
 
         # --- lc counts plot --- #
-        ax2.plot(
-            data_time_groupedLC,
-            data_photon_groupedLC,
-            color="blue",
-            label="Long Cavity counts",
-            ls="None",
-            marker=".",
-        )
-        ax2.vlines(
-            atom_in_histo, -20, 0, color="grey", linestyle="--", label="atom start time"
-        )
-        ax2.vlines(
-            atom_out_histo, -20, 0, color="red", linestyle="--", label="atom out time"
-        )
-        ax2.hlines(
-            wt_lc, atom_in_histo[0], atom_out_histo[-1], color="tab:green", alpha=0.2
-        )
-
+        # ax2.plot(
+        #     data_time_groupedLC,
+        #     data_photon_groupedLC,
+        #     color="blue",
+        #     label="Long Cavity counts",
+        #     ls="None",
+        #     marker=".",
+        # )
+        # ax2.vlines(
+        #     atom_in_histo, -20, 0, color="grey", linestyle="--", label="atom start time"
+        # )
+        # ax2.vlines(
+        #     atom_out_histo, -20, 0, color="red", linestyle="--", label="atom out time"
+        # )
+        # ax2.hlines(
+        #     wt_lc, atom_in_histo[0], atom_out_histo[-1], color="tab:green", alpha=0.2
+        # )
+        #
         for i in range(len(atom_in_histo)):
             """
                 if an atom is in the cavity and lives long enough the
                 background will be dyed in a color in specific color
                 """
             if atom_out_histo[i] - atom_in_histo[i] >= self.ad_t:
-                ax1.axvspan(
+                plt.axvspan(
                     atom_in_histo[i], atom_out_histo[i], alpha=0.5, color="tab:purple"
                 )
-                ax2.axvspan(
-                    atom_in_histo[i], atom_out_histo[i], alpha=0.5, color="tab:purple"
-                )
+                # ax2.axvspan(
+                #     atom_in_histo[i], atom_out_histo[i], alpha=0.5, color="tab:purple"
+                # )
                 # print number of atom below
-                ax1.text(atom_in_histo[i], -20 + 20 * (i % 2), str(i), fontsize=10)
-                ax2.text(atom_in_histo[i], -20 + 20 * (i % 2), str(i), fontsize=10)
+            plt.text(atom_in_histo[i], -20 + 20 * (i % 2), str(i), fontsize=10)
+            # ax2.text(atom_in_histo[i], -20 + 20 * (i % 2), str(i), fontsize=10)
 
-        ax1.set_xlim(xmin=atom_in_histo[0] - 2, xmax=atom_out_histo[-1] + 2)
-        ax1.legend()
+        plt.xlim(xmin=atom_in_histo[0] - 2, xmax=atom_out_histo[-1] + 2)
+        # plt.ylim(-1 * wt_kc, twot * 2)
+        plt.legend()
 
-        ax2.set_xlim(xmin=atom_in_histo[0] - 2, xmax=atom_out_histo[-1] + 2)
-        ax2.legend()
+        # ax2.set_xlim(xmin=atom_in_histo[0] - 2, xmax=atom_out_histo[-1] + 2)
+        # ax2.legend()
 
         plt.tight_layout()
         plt.show()

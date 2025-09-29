@@ -40,7 +40,7 @@ if __name__ == "__main__":
     file_list: List[str] = ["24_09_25_KC_Spectroscopy_2_1_pi_75_375_MHz_100_points_3"]
 
     # bla = handler.analzer.data_loading(file_list[0], 0, None)
-    cunt = handler.analzer.dataEv_postSelection(file_list[0], None, ".h5", 2000)
+    cunt = handler.analzer.dataEv_postSelection(file_list[0], None, ".h5", 2500, 100)
 
     # ------ Setting flags------
     loadFromDir: bool = False  # if True, counts dictionary is loaded from the directory
