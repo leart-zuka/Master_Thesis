@@ -1,22 +1,17 @@
 import sys
 import h5py
+from numba.cuda import external_stream
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+from typing import List
 import matplotlib.pyplot as plt
-from typing import List, Tuple, TypedDict
 from pathlib import Path
-
-
-class DataDic(TypedDict):
-    ch0: np.ndarray
-    ch1: np.ndarray
-    ch2: np.ndarray
-    ch3: np.ndarray
-    ch4: np.ndarray
-    ch5: np.ndarray
-    ch6: np.ndarray
-    ch7: np.ndarray
+from helper.numba_functions import (
+    loop_over_time_stamps,
+    get_atom_in_and_out_index,
+    group_data_array,
+)
 
 
 class Analyzer:
@@ -31,14 +26,14 @@ class Analyzer:
         self.data_dir = data_dir
 
         # ------ Definition of parameters ------
-        self.sync_slow = "ch0"
-        self.sync_fast2 = "ch1"
-        self.lc_h = "ch2"
-        self.lc_v = "ch3"
-        self.kc_h = "ch4"
-        self.sync_fast = "ch5"
-        self.sd_trig = "ch6"
-        self.kc_v = "ch7"
+        self.sync_slow = 0
+        self.sync_fast2 = 1
+        self.lc_h = 2
+        self.lc_v = 3
+        self.kc_h = 4
+        self.sync_fast = 5
+        self.sd_trig = 6
+        self.kc_v = 7
 
         self.ad_t = (
             0.13  # s - minimum atom trapping duration to be considered "good atom"
@@ -73,7 +68,7 @@ class Analyzer:
         atom: int,
         path: str | Path | None = None,
         filetype: str = ".h5",
-    ) -> DataDic:
+    ) -> List[np.ndarray]:
         """
         Loads data for one atom trial from our file.
 
@@ -102,74 +97,15 @@ class Analyzer:
 
         try:
             with h5py.File(f"{file_path}{filetype}", "r") as f:
-                tau = f.attrs["qu_tau_timebase"]
-                self.dataDic: DataDic = {
-                    f"ch{i}": f[f"atom_{atom}_{i}"][()] * tau for i in range(8)
-                }
+                tau = float(f.attrs["qu_tau_timebase"])
+                # directly build a numpy array
+                self.data_arr = [
+                    np.asarray(f[f"atom_{atom}_{i}"][()] * tau) for i in range(8)
+                ]
         except FileNotFoundError:
             print(f"Wasn't able to find file with path: \033[93m{file_path}\033[00m")
-
-        return self.dataDic
-
-    def loop_over_time_stamps(
-        self, dataDic: DataDic, time_stamps: Tuple[np.ndarray]
-    ) -> tuple[List[float], List[float]]:
-        photon_numbers = []
-        photon_detection_times = []
-        """
-            Idea here is that all the timeStamps for events, be it detector events from the
-            short or long cavity, pulses we send to the qTau via the FPGA are being stored as
-            time stamps, with of course a certain delay in between the events.
-
-            Counting up how many timeStamps we've had in an inteval, will tell us how
-            many events there were.
-
-        """
-        for timeStamp in time_stamps:
-            timeStamp += self.fs_delay
-
-            start_kc_h, end_kc_h = np.searchsorted(
-                dataDic[self.kc_h], [timeStamp, timeStamp + self.cooling_time]
-            )
-            start_kc_v, end_kv_v = np.searchsorted(
-                dataDic[self.kc_v], [timeStamp, timeStamp + self.cooling_time]
-            )
-
-            # save total number of counts in both cavities at a certain time stamp
-            tot_number_in_interval = end_kc_h - start_kc_h + end_kv_v - start_kc_v
-            photon_numbers.append(tot_number_in_interval)
-            photon_detection_times.append(timeStamp)
-
-        return photon_numbers, photon_detection_times
-
-    def group_data_array(self, data_array, no):
-        data_array_grouped = [
-            sum(data_array[current : current + no]) / no
-            for current in range(0, len(data_array) - no, no)
-        ]
-        return data_array_grouped
-
-    def get_atom_in_and_out_index(
-        self, current_data_photon_grouped, whitness_count_kc, two_atom_threshold_kc
-    ):
-        atom_is_in = False
-        atom_in_idx = 0
-        atom_out_idx = 0
-        for idx in range(1, len(current_data_photon_grouped)):
-            count = current_data_photon_grouped[idx]
-            if not atom_is_in and (two_atom_threshold_kc >= count >= whitness_count_kc):
-                atom_in_idx = idx
-                atom_is_in = True
-
-            if atom_is_in:
-                atom_out_idx = idx
-                if count < whitness_count_kc:
-                    atom_out_idx = idx
-                    break
-                if count > two_atom_threshold_kc:
-                    atom_out_idx = atom_in_idx
-                    break
-        return atom_in_idx, atom_out_idx
+            exit()
+        return self.data_arr
 
     def dataEv_postSelection(
         self,
@@ -208,7 +144,7 @@ class Analyzer:
 
         # ------ We enter the atom loop ------
         for i in atom_list:
-            dataDic = self.data_loading(file_name, i, base)
+            data_array = self.data_loading(file_name, i, base)
             """
                     Really we just count all the all the counts in the short cavity for a run, and then we save:
                         counts in KC -> dataPhotonKC
@@ -217,13 +153,13 @@ class Analyzer:
                     timeStamps are all the time stamps in seconds
                 """
             # --- Short Cavity --- #
-            time_stamps = dataDic[self.sync_fast][1:-1]
-            data_photon_kc, data_time_kc = self.loop_over_time_stamps(
-                dataDic, time_stamps
+            time_stamps: np.ndarray = data_array[self.sync_fast][1:-1]
+            data_photon_kc, data_time_kc = loop_over_time_stamps(
+                data_array, time_stamps
             )
 
-            current_data_photon_grouped = self.group_data_array(data_photon_kc, no)
-            current_data_time_grouped = self.group_data_array(data_time_kc, no)
+            current_data_photon_grouped = group_data_array(data_photon_kc, no)
+            current_data_time_grouped = group_data_array(data_time_kc, no)
 
             data_photon_grouped = np.concatenate(
                 [data_photon_grouped, current_data_photon_grouped]
@@ -232,19 +168,19 @@ class Analyzer:
                 [data_time_grouped, current_data_time_grouped]
             )
 
-            atom_in_index, atom_out_index = self.get_atom_in_and_out_index(
+            atom_in_index, atom_out_index = get_atom_in_and_out_index(
                 current_data_photon_grouped, wt_kc, twot
             )
 
             try:
                 in_val = (
                     current_data_time_grouped[atom_in_index]
-                    - dataDic[self.sync_slow][0]
+                    - data_array[self.sync_slow][0]
                 )
                 in_histo_val = current_data_time_grouped[atom_in_index]
             except Exception:
                 in_val = 0
-                in_histo_val = dataDic[self.sync_slow][0]
+                in_histo_val = data_array[self.sync_slow][0]
 
             atom_in.append(in_val)
             atom_in_histo.append(in_histo_val)
@@ -252,12 +188,12 @@ class Analyzer:
             try:
                 out_val = (
                     current_data_time_grouped[atom_out_index]
-                    - dataDic[self.sync_slow][0]
+                    - data_array[self.sync_slow][0]
                 )
                 out_histo_val = current_data_time_grouped[atom_out_index]
             except Exception:
                 out_val = 0
-                out_histo_val = dataDic[self.sync_slow][0]
+                out_histo_val = data_array[self.sync_slow][0]
 
             atom_out.append(out_val)
             atom_out_histo.append(out_histo_val)
@@ -323,7 +259,6 @@ class Analyzer:
                 )
             # print number of atom below
             plt.text(atom_in_histo[i], -20 + 20 * (i % 2), str(i), fontsize=10)
-        print(atom_out_histo[-1])
 
         plt.xlim(xmin=atom_in_histo[0] - 2, xmax=atom_out_histo[-1] + 2)
         plt.ylim(-1 * wt_kc, twot * 2)
