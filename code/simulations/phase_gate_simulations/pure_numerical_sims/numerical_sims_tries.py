@@ -27,9 +27,9 @@ Delta_a = 2 * np.pi * 0.0  # [GHz]
 # Delta_a = 2 * np.pi * 6.835  # Atom isn't coupled to cavity aka atom in |0>
 
 
-t_span = (0.0, 400.0)
+t_span = (0.0, 1000.0)
 t_eval = np.linspace(*t_span, 10000)
-args = {"amp": 1, "t0": 200, "tau": 70.0, "tau_start": 91.0, "sigma": 1.0}
+args = {"amp": 0.01, "t0": 700, "tau": 70.0, "tau_start": 91.0, "sigma": 1.0}
 
 
 # Input shape

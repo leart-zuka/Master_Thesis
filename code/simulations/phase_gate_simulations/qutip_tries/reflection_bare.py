@@ -13,7 +13,7 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 # ------ Constants ------
 # -----------------------
 Mu0 = -np.sqrt(1 / 24)  # pi (mf2 -> mf2) GG coefficient for F=2 m_f=-1 -> F'=2 m_f=-1
-Mu1 = -np.sqrt(1 / 3)  # pi (mf0 -> mf0) GG coefficient for F=2 m_f= 0 -> F'=1 m_f= 0
+Mu1 = -np.sqrt(1 / 30)  # pi (mf0 -> mf0) GG coefficient for F=2 m_f= 0 -> F'=1 m_f= 0
 
 G0_kc = 2 * np.pi * 0.032  # coupling strength (F2mf2 -> F'2mf2); measured myself :D
 G_pi_KC = G0_kc * (Mu1 / Mu0)  # coupling strength (F2mf0 -> F'1mf0)
@@ -36,7 +36,7 @@ Atom_dimensions = 5  # |F=1,m_f=0>,|F=2,m_f=0>,|F=2,m_f=-1>,|F=2,m_f=+1>,|F'=3,m
 Photon_dimensions = [2]  # only π-pol. light is able to enter our cavity
 
 tlist = np.linspace(0, 1000, 10000, dtype=np.float32)
-args = {"t0": 500, "tau": 70.0, "tau_start": 91.0, "sigma": 1.0}
+args = {"t0": 500, "amp": 0.1, "tau": 70.0, "tau_start": 91.0, "sigma": 1.0}
 
 # -----------------------
 # ---- System Params-----
@@ -54,6 +54,7 @@ obs = [
     * qced.annihilation_operators["a0"],  # a.dag*a=n
     qced.annihilation_operators["a0"],
 ]
+
 
 c_obs = [
     np.sqrt(2 * Kappa) * qced.annihilation_operators["a0"],
@@ -79,10 +80,10 @@ result_0 = simulate_w_H0(
 )
 
 a_in_t = [input_shape(t, args) for t in tlist]
-a_out_t = a_in_t + np.sqrt(Kappa_oc) * result_0.expect[-1]
+a_out_t = a_in_t + np.sqrt(Kappa_oc) * result_0.expect[-2]
 
 plt.figure()
-plt.plot(tlist, result_0.expect[-2], label="Tot")
+plt.plot(tlist, result_0.expect[-3], label="Tot")
 plt.xlabel("t")
 plt.ylabel("|⟨a⟩|")
 plt.legend()
@@ -90,8 +91,8 @@ plt.title("Intracavity field amplitude")
 
 plt.figure()
 plt.plot(tlist, a_in_t, label="In")
-# plt.plot(tlist, a_out_t, label="Out")
-# plt.plot(tlist, a_out_t.real + a_out_t.imag, label="Out")
+plt.plot(tlist, a_out_t, label="Out")
+plt.plot(tlist, a_out_t.real + a_out_t.imag, label="Out")
 plt.plot(tlist, np.imag(a_out_t), label="Im(Out)")
 plt.plot(tlist, np.real(a_out_t), label="Re(Out)")
 plt.xlabel("t")
@@ -102,8 +103,8 @@ plt.title("Input and Output Field amplitudes")
 plt.figure()
 plt.plot(tlist, result_0.expect[1])
 plt.xlabel("t")
-plt.ylabel("⟨σ_z⟩")
-plt.title("Atomic inversion")
+plt.ylabel("⟨a_out⟩")
+plt.title("Output photon number")
 
 
 plt.show()
