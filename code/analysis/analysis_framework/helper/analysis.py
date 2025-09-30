@@ -153,21 +153,23 @@ class Analyzer:
         self, current_data_photon_grouped, whitness_count_kc, two_atom_threshold_kc
     ):
         atom_is_in = False
-        atom_in_index = 0
-        atom_out_index = 0
-        for n, j in enumerate(current_data_photon_grouped[1:]):
-            if not atom_is_in and (two_atom_threshold_kc <= j <= whitness_count_kc):
-                atom_in_index = n
+        atom_in_idx = 0
+        atom_out_idx = 0
+        for idx in range(1, len(current_data_photon_grouped)):
+            count = current_data_photon_grouped[idx]
+            if not atom_is_in and (two_atom_threshold_kc >= count >= whitness_count_kc):
+                atom_in_idx = idx
                 atom_is_in = True
 
             if atom_is_in:
-                if j < whitness_count_kc or j > two_atom_threshold_kc:
-                    atom_out_index = n
-                    atom_is_in = False
+                atom_out_idx = idx
+                if count < whitness_count_kc:
+                    atom_out_idx = idx
                     break
-
-            atom_out_index = n
-        return atom_in_index, atom_out_index
+                if count > two_atom_threshold_kc:
+                    atom_out_idx = atom_in_idx
+                    break
+        return atom_in_idx, atom_out_idx
 
     def dataEv_postSelection(
         self,
@@ -287,10 +289,6 @@ class Analyzer:
         plt.close("all")
 
         f = plt.figure(file_name, figsize=[17, 14])
-        # f.suptitle("%s, atom %d, binning = %d" % (file_name, 'cun, no))
-
-        # ax1 = f.add_subplot(211)
-        # ax2 = f.add_subplot(212)
 
         # --- kc counts plot --- #
         plt.plot(
@@ -314,25 +312,6 @@ class Analyzer:
             twot, atom_in_histo[0], atom_out_histo[-1], color="tab:red", alpha=0.2
         )
 
-        # --- lc counts plot --- #
-        # ax2.plot(
-        #     data_time_groupedLC,
-        #     data_photon_groupedLC,
-        #     color="blue",
-        #     label="Long Cavity counts",
-        #     ls="None",
-        #     marker=".",
-        # )
-        # ax2.vlines(
-        #     atom_in_histo, -20, 0, color="grey", linestyle="--", label="atom start time"
-        # )
-        # ax2.vlines(
-        #     atom_out_histo, -20, 0, color="red", linestyle="--", label="atom out time"
-        # )
-        # ax2.hlines(
-        #     wt_lc, atom_in_histo[0], atom_out_histo[-1], color="tab:green", alpha=0.2
-        # )
-        #
         for i in range(len(atom_in_histo)):
             """
                 if an atom is in the cavity and lives long enough the
@@ -342,19 +321,13 @@ class Analyzer:
                 plt.axvspan(
                     atom_in_histo[i], atom_out_histo[i], alpha=0.5, color="tab:purple"
                 )
-                # ax2.axvspan(
-                #     atom_in_histo[i], atom_out_histo[i], alpha=0.5, color="tab:purple"
-                # )
-                # print number of atom below
+            # print number of atom below
             plt.text(atom_in_histo[i], -20 + 20 * (i % 2), str(i), fontsize=10)
-            # ax2.text(atom_in_histo[i], -20 + 20 * (i % 2), str(i), fontsize=10)
+        print(atom_out_histo[-1])
 
         plt.xlim(xmin=atom_in_histo[0] - 2, xmax=atom_out_histo[-1] + 2)
-        # plt.ylim(-1 * wt_kc, twot * 2)
+        plt.ylim(-1 * wt_kc, twot * 2)
         plt.legend()
-
-        # ax2.set_xlim(xmin=atom_in_histo[0] - 2, xmax=atom_out_histo[-1] + 2)
-        # ax2.legend()
 
         plt.tight_layout()
         plt.show()
@@ -363,7 +336,7 @@ class Analyzer:
         if self.ps_save is True:
             f.savefig(f"{file_path}.png")
 
-        # return goodAtomsDic, atom_in_histo, atom_out_histo
+        return goodAtomsDic, atom_in_histo, atom_out_histo
 
 
 if __name__ == "__main__":
