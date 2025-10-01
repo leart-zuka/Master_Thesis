@@ -60,6 +60,12 @@ class Analyzer:
     def update_data_dir(self, new_data_dir: str) -> None:
         self.data_dir = new_data_dir
 
+    def save_post_selection_data(self, base: Path, file_name: str, *args: pd.DataFrame):
+        writer = pd.ExcelWriter(f"{base}/{file_name}_atomParameters.xlsx")
+        with pd.ExcelWriter(f"{base}/{file_name}_atomParameters.xlsx") as writer:
+            for arg in args:
+                arg.to_excel(writer, sheet_name=f"{arg['sheet_name']}")
+
     def dataEv_postSelection(
         self,
         file_name: str,
@@ -76,9 +82,8 @@ class Analyzer:
 
         # ------ We get the data ------
         full_data_array = get_data_from_file(base, file_name, file_type)
-        # We define and initialize variables before entering the atom loop
-        wt_kc = 0.6 * mean_kc_counts  # wt_kc = witness threshold short cavity
-        twot = 2 * mean_kc_counts  # twot = two atom threshold
+        wt_kc = 0.6 * mean_kc_counts  # witness threshold short cavity
+        twot = 2 * mean_kc_counts  # two atom threshold
         atom_df = pd.DataFrame()
         data_photon_grouped = []
         data_time_grouped = []
@@ -97,7 +102,7 @@ class Analyzer:
                         times for an atom in KC -> dataTimeKC
 
                     timeStamps are all the time stamps in seconds
-                """
+            """
             # --- Short Cavity --- #
             time_stamps: np.ndarray = data_array[self.sync_fast][1:-1]
             data_photon_kc, data_time_kc = loop_over_time_stamps(
@@ -150,22 +155,27 @@ class Analyzer:
         atom_df["atomsDuration"] = atoms_duration
         atom_df["atomsIn"] = atom_in
         atom_df["atomsOut"] = atom_out
+        atom_df["sheet_name"] = "atomParameters"
 
         # Good atoms are selected, added in the data frame and in a dictionary
         """
             Only select the ones where the duration inside of the cavity is
             above a certain threshold
         """
-        goodAtomsDF = atom_df[(atom_df["atomsDuration"] >= self.ad_t)]
-        goodAtomsDic = {
-            i: [goodAtomsDF["atomsIn"][i], goodAtomsDF["atomsOut"][i]]
-            for i in list(goodAtomsDF.index)
+        good_atoms_df = atom_df[(atom_df["atomsDuration"] >= self.ad_t)]
+        good_atoms_df["sheet_name"] = "goodAtoms"
+        good_atoms_dict = {
+            i: [good_atoms_df["atomsIn"][i], good_atoms_df["atomsOut"][i]]
+            for i in list(good_atoms_df.index)
         }
+        good_atom_dict_df = pd.DataFrame.from_dict(good_atoms_dict)
+        good_atom_dict_df["sheet_name"] = "goodAtomsDic"
 
         # The conditions for good atoms selection are saved in a data frame
-        condsDF = pd.DataFrame()
-        condsDF["Conditions"] = ["Single atom time threshold (s)"]
-        condsDF["Bounds"] = [self.ad_t]
+        conds_df = pd.DataFrame()
+        conds_df["Conditions"] = ["Single atom time threshold (s)"]
+        conds_df["Bounds"] = [self.ad_t]
+        conds_df["sheet_name"] = "gootAtomsConds"
 
         # %% ------ We plot the data ------
         plt.close("all")
@@ -225,8 +235,11 @@ class Analyzer:
         # %% - DATA SAVING
         if self.ps_save is True:
             f.savefig(f"{file_path}.png")
+            self.save_post_selection_data(
+                base, file_name, atom_df, good_atom_dict_df, good_atoms_df, conds_df
+            )
 
-        return goodAtomsDic, atom_in_histo, atom_out_histo
+        return good_atoms_dict, atom_in_histo, atom_out_histo
 
 
 if __name__ == "__main__":
