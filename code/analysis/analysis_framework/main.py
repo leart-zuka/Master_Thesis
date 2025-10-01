@@ -21,7 +21,8 @@ if __name__ == "__main__":
         base_data_dir=base_data_dir,
         year=2025,
         month=9,
-        day_topic="10 - KC Spectroscopy",
+        day_topic="24 - KC Normal Mode Spectroscopy 2-1",
+        # day_topic="10 - KC Spectroscopy",
     )
 
     """
@@ -41,7 +42,10 @@ if __name__ == "__main__":
     file_list: List[str] = ["24_09_25_KC_Spectroscopy_2_1_pi_75_375_MHz_100_points_3"]
     # file_list: List[str] = ["10_09_25_KC_spectroscopy_pi_light_9_22-242MHz_55points"]
 
-    cunt = handler.analzer.dataEv_postSelection(file_list[0], None, ".h5", 2000, 10)
+    a = time()
+    cunt = handler.analzer.dataEv_postSelection(file_list[0], None, ".h5", 2500, 10)
+    b = time()
+    print(f"Took {b - a}s")
 
     # ------ Setting flags------
     loadFromDir: bool = False  # if True, counts dictionary is loaded from the directory

@@ -1,7 +1,7 @@
 import sys
 import numpy as np
 import pandas as pd
-from tqdm import tqdm
+from rich.progress import track
 import matplotlib.pyplot as plt
 from pathlib import Path
 from helper.numba_functions import (
@@ -64,8 +64,8 @@ class Analyzer:
         self,
         file_name: str,
         path: str | Path | None = None,
-        filetype: str = ".h5",
-        mean_kc_counts: int = 4000,
+        file_type: str = ".h5",
+        mean_kc_counts: int = 2500,
         no=10,
     ):
         if self.data_dir is None:
@@ -75,7 +75,7 @@ class Analyzer:
         file_path = base / file_name
 
         # ------ We get the data ------
-        full_data_array = get_data_from_file(base, file_name)
+        full_data_array = get_data_from_file(base, file_name, file_type)
         # We define and initialize variables before entering the atom loop
         wt_kc = 0.6 * mean_kc_counts  # wt_kc = witness threshold short cavity
         twot = 2 * mean_kc_counts  # twot = two atom threshold
@@ -89,7 +89,7 @@ class Analyzer:
         atoms_duration = []
 
         # ------ We enter the atom loop ------
-        for atom_number in range(len(full_data_array)):
+        for atom_number in track(range(len(full_data_array))):
             data_array = full_data_array[atom_number]
             """
                     Really we just count all the all the counts in the short cavity for a run, and then we save:
