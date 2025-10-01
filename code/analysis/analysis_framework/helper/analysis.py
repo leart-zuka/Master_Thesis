@@ -1,13 +1,11 @@
 import sys
-import h5py
-from numba.cuda import external_stream
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-from typing import List
 import matplotlib.pyplot as plt
 from pathlib import Path
 from helper.numba_functions import (
+    get_data_from_file,
     loop_over_time_stamps,
     get_atom_in_and_out_index,
     group_data_array,
@@ -62,51 +60,6 @@ class Analyzer:
     def update_data_dir(self, new_data_dir: str) -> None:
         self.data_dir = new_data_dir
 
-    def data_loading(
-        self,
-        file_name: str,
-        atom: int,
-        path: str | Path | None = None,
-        filetype: str = ".h5",
-    ) -> List[np.ndarray]:
-        """
-        Loads data for one atom trial from our file.
-
-        Parameters
-        ----------
-        fileName : str
-            Name of the file itself
-
-        atom : int
-            Atom trial within data
-
-        path : str | Path |None
-            The path to the folder if given (can be str if you want to load it manually, or left out if it was already passed to the Analyzer class)
-
-        Returns
-        -------
-        DataDic
-            Dictionary with valid timestamps of each channel
-
-        """
-        if self.data_dir is None:
-            raise Exception("Please define a data directory first")
-
-        base = Path(path or self.data_dir)
-        file_path = base / file_name
-
-        try:
-            with h5py.File(f"{file_path}{filetype}", "r") as f:
-                tau = float(f.attrs["qu_tau_timebase"])
-                # directly build a numpy array
-                self.data_arr = [
-                    np.asarray(f[f"atom_{atom}_{i}"][()] * tau) for i in range(8)
-                ]
-        except FileNotFoundError:
-            print(f"Wasn't able to find file with path: \033[93m{file_path}\033[00m")
-            exit()
-        return self.data_arr
-
     def dataEv_postSelection(
         self,
         file_name: str,
@@ -122,15 +75,8 @@ class Analyzer:
         file_path = base / file_name
 
         # ------ We get the data ------
-        try:
-            with h5py.File(f"{file_path}{filetype}", "r") as f:
-                atom_number = int(len(f) / 8)
-        except FileNotFoundError:
-            print(f"Wasn't able to find file with path: \033[93m{file_path}\033[00m")
-            exit()
-
+        full_data_array = get_data_from_file(base, file_name)
         # We define and initialize variables before entering the atom loop
-        atom_list = list(range(0, atom_number))
         wt_kc = 0.6 * mean_kc_counts  # wt_kc = witness threshold short cavity
         twot = 2 * mean_kc_counts  # twot = two atom threshold
         atom_df = pd.DataFrame()
@@ -143,8 +89,8 @@ class Analyzer:
         atoms_duration = []
 
         # ------ We enter the atom loop ------
-        for i in atom_list:
-            data_array = self.data_loading(file_name, i, base)
+        for atom_number in range(len(full_data_array)):
+            data_array = full_data_array[atom_number]
             """
                     Really we just count all the all the counts in the short cavity for a run, and then we save:
                         counts in KC -> dataPhotonKC
@@ -248,17 +194,26 @@ class Analyzer:
             twot, atom_in_histo[0], atom_out_histo[-1], color="tab:red", alpha=0.2
         )
 
-        for i in range(len(atom_in_histo)):
+        for atom_number in range(len(atom_in_histo)):
             """
                 if an atom is in the cavity and lives long enough the
                 background will be dyed in a color in specific color
                 """
-            if atom_out_histo[i] - atom_in_histo[i] >= self.ad_t:
+            if atom_out_histo[atom_number] - atom_in_histo[atom_number] >= self.ad_t:
                 plt.axvspan(
-                    atom_in_histo[i], atom_out_histo[i], alpha=0.5, color="tab:purple"
+                    atom_in_histo[atom_number],
+                    atom_out_histo[atom_number],
+                    alpha=0.5,
+                    color="tab:purple",
                 )
+
             # print number of atom below
-            plt.text(atom_in_histo[i], -20 + 20 * (i % 2), str(i), fontsize=10)
+            plt.text(
+                atom_in_histo[atom_number],
+                -20 + 20 * (atom_number % 2),
+                str(atom_number),
+                fontsize=10,
+            )
 
         plt.xlim(xmin=atom_in_histo[0] - 2, xmax=atom_out_histo[-1] + 2)
         plt.ylim(-1 * wt_kc, twot * 2)
@@ -275,4 +230,4 @@ class Analyzer:
 
 
 if __name__ == "__main__":
-    print("hi")
+    print("honk")

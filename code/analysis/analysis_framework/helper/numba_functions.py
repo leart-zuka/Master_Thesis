@@ -1,6 +1,34 @@
+import h5py
 import numpy as np
 from numba import jit
 from typing import List, Tuple
+from pathlib import Path
+
+
+def get_data_from_file(
+    path: str | Path, file_name: str, file_type: str = ".h5"
+) -> List[List[np.ndarray]]:
+    base = Path(path)
+    file_path = base / file_name
+
+    # ------ We get the data ------
+    full_data_array = []
+    try:
+        with h5py.File(f"{file_path}{file_type}", "r") as f:
+            total_number_of_atoms = int(len(f) / 8)
+            tau = float(f.attrs["qu_tau_timebase"])
+            for atom_number in range(total_number_of_atoms):
+                full_data_array.append(
+                    [
+                        np.asarray(f[f"atom_{atom_number}_{channel_number}"][()] * tau)
+                        for channel_number in range(8)
+                    ]
+                )
+    except FileNotFoundError:
+        print(f"Wasn't able to find file with path: \033[93m{file_path}\033[00m")
+        exit()
+
+    return full_data_array
 
 
 @jit(nopython=True, cache=True)
