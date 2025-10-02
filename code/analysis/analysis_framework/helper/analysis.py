@@ -1,3 +1,4 @@
+import os
 import sys
 import numpy as np
 import pandas as pd
@@ -61,10 +62,13 @@ class Analyzer:
         self.data_dir = new_data_dir
 
     def save_post_selection_data(self, base: Path, file_name: str, *args: pd.DataFrame):
-        writer = pd.ExcelWriter(f"{base}/{file_name}_atomParameters.xlsx")
-        with pd.ExcelWriter(f"{base}/{file_name}_atomParameters.xlsx") as writer:
+        save_path = base / "goodAtomSelectorFiles"
+        if not os.path.exists(save_path):
+            os.makedirs(save_path)
+        with pd.ExcelWriter(f"{save_path}/{file_name}_atomParameters.xlsx") as writer:
             for arg in args:
-                arg.to_excel(writer, sheet_name=f"{arg['sheet_name']}")
+                print(arg.sheet_name)
+                arg.to_excel(writer, sheet_name=f"{arg.sheet_name}")
 
     def dataEv_postSelection(
         self,
@@ -155,7 +159,7 @@ class Analyzer:
         atom_df["atomsDuration"] = atoms_duration
         atom_df["atomsIn"] = atom_in
         atom_df["atomsOut"] = atom_out
-        atom_df["sheet_name"] = "atomParameters"
+        atom_df.sheet_name = "atomParameters"
 
         # Good atoms are selected, added in the data frame and in a dictionary
         """
@@ -163,19 +167,19 @@ class Analyzer:
             above a certain threshold
         """
         good_atoms_df = atom_df[(atom_df["atomsDuration"] >= self.ad_t)]
-        good_atoms_df["sheet_name"] = "goodAtoms"
+        good_atoms_df.sheet_name = "goodAtoms"
         good_atoms_dict = {
             i: [good_atoms_df["atomsIn"][i], good_atoms_df["atomsOut"][i]]
             for i in list(good_atoms_df.index)
         }
         good_atom_dict_df = pd.DataFrame.from_dict(good_atoms_dict)
-        good_atom_dict_df["sheet_name"] = "goodAtomsDic"
+        good_atom_dict_df.sheet_name = "goodAtomsDic"
 
         # The conditions for good atoms selection are saved in a data frame
         conds_df = pd.DataFrame()
         conds_df["Conditions"] = ["Single atom time threshold (s)"]
         conds_df["Bounds"] = [self.ad_t]
-        conds_df["sheet_name"] = "gootAtomsConds"
+        conds_df.sheet_name = "gootAtomsConds"
 
         # %% ------ We plot the data ------
         plt.close("all")
