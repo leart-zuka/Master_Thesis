@@ -1,12 +1,17 @@
 import os
-import sys
+import copy
+import pickle
+from typing import Dict
 import numpy as np
 import pandas as pd
 from rich.progress import track
+from rich import print
+from rich.table import Table
+from rich.console import Console
 import matplotlib.pyplot as plt
 from pathlib import Path
 from helper.numba_functions import (
-    get_data_from_file,
+    get_data_from_main_h5_file,
     loop_over_time_stamps,
     get_atom_in_and_out_index,
     group_data_array,
@@ -69,7 +74,7 @@ class Analyzer:
             for arg in args:
                 arg.to_excel(writer, sheet_name=f"{arg.sheet_name}")
 
-    def dataEv_postSelection(
+    def post_selection(
         self,
         file_name: str,
         path: str | Path | None = None,
@@ -84,7 +89,7 @@ class Analyzer:
         file_path = base / file_name
 
         # ------ We get the data ------
-        full_data_array = get_data_from_file(base, file_name, file_type)
+        full_data_array = get_data_from_main_h5_file(base, file_name, file_type)
         wt_kc = 0.6 * mean_kc_counts  # witness threshold short cavity
         twot = 2 * mean_kc_counts  # two atom threshold
         atom_df = pd.DataFrame()
@@ -171,8 +176,8 @@ class Analyzer:
             i: [good_atoms_df["atomsIn"][i], good_atoms_df["atomsOut"][i]]
             for i in list(good_atoms_df.index)
         }
-        good_atom_dict_df = pd.DataFrame.from_dict(good_atoms_dict)
-        good_atom_dict_df.sheet_name = "goodAtomsDic"
+        good_atoms_dict_df = pd.DataFrame.from_dict(good_atoms_dict)
+        good_atoms_dict_df.sheet_name = "goodAtomsDic"
 
         # The conditions for good atoms selection are saved in a data frame
         conds_df = pd.DataFrame()
@@ -239,10 +244,69 @@ class Analyzer:
         if self.ps_save is True:
             f.savefig(f"{file_path}.png")
             self.save_post_selection_data(
-                base, file_name, atom_df, good_atom_dict_df, good_atoms_df, conds_df
+                base, file_name, atom_df, good_atoms_dict_df, good_atoms_df, conds_df
             )
 
+            with open(
+                f"{base}/goodAtomSelectorFiles/{file_name}_goodAtoms.pkl", "wb"
+            ) as file:
+                pickle.dump(good_atoms_dict, file)
+
         return good_atoms_dict, atom_in_histo, atom_out_histo
+
+    def get_trap_times(self, goodAtomsDic, atomInHisto, atomOutHisto):
+        list_trappingDuration = []
+        for key in goodAtomsDic:
+            list_trappingDuration.append(goodAtomsDic[key][1] - goodAtomsDic[key][0])
+
+        averageTrapTime = np.mean(list_trappingDuration)
+        averageTrapTime_err = np.std(list_trappingDuration) / np.sqrt(
+            np.size(list_trappingDuration)
+        )
+        trappingProbability = len(list_trappingDuration) / len(atomInHisto) * 100
+        dutyCycle = (
+            sum(list_trappingDuration) / (atomOutHisto[-1] - atomInHisto[0]) * 100
+        )
+
+        table = Table(title="Trapping Info")
+        table.add_column("Attribute", justify="left", style="yellow")
+        table.add_column("Value", justify="right", style="blue")
+
+        table.add_row(
+            "Average single atom trapping time",
+            f"{averageTrapTime:.2f} +/- {averageTrapTime_err:.2f}",
+        )
+        table.add_row("Atom trapping probability", f"{trappingProbability:.0f}%")
+        table.add_row("Duty cycle", f"{dutyCycle:.0f}%")
+        console = Console()
+        console.print(table)
+        return averageTrapTime, averageTrapTime_err, trappingProbability, dutyCycle
+
+    def normal_mode_spectroscopy(
+        self,
+        file_name: str,
+        path: str | Path | None = None,
+        file_type: str = ".h5",
+        parameters={},
+        plot_histogramm: bool = False,
+    ):
+        if self.data_dir is None:
+            raise Exception("please define a data directory fist")
+        base = Path(path or self.data_dir)
+        file_post_selected = (
+            base / "goodAtomSelectorFiles" / f"{file_name}_goodAtoms.pkl"
+        )
+        if not os.path.exists(file_post_selected):
+            self.post_selection(file_name, base, file_type)
+
+        print(
+            f"Analyzing Normal Mode Spectroscopy of file [green]{file_post_selected}[/green]"
+        )
+
+        with open(file_post_selected, "rb") as file:
+            atom_dict = pickle.load(file)
+
+        print(atom_dict)
 
 
 if __name__ == "__main__":

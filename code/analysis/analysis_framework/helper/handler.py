@@ -43,3 +43,21 @@ class AnalysisHandler:
         self.data_dir = path_to_folder
         print(f"Loaded up folder [green]{path_to_folder}[/green]")
         return path_to_folder
+
+    def post_selection(
+        self,
+        files: str | List[str],
+        file_type: str = ".h5",
+        mean_kc_counts: int = 2500,
+        no=10,
+    ):
+        if type(files) is str:
+            files = [files]
+
+        for file in files:
+            print("-----------------------------------------")
+            print(f":waffle: Analyzing file [green]{file}[/green] right now")
+            goodAtomsDic, atomInHisto, atomOutHisto = self.analzer.post_selection(
+                file, self.data_dir, file_type, mean_kc_counts, no
+            )
+            self.analzer.get_trap_times(goodAtomsDic, atomInHisto, atomOutHisto)

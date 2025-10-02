@@ -6,7 +6,7 @@ from pathlib import Path
 from rich import print
 
 
-def get_data_from_file(
+def get_data_from_main_h5_file(
     path: str | Path, file_name: str, file_type: str = ".h5"
 ) -> List[List[np.ndarray]]:
     base = Path(path)

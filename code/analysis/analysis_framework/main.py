@@ -39,13 +39,10 @@ if __name__ == "__main__":
                 - folder: str (but will need to be constructed from multiple variables in order to keep it ✨variable✨)
                 - file_names: List[str]
     """
-    file_list: List[str] = ["24_09_25_KC_Spectroscopy_2_1_pi_75_375_MHz_100_points_3"]
-    # file_list: List[str] = ["10_09_25_KC_spectroscopy_pi_light_9_22-242MHz_55points"]
+    file_list = "24_09_25_KC_Spectroscopy_2_1_pi_75_375_MHz_100_points_3"
 
-    a = time()
-    cunt = handler.analzer.dataEv_postSelection(file_list[0], None, ".h5", 2500, 10)
-    b = time()
-    print(f"Took {b - a}s")
+    # cunt = handler.analzer.post_selection(file_list, ".h5")
+    cunt = handler.analzer.normal_mode_spectroscopy(file_list, None, ".h5")
 
     # ------ Setting flags------
     loadFromDir: bool = False  # if True, counts dictionary is loaded from the directory
