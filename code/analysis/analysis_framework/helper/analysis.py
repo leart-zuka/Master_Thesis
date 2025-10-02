@@ -67,7 +67,6 @@ class Analyzer:
             os.makedirs(save_path)
         with pd.ExcelWriter(f"{save_path}/{file_name}_atomParameters.xlsx") as writer:
             for arg in args:
-                print(arg.sheet_name)
                 arg.to_excel(writer, sheet_name=f"{arg.sheet_name}")
 
     def dataEv_postSelection(

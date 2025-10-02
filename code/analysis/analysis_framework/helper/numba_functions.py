@@ -3,6 +3,7 @@ import numpy as np
 from numba import jit
 from typing import List, Tuple
 from pathlib import Path
+from rich import print
 
 
 def get_data_from_file(
@@ -25,7 +26,7 @@ def get_data_from_file(
                     ]
                 )
     except FileNotFoundError:
-        print(f"Wasn't able to find file with path: \033[93m{file_path}\033[00m")
+        print(f"Wasn't able to find file with path: [yellow]{file_path}[/yellow]")
         exit()
 
     return full_data_array
