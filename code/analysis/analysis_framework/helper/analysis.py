@@ -1,7 +1,6 @@
 import os
-import copy
 import pickle
-from typing import Dict
+from typing import List
 import numpy as np
 import pandas as pd
 from rich.progress import track
@@ -16,6 +15,7 @@ from helper.numba_functions import (
     get_atom_in_and_out_index,
     group_data_array,
 )
+from helper.analysis_types import NormalModeSpectroscopyT
 
 
 class Analyzer:
@@ -62,6 +62,7 @@ class Analyzer:
         }
 
         self.data_dic = None
+        self.data_arr = None
 
     def update_data_dir(self, new_data_dir: str) -> None:
         self.data_dir = new_data_dir
@@ -89,7 +90,7 @@ class Analyzer:
         file_path = base / file_name
 
         # ------ We get the data ------
-        full_data_array = get_data_from_main_h5_file(base, file_name, file_type)
+        self.data_arr = get_data_from_main_h5_file(base, file_name, file_type)
         wt_kc = 0.6 * mean_kc_counts  # witness threshold short cavity
         twot = 2 * mean_kc_counts  # two atom threshold
         atom_df = pd.DataFrame()
@@ -102,8 +103,8 @@ class Analyzer:
         atoms_duration = []
 
         # ------ We enter the atom loop ------
-        for atom_number in track(range(len(full_data_array))):
-            data_array = full_data_array[atom_number]
+        for atom_number in track(range(len(self.data_arr))):
+            data_array = self.data_arr[atom_number]
             """
                     Really we just count all the all the counts in the short cavity for a run, and then we save:
                         counts in KC -> dataPhotonKC
@@ -285,9 +286,9 @@ class Analyzer:
     def normal_mode_spectroscopy(
         self,
         file_name: str,
+        parameters: NormalModeSpectroscopyT,
         path: str | Path | None = None,
         file_type: str = ".h5",
-        parameters={},
         plot_histogramm: bool = False,
     ):
         if self.data_dir is None:
@@ -306,7 +307,194 @@ class Analyzer:
         with open(file_post_selected, "rb") as file:
             atom_dict = pickle.load(file)
 
-        print(atom_dict)
+        # print(atom_dict)
+        data_arr = self.data_good_atoms(atom_dict, base, file_name, file_type)
+
+        # --- Load parameters ---
+        trigger_delay = parameters["trigger_delay"]
+        cooling_duration = parameters["cooling_duration"]
+        optical_pumping_duration = parameters["optical_pumping_duration"]
+        pulse_delay = parameters["pulse_delay"]
+        pulse_duration = parameters["pulse_duration"]
+        sequence_duration = parameters["sequence_duration"]
+
+        # Some other constants
+        binsize = 20 * 1e-9
+
+        # sequence gates
+        optical_pumping_gate = [
+            trigger_delay + cooling_duration,
+            trigger_delay + cooling_duration + optical_pumping_duration,
+        ]
+        write_gate = [
+            optical_pumping_gate[1] + pulse_delay,
+            optical_pumping_gate[1] + pulse_delay + pulse_duration,
+        ]
+
+        # plotting
+        if plot_histogramm:
+            binNum = int(sequence_duration / binsize)
+            detectors = [self.kc_h, self.kc_v, self.lc_h, self.lc_v, self.sd_trig]
+            colors = ["violet", "violet", "tab:blue", "tab:blue", "orange"]
+            fsdelay = {
+                self.kc_h: 0,
+                self.kc_v: 12e-9,
+                self.lc_h: 0,
+                self.lc_v: 0.0,
+                self.sd_trig: 0.0,
+            }
+            chfig = self.channels_histo(
+                data_arr,
+                detectors,
+                write_gate,
+                binNum,
+                self.sync_fast,
+                sequence_duration,
+                fsdelay,
+                file_name,
+                colors,
+            )
+            plt.show(block=True)
+
+    def data_good_atoms(self, atom_dict, base, file_name, file_type):
+        data_vd = [np.ndarray([]) for i in range(8)]
+        if self.data_arr is None:
+            self.data_arr = get_data_from_main_h5_file(base, file_name, file_type)
+
+        for atom_number in track(atom_dict.keys()):
+            data_array = self.data_arr[atom_number]
+
+            start_sync_fast_trigger = np.searchsorted(
+                data_array[self.sync_fast],
+                data_array[self.sync_slow][0] + atom_dict[atom_number][0],
+            )
+
+            end_sync_fast_trigger = np.searchsorted(
+                data_array[self.sync_fast],
+                data_array[self.sync_slow][0] + atom_dict[atom_number][1],
+            )
+
+            time_start = data_array[self.sync_fast][start_sync_fast_trigger] - 1e-9
+            time_end = data_array[self.sync_fast][end_sync_fast_trigger] - 1e-9
+
+            for i in range(8):
+                start = np.searchsorted(data_array[i], time_start)
+                end = np.searchsorted(data_array[i], time_end)
+                print(atom_number, i)
+
+                data_vd[i] = np.append(data_vd[i], data_array[i][start:end])
+
+        return data_vd
+
+    def channels_histo(
+        self,
+        data_arr: List[np.ndarray],
+        detectors=["ch2", "ch3", "ch4", "ch7"],
+        gates=[0],
+        binNum: int = 10000,
+        trigger: int = 5,
+        maxTrigDiff=100e-3,
+        fsdelay=[0, 0, 0, 0],
+        filename="",
+        colors=["grey" for i in range(4)],
+    ):
+        # dataDic: dictionary with the timestamps generated by data_loading
+        # detectors: list of detector strings (e.g. detectors=['lcH','lcV','kcPi','kcV'])
+        # gates: list of time gates we want to plot
+        # binNum: number of bins
+        # trigger: channel used as a trigger
+        # maxTrigDiff: maximum time difference between triggers
+
+        syncFast = data_arr[trigger]
+        histoDic = {
+            i: [] for i in detectors
+        }  # dictionary where histograms will be stored
+
+        diffFS = np.diff(syncFast)
+        print(diffFS)
+        # maxFSdur = 11e-3
+        maxFSdur = np.amax(
+            diffFS[diffFS < maxTrigDiff]
+        )  # time difference between atoms are excluded
+        print(maxFSdur)
+        histotime = np.linspace(0, maxFSdur, binNum)
+        binsize = maxTrigDiff / binNum
+
+        for k, det in enumerate(detectors):
+            histoDic[det] = np.copy(data_arr[det])
+
+            for i in range(len(syncFast) - 1):
+                start = syncFast[i] + fsdelay[det]
+                FSdur = syncFast[i + 1] - start + fsdelay[det]
+                left = np.searchsorted(histoDic[det], start)
+                right = np.searchsorted(histoDic[det], start + FSdur)
+                histoDic[det][left:right] = histoDic[det][left:right] - start
+
+            histoDic[det] = np.histogram(
+                histoDic[det], bins=binNum, range=(0, maxFSdur)
+            )[0]
+
+        # Plotting of the histograms
+        gateColors = plt.cm.jet(np.linspace(0, 1, len(gates)))  # color map is created
+
+        plt.close(filename + " - Trace Histogram")
+        afs = 15
+
+        f = plt.figure(filename + " - Trace Histogram", figsize=[10, 7])
+
+        for i in range(len(detectors)):
+            ax = f.add_subplot(len(detectors), 1, i + 1)
+            ax.plot(
+                histotime * 1e3,
+                histoDic[detectors[i]],
+                "-",
+                label=detectors[i],
+                color=colors[i],
+            )
+            ax1 = ax.twinx()
+            ax1.plot(
+                histotime * 1e3,
+                histoDic[detectors[i]] / (len(syncFast) * binsize),
+                "-",
+                label=detectors[i],
+                color=colors[i],
+            )
+            ax.legend(loc=6, fontsize=afs)
+            ax.set_ylabel("# clicks", fontsize=afs)
+            ax1.set_ylabel("rate", fontsize=afs)
+
+            ax.tick_params(axis="y", labelsize=afs)
+            ax.tick_params(axis="x", labelsize=afs)
+
+            ax1.tick_params(axis="y", labelsize=afs)
+
+            if i == 0:
+                ax1.axhline(
+                    y=2400,
+                    xmin=histotime[0] * 1e3,
+                    xmax=histotime[-1] * 1e3,
+                    color="k",
+                    ls="--",
+                )  # 2-2' pumping dark counts
+
+            if i == 1:
+                ax1.axhline(
+                    y=1600,
+                    xmin=histotime[0] * 1e3,
+                    xmax=histotime[-1] * 1e3,
+                    color="k",
+                    ls="--",
+                )  # 2-2' pumping dark counts
+
+            for i, gate in enumerate(gates):
+                ax.axvline(gate * 1e3, color=gateColors[i])
+        ax.set_xlabel("Time (ms)", fontsize=afs)
+
+        f.suptitle(filename + " - Trace Histogram")
+
+        plt.tight_layout()
+
+        return f
 
 
 if __name__ == "__main__":

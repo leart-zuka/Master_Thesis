@@ -1,5 +1,6 @@
 from typing import List
 from helper.handler import AnalysisHandler
+from helper.analysis_types import NormalModeSpectroscopyT
 from time import time
 
 if __name__ == "__main__":
@@ -42,7 +43,19 @@ if __name__ == "__main__":
     file_list = "24_09_25_KC_Spectroscopy_2_1_pi_75_375_MHz_100_points_3"
 
     # cunt = handler.analzer.post_selection(file_list, ".h5")
-    cunt = handler.analzer.normal_mode_spectroscopy(file_list, None, ".h5")
+    ParamDic: NormalModeSpectroscopyT = {
+        "trigger_delay": 3.15e-6,
+        "cooling_duration": 400e-6,
+        "optical_pumping_duration": 200e-6,
+        "pulse_delay": 33.5e-6,
+        "pulse_duration": 7e-6,
+        "sequence_duration": 0.7e-3,
+        # "freqSpan": 250,  # in MHz
+        # "PointsPerScan": 200,  # including up and down ramp
+        # "TrialsPerPoint": 40,
+        # "freqCenter": 200,
+    }
+    cunt = handler.analzer.normal_mode_spectroscopy(file_list, ParamDic, None, ".h5")
 
     # ------ Setting flags------
     loadFromDir: bool = False  # if True, counts dictionary is loaded from the directory
