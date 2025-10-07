@@ -8,3 +8,7 @@ class NormalModeSpectroscopyT(TypedDict):
     pulse_delay: float
     pulse_duration: float
     sequence_duration: float
+    frequency_span: int
+    points_per_scan: int
+    trials_per_point: int
+    frequency_center: int

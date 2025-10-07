@@ -9,8 +9,13 @@ from rich.table import Table
 from rich.console import Console
 import matplotlib.pyplot as plt
 from pathlib import Path
+
+from scipy.optimize import curve_fit
+from helper.fitting import R_coupled
 from helper.numba_functions import (
+    get_binary_up_and_down,
     get_data_from_main_h5_file,
+    loop_over_normal_mode_spectroscopy_spectrum,
     loop_over_time_stamps,
     get_atom_in_and_out_index,
     group_data_array,
@@ -290,6 +295,7 @@ class Analyzer:
         path: str | Path | None = None,
         file_type: str = ".h5",
         plot_histogramm: bool = False,
+        fit_function: bool = False,
     ):
         if self.data_dir is None:
             raise Exception("please define a data directory fist")
@@ -307,7 +313,6 @@ class Analyzer:
         with open(file_post_selected, "rb") as file:
             atom_dict = pickle.load(file)
 
-        # print(atom_dict)
         data_arr = self.data_good_atoms(atom_dict, base, file_name, file_type)
 
         # --- Load parameters ---
@@ -317,8 +322,11 @@ class Analyzer:
         pulse_delay = parameters["pulse_delay"]
         pulse_duration = parameters["pulse_duration"]
         sequence_duration = parameters["sequence_duration"]
+        frequency_span = parameters["frequency_span"]
+        points_per_scan = parameters["points_per_scan"]
+        trials_per_point = parameters["trials_per_point"]
+        frequency_center = parameters["frequency_center"]
 
-        # Some other constants
         binsize = 20 * 1e-9
 
         # sequence gates
@@ -356,8 +364,104 @@ class Analyzer:
             )
             plt.show(block=True)
 
-    def data_good_atoms(self, atom_dict, base, file_name, file_type):
-        data_vd = [np.ndarray([]) for i in range(8)]
+        fast_sequence_step_size = (
+            data_arr[self.sync_fast][-1] - data_arr[self.sync_fast][-2]
+        )
+        scan_duration = fast_sequence_step_size * points_per_scan * trials_per_point
+
+        print(":waffle: Looping over [purple]Fast Sequence Triggers[/purple] now")
+
+        binary_up, binary_down = get_binary_up_and_down(
+            points_per_scan,
+            trials_per_point,
+            scan_duration,
+            data_arr[self.kc_h],
+            data_arr[self.kc_v],
+            data_arr[self.sync_fast],
+            data_arr[self.sync_fast2],
+            write_gate,
+        )
+
+        binary_up_mean = [np.mean(point) for point in binary_up]
+        binary_up_err = [np.std(point) / np.sqrt(len(point)) for point in binary_up]
+        binary_down_mean = [np.mean(point) for point in binary_down]
+        binary_down_err = [np.std(point) / np.sqrt(len(point)) for point in binary_down]
+        frequency_span = (
+            np.linspace(0, frequency_span, int(points_per_scan / 2)) - frequency_center
+        )
+
+        if fit_function:
+            p0 = [
+                -27,  # A (normalization, negative guess here to match scaling of data)
+                0.182,  # f_res (MHz offset of resonance)
+                30,  # g (coupling strength, MHz)
+                58,  # kappa (total cavity decay rate, MHz)
+                58 * 0.85,  # kappa_oc (outcoupling, ~85% of total kappa)
+                0.882,  # MM_rf (close to ideal)
+                0.882,  # MM_fc (80% coupling in)
+                3.0333,  # gamma (free space decay rate, MHz)
+                0.01,  # offset (background level)
+                0.0,  # a (slope term for detuning-dependent broadening)
+            ]
+
+            bounds = (
+                [
+                    -np.inf,
+                    0.01,
+                    10,
+                    58,
+                    49,
+                    0.881,
+                    0.881,
+                    3.0318,
+                    -np.inf,
+                    -np.inf,
+                ],
+                [
+                    np.inf,
+                    0.3,
+                    50,
+                    59,
+                    50,
+                    0.883,
+                    0.883,
+                    3.0354,
+                    np.inf,
+                    np.inf,
+                ],
+            )
+            popt, pcov = curve_fit(
+                R_coupled,
+                frequency_span,
+                binary_up_mean + np.flip(binary_down_mean),
+                p0,
+                bounds=bounds,
+                maxfev=10000,
+            )
+
+            plt.plot(
+                frequency_span,
+                R_coupled(frequency_span, *popt),
+                label="Model fit",
+                color="red",
+                linewidth=3,
+                linestyle="-.",
+            )
+
+        plt.errorbar(
+            frequency_span,
+            binary_up_mean + np.flip(binary_down_mean),
+            binary_up_err + np.flip(binary_down_err),
+            linestyle="",
+            marker="o",
+            label="Measurement data",
+        )
+        plt.show()
+
+    def data_good_atoms(
+        self, atom_dict, base, file_name, file_type
+    ) -> List[np.ndarray]:
+        data_vd = [[] for _ in range(8)]
         if self.data_arr is None:
             self.data_arr = get_data_from_main_h5_file(base, file_name, file_type)
 
@@ -380,7 +484,6 @@ class Analyzer:
             for i in range(8):
                 start = np.searchsorted(data_array[i], time_start)
                 end = np.searchsorted(data_array[i], time_end)
-                print(atom_number, i)
 
                 data_vd[i] = np.append(data_vd[i], data_array[i][start:end])
 
@@ -411,12 +514,12 @@ class Analyzer:
         }  # dictionary where histograms will be stored
 
         diffFS = np.diff(syncFast)
-        print(diffFS)
+        # print(diffFS)
         # maxFSdur = 11e-3
         maxFSdur = np.amax(
             diffFS[diffFS < maxTrigDiff]
         )  # time difference between atoms are excluded
-        print(maxFSdur)
+        # print(maxFSdur)
         histotime = np.linspace(0, maxFSdur, binNum)
         binsize = maxTrigDiff / binNum
 

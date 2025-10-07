@@ -50,26 +50,11 @@ if __name__ == "__main__":
         "pulse_delay": 33.5e-6,
         "pulse_duration": 7e-6,
         "sequence_duration": 0.7e-3,
-        # "freqSpan": 250,  # in MHz
-        # "PointsPerScan": 200,  # including up and down ramp
-        # "TrialsPerPoint": 40,
-        # "freqCenter": 200,
+        "frequency_span": 250,  # in MHz
+        "points_per_scan": 200,  # including up and down ramp
+        "trials_per_point": 40,
+        "frequency_center": 200,
     }
-    cunt = handler.analzer.normal_mode_spectroscopy(file_list, ParamDic, None, ".h5")
-
-    # ------ Setting flags------
-    loadFromDir: bool = False  # if True, counts dictionary is loaded from the directory
-
-    # ------ Begin Analysis ------
-    # analysis = AtomAnalysis()
-    #
-    # ParamDic = {
-    #     "freqSpan": 250,  # in MHz
-    #     "PointsPerScan": 200,  # including up and down ramp
-    #     "TrialsPerPoint": 40,
-    #     "freqCenter": 200,
-    # }
-    #
-    # analysis.dataEval_noramlModeSpectroscopy(
-    #     path, file_list, filetype, ParamDic=ParamDic
-    # )
+    cunt = handler.analzer.normal_mode_spectroscopy(
+        file_list, ParamDic, None, ".h5", False, True
+    )

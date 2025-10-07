@@ -110,3 +110,71 @@ def group_data_array(data_array: np.ndarray, no: int) -> np.ndarray:
         grouped[i] = np.sum(data_array[start:end]) / no
 
     return grouped
+
+
+@jit(nopython=True, cache=True)
+def loop_over_normal_mode_spectroscopy_spectrum(
+    spectrum_end_index: int,
+    kc_h_data: np.ndarray,
+    kc_v_data: np.ndarray,
+    fast_triggers: np.ndarray,
+    write_gate: List[float],
+) -> float:
+    start_h, end_h = np.searchsorted(
+        kc_h_data,
+        [
+            fast_triggers[spectrum_end_index] + write_gate[0],
+            fast_triggers[spectrum_end_index] + write_gate[1],
+        ],
+    )
+
+    start_v, end_v = np.searchsorted(
+        kc_v_data,
+        [
+            fast_triggers[spectrum_end_index] + write_gate[0],
+            fast_triggers[spectrum_end_index] + write_gate[1],
+        ],
+    )
+
+    return end_h - start_h + end_v - start_v
+
+
+def get_binary_up_and_down(
+    points_per_scan: int,
+    trials_per_point: int,
+    scan_duration: float,
+    kc_h_data: np.ndarray,
+    kc_v_data: np.ndarray,
+    fast_triggers: np.ndarray,
+    fast_triggers_2: np.ndarray,
+    write_gate: List[float],
+):
+    binary_up = [[] for _ in range(points_per_scan // 2)]
+    binary_down = [[] for _ in range(points_per_scan // 2)]
+
+    for i in range(len(fast_triggers_2[:-1])):
+        fast_sequence_duration = fast_triggers_2[i + 1] - fast_triggers_2[i]
+        if fast_sequence_duration > scan_duration * 1.1:
+            print(f"Incomplete scan with time: {fast_sequence_duration}")
+            continue
+
+        spectrum_start_idx = np.searchsorted(fast_triggers, fast_triggers_2[i])
+        for point in range(points_per_scan // 2):
+            for trial in range(trials_per_point):
+                spectrum_end_idx = spectrum_start_idx + point * trials_per_point + trial
+
+                up = loop_over_normal_mode_spectroscopy_spectrum(
+                    spectrum_end_idx, kc_h_data, kc_v_data, fast_triggers, write_gate
+                )
+                binary_up[point].append(up)
+
+                down = loop_over_normal_mode_spectroscopy_spectrum(
+                    spectrum_end_idx + points_per_scan // 2 * trials_per_point,
+                    kc_h_data,
+                    kc_v_data,
+                    fast_triggers,
+                    write_gate,
+                )
+                binary_down[point].append(down)
+
+    return binary_up, binary_down
