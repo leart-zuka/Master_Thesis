@@ -4,6 +4,7 @@ from numba import jit
 from typing import List, Tuple
 from pathlib import Path
 from rich import print
+from rich.progress import track
 
 
 def get_data_from_main_h5_file(
@@ -14,6 +15,7 @@ def get_data_from_main_h5_file(
 
     # ------ We get the data ------
     full_data_array = []
+    print(file_path)
     try:
         with h5py.File(f"{file_path}{file_type}", "r") as f:
             total_number_of_atoms = int(len(f) / 8)
@@ -26,7 +28,9 @@ def get_data_from_main_h5_file(
                     ]
                 )
     except FileNotFoundError:
-        print(f"Wasn't able to find file with path: [yellow]{file_path}[/yellow]")
+        print(
+            f"Wasn't able to find file with path: [yellow]{file_path}{file_type}[/yellow]"
+        )
         exit()
 
     return full_data_array
@@ -152,7 +156,7 @@ def get_binary_up_and_down(
     binary_up = [[] for _ in range(points_per_scan // 2)]
     binary_down = [[] for _ in range(points_per_scan // 2)]
 
-    for i in range(len(fast_triggers_2[:-1])):
+    for i in track(range(len(fast_triggers_2[:-1]))):
         fast_sequence_duration = fast_triggers_2[i + 1] - fast_triggers_2[i]
         if fast_sequence_duration > scan_duration * 1.1:
             print(f"Incomplete scan with time: {fast_sequence_duration}")

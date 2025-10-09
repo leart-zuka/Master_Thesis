@@ -20,7 +20,7 @@ class AnalysisHandler:
         self.log_dir = log_dir.rstrip("/")
         self.base_data_dir = base_data_dir.rstrip("/")
         self.data_dir: str = self.return_and_load_folder_path(year, month, day_topic)
-        self.analzer = Analyzer(log_dir=log_dir, data_dir=self.data_dir)
+        self.analyzer = Analyzer(log_dir=log_dir, data_dir=self.data_dir)
 
     def validate_folder_path(self, path_to_folder: str) -> bool:
         path_exists = os.path.exists(path_to_folder)
@@ -57,7 +57,7 @@ class AnalysisHandler:
         for file in files:
             print("-----------------------------------------")
             print(f":waffle: Analyzing file [green]{file}[/green] right now")
-            goodAtomsDic, atomInHisto, atomOutHisto = self.analzer.post_selection(
+            goodAtomsDic, atomInHisto, atomOutHisto = self.analyzer.post_selection(
                 file, self.data_dir, file_type, mean_kc_counts, no
             )
-            self.analzer.get_trap_times(goodAtomsDic, atomInHisto, atomOutHisto)
+            self.analyzer.get_trap_times(goodAtomsDic, atomInHisto, atomOutHisto)

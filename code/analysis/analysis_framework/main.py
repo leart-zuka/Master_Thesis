@@ -1,4 +1,3 @@
-from typing import List
 from helper.handler import AnalysisHandler
 from helper.analysis_types import NormalModeSpectroscopyT
 from time import time
@@ -55,6 +54,6 @@ if __name__ == "__main__":
         "trials_per_point": 40,
         "frequency_center": 200,
     }
-    cunt = handler.analzer.normal_mode_spectroscopy(
-        file_list, ParamDic, None, ".h5", False, True
+    cunt = handler.analyzer.normal_mode_spectroscopy(
+        file_list, ParamDic, None, ".h5", False, False
     )
