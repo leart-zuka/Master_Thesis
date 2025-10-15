@@ -14,6 +14,7 @@ Delta_c = 0
 # Delta_c = 0.5
 Delta_a = 0
 # Delta_a = 6.835
+Delta_v = 0.5
 
 Atom_dimensions = 5
 Photon_dimensions = 2
@@ -22,7 +23,7 @@ External_Photon_modes = 2
 # time
 tlist = np.linspace(0.0, 1000, 10000)
 args = {
-    "amp": 0.1,
+    "amp": 0.01,
     "t0": 1000,
     "tau": 70.0,
     "tau_start": 91.0,
@@ -100,16 +101,16 @@ e_obs = {
     "P(0)": sigma_0 * sigma_0.dag(),
     "P(1)": sigma * sigma.dag(),
     "P(e)": sigma.dag() * sigma,
-    "n_cav": a_pi.dag() * a_pi,
+    "n_cav_pi": a_pi.dag() * a_pi,
     "n_cav_v": a_v.dag() * a_v,
     "a_pi": a_pi,
 }
 
-c_obs = [
-    np.sqrt(2 * Kappa) * a_pi,
-    np.sqrt(2 * Kappa) * a_v,
-    np.sqrt(2 * Gamma_5P32_5S) * sigma_bad_1,
-]
+# c_obs = [
+#     np.sqrt(2 * Kappa) * a_pi,
+#     np.sqrt(2 * Kappa) * a_v,
+#     np.sqrt(2 * Gamma_5P32_5S) * sigma_bad_1,
+# ]
 
 # 4 experimental runs
 # Atom in 0, sending in pi light
@@ -119,8 +120,9 @@ H = [
     H_0 + H_int,
     [np.sqrt(2 * Kappa_oc) * (a_pi.dag() + a_pi), input_shape],
 ]
+# out_0 = qt.mesolve(H, psi_0, tlist, c_obs, e_obs, args)
+out_0 = qt.mesolve(H, psi_0, tlist, [], e_obs, args)
 
-out_0 = qt.mesolve(H, psi_0, tlist, c_obs, e_obs, args)
 # Atom in 1, sending in pi light
 H_0 = 0.5 * a_v.dag() * a_v
 H_int = G0_kc * (a_pi * sigma.dag() + a_pi.dag() * sigma)
@@ -128,69 +130,117 @@ H = [
     H_0 + H_int,
     [np.sqrt(2 * Kappa_oc) * (a_pi.dag() + a_pi), input_shape],
 ]
-
+# out_1 = qt.mesolve(
+#     H,
+#     psi_1,
+#     tlist,
+#     c_obs,
+#     e_obs,
+#     args,
+# )
 out_1 = qt.mesolve(
     H,
     psi_1,
     tlist,
-    c_obs,
+    [],
     e_obs,
     args,
 )
 
 # # Atom in 0, sending in V light
-H_0 = 0.5 * a_v.dag() * a_v
+H_0 = Delta_v * a_v.dag() * a_v
 H_int = G0_kc * (a_pi * sigma.dag() + a_pi.dag() * sigma)
 H = [
     H_0 + H_int,
     [np.sqrt(2 * Kappa_oc) * (a_v.dag() + a_v), input_shape],
 ]
+# out_2 = qt.mesolve(
+#     H,
+#     psi_0,
+#     tlist,
+#     c_obs,
+#     e_obs,
+#     args,
+# )
 out_2 = qt.mesolve(
     H,
     psi_0,
     tlist,
-    c_obs,
+    [],
     e_obs,
     args,
 )
-#
+
 # Atom in 1, sending in V light
-H_0 = 0.5 * a_v.dag() * a_v
+H_0 = Delta_v * a_v.dag() * a_v
 H_int = G0_kc * (a_pi * sigma.dag() + a_pi.dag() * sigma)
 H = [
     H_0 + H_int,
     [np.sqrt(2 * Kappa_oc) * (a_v.dag() + a_v), input_shape],
 ]
-
+# out_3 = qt.mesolve(
+#     H,
+#     psi_1,
+#     tlist,
+#     c_obs,
+#     e_obs,
+#     args,
+# )
 out_3 = qt.mesolve(
     H,
     psi_1,
     tlist,
-    c_obs,
+    [],
     e_obs,
     args,
 )
 
 # States
 plt.figure()
-plt.plot(tlist, out_0.e_data["n_cav"], linestyle="-", label=r"$|0,|\pi\rangle$")
-plt.plot(tlist, out_1.e_data["n_cav"], linestyle="--", label=r"$|1,|\pi\rangle$")
-plt.plot(tlist, out_2.e_data["n_cav"], linestyle="-.", label=r"$|0,|V\rangle$")
-plt.plot(tlist, out_3.e_data["n_cav"], linestyle=":", label=r"$|1,|V\rangle$")
+plt.title(r"Looking at $\pi$ photons")
+plt.plot(tlist, out_0.e_data["n_cav_pi"], linestyle="-", label=r"$|0,|\pi\rangle$")
+plt.plot(tlist, out_1.e_data["n_cav_pi"], linestyle="--", label=r"$|1,|\pi\rangle$")
+plt.plot(tlist, out_2.e_data["n_cav_pi"], linestyle="-.", label=r"$|0,|V\rangle$")
+plt.plot(tlist, out_3.e_data["n_cav_pi"], linestyle=":", label=r"$|1,|V\rangle$")
 plt.legend()
 plt.show()
 
 plt.figure()
-plt.title(r"Starting state $|1\rangle$")
+plt.title("Looking at V photons")
+plt.plot(tlist, out_0.e_data["n_cav_pi"], linestyle="-", label=r"$|0,|\pi\rangle$")
+plt.plot(tlist, out_0.e_data["n_cav_v"], linestyle="-", label=r"$|0,|\pi\rangle$")
+plt.plot(tlist, out_1.e_data["n_cav_v"], linestyle="--", label=r"$|1,|\pi\rangle$")
+plt.plot(tlist, out_2.e_data["n_cav_v"], linestyle="-.", label=r"$|0,|V\rangle$")
+plt.plot(tlist, out_3.e_data["n_cav_v"], linestyle=":", label=r"$|1,|V\rangle$")
+plt.legend()
+plt.show()
+
+plt.figure()
+plt.title(r"Starting state $|0,\pi\rangle$")
 plt.plot(tlist, out_0.e_data["P(0)"], label=r"$|0\rangle$")
 plt.plot(tlist, out_0.e_data["P(1)"], label=r"$|1\rangle$")
 plt.plot(tlist, out_0.e_data["P(e)"], label=r"$|e\rangle$")
 plt.legend()
 
-# plt.figure()
-# plt.title(r"Starting state $|0\rangle$")
-# plt.plot(tlist, out_0.e_data["P(0)"], label=r"$|0\rangle$")
-# plt.plot(tlist, out_0.e_data["P(1)"], label=r"$|1\rangle$")
-# plt.plot(tlist, out_0.e_data["P(e)"], label=r"$|e\rangle$")
-# plt.legend()
+plt.figure()
+plt.title(r"Starting state $|1,\pi\rangle$")
+plt.plot(tlist, out_1.e_data["P(0)"], label=r"$|0\rangle$")
+plt.plot(tlist, out_1.e_data["P(1)"], label=r"$|1\rangle$")
+plt.plot(tlist, out_1.e_data["P(e)"], label=r"$|e\rangle$")
+plt.legend()
+plt.show()
+
+plt.figure()
+plt.title(r"Starting state $|0,V\rangle$")
+plt.plot(tlist, out_2.e_data["P(0)"], label=r"$|0\rangle$")
+plt.plot(tlist, out_2.e_data["P(1)"], label=r"$|1\rangle$")
+plt.plot(tlist, out_2.e_data["P(e)"], label=r"$|e\rangle$")
+plt.legend()
+
+plt.figure()
+plt.title(r"Starting state $|1,V\rangle$")
+plt.plot(tlist, out_3.e_data["P(0)"], label=r"$|0\rangle$")
+plt.plot(tlist, out_3.e_data["P(1)"], label=r"$|1\rangle$")
+plt.plot(tlist, out_3.e_data["P(e)"], label=r"$|e\rangle$")
+plt.legend()
 plt.show()

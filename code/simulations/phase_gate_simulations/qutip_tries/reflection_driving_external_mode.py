@@ -75,6 +75,24 @@ sigma = qt.tensor(
 )
 
 
+def run_sim(
+    driving_field_destr_operator: qt.Qobj, e_obs, c_obs, psi: qt.Qobj
+) -> qt.Result:
+    H_0 = 0.5 * a_v.dag() * a_v
+    H_int = G0_kc * (a_pi * sigma.dag() + a_pi.dag() * sigma)
+    H = [
+        H_0 + H_int,
+        [
+            np.sqrt(2 * Kappa_oc)
+            * 1j
+            * (driving_field_destr_operator.dag() - driving_field_destr_operator),
+            input_shape,
+        ],
+    ]
+    out = qt.mesolve(H, psi, tlist, c_obs, e_obs, args)
+    return out
+
+
 H_0 = (
     Delta_a * sigma.dag() * sigma + Delta_c * a_pi.dag() * a_pi + 0.5 * a_v.dag() * a_v
 )
