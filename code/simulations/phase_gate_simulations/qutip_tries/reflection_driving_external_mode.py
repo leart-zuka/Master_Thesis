@@ -2,9 +2,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import qutip as qt
 from helpers.input_shapes import input_shape
+from helpers.plotting import plot_photon_number_and_population
+import warnings
+
+warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
 
 rerun_sim = True
-rerun_sim = False
+# rerun_sim = False
 
 # --- minimal parameters (use your actual numbers) ---
 G0_kc = 2 * np.pi * 0.0386  # 2-1' splitting
@@ -18,7 +23,7 @@ External_Photon_modes = 3
 
 # time grid (use same spacing you prefer)
 tlist = np.linspace(0.0, 1000, 1000)
-args = {"amp": 0.01, "t0": 750, "tau": 70.0, "tau_start": 91.0, "sigma": 1.0}
+args = {"amp": 0.01, "t0": 1000, "tau": 70.0, "tau_start": 91.0, "sigma": 1.0}
 
 atom_0 = qt.basis(Atom_dimensions, 0)
 atom_1 = qt.basis(Atom_dimensions, 1)
@@ -28,11 +33,13 @@ atom_e = qt.basis(Atom_dimensions, 4)
 
 psi_0 = qt.tensor(
     qt.fock(External_Photon_modes, 0),
+    qt.fock(External_Photon_modes, 0),
     qt.fock(Photon_dimensions, 0),
     qt.fock(Photon_dimensions, 0),
     atom_0,
 )
 psi_1 = qt.tensor(
+    qt.fock(External_Photon_modes, 0),
     qt.fock(External_Photon_modes, 0),
     qt.fock(Photon_dimensions, 0),
     qt.fock(Photon_dimensions, 0),
@@ -40,33 +47,42 @@ psi_1 = qt.tensor(
 )
 psi_bad_1 = qt.tensor(
     qt.fock(External_Photon_modes, 0),
+    qt.fock(External_Photon_modes, 0),
     qt.fock(Photon_dimensions, 0),
     qt.fock(Photon_dimensions, 0),
     atom_bad_1,
 )
 psi_bad_2 = qt.tensor(
     qt.fock(External_Photon_modes, 0),
+    qt.fock(External_Photon_modes, 0),
     qt.fock(Photon_dimensions, 0),
     qt.fock(Photon_dimensions, 0),
     atom_bad_2,
 )
 
-
 b_pi = qt.tensor(
+    qt.destroy(External_Photon_modes),
+    qt.qeye(External_Photon_modes),
+    qt.qeye(Photon_dimensions),
+    qt.qeye(Photon_dimensions),
+    qt.qeye(Atom_dimensions),
+)
+b_v = qt.tensor(
+    qt.qeye(External_Photon_modes),
     qt.destroy(External_Photon_modes),
     qt.qeye(Photon_dimensions),
     qt.qeye(Photon_dimensions),
     qt.qeye(Atom_dimensions),
 )
-
 a_pi = qt.tensor(
+    qt.qeye(External_Photon_modes),
     qt.qeye(External_Photon_modes),
     qt.destroy(Photon_dimensions),
     qt.qeye(Photon_dimensions),
     qt.qeye(Atom_dimensions),
 )
-
 a_v = qt.tensor(
+    qt.qeye(External_Photon_modes),
     qt.qeye(External_Photon_modes),
     qt.qeye(Photon_dimensions),
     qt.destroy(Photon_dimensions),
@@ -75,17 +91,20 @@ a_v = qt.tensor(
 
 sigma = qt.tensor(
     qt.qeye(External_Photon_modes),
+    qt.qeye(External_Photon_modes),
     qt.qeye(Photon_dimensions),
     qt.qeye(Photon_dimensions),
     atom_1 * atom_e.dag(),
 )
 sigma_bad_1 = qt.tensor(
     qt.qeye(External_Photon_modes),
+    qt.qeye(External_Photon_modes),
     qt.qeye(Photon_dimensions),
     qt.qeye(Photon_dimensions),
     atom_bad_1 * atom_e.dag(),
 )
 sigma_bad_2 = qt.tensor(
+    qt.qeye(External_Photon_modes),
     qt.qeye(External_Photon_modes),
     qt.qeye(Photon_dimensions),
     qt.qeye(Photon_dimensions),
@@ -116,16 +135,13 @@ def run_sim(
             - a_v.dag() * driving_field_destr_operator
         )
     )
+    H_drive = (
+        1j
+        * np.sqrt(2 * Kappa_oc)
+        * (driving_field_destr_operator.dag() - driving_field_destr_operator)
+    )
 
-    H = [
-        H_0 + H_int_pi + H_int_v + H_couple_pi,
-        [
-            np.sqrt(2 * Kappa_oc)
-            * 1j
-            * (driving_field_destr_operator.dag() - driving_field_destr_operator),
-            input_shape,
-        ],
-    ]
+    H = [H_0 + H_int_pi + H_int_v + H_couple_pi + H_couple_v, [H_drive, input_shape]]
     out = qt.mesolve(
         H,
         psi,
@@ -169,34 +185,10 @@ else:
     out_0 = qt.qload("out_0")
     out_1 = qt.qload("out_1")
 
-plt.figure()
-plt.title(r"Driving only with $\pi$")
-plt.plot(tlist, out_0.e_data["n_cav_pi"], linestyle="-", label=r"$n_{\pi,|0\rangle}$")
-plt.plot(
-    tlist,
-    out_1.e_data["n_cav_pi"],
-    linestyle="--",
-    label=r"$n_{\pi,|1\rangle}$",
-)
-plt.plot(tlist, out_0.e_data["n_cav_v"], linestyle="-.", label=r"$n_{V,|0\rangle}$")
-plt.plot(tlist, out_1.e_data["n_cav_v"], linestyle=":", label=r"$n_{V,|1\rangle}$")
-plt.legend()
-plt.show()
+# ----------------------------------
 
-plt.figure()
-plt.title(r"Population of $|0\rangle$")
-plt.plot(tlist, out_0.e_data["P(0)"], linestyle="-", label=r"$|0\rangle$")
-plt.plot(tlist, out_0.e_data["P(1)"], linestyle="--", label=r"$|1\rangle$")
-plt.plot(tlist, out_0.e_data["P(e)"], linestyle="-.", label=r"$|e\rangle$")
-plt.legend()
-plt.show()
-plt.figure()
-plt.title(r"Population of $|1\rangle$")
-plt.plot(tlist, out_1.e_data["P(0)"], linestyle="--", label=r"$|0\rangle$")
-plt.plot(tlist, out_1.e_data["P(1)"], linestyle="-", label=r"$|1\rangle$")
-plt.plot(tlist, out_1.e_data["P(e)"], linestyle="-.", label=r"$|e\rangle$")
-plt.legend()
-plt.show()
+
+plot_photon_number_and_population(tlist, out_0, out_1)
 
 
 # ----------------------------------
@@ -222,7 +214,7 @@ plt.plot(
 )
 plt.plot(tlist, np.imag(field_out_1), linestyle=":", label=r"$Im(out_{\pi,|1\rangle})$")
 plt.legend()
-print(np.mean(np.angle(field_in)))
+# print(np.mean(np.angle(field_in)))
 print(np.mean(np.angle(field_out_0 / field_in)))
 print(np.mean(np.angle(field_out_1 / field_in)))
 plt.show()

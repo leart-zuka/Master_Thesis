@@ -98,3 +98,49 @@ def plot_qswitch_dynamics(
     fig.suptitle(f"Polarization of Photon: {polarization}", fontsize=16)
     # plt.tight_layout(rect=[0, 0, 1, 0.96])
     plt.show()
+
+
+def plot_photon_number_and_population(
+    tlist: np.ndarray, result_0: qt.Result, result_1: qt.Result
+) -> None:
+    fig = plt.figure(figsize=(12, 8))
+    gs = fig.add_gridspec(2, 2, height_ratios=[1.2, 1], hspace=0.4, wspace=0.3)
+
+    ax1 = fig.add_subplot(gs[0, :])
+    ax1.set_title(r"Driving only with $\pi$")
+    ax1.plot(
+        tlist, result_0.e_data["n_cav_pi"], linestyle="-", label=r"$n_{\pi,|0\rangle}$"
+    )
+    ax1.plot(
+        tlist, result_1.e_data["n_cav_pi"], linestyle="--", label=r"$n_{\pi,|1\rangle}$"
+    )
+    ax1.plot(
+        tlist, result_0.e_data["n_cav_v"], linestyle="-.", label=r"$n_{V,|0\rangle}$"
+    )
+    ax1.plot(
+        tlist, result_1.e_data["n_cav_v"], linestyle=":", label=r"$n_{V,|1\rangle}$"
+    )
+    ax1.legend()
+    ax1.set_xlabel("Time")
+    ax1.set_ylabel("Photon number")
+
+    ax2 = fig.add_subplot(gs[1, 0])
+    ax2.set_title(r"Population of $|0\rangle$")
+    ax2.plot(tlist, result_0.e_data["P(0)"], linestyle="-", label=r"$|0\rangle$")
+    ax2.plot(tlist, result_0.e_data["P(1)"], linestyle="--", label=r"$|1\rangle$")
+    ax2.plot(tlist, result_0.e_data["P(e)"], linestyle="-.", label=r"$|e\rangle$")
+    ax2.legend()
+    ax2.set_xlabel("Time")
+    ax2.set_ylabel("Population")
+
+    ax3 = fig.add_subplot(gs[1, 1])
+    ax3.set_title(r"Population of $|1\rangle$")
+    ax3.plot(tlist, result_1.e_data["P(0)"], linestyle="--", label=r"$|0\rangle$")
+    ax3.plot(tlist, result_1.e_data["P(1)"], linestyle="-", label=r"$|1\rangle$")
+    ax3.plot(tlist, result_1.e_data["P(e)"], linestyle="-.", label=r"$|e\rangle$")
+    ax3.legend()
+    ax3.set_xlabel("Time")
+    ax3.set_ylabel("Population")
+
+    plt.tight_layout()
+    plt.show()
