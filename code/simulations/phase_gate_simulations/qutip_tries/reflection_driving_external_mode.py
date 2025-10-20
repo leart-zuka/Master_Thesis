@@ -19,7 +19,7 @@ Gamma_5P32_5S = 2 * np.pi * 0.006065 / 2
 
 Atom_dimensions = 5
 Photon_dimensions = 2
-External_Photon_modes = 3
+External_Photon_modes = 2
 
 # time grid (use same spacing you prefer)
 tlist = np.linspace(0.0, 1000, 1000)
