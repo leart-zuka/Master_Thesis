@@ -52,8 +52,11 @@ r_1_pi = reflection_coefficient(
 )
 arg_r_1_pi = phase_shift(r_1_pi)
 
+print(f"Reflection amplitude for |1> is: {r_1_pi}")
+print(f"Reflection phase for |1> is: {arg_r_1_pi}")
 
-# for atom in 0 and light is π pol: detuning between cav and light is 0 and light and atom is 6.835 GHz aswell
+
+# # for atom in 0 and light is π pol: detuning between cav and light is 0 and light and atom is 6.835 GHz aswell
 Delta_a = 6.835
 Delta_c = 0
 
@@ -69,3 +72,6 @@ r_0_pi = reflection_coefficient(
 )
 
 arg_r_0_pi = phase_shift(r_0_pi)
+
+print(f"Reflection amplitude for |0> is: {r_0_pi}")
+print(f"Reflection phase for |0> is: {arg_r_0_pi}")

@@ -9,7 +9,7 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
 rerun_sim = True
-# rerun_sim = False
+rerun_sim = False
 
 # --- minimal parameters (use your actual numbers) ---
 G0_kc = 2 * np.pi * 0.0386  # 2-1' splitting
@@ -141,7 +141,7 @@ def run_sim(
         * (driving_field_destr_operator.dag() - driving_field_destr_operator)
     )
 
-    H = [H_0 + H_int_pi + H_int_v + H_couple_pi + H_couple_v, [H_drive, input_shape]]
+    H = [H_0 + H_int_pi + H_couple_pi, [H_drive, input_shape]]
     out = qt.mesolve(
         H,
         psi,
@@ -214,7 +214,8 @@ plt.plot(
 )
 plt.plot(tlist, np.imag(field_out_1), linestyle=":", label=r"$Im(out_{\pi,|1\rangle})$")
 plt.legend()
-# print(np.mean(np.angle(field_in)))
-print(np.mean(np.angle(field_out_0 / field_in)))
-print(np.mean(np.angle(field_out_1 / field_in)))
+print(f"Reflection amplitude for |0> is: {np.max(np.abs(np.real(field_out_0)))}")
+print(f"Reflection phase for |0> is: {np.mean(np.angle(field_out_0 / field_in))}")
+print(f"Reflection amplitude for |1> is: {np.max(np.abs(np.real(field_out_1)))}")
+print(f"Reflection phase for |1> is: {np.mean(np.angle(field_out_1 / field_in))}")
 plt.show()
