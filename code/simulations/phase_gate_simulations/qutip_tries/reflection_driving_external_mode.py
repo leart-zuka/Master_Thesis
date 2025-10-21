@@ -9,10 +9,11 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
 rerun_sim = True
-rerun_sim = False
+# rerun_sim = False
 
 # --- minimal parameters (use your actual numbers) ---
 G0_kc = 2 * np.pi * 0.0386  # 2-1' splitting
+G0_kc *= np.sqrt(30 / 24)
 Kappa = 2 * np.pi * 0.063
 Kappa_oc = 2 * np.pi * 0.054 * 2
 Gamma_5P32_5S = 2 * np.pi * 0.006065 / 2
