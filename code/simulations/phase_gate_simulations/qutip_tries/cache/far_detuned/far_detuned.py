@@ -1,13 +1,10 @@
-from typing import Literal
 import numpy as np
 import matplotlib.pyplot as plt
 import qutip as qt
 from helpers.input_shapes import input_shape
 from helpers.plotting import plot_photon_number_and_population
 from helpers.fidelity_calculations import compute_mode_fidelities
-from rich.console import Console
-from rich.table import Table
-from rich import box
+from rich import print
 import warnings
 
 warnings.filterwarnings("ignore", category=FutureWarning)
@@ -124,11 +121,7 @@ def run_sim(
     driving_field_destr_operator: qt.Qobj, e_obs, c_obs, psi: qt.Qobj
 ) -> qt.Result:
     H_0 = (
-        Delta
-        * sigma.dag()
-        * sigma  # detuning for atomic transition away from |1> <-> |e>
-        + Delta * a_pi.dag() * a_pi  # detuning for cavity resonance away from whatever
-        + (Delta + 0.5) * a_v.dag() * a_v  # detuning for V mode of cavity (~ 500 MHz)
+        Delta * sigma.dag() * sigma + Delta * a_pi.dag() * a_pi + 0.5 * a_v.dag() * a_v
     )
     H_int_pi = G0_kc * (a_pi * sigma.dag() + a_pi.dag() * sigma)
     H_int_v = 0.01 * G0_kc * (a_v * sigma.dag() + a_v.dag() * sigma)
@@ -155,7 +148,7 @@ def run_sim(
         * (driving_field_destr_operator.dag() - driving_field_destr_operator)
     )
 
-    H = [H_0 + H_int_pi + H_int_v + H_couple_pi + H_couple_v, [H_drive, input_shape]]
+    H = [H_0 + H_int_pi + H_couple_pi, [H_drive, input_shape]]
     out = qt.mesolve(
         H,
         psi,
@@ -182,25 +175,22 @@ c_obs = [
     np.sqrt(2 * Kappa) * a_pi,
     np.sqrt(2 * Kappa) * a_v,
     np.sqrt(2 * Kappa_oc) * b_pi,
-    np.sqrt(2 * Kappa_oc) * b_v,
     np.sqrt(2 * Gamma_5P32_5S) * sigma_bad_1,
     np.sqrt(2 * Gamma_5P32_5S) * sigma_bad_2,
 ]
 
 if rerun_sim:
     out_0 = run_sim(
-        driving_field_destr_operator=b_v, e_obs=e_obs, c_obs=c_obs, psi=psi_0
+        driving_field_destr_operator=b_pi, e_obs=e_obs, c_obs=c_obs, psi=psi_0
     )
     qt.qsave(out_0, "./cache/out_0")
     out_1 = run_sim(
-        driving_field_destr_operator=b_v, e_obs=e_obs, c_obs=c_obs, psi=psi_1
+        driving_field_destr_operator=b_pi, e_obs=e_obs, c_obs=c_obs, psi=psi_1
     )
     qt.qsave(out_1, "./cache/out_1")
 else:
-    out_0 = qt.qload("./cache/out_0")
-    out_1 = qt.qload("./cache/out_1")
-    # out_0 = qt.qload("./cache/out_0_pi")
-    # out_1 = qt.qload("./cache/out_1_pi")
+    out_0 = qt.qload("./cache/far_detuned/out_0")
+    out_1 = qt.qload("./cache/far_detuned/out_1")
 
 # ----------------------------------
 
@@ -210,20 +200,14 @@ plot_photon_number_and_population(tlist, out_0, out_1)
 
 # ----------------------------------
 # Field
-def compute_output_field(
-    input_field: np.ndarray, results: qt.Result, cavity_mode: Literal["a_pi", "a_v"]
-) -> np.ndarray:
-    out = input_field + np.sqrt(2 * Kappa_oc) * np.array(results.e_data[cavity_mode])
+def compute_output_field(input_field: np.ndarray, results: qt.Result) -> np.ndarray:
+    out = input_field + np.sqrt(2 * Kappa_oc) * np.array(results.e_data["a_pi"])
     return out
 
 
 field_in: np.ndarray = input_shape(tlist, args)
-field_out_0 = compute_output_field(
-    input_field=field_in, results=out_0, cavity_mode="a_v"
-)
-field_out_1 = compute_output_field(
-    input_field=field_in, results=out_1, cavity_mode="a_v"
-)
+field_out_0 = compute_output_field(input_field=field_in, results=out_0)
+field_out_1 = compute_output_field(input_field=field_in, results=out_1)
 
 plt.figure()
 plt.title("Field amplitudes vs Time")
@@ -237,65 +221,21 @@ plt.plot(
 )
 plt.plot(tlist, np.imag(field_out_1), linestyle=":", label=r"$Im(out_{\pi,|1\rangle})$")
 plt.legend()
-plt.show()
-#
+
 ampl_in = sum(np.nan_to_num(abs(field_in)) ** 2)
 ampl_0 = sum(np.nan_to_num(abs(field_out_0)) ** 2)
 ampl_1 = sum(np.nan_to_num(abs(field_out_1)) ** 2)
-norm_0 = ampl_0 / ampl_in
-norm_1 = ampl_1 / ampl_in
+# print(f"Reflection amplitude for |0> is: {ampl_0}")
+print(f"Reflection amplitude for |0> is: {ampl_0 / ampl_in}")
+print(f"Reflection phase for |0> is: {np.mean(np.angle(field_out_0 / field_in))}")
+# print(
+#     f"Reflection phase for |0> is: {np.exp(1j * np.mean(np.angle(field_out_0 / field_in)))}"
+# )
+print(f"Reflection amplitude for |1> is: {ampl_1 / ampl_in}")
+print(f"Reflection phase for |1> is: {np.mean(np.angle(field_out_1 / field_in))}")
+# print(
+#     f"Reflection phase for |1> is: {np.exp(1j * np.mean(np.angle(field_out_1 / field_in)))}"
+# )
+plt.show()
 
-console = Console()
-
-
-def mini_bar(value, width=20, fill_char="█", empty_char="░"):
-    """
-    Return a small bar string for a normalized value in [0, inf).
-    Values >1 will be capped to 1.0 for the bar (but the numeric label still shows >100%).
-    """
-    # protect against division by zero or NaN
-    try:
-        frac = float(value)
-    except Exception:
-        frac = 0.0
-    capped = max(0.0, min(frac, 1.0))
-    filled = int(round(capped * width))
-    bar = f"{fill_char * filled}{empty_char * (width - filled)}"
-    pct = f"{value:.7f}"
-    # color the fill based on thresholds
-    if value >= 1.0:
-        return f"[bold red]{bar}[/bold red] {pct}"
-    elif value >= 0.8:
-        return f"[bold yellow]{bar}[/bold yellow] {pct}"
-    else:
-        return f"[green]{bar}[/green] {pct}"
-
-
-# Create a rich table
-table = Table(
-    title="[bold cyan]Reflection Analysis Results[/bold cyan]",
-    box=box.ROUNDED,
-    header_style="bold magenta",
-)
-
-table.add_column("Quantity", justify="left", style="cyan", no_wrap=True)
-table.add_column("|0⟩ Value", justify="right", style="red")
-table.add_column("|1⟩ Value", justify="right", style="blue")
-
-# Compute values
-phase_0 = np.mean(np.angle(field_out_0 / field_in))
-phase_1 = np.mean(np.angle(field_out_1 / field_in))
-
-# Add rows to the table
-table.add_row("Input Amplitude", f"{ampl_in:.7f}", f"{ampl_in:.7f}")
-table.add_row("Reflection Amplitude", f"{ampl_0:.7f}", f"{ampl_1:.7f}")
-table.add_row("Normalized Amplitude", mini_bar(norm_0), mini_bar(norm_1))
-table.add_row("Reflection Phase (rad)", f"{phase_0:.7f}", f"{phase_1:.7f}")
-table.add_row(
-    "Normalized Amp × Phase",
-    f"{(ampl_0 / ampl_in * np.exp(-1j * phase_0)):.7f}",
-    f"{(ampl_1 / ampl_in * np.exp(-1j * phase_1)):.7f}",
-)
-
-# Print the table
-console.print(table)
+# print(compute_mode_fidelities(tlist, field_in, field_out_0, field_out_1))

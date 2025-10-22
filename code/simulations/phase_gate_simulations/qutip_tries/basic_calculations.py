@@ -28,7 +28,7 @@ def phase_shift(reflection_coefficient: complex):
 
 
 G0_kc = 2 * np.pi * 0.0386  # 2-1' splitting
-G0_kc *= np.sqrt(30 / 24)
+# G0_kc *= np.sqrt(30 / 24)
 Kappa = 2 * np.pi * 0.058
 Kappa_oc = Kappa * 0.85
 Gamma_5P32_5S = 2 * np.pi * 0.006065 / 2
@@ -38,8 +38,8 @@ Mu_fc = 0.88
 
 # --------------------
 # for atom in 1 and light is π pol: detuning between cav and light is 0 and light and atom is 0 aswell
-Delta_a = 0
-Delta_c = 0
+Delta_a = 2 * np.pi * 0
+Delta_c = 2 * np.pi * 0.5
 
 r_1_pi = reflection_coefficient(
     mu_rf=Mu_rf,
@@ -53,13 +53,14 @@ r_1_pi = reflection_coefficient(
 )
 arg_r_1_pi = phase_shift(r_1_pi)
 
-print(f"Reflection amplitude for |1> is: {r_1_pi}")
+print(f"Reflection amplitude for |1> is: {np.abs(r_1_pi) ** 2}")
 print(f"Reflection phase for |1> is: {arg_r_1_pi}")
-
+C = np.abs(r_1_pi) * np.conj(r_1_pi)
+print(np.real(C))
 
 # # for atom in 0 and light is π pol: detuning between cav and light is 0 and light and atom is 6.835 GHz aswell
-Delta_a = 6.835
-Delta_c = 0
+Delta_a = 2 * np.pi * 6.835
+Delta_c = 2 * np.pi * 0.5
 
 r_0_pi = reflection_coefficient(
     mu_rf=Mu_rf,
@@ -74,5 +75,7 @@ r_0_pi = reflection_coefficient(
 
 arg_r_0_pi = phase_shift(r_0_pi)
 
-print(f"Reflection amplitude for |0> is: {r_0_pi}")
+print(f"Reflection amplitude for |0> is: {np.abs(r_0_pi) ** 2}")
 print(f"Reflection phase for |0> is: {arg_r_0_pi}")
+C = np.abs(r_0_pi) * np.conj(r_0_pi)
+print(np.real(C))

@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from typing import Dict
 from typing import Union, Callable
 
@@ -8,7 +9,14 @@ def input_shape(
 ) -> Union[float, np.ndarray]:
     t0 = args["t0"]
     amp = args["amp"]
-    return amp * np.exp(-((t - t0 / 2) ** 2) / (t0 / 5) ** 2)
+    mu = t0 / 2
+    sigma = t0 * np.sqrt(1 / 50)
+
+    return (
+        amp
+        / np.sqrt(2 * np.pi * sigma**2)
+        * np.exp(-((t - mu) ** 2) / (2 * (sigma) ** 2))
+    )
 
 
 def real_input_shape(t: float, args: Dict[str, float]) -> float:
@@ -30,3 +38,16 @@ def normalized_input_shape(
     area = np.trapezoid(y, t_list)
     y_norm = y / area
     return y_norm
+
+
+if __name__ == "__main__":
+    tlist = np.linspace(0, 100, 1000)
+    args = {"amp": 0.1, "t0": 50, "tau": 70.0, "tau_start": 91.0, "sigma": 1.0}
+    input_field = input_shape(tlist, args)
+    area = np.trapezoid(input_field)
+    print(area)
+    norm_input_field = input_field / area
+    plt.plot(tlist, input_field, label="input")
+    plt.plot(tlist, norm_input_field, label="normalized input")
+    plt.legend()
+    plt.show()
