@@ -2690,35 +2690,58 @@ class AtomAnalysis:
 
             # # 2. Fit the EMG to the histogram
             p0 = [
-                -27,
-                0.182,
-                34.5,
-                60,
-                60 * 0.85,
-                0.99,
-                0.8,
-                3,
-                0.01,
-                0.0,
-            ]  # Initial guesses
+                -27,  # A (normalization, negative guess here to match scaling of data)
+                0.182,  # f_res (MHz offset of resonance)
+                30,  # g (coupling strength, MHz)
+                58,  # kappa (total cavity decay rate, MHz)
+                58 * 0.85,  # kappa_oc (outcoupling, ~85% of total kappa)
+                0.882,  # MM_rf (close to ideal)
+                0.882,  # MM_fc (80% coupling in)
+                3.0333,  # gamma (free space decay rate, MHz)
+                0.01,  # offset (background level)
+                0.0,  # a (slope term for detuning-dependent broadening)
+            ]
+
             bounds = (
-                [-50, 0.01, 30, 55.4, 55.4 * 0.8, 0.95, 0.7, 2.9, 0.01, -0.00001],
-                [-20, 0.3, 40, 65, 65, 1, 0.9, 3.3, 0.03, 0.00001],
+                [
+                    -np.inf,
+                    0.01,
+                    10,
+                    58,
+                    49,
+                    0.881,
+                    0.881,
+                    3.0318,
+                    -np.inf,
+                    -np.inf,
+                ],
+                [
+                    np.inf,
+                    0.3,
+                    100,
+                    59,
+                    50,
+                    0.883,
+                    0.883,
+                    3.0354,
+                    np.inf,
+                    np.inf,
+                ],
             )  # Avoid zero/negative sigma/lambda
-            # popt, pcov = curve_fit(
-            #     R_coupled, freq_NMS, list_SDmean[0], p0=p0, bounds=bounds
-            # )
+            popt, pcov = curve_fit(
+                R_coupled, freq_NMS, list_SDmean[0], p0=p0, bounds=bounds
+            )
 
             plt.rcParams.update({"font.size": 14})
             phfig = plt.figure(figsize=[12, 8])
             phfig.suptitle(
                 filename + "\n Memory Spectroscopy with KC @ +500MHz detuning"
-                # "\n g: %.1f MHz "
-                # "\n kappa/kappa_oc: %.1f MHz/%.1f MHz "
-                # "\n MM_fr: %.3f"
-                # "\n MM_fc: %.3f"
-                # "\n gamma: %.1f MHz "
-                # % (popt[2], popt[3], popt[4], popt[5], popt[6], popt[7])
+                "\n g: %.1f MHz "
+                "\n kappa/kappa_oc: %.1f MHz/%.1f MHz "
+                "\n MM_fr: %.3f"
+                "\n MM_fc: %.3f"
+                "\n gamma: %.1f MHz "
+                % (popt[2], popt[3], popt[4], popt[5], popt[6], popt[7])
             )
             ax = phfig.add_subplot(1, 1, 1)
             ax.errorbar(
@@ -2729,14 +2752,14 @@ class AtomAnalysis:
                 marker="o",
                 label="Measurement data",
             )
-            # ax.plot(
-            #     freq_NMS,
-            #     R_coupled(freq_NMS, *popt),
-            #     label="Model fit",
-            #     color="red",
-            #     linewidth=3,
-            #     linestyle="-.",
-            # )
+            ax.plot(
+                freq_NMS,
+                R_coupled(freq_NMS, *popt),
+                label="Model fit",
+                color="red",
+                linewidth=3,
+                linestyle="-.",
+            )
             ax.set_ylabel("Reflection (a.u.)")
             ax.legend()
             # ax.plot(model_time, emg(model_time, 0.0297, 36, 8.9,0.038), label='lmu photon simulated', color='green', linewidth = 3, linestyle = '--')
@@ -2744,7 +2767,7 @@ class AtomAnalysis:
 
             ax.set_xlabel("Frequency (MHz)")
             plt.tight_layout()
-            # plt.show()
+            plt.show()
             phfig.savefig(f"pictures/{filename}_reflection_spectrum.jpg")
 
         #
