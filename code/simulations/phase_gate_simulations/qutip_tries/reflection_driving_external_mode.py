@@ -5,6 +5,7 @@ import qutip as qt
 from helpers.input_shapes import input_shape
 from helpers.plotting import plot_photon_number_and_population
 from helpers.fidelity_calculations import compute_mode_fidelities
+from helpers.printing import mini_bar
 from rich.console import Console
 from rich.table import Table
 from rich import box
@@ -14,13 +15,14 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
 rerun_sim = True
-rerun_sim = False
+# rerun_sim = False
 
 # --- minimal parameters (use your actual numbers) ---
 G0_kc = 2 * np.pi * 0.0386  # 2-1' splitting
 # G0_kc *= np.sqrt(30 / 24)
-Kappa = 2 * np.pi * 0.063
-Kappa_oc = 2 * np.pi * 0.054 * 2
+Kappa = 2 * np.pi * 0.058
+Kappa_oc = 2 * np.pi * 0.049
+Kappa_internal = Kappa - Kappa_oc
 Gamma_5P32_5S = 2 * np.pi * 0.006065 / 2
 
 Delta = 0
@@ -67,6 +69,29 @@ psi_bad_2 = qt.tensor(
     qt.fock(Photon_dimensions, 0),
     atom_bad_2,
 )
+psi_out_ideal_0 = qt.tensor(
+    -qt.fock(External_Photon_modes, 0),
+    qt.fock(External_Photon_modes, 0),
+    qt.fock(Photon_dimensions, 0),
+    qt.fock(Photon_dimensions, 0),
+    atom_0,
+)
+psi_out_ideal_test = qt.tensor(
+    qt.fock(External_Photon_modes, 0),
+    qt.fock(External_Photon_modes, 0),
+    qt.fock(Photon_dimensions, 0),
+    qt.fock(Photon_dimensions, 0),
+    atom_0,
+)
+
+psi_out_ideal_1 = qt.tensor(
+    qt.fock(External_Photon_modes, 0),
+    qt.fock(External_Photon_modes, 0),
+    qt.fock(Photon_dimensions, 0),
+    qt.fock(Photon_dimensions, 0),
+    atom_1,
+)
+
 
 b_pi = qt.tensor(
     qt.destroy(External_Photon_modes),
@@ -155,7 +180,7 @@ def run_sim(
         * (driving_field_destr_operator.dag() - driving_field_destr_operator)
     )
 
-    H = [H_0 + H_int_pi + H_int_v + H_couple_pi + H_couple_v, [H_drive, input_shape]]
+    H = [H_0 + H_int_pi + H_couple_pi, [H_drive, input_shape]]
     out = qt.mesolve(
         H,
         psi,
@@ -176,24 +201,26 @@ e_obs = {
     "n_cav_v": a_v.dag() * a_v,
     "a_pi": a_pi,
     "a_v": a_v,
+    "b_pi": b_pi,
+    "b_v": b_v,
 }
 
 c_obs = [
-    np.sqrt(2 * Kappa) * a_pi,
-    np.sqrt(2 * Kappa) * a_v,
+    np.sqrt(2 * Kappa_internal) * a_pi,
+    # np.sqrt(2 * Kappa_internal) * a_v,
     np.sqrt(2 * Kappa_oc) * b_pi,
-    np.sqrt(2 * Kappa_oc) * b_v,
-    np.sqrt(2 * Gamma_5P32_5S) * sigma_bad_1,
-    np.sqrt(2 * Gamma_5P32_5S) * sigma_bad_2,
+    # np.sqrt(2 * Kappa_oc) * b_v,
+    np.sqrt(2 * Gamma_5P32_5S * 1 / 8) * sigma_bad_1,
+    # np.sqrt(2 * Gamma_5P32_5S * 1 / 8) * sigma_bad_2,
 ]
 
 if rerun_sim:
     out_0 = run_sim(
-        driving_field_destr_operator=b_v, e_obs=e_obs, c_obs=c_obs, psi=psi_0
+        driving_field_destr_operator=b_pi, e_obs=e_obs, c_obs=c_obs, psi=psi_0
     )
     qt.qsave(out_0, "./cache/out_0")
     out_1 = run_sim(
-        driving_field_destr_operator=b_v, e_obs=e_obs, c_obs=c_obs, psi=psi_1
+        driving_field_destr_operator=b_pi, e_obs=e_obs, c_obs=c_obs, psi=psi_1
     )
     qt.qsave(out_1, "./cache/out_1")
 else:
@@ -219,10 +246,10 @@ def compute_output_field(
 
 field_in: np.ndarray = input_shape(tlist, args)
 field_out_0 = compute_output_field(
-    input_field=field_in, results=out_0, cavity_mode="a_v"
+    input_field=field_in, results=out_0, cavity_mode="a_pi"
 )
 field_out_1 = compute_output_field(
-    input_field=field_in, results=out_1, cavity_mode="a_v"
+    input_field=field_in, results=out_1, cavity_mode="a_pi"
 )
 
 plt.figure()
@@ -247,30 +274,6 @@ norm_1 = ampl_1 / ampl_in
 
 console = Console()
 
-
-def mini_bar(value, width=20, fill_char="█", empty_char="░"):
-    """
-    Return a small bar string for a normalized value in [0, inf).
-    Values >1 will be capped to 1.0 for the bar (but the numeric label still shows >100%).
-    """
-    # protect against division by zero or NaN
-    try:
-        frac = float(value)
-    except Exception:
-        frac = 0.0
-    capped = max(0.0, min(frac, 1.0))
-    filled = int(round(capped * width))
-    bar = f"{fill_char * filled}{empty_char * (width - filled)}"
-    pct = f"{value:.7f}"
-    # color the fill based on thresholds
-    if value >= 1.0:
-        return f"[bold red]{bar}[/bold red] {pct}"
-    elif value >= 0.8:
-        return f"[bold yellow]{bar}[/bold yellow] {pct}"
-    else:
-        return f"[green]{bar}[/green] {pct}"
-
-
 # Create a rich table
 table = Table(
     title="[bold cyan]Reflection Analysis Results[/bold cyan]",
@@ -293,8 +296,8 @@ table.add_row("Normalized Amplitude", mini_bar(norm_0), mini_bar(norm_1))
 table.add_row("Reflection Phase (rad)", f"{phase_0:.7f}", f"{phase_1:.7f}")
 table.add_row(
     "Normalized Amp × Phase",
-    f"{(ampl_0 / ampl_in * np.exp(-1j * phase_0)):.7f}",
-    f"{(ampl_1 / ampl_in * np.exp(-1j * phase_1)):.7f}",
+    f"{(ampl_0 / ampl_in * np.real(np.exp(-1j * phase_0))):.7f}",
+    f"{(ampl_1 / ampl_in * np.real(np.exp(-1j * phase_1))):.7f}",
 )
 
 # Print the table
