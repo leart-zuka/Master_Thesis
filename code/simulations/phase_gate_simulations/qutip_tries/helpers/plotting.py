@@ -1,7 +1,9 @@
+from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
 import qutip as qt
 import matplotlib.pyplot as plt
 from typing import Callable, Dict, Any
+from helpers.generic_computations import normalize_matrix
 
 
 def plot_qswitch_dynamics(
@@ -143,4 +145,120 @@ def plot_photon_number_and_population(
     ax3.set_ylabel("Population")
 
     plt.tight_layout()
+    plt.show()
+
+
+def styled_3d_bar(
+    ax,
+    mat,
+    labels,
+    cmap=LinearSegmentedColormap.from_list("my_list", ["white", "green"]),
+    vmax=None,
+):
+    """
+    Draw styled 3D bars on the given Axes3D `ax` based on `mat` (2D array).
+    """
+    mat = np.array(mat, dtype=float)
+    n_rows, n_cols = mat.shape
+    _x, _y = np.meshgrid(np.arange(n_cols), np.arange(n_rows))
+    x = _x.ravel()
+    y = _y.ravel()
+    z = np.zeros_like(x)
+    dz = mat.ravel()
+
+    dx = dy = 0.8  # bar footprint
+
+    # Choose colors: use a single-blue colormap but make zeros fully transparent
+    if vmax is None:
+        vmax = max(dz.max(), 1e-9)
+    norm = plt.Normalize(0, vmax)
+    cmap_obj = plt.get_cmap(cmap)
+    colors = []
+    for val in dz:
+        if val <= 0:
+            colors.append((1, 1, 1, 0.0))  # fully transparent
+        else:
+            rgba = cmap_obj(norm(val))
+            # slightly darken edges: use same rgba but we will draw edges in black
+            colors.append(rgba)
+
+    # Draw bars: use edgecolor black for visibility and alpha from colormap
+    ax.bar3d(
+        x,
+        y,
+        z,
+        dx,
+        dy,
+        dz,
+        color=colors,
+        edgecolor="gray",
+        linewidth=0.6,
+        shade=True,
+        zsort="average",
+        alpha=0.7,
+    )
+
+    # Style the base grid and panes to look clean
+    ax.xaxis.pane.fill = False
+    ax.yaxis.pane.fill = False
+    # ax.zaxis.pane.fill = False
+    ax.xaxis.pane.set_edgecolor("white")
+    ax.yaxis.pane.set_edgecolor("white")
+    # ax.zaxis.pane.set_edgecolor("white")
+
+    # Ticks and labels
+    ax.set_xticks(np.arange(n_cols) + dx / 2.0)
+    ax.set_yticks(np.arange(n_rows) + dy / 2.0)
+    ax.set_xticklabels(labels, rotation=40, ha="right", fontsize=9)
+    ax.set_yticklabels(labels, fontsize=9)
+    ax.set_xlabel("Input", labelpad=15)
+    ax.set_ylabel("Output", labelpad=15)
+    ax.set_zlabel("Amplitude (a.u.)", labelpad=6)
+
+    # Add numeric labels above nonzero bars (format to 2 decimals or 3 if small)
+    for xi, yi, zi in zip(x, y, dz):
+        if zi > 0:
+            zpos = zi + vmax * 0.03
+            label = f"{zi:.2f}" if zi >= 0.01 else f"{zi:.3f}"
+            ax.text(
+                xi + dx / 2.0,
+                yi + dy / 2.0,
+                zpos,
+                label,
+                ha="center",
+                va="bottom",
+                fontsize=9,
+                color="black",
+                weight="bold",
+            )
+
+    # Set limits and view
+    ax.set_zlim(0, vmax * 1.15)
+    # ax.view_init(elev=20, azim=45)
+
+
+def plot_raw_and_normalized_styled(matrix, labels, title, normalized_matrix=None):
+    """
+    Create a vertically stacked figure: raw matrix on top, row-normalized below.
+    """
+    matrix = np.array(matrix, dtype=float)
+    n = matrix.shape[0]
+
+    if normalized_matrix is None:
+        normalized_matrix = normalize_matrix(matrix)
+
+    # Prepare figure
+    fig = plt.figure(figsize=(6.5, 10))
+    ax1 = fig.add_subplot(211, projection="3d")
+    ax2 = fig.add_subplot(212, projection="3d")
+
+    # vmax = max(matrix.max(), normalized.max(), 1e-9)
+
+    styled_3d_bar(ax1, matrix, labels)
+    ax1.set_title(title, pad=10, fontsize=12)
+
+    styled_3d_bar(ax2, normalized_matrix, labels, vmax=1.0)  # normalized -> vmax=1
+    ax2.set_title(f"{title} - Normalized", pad=10, fontsize=12)
+
+    # plt.tight_layout()
     plt.show()
