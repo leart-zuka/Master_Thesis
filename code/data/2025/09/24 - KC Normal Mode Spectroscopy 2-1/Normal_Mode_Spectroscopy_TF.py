@@ -936,16 +936,18 @@ class AtomAnalysis:
             R_coupled, freq_NMS, list_SDmean[0], p0=p0, bounds=bounds, maxfev=10000
         )
 
+        print(popt)
+        pcov = np.sqrt(np.diag(pcov))
         plt.rcParams.update({"font.size": 14})
         phfig = plt.figure(figsize=[12, 8])
         phfig.suptitle(
             filename + "\n Memory Spectroscopy with KC @ +500MHz detuning"
-            "\n g: %.1f MHz "
-            "\n kappa/kappa_oc: %.1f MHz/%.1f MHz "
+            "\n g: %.1f MHz +/- %.1f MHz"
+            "\n kappa/kappa_oc: %.1f MHz +/- %.1f MHz /%.1f MHz "
             "\n MM_fr: %.3f"
             "\n MM_fc: %.3f"
             "\n gamma: %.1f MHz "
-            % (popt[2], popt[3], popt[4], popt[5], popt[6], popt[7])
+            % (popt[2], pcov[2], popt[3], pcov[3], popt[4], popt[5], popt[6], popt[7])
         )
         ax = phfig.add_subplot(1, 1, 1)
         ax.errorbar(
@@ -970,6 +972,10 @@ class AtomAnalysis:
         plt.tight_layout()
         plt.show()
         phfig.savefig(f"{path}/{filename}_reflection_spectrum.jpg")
+        with open("data_from_fit.csv", "w") as file:
+            file.write("x,y\n")
+            for i in range(len(freq_NMS)):
+                file.write(f"{freq_NMS[i]},{R_coupled(freq_NMS[i], *popt)}\n")
 
 
 if __name__ == "__main__":

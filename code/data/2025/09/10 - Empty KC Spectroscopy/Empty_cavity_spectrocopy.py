@@ -194,9 +194,9 @@ def dataFit_cavityRF(freqs, rCav, fitMax, fitMin, ModeSplit):
     fitrange = fitMax - fitMin
 
     # Parameters for the cavity locked fit pset(label,start,lowerLimit,upperLimit, fittingBoolean)
-    pset("MM_rf", 0.99, 0, 1, False)  # arbitrary amplitude
-    pset("MM_fc", 0.8, 0, 0.95, True)  # cavity resonance frequency
-    pset("k_oc", 115 / 2 * 0.85, 0, 70, False)  # total cavity decay rate
+    pset("MM_rf", 0.99, 0, 1, True)  # arbitrary amplitude
+    pset("MM_fc", 0.882, 0.85, 0.95, True)  # cavity resonance frequency
+    pset("k_oc", 116 / 2 * 0.85, 0, 70, False)  # total cavity decay rate
     pset("freqC", 0, -10, +10, True)  # cavity resonance frequency
     # pset("freqC", fitCenter-ModeSplit/2, fitCenter-ModeSplit/2-0.05, fitCenter-ModeSplit/2+0.05, True)  # cavity resonance frequency
     pset("k", 115 / 2, 0, 70, False)  # total cavity decay rate
@@ -331,6 +331,8 @@ plt.show()
 list_linewidth = []
 list_splitting = []
 list_MM_fc = []
+list_MM_fc_phi = []
+list_MM_fr = []
 splitting_flag = True
 if splitting_flag == True:
     list_conversion1 = []
@@ -397,6 +399,8 @@ if splitting_flag == True:
                 zorder=2,
             )
             list_MM_fc.append(fit_emptyCavityR.best_values["MM_fc"])
+            list_MM_fc_phi.append(fit_emptyCavityR.best_values["phi_fc"])
+            list_MM_fr.append(fit_emptyCavityR.best_values["MM_rf"])
 
         ax1.plot((dfFit["Freq"] - fitC) / conversion * 600, dfFit["Ampl"])
         modCavT = lmfit.Model(transmission_cavity_mod)
@@ -448,10 +452,25 @@ ax1.set_title(
 
 # print(list_linewidth)
 mean_MM_fc = np.average(list_MM_fc)
+mean_MM_fc_phi = np.average(list_MM_fc_phi)
+mean_MM_fr = np.average(list_MM_fr)
 std_of_mean_MM_fc = np.std(list_MM_fc) / np.sqrt(len(list_MM_fc))
+std_of_mean_MM_fc_phi = np.std(list_MM_fc_phi) / np.sqrt(len(list_MM_fc_phi))
+std_of_mean_MM_fr = np.std(list_MM_fr) / np.sqrt(len(list_MM_fr))
+print(mean_MM_fc, std_of_mean_MM_fc)
 print(
-    "Mode matiching fiber-cavity = %.2f(%.f) MHz"
+    "Mode matiching fiber-cavity = %.3f(%.f) MHz"
     % (mean_MM_fc, std_of_mean_MM_fc * 1000)
+)
+
+print(
+    "Angle Mode matiching fiber-cavity = %.3f(%.f) MHz"
+    % (mean_MM_fc_phi, std_of_mean_MM_fc_phi * 1000)
+)
+
+print(
+    "Mode matiching fiber-reflected light = %.3f(%.f) MHz"
+    % (mean_MM_fr, std_of_mean_MM_fr * 1000)
 )
 # print(std_of_mean_linewidth)
 # print(np.std(list_linewidth))

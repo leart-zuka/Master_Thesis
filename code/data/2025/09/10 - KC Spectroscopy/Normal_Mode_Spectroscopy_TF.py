@@ -2731,6 +2731,7 @@ class AtomAnalysis:
             popt, pcov = curve_fit(
                 R_coupled, freq_NMS, list_SDmean[0], p0=p0, bounds=bounds
             )
+            print(popt)
 
             plt.rcParams.update({"font.size": 14})
             phfig = plt.figure(figsize=[12, 8])
@@ -2762,13 +2763,15 @@ class AtomAnalysis:
             )
             ax.set_ylabel("Reflection (a.u.)")
             ax.legend()
-            # ax.plot(model_time, emg(model_time, 0.0297, 36, 8.9,0.038), label='lmu photon simulated', color='green', linewidth = 3, linestyle = '--')
-            # ax.plot(freq_NMS,R_coupled(freq_NMS,-27,0.142,35,62,62*0.85,0.95,0.81,3,0.015, +0.0), linewidth=3, linestyle="--")
 
             ax.set_xlabel("Frequency (MHz)")
             plt.tight_layout()
             plt.show()
             phfig.savefig(f"pictures/{filename}_reflection_spectrum.jpg")
+            with open("data_from_fit.csv", "w") as file:
+                file.write("x,y\n")
+                for i in range(len(freq_NMS)):
+                    file.write(f"{freq_NMS[i]},{R_coupled(freq_NMS[i], *popt)}\n")
 
         #
         # if self.dataSave:
