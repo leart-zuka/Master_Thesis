@@ -1,4 +1,6 @@
 from rich.console import Console
+from rich.panel import Panel
+from rich.text import Text
 from rich.table import Table
 from rich import box
 
@@ -56,11 +58,11 @@ def fmt_phase(x: float) -> str:
     return f"[{color}]{x:.3f}[/{color}]"
 
 
-def print_data(basis, results):
+def print_data(title, basis, results):
     console = Console()
 
     table = Table(
-        title="[bold cyan]Reflection Coefficient — Summary[/bold cyan]",
+        title=f"[bold cyan]Reflection Coefficient — Summary for {title}[/bold cyan]",
         box=box.ROUNDED,
         header_style="bold magenta",
         border_style="bright_black",
@@ -78,9 +80,26 @@ def print_data(basis, results):
     table.add_row(
         "Reflection coefficient (r)", *[fmt_complex(results[c]["r"]) for c in cols]
     )
-    table.add_row("Magnitude |r|", *[fmt_mag(results[c]["|r|"]) for c in cols])
+    # table.add_row("Magnitude |r|", *[fmt_mag(results[c]["|r|"]) for c in cols])
     table.add_row(
-        "Power |r|² aka coefficient", *[fmt_power(results[c]["|r|^2"]) for c in cols]
+        "Reflectivity R=|r|² ", *[fmt_power(results[c]["|r|^2"]) for c in cols]
     )
     table.add_row("Phase (rad)", *[fmt_phase(results[c]["phase_rad"]) for c in cols])
     console.print(table)
+
+
+def display_fidelity(fidelity: float, title: str = "CNOT Fidelity"):
+    """
+    Nicely display a process fidelity value with Rich and emojis.
+
+    Args:
+        fidelity (float): The process fidelity to display.
+        title (str, optional): Title of the panel. Defaults to "Quantum Gate Metrics".
+    """
+    console = Console()
+    fidelity_text = Text.assemble(
+        ("✨ Process Fidelity: ", "bold magenta"),
+        (f"{fidelity:.4f} ", "bold green"),
+        "🎉✅",
+    )
+    console.print(Panel(fidelity_text, title=title, border_style="cyan"))

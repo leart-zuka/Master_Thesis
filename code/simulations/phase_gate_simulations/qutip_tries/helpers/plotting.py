@@ -237,28 +237,53 @@ def styled_3d_bar(
     # ax.view_init(elev=20, azim=45)
 
 
-def plot_raw_and_normalized_styled(matrix, labels, title, normalized_matrix=None):
+def plot_two_matrices_styled_grid(
+    mat_left,
+    mat_right,
+    labels_left,
+    labels_right,
+    title_left,
+    title_right,
+    norm_left=None,
+    norm_right=None,
+    title_figure=None,
+):
     """
-    Create a vertically stacked figure: raw matrix on top, row-normalized below.
+    Plot two matrices (and their normalized versions) in a 2x2 grid.
+    Left column = first matrix (raw + normalized)
+    Right column = second matrix (raw + normalized)
     """
-    matrix = np.array(matrix, dtype=float)
-    n = matrix.shape[0]
+    # Auto-normalize if not provided
+    if norm_left is None:
+        norm_left = normalize_matrix(mat_left)
+    if norm_right is None:
+        norm_right = normalize_matrix(mat_right)
 
-    if normalized_matrix is None:
-        normalized_matrix = normalize_matrix(matrix)
+    # Create figure and axes (2x2)
+    fig = plt.figure(figsize=(11, 8))
+    axs = [
+        fig.add_subplot(2, 2, 1, projection="3d"),
+        fig.add_subplot(2, 2, 3, projection="3d"),
+        fig.add_subplot(2, 2, 2, projection="3d"),
+        fig.add_subplot(2, 2, 4, projection="3d"),
+    ]
 
-    # Prepare figure
-    fig = plt.figure(figsize=(6.5, 10))
-    ax1 = fig.add_subplot(211, projection="3d")
-    ax2 = fig.add_subplot(212, projection="3d")
+    # --- Left column: C-PHASE ---
+    styled_3d_bar(axs[0], mat_left, labels_left)
+    axs[0].set_title(title_left, pad=10, fontsize=12)
 
-    # vmax = max(matrix.max(), normalized.max(), 1e-9)
+    styled_3d_bar(axs[1], norm_left, labels_left, vmax=1.0)
+    axs[1].set_title(f"{title_left} - Normalized", pad=10, fontsize=12)
 
-    styled_3d_bar(ax1, matrix, labels)
-    ax1.set_title(title, pad=10, fontsize=12)
+    # --- Right column: CNOT ---
+    styled_3d_bar(axs[2], mat_right, labels_right)
+    axs[2].set_title(title_right, pad=10, fontsize=12)
 
-    styled_3d_bar(ax2, normalized_matrix, labels, vmax=1.0)  # normalized -> vmax=1
-    ax2.set_title(f"{title} - Normalized", pad=10, fontsize=12)
+    styled_3d_bar(axs[3], norm_right, labels_right, vmax=1.0)
+    axs[3].set_title(f"{title_right} - Normalized", pad=10, fontsize=12)
 
+    # Adjust layout
+    if title_figure is not None:
+        plt.suptitle(title_figure, fontsize=16, y=0.98)
     # plt.tight_layout()
     plt.show()
