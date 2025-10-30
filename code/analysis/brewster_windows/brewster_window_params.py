@@ -61,7 +61,6 @@ n_brewster = calculate_refraction_index(wavelength)
 print(f"Refractive Index of Brewster Window: {n_brewster:.6f}")
 n_air = 1.0003
 
-# n_brewster = 1.4537
 brewster_angle = calculate_brewster_angle(n_brewster, n_air)
 brewster_angle_degree = np.degrees(brewster_angle)
 
