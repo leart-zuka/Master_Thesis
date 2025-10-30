@@ -29,11 +29,39 @@ def mini_bar(value, width=20, fill_char="█", empty_char="░"):
 
 
 # Helper for nicer formatting
-def fmt_complex(z: complex) -> str:
-    """Format complex numbers cleanly with color-coded sign."""
+def fmt_complex(z: complex, err=None) -> str:
+    """
+    Format complex numbers cleanly with color-coded sign.
+    Optionally include an error (err) which may be a real scalar or a complex.
+    Examples:
+      - fmt_complex(1+0.2j) -> "1.0000 + 0.2000i"
+      - fmt_complex(1+0.2j, 0.01) -> "1.0000 + 0.2000i ± 0.0100"
+      - fmt_complex(1+0.2j, 0.005+0.002j) -> "1.0000 + 0.2000i ± (0.0050 + 0.0020i)"
+    """
+    if z is None:
+        return "-"
     re, im = z.real, z.imag
     sign = "+" if im >= 0 else "-"
-    return f"[yellow]{re:.4f}[/yellow] [bright_black]{sign}[/bright_black] [cyan]{abs(im):.4f}i[/cyan]"
+    main = f"[yellow]{re:.4f}[/yellow] [bright_black]{sign}[/bright_black] [cyan]{abs(im):.4f}i[/cyan]"
+
+    if err is None:
+        return main
+
+    # Try to detect complex-like error (has real and imag) first
+    try:
+        if isinstance(err, complex) or (hasattr(err, "real") and hasattr(err, "imag")):
+            e = complex(err)
+            e_re, e_im = e.real, e.imag
+            e_sign = "+" if e_im >= 0 else "-"
+            err_str = f"[yellow]{e_re:.4f}[/yellow] [bright_black]{e_sign}[/bright_black] [cyan]{abs(e_im):.4f}i[/cyan]"
+            return f"{main} ± ({err_str})"
+        else:
+            # treat as scalar
+            e_val = float(err)
+            return f"{main} ± [bright_black]{e_val:.4f}[/bright_black]"
+    except Exception:
+        # fallback: just str() the error
+        return f"{main} ± {err}"
 
 
 def fmt_mag(x: float) -> str:
@@ -52,10 +80,12 @@ def fmt_power(x: float) -> str:
     return f"[bright_blue]{x:.3}[/bright_blue]"
 
 
-def fmt_phase(x: float) -> str:
+def fmt_phase(x: float, err=None) -> str:
     """Color by phase sign."""
     color = "cyan" if x >= 0 else "magenta"
-    return f"[{color}]{x:.3f}[/{color}]"
+    if err is None:
+        return f"[{color}]{x:.3f}[/{color}]"
+    return f"[{color}]{x:.3f}[/{color}] ± [{color}]{err:.3f}[/{color}]"
 
 
 def print_data(title, basis, results):
@@ -78,13 +108,19 @@ def print_data(title, basis, results):
 
     # Add rows
     table.add_row(
-        "Reflection coefficient (r)", *[fmt_complex(results[c]["r"]) for c in cols]
+        "Reflection coefficient (r)",
+        *[fmt_complex(results[c]["r"], results[c]["dr"]) for c in cols],
     )
-    # table.add_row("Magnitude |r|", *[fmt_mag(results[c]["|r|"]) for c in cols])
     table.add_row(
         "Reflectivity R=|r|² ", *[fmt_power(results[c]["|r|^2"]) for c in cols]
     )
-    table.add_row("Phase (rad)", *[fmt_phase(results[c]["phase_rad"]) for c in cols])
+    table.add_row(
+        "Phase (rad)",
+        *[
+            fmt_phase(results[c]["phase_rad"], results[c]["phase_rad_err"])
+            for c in cols
+        ],
+    )
     console.print(table)
 
 

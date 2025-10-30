@@ -3,6 +3,10 @@ from typing import Dict, Literal
 from rich.console import Console
 from rich.table import Table
 
+from helpers.compute_reflection_parameters import (
+    params_type,
+)
+
 
 def reflection_coefficient(
     mu_rf: float,
@@ -91,6 +95,35 @@ def dr_d_mu_phi(mu_rf, mu_fc, mu_fc_phi, kappa, kappa_oc, d_w_r, d_w_a, gamma, g
     return mu_rf - 1j * C * A / D
 
 
+def compute_reflection_amplitude_error(
+    params_dir: params_type, params_dir_err: params_type, d_w_a: float, d_w_r: float
+):
+    reflection_params = {
+        "mu_rf": params_dir["mu_rf"],
+        "mu_fc": params_dir["mu_fc"],
+        "mu_fc_phi": params_dir["mu_fc_phi"],
+        "kappa": params_dir["kappa"],
+        "kappa_oc": params_dir["kappa_oc"],
+        "d_w_r": d_w_r,
+        "d_w_a": d_w_a,
+        "gamma": params_dir["gamma"],
+        "g": params_dir["g"],
+    }
+    delta_r_w = np.sqrt(
+        (np.abs(dr_d_mu_rf(**reflection_params)) * params_dir_err["mu_rf"]) ** 2
+        + ((np.abs(dr_d_mu_fc(**reflection_params)) * params_dir_err["mu_fc"]) ** 2)
+        + (
+            (np.abs(dr_d_mu_phi(**reflection_params)) * params_dir_err["mu_fc_phi"])
+            ** 2
+        )
+        + (np.abs(dr_d_kappa_oc(**reflection_params)) * params_dir_err["kappa_oc"]) ** 2
+        + (np.abs(dr_d_gamma(**reflection_params)) * params_dir_err["gamma"]) ** 2
+        + (np.abs(dr_d_kappa(**reflection_params)) * params_dir_err["kappa"]) ** 2
+        + (np.abs(dr_d_g(**reflection_params)) * params_dir_err["g"]) ** 2
+    )
+    return delta_r_w
+
+
 if __name__ == "__main__":
     basis: Dict[
         Literal["|0,pi>", "|1,pi>", "|0,V>", "|1,V>"],
@@ -114,21 +147,26 @@ if __name__ == "__main__":
         },
     }
 
-    g = 2 * np.pi * 0.0386  # 2-1' splitting
-    g_sigma = 2 * np.pi * 0.004
-    kappa = 2 * np.pi * 0.058
-    kappa_sigma = 2 * np.pi * 0.00037 / 2
-    kappa_oc = kappa * 0.85
-    kappa_oc_sigma = kappa_sigma * 0.085
-    gamma = 2 * np.pi * 0.006065
-    gamma_sigma = 2 * np.pi * 0.000018
-    coopoerativity = g**2 / (2 * kappa * gamma)
-    mu_rf = 0.978
-    mu_rf_sigma = 0.006
-    mu_fc = 0.873
-    mu_fc_sigma = 0.002
-    mu_fc_phi = 0.024
-    mu_fc_phi_sigma = 0.0001
+    params_dir: params_type = {
+        "g": 2 * np.pi * 0.0386,
+        "kappa": 2 * np.pi * 0.058,
+        "kappa_oc": 2 * np.pi * 0.058 * 0.85,
+        "gamma": 2 * np.pi * 0.006065,
+        "mu_rf": 0.978,
+        "mu_fc": 0.873,
+        "mu_fc_phi": 0.024,
+    }
+
+    # Errors
+    params_err_dir: params_type = {
+        "g": 2 * np.pi * 0.004,
+        "kappa": 2 * np.pi * 0.00037 / 2,
+        "kappa_oc": 2 * np.pi * 0.00037 / 2 * 0.85,
+        "gamma": 2 * np.pi * 0.000018,
+        "mu_rf": 0.006,
+        "mu_fc": 0.002,
+        "mu_fc_phi": 0.001,
+    }
 
     console = Console()
     table = Table(
@@ -141,33 +179,28 @@ if __name__ == "__main__":
     table.add_column("Δa (Uncertainty)", justify="right")
 
     for state, detunings in basis.items():
-        params = [
-            mu_rf,
-            mu_fc,
-            mu_fc_phi,
-            kappa,
-            kappa_oc,
-            detunings["Delta c"],
-            detunings["Delta a"],
-            gamma,
-            g,
-        ]
+        reflection_params = {
+            "mu_rf": params_dir["mu_rf"],
+            "mu_fc": params_dir["mu_fc"],
+            "mu_fc_phi": params_dir["mu_fc_phi"],
+            "kappa": params_dir["kappa"],
+            "kappa_oc": params_dir["kappa_oc"],
+            "d_w_r": detunings["Delta c"],
+            "d_w_a": detunings["Delta a"],
+            "gamma": params_dir["gamma"],
+            "g": params_dir["g"],
+        }
 
         # Main value
-        a = reflection_coefficient(*params)
+        a = reflection_coefficient(**reflection_params)
 
         # Error propagation
-        delta_a = np.sqrt(
-            (np.abs(dr_d_mu_rf(*params)) * mu_rf_sigma) ** 2
-            + ((np.abs(dr_d_mu_fc(*params)) * mu_fc_sigma) ** 2)
-            + ((np.abs(dr_d_mu_phi(*params)) * mu_fc_phi_sigma) ** 2)
-            + (np.abs(dr_d_kappa_oc(*params)) * kappa_oc_sigma) ** 2
-            + (np.abs(dr_d_gamma(*params)) * gamma_sigma) ** 2
-            + (np.abs(dr_d_kappa(*params)) * kappa_sigma) ** 2
-            + (np.abs(dr_d_g(*params)) * g_sigma) ** 2
+        d_a = compute_reflection_amplitude_error(
+            params_dir, params_err_dir, detunings["Delta a"], detunings["Delta c"]
         )
+
         a_str = f"{a.real:.5g} + {a.imag:.5g}j"
-        da_str = f"{np.abs(delta_a):.5g}"
+        da_str = f"{np.abs(d_a):.5g}"
 
         table.add_row(str(state), a_str, da_str)
 

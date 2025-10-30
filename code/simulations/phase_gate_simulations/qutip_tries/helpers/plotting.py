@@ -2,8 +2,18 @@ from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
 import qutip as qt
 import matplotlib.pyplot as plt
-from typing import Callable, Dict, Any
+from typing import Callable, Dict, Any, Literal
+from helpers.printing import print_data
 from helpers.generic_computations import normalize_matrix
+from helpers.compute_reflection_parameters import (
+    compute_params,
+    params_type,
+    phase_shift,
+)
+from helpers.error_computation import (
+    compute_reflection_amplitude_error,
+)
+from rich import print
 
 
 def plot_qswitch_dynamics(
@@ -154,6 +164,8 @@ def styled_3d_bar(
     labels,
     cmap=LinearSegmentedColormap.from_list("my_list", ["white", "green"]),
     vmax=None,
+    errors=None,
+    cap_width=0.3,
 ):
     """
     Draw styled 3D bars on the given Axes3D `ax` based on `mat` (2D array).
@@ -197,6 +209,33 @@ def styled_3d_bar(
         zsort="average",
         alpha=0.7,
     )
+    if errors is not None:
+        errors = np.array(errors, dtype=float).ravel()
+        half_cap = cap_width / 2.0
+
+        for xi, yi, zi, err in zip(x, y, dz, errors):
+            if err > 0:
+                top_z = zi
+                err_low = max(top_z - err, 0)
+                err_high = top_z + err
+
+                # Vertical line
+                ax.plot(
+                    [xi + dx / 2.0] * 2,
+                    [yi + dy / 2.0] * 2,
+                    [err_low, err_high],
+                    color="black",
+                    linewidth=1.2,
+                )
+
+                # Optional cap (horizontal marker)
+                ax.plot(
+                    [xi + dx / 2.0 - half_cap, xi + dx / 2.0 + half_cap],
+                    [yi + dy / 2.0, yi + dy / 2.0],
+                    [err_high, err_high],
+                    color="black",
+                    linewidth=1.2,
+                )
 
     # Style the base grid and panes to look clean
     ax.xaxis.pane.fill = False
@@ -216,10 +255,25 @@ def styled_3d_bar(
     ax.set_zlabel("Amplitude (a.u.)", labelpad=6)
 
     # Add numeric labels above nonzero bars (format to 2 decimals or 3 if small)
-    for xi, yi, zi in zip(x, y, dz):
+    if errors is not None:
+        err_arr = np.array(errors, dtype=float).ravel()
+    else:
+        err_arr = np.zeros_like(dz)
+
+    for xi, yi, zi, err in zip(x, y, dz, err_arr):
         if zi > 0:
-            zpos = zi + vmax * 0.03
-            label = f"{zi:.2f}" if zi >= 0.01 else f"{zi:.3f}"
+            zpos = zi + vmax * 0.05  # slightly higher to avoid cap overlap
+
+            # smart rounding
+            fmt = "{:.2f}" if zi >= 0.01 else "{:.3f}"
+            val_str = fmt.format(zi)
+            err_str = fmt.format(err)
+
+            if err > 0:
+                label = f"{val_str} ± {err_str}"
+            else:
+                label = val_str
+
             ax.text(
                 xi + dx / 2.0,
                 yi + dy / 2.0,
@@ -230,9 +284,7 @@ def styled_3d_bar(
                 fontsize=9,
                 color="black",
                 weight="bold",
-            )
-
-    # Set limits and view
+            )  # Set limits and view
     ax.set_zlim(0, vmax * 1.15)
     # ax.view_init(elev=20, azim=45)
 
@@ -244,8 +296,8 @@ def plot_two_matrices_styled_grid(
     labels_right,
     title_left,
     title_right,
-    norm_left=None,
-    norm_right=None,
+    err_left: np.ndarray | None = None,
+    err_right: np.ndarray | None = None,
     title_figure=None,
 ):
     """
@@ -254,10 +306,8 @@ def plot_two_matrices_styled_grid(
     Right column = second matrix (raw + normalized)
     """
     # Auto-normalize if not provided
-    if norm_left is None:
-        norm_left = normalize_matrix(mat_left)
-    if norm_right is None:
-        norm_right = normalize_matrix(mat_right)
+    norm_left = normalize_matrix(mat_left)
+    norm_right = normalize_matrix(mat_right)
 
     # Create figure and axes (2x2)
     fig = plt.figure(figsize=(11, 8))
@@ -269,10 +319,16 @@ def plot_two_matrices_styled_grid(
     ]
 
     # --- Left column: C-PHASE ---
-    styled_3d_bar(axs[0], mat_left, labels_left)
+    if err_left is not None:
+        styled_3d_bar(axs[0], mat_left, labels_left, errors=err_left)
+    else:
+        styled_3d_bar(axs[0], mat_left, labels_left)
     axs[0].set_title(title_left, pad=10, fontsize=12)
 
-    styled_3d_bar(axs[1], norm_left, labels_left, vmax=1.0)
+    if err_right is not None:
+        styled_3d_bar(axs[1], norm_left, labels_left, errors=err_right, vmax=1.0)
+    else:
+        styled_3d_bar(axs[1], norm_left, labels_left, vmax=1.0)
     axs[1].set_title(f"{title_left} - Normalized", pad=10, fontsize=12)
 
     # --- Right column: CNOT ---
@@ -287,3 +343,172 @@ def plot_two_matrices_styled_grid(
         plt.suptitle(title_figure, fontsize=16, y=0.98)
     # plt.tight_layout()
     plt.show()
+    return norm_left, norm_right
+
+
+def plot_cphase_and_cnot(
+    basis: Dict[
+        Literal["|0,pi>", "|1,pi>", "|0,V>", "|1,V>"],
+        Dict[Literal["Delta a", "Delta c"], float],
+    ],
+    title: str,
+    params_dir: params_type,
+    params_dir_err: params_type,
+    attenuate_light: bool = False,
+):
+    results = {}
+
+    for label, detunings in basis.items():
+        reflection_params = {
+            "mu_rf": params_dir["mu_rf"],
+            "mu_fc": params_dir["mu_fc"],
+            "mu_fc_phi": params_dir["mu_fc_phi"],
+            "kappa": params_dir["kappa"],
+            "kappa_oc": params_dir["kappa_oc"],
+            "d_w_r": detunings["Delta c"],
+            "d_w_a": detunings["Delta a"],
+            "gamma": params_dir["gamma"],
+            "g": params_dir["g"],
+        }
+        reflection_amplitude, phase = compute_params(**reflection_params)
+        reflection_amplitude_err = compute_reflection_amplitude_error(
+            params_dir, params_dir_err, detunings["Delta a"], detunings["Delta c"]
+        )
+        reflection_phase_err = phase_shift(reflection_amplitude_err)
+        power = np.abs(reflection_amplitude) ** 2
+        results[label] = {
+            "r": reflection_amplitude,
+            "dr": reflection_amplitude_err,
+            "|r|^2": power,
+            "phase_rad": phase,
+            "phase_deg": np.degrees(phase),
+            "phase_rad_err": reflection_phase_err,
+            "phase_deg_err": np.degrees(reflection_phase_err),
+        }
+    if attenuate_light:
+        r_0_pi = results["|0,pi>"]["|r|^2"]
+        r_1_pi = results["|1,pi>"]["|r|^2"]
+        r_0_V = results["|0,V>"]["|r|^2"]
+        r_1_V = results["|1,V>"]["|r|^2"]
+
+        avg_pi = (r_0_pi + r_1_pi) / 2
+        avg_v = (r_0_V + r_1_V) / 2
+        reduction_v_polarization = avg_pi / avg_v
+
+        results["|0,V>"]["r"] *= np.sqrt(reduction_v_polarization)
+        results["|1,V>"]["r"] *= np.sqrt(reduction_v_polarization)
+        results["|0,V>"]["dr"] *= np.sqrt(reduction_v_polarization)
+        results["|1,V>"]["dr"] *= np.sqrt(reduction_v_polarization)
+        results["|0,V>"]["|r|^2"] *= reduction_v_polarization
+        results["|1,V>"]["|r|^2"] *= reduction_v_polarization
+
+    c_0_pi = results["|0,pi>"]["r"]
+    c_1_pi = results["|1,pi>"]["r"]
+    c_0_V = results["|0,V>"]["r"]
+    c_1_V = results["|1,V>"]["r"]
+
+    d_0_pi = results["|0,pi>"]["dr"]
+    d_1_pi = results["|1,pi>"]["dr"]
+    d_0_V = results["|0,V>"]["dr"]
+    d_1_V = results["|1,V>"]["dr"]
+
+    r_0_pi = results["|0,pi>"]["|r|^2"]
+    r_1_pi = results["|1,pi>"]["|r|^2"]
+    r_0_V = results["|0,V>"]["|r|^2"]
+    r_1_V = results["|1,V>"]["|r|^2"]
+
+    dr_0_pi = np.abs(d_0_pi) ** 2
+    dr_1_pi = np.abs(d_1_pi) ** 2
+    dr_0_V = np.abs(d_0_V) ** 2
+    dr_1_V = np.abs(d_1_V) ** 2
+
+    print_data(title, basis, results)
+
+    input_matrix = np.array(
+        [
+            [r_0_pi, 0.0, 0.0, 0.0],
+            [0.0, r_1_pi, 0.0, 0.0],
+            [0.0, 0.0, r_0_V, 0.0],
+            [0.0, 0.0, 0.0, r_1_V],
+        ]
+    )
+    input_matrix_err = np.array(
+        [
+            [dr_0_pi, 0.0, 0.0, 0.0],
+            [0.0, dr_1_pi, 0.0, 0.0],
+            [0.0, 0.0, dr_0_V, 0.0],
+            [0.0, 0.0, 0.0, dr_1_V],
+        ]
+    )
+    cnot_matrix = np.array(
+        [
+            [
+                np.abs((c_1_pi + c_1_V) / 2) ** 2,
+                np.abs((-c_1_pi + c_1_V) / 2) ** 2,
+                0,
+                0,
+            ],
+            [
+                np.abs((-c_1_pi + c_1_V) / 2) ** 2,
+                np.abs((c_1_pi + c_1_V) / 2) ** 2,
+                0,
+                0,
+            ],
+            [
+                0,
+                0,
+                np.abs((+c_0_pi + c_0_V) / 2) ** 2,
+                np.abs((-c_0_pi + c_0_V) / 2) ** 2,
+            ],
+            [
+                0,
+                0,
+                np.abs((-c_0_pi + c_0_V) / 2) ** 2,
+                np.abs((+c_0_pi + c_0_V) / 2) ** 2,
+            ],
+        ]
+    )
+    cnot_matrix_err = np.array(
+        [
+            [
+                np.abs((d_1_pi + d_1_V) / 2) ** 2,
+                np.abs((-d_1_pi + d_1_V) / 2) ** 2,
+                0,
+                0,
+            ],
+            [
+                np.abs((-d_1_pi + d_1_V) / 2) ** 2,
+                np.abs((d_1_pi + d_1_V) / 2) ** 2,
+                0,
+                0,
+            ],
+            [
+                0,
+                0,
+                np.abs((+d_0_pi + d_0_V) / 2) ** 2,
+                np.abs((-d_0_pi + d_0_V) / 2) ** 2,
+            ],
+            [
+                0,
+                0,
+                np.abs((-d_0_pi + d_0_V) / 2) ** 2,
+                np.abs((+d_0_pi + d_0_V) / 2) ** 2,
+            ],
+        ]
+    )
+
+    c_phase_labels = ["|0,π⟩", "|1,π⟩", "|0,V⟩", "|1,V⟩"]
+    cnot_labels = ["|1,+⟩", "|1,-⟩", "|0,+⟩", "|0,-⟩"]
+
+    normalized_cphase, normalized_cnot = plot_two_matrices_styled_grid(
+        mat_left=input_matrix,
+        err_left=input_matrix_err,
+        labels_left=c_phase_labels,
+        title_left="Reflection Intensity (C-PHASE)",
+        mat_right=cnot_matrix,
+        err_right=cnot_matrix_err,
+        labels_right=cnot_labels,
+        title_right="Population Probability (CNOT)",
+        title_figure=title,
+    )
+    return normalized_cphase, normalized_cnot
