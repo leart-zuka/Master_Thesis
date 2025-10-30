@@ -899,8 +899,8 @@ class AtomAnalysis:
             30,  # g (coupling strength, MHz)
             58,  # kappa (total cavity decay rate, MHz)
             58 * 0.85,  # kappa_oc (outcoupling, ~85% of total kappa)
-            0.882,  # MM_rf (close to ideal)
-            0.882,  # MM_fc (80% coupling in)
+            0.978,  # MM_rf (close to ideal)
+            0.873,  # MM_fc (80% coupling in)
             3.0333,  # gamma (free space decay rate, MHz)
             0.01,  # offset (background level)
             0.0,  # a (slope term for detuning-dependent broadening)
@@ -913,8 +913,8 @@ class AtomAnalysis:
                 10,
                 58,
                 49,
-                0.881,
-                0.881,
+                0.972,
+                0.871,
                 3.0318,
                 -np.inf,
                 -np.inf,
@@ -925,8 +925,8 @@ class AtomAnalysis:
                 50,
                 59,
                 50,
-                0.883,
-                0.883,
+                0.984,
+                0.875,
                 3.0354,
                 np.inf,
                 np.inf,
