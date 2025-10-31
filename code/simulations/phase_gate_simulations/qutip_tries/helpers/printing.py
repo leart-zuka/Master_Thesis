@@ -124,18 +124,31 @@ def print_data(title, basis, results):
     console.print(table)
 
 
-def display_fidelity(fidelity: float, title: str = "CNOT Fidelity"):
+def display_fidelity(
+    fidelity: float,
+    error: float | None = None,
+    title: str = "CNOT Fidelity",
+):
     """
-    Nicely display a process fidelity value with Rich and emojis.
+    Nicely display a process fidelity value with Rich and emojis in the format:
+    value ± error
 
     Args:
-        fidelity (float): The process fidelity to display.
-        title (str, optional): Title of the panel. Defaults to "Quantum Gate Metrics".
+        fidelity (float): The process fidelity value.
+        error (float, optional): Statistical error for the fidelity.
+        title (str, optional): Title for the displayed panel.
     """
     console = Console()
+
+    if error is not None:
+        text_str = f"{fidelity:.4f} ± {error:.4f}"
+        emoji = "📏✨"
+    else:
+        text_str = f"{fidelity:.4f}"
+        emoji = "🎉✅"
+
     fidelity_text = Text.assemble(
-        ("✨ Process Fidelity: ", "bold magenta"),
-        (f"{fidelity:.4f} ", "bold green"),
-        "🎉✅",
+        ("Process Fidelity: ", "bold magenta"), (text_str + " ", "bold green"), emoji
     )
+
     console.print(Panel(fidelity_text, title=title, border_style="cyan"))

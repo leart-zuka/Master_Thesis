@@ -41,10 +41,10 @@ def normalized_input_shape(
 
 
 if __name__ == "__main__":
-    tlist = np.linspace(0, 100, 1000)
-    args = {"amp": 0.1, "t0": 50, "tau": 70.0, "tau_start": 91.0, "sigma": 1.0}
+    tlist = np.linspace(0, 10000, 1000)
+    args = {"amp": 1, "t0": 10000, "tau": 70.0, "tau_start": 91.0, "sigma": 1.0}
     input_field = input_shape(tlist, args)
-    area = np.trapezoid(input_field)
+    area = np.trapezoid(input_field, tlist)
     print(area)
     norm_input_field = input_field / area
     plt.plot(tlist, input_field, label="input")

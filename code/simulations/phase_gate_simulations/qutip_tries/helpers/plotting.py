@@ -270,7 +270,7 @@ def styled_3d_bar(
             err_str = fmt.format(err)
 
             if err > 0:
-                label = f"{val_str} ± {err_str}"
+                label = f"{val_str} \n± {err_str}"
             else:
                 label = val_str
 
@@ -299,6 +299,7 @@ def plot_two_matrices_styled_grid(
     err_left: np.ndarray | None = None,
     err_right: np.ndarray | None = None,
     title_figure=None,
+    save_fig: bool = False,
 ):
     """
     Plot two matrices (and their normalized versions) in a 2x2 grid.
@@ -323,25 +324,26 @@ def plot_two_matrices_styled_grid(
         styled_3d_bar(axs[0], mat_left, labels_left, errors=err_left)
     else:
         styled_3d_bar(axs[0], mat_left, labels_left)
-    axs[0].set_title(title_left, pad=10, fontsize=12)
+    axs[0].set_title(title_left, pad=0, fontsize=12)
 
     if err_right is not None:
         styled_3d_bar(axs[1], norm_left, labels_left, errors=err_right, vmax=1.0)
     else:
         styled_3d_bar(axs[1], norm_left, labels_left, vmax=1.0)
-    axs[1].set_title(f"{title_left} - Normalized", pad=10, fontsize=12)
+    axs[1].set_title(f"{title_left} - PS", pad=0, fontsize=12)
 
     # --- Right column: CNOT ---
     styled_3d_bar(axs[2], mat_right, labels_right)
-    axs[2].set_title(title_right, pad=10, fontsize=12)
+    axs[2].set_title(title_right, pad=0, fontsize=12)
 
     styled_3d_bar(axs[3], norm_right, labels_right, vmax=1.0)
-    axs[3].set_title(f"{title_right} - Normalized", pad=10, fontsize=12)
+    axs[3].set_title(f"{title_right} - PS", pad=0, fontsize=12)
 
     # Adjust layout
     if title_figure is not None:
-        plt.suptitle(title_figure, fontsize=16, y=0.98)
-    # plt.tight_layout()
+        plt.suptitle(f"Truth table for {title_figure}", fontsize=16, y=0.98)
+    if save_fig:
+        plt.savefig(f"{title_figure}.svg", dpi=300, pad_inches=0.08)
     plt.show()
     return norm_left, norm_right
 
@@ -355,6 +357,7 @@ def plot_cphase_and_cnot(
     params_dir: params_type,
     params_dir_err: params_type,
     attenuate_light: bool = False,
+    save_fig: bool = False,
 ):
     results = {}
 
@@ -394,6 +397,7 @@ def plot_cphase_and_cnot(
         avg_pi = (r_0_pi + r_1_pi) / 2
         avg_v = (r_0_V + r_1_V) / 2
         reduction_v_polarization = avg_pi / avg_v
+        reduction_v_polarization = 0.4466
 
         results["|0,V>"]["r"] *= np.sqrt(reduction_v_polarization)
         results["|1,V>"]["r"] *= np.sqrt(reduction_v_polarization)
@@ -504,11 +508,12 @@ def plot_cphase_and_cnot(
         mat_left=input_matrix,
         err_left=input_matrix_err,
         labels_left=c_phase_labels,
-        title_left="Reflection Intensity (C-PHASE)",
+        title_left="C-PHASE basis",
         mat_right=cnot_matrix,
         err_right=cnot_matrix_err,
         labels_right=cnot_labels,
-        title_right="Population Probability (CNOT)",
+        title_right="CNOT basis",
         title_figure=title,
+        save_fig=save_fig,
     )
-    return normalized_cphase, normalized_cnot
+    return normalized_cphase, normalized_cnot, cnot_matrix_err

@@ -148,7 +148,7 @@ if __name__ == "__main__":
     }
 
     params_dir: params_type = {
-        "g": 2 * np.pi * 0.0386,
+        "g": 2 * np.pi * 0.0353,
         "kappa": 2 * np.pi * 0.058,
         "kappa_oc": 2 * np.pi * 0.058 * 0.85,
         "gamma": 2 * np.pi * 0.006065,
@@ -159,7 +159,7 @@ if __name__ == "__main__":
 
     # Errors
     params_err_dir: params_type = {
-        "g": 2 * np.pi * 0.004,
+        "g": 2 * np.pi * 0.0036,
         "kappa": 2 * np.pi * 0.00037 / 2,
         "kappa_oc": 2 * np.pi * 0.00037 / 2 * 0.85,
         "gamma": 2 * np.pi * 0.000018,
