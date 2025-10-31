@@ -476,7 +476,9 @@ print(
 # print(np.std(list_linewidth))
 ax2.set_title(
     "KC reflection \n"
-    + "Mode matching fiber-cavity: %.3f(%.f)" % (mean_MM_fc, std_of_mean_MM_fc * 1000)
+    + "Mode matching fiber-cavity: %.3f(%.f)\n" % (mean_MM_fc, std_of_mean_MM_fc * 1000)
+    + "Mode matching fiber-reflected light: %.3f(%.f)"
+    % (mean_MM_fr, std_of_mean_MM_fr * 1000)
 )
 ax2.set_ylim(0, 1.1)
 plt.tight_layout()
@@ -492,5 +494,5 @@ Mu_fc = 0.88
 print(
     f"Phase shift for |0>: {np.arctan2(0, (Kappa * Gamma_5P32_5S**2 * (Kappa - 2 * Kappa_oc)))}"
 )
-
+plt.savefig("Normal_mode_spectroscopy.svg")
 plt.show()

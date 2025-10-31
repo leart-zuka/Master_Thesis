@@ -942,7 +942,7 @@ class AtomAnalysis:
         phfig = plt.figure(figsize=[12, 8])
         phfig.suptitle(
             filename + "\n Memory Spectroscopy with KC @ +500MHz detuning"
-            "\n g: %.1f MHz +/- %.1f MHz"
+            "\n $\\mathbf{g:\\ %.1f\\ MHz\\ \\pm\\ %.1f\\ MHz}$"
             "\n kappa/kappa_oc: %.1f MHz +/- %.1f MHz /%.1f MHz "
             "\n MM_fr: %.3f"
             "\n MM_fc: %.3f"
@@ -970,7 +970,7 @@ class AtomAnalysis:
         ax.legend()
         ax.set_xlabel("Frequency (MHz)")
         plt.tight_layout()
-        plt.show()
+        # plt.show()
         phfig.savefig(f"{path}/{filename}_reflection_spectrum.jpg")
         with open("data_from_fit.csv", "w") as file:
             file.write("x,y\n")
