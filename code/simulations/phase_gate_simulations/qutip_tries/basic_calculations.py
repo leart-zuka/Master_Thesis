@@ -8,7 +8,6 @@ from helpers.compute_reflection_parameters import (
 )
 
 attenuate_light = True
-attenuate_light = False
 
 basis: Dict[
     Literal["|0,pi>", "|1,pi>", "|0,V>", "|1,V>"],
@@ -54,22 +53,17 @@ params_err_dir: params_type = {
     "mu_fc_phi": 0.001,
 }
 
-if attenuate_light:
-    theoretical_c_phase, theoretical_cnot, theoretical_cnot_err = plot_cphase_and_cnot(
-        basis,
-        "2-1' Transition",
-        params_dir,
-        params_err_dir,
-        attenuate_light,
-        save_fig=True,
-    )
-else:
-    theoretical_c_phase, theoretical_cnot, theoretical_cnot_err = plot_cphase_and_cnot(
-        basis, "2-1' Transition", params_dir, params_err_dir, save_fig=True
-    )
+gate_matrices = plot_cphase_and_cnot(
+    basis,
+    "2-1' Transition",
+    params_dir,
+    params_err_dir,
+    attenuate_light,
+    save_fig=True,
+)
 
-process_fidelity = compute_process_fidelity(theoretical_cnot)
-process_fidelity_err = compute_process_fidelity(theoretical_cnot_err)
+process_fidelity = compute_process_fidelity(gate_matrices["normalized_cnot"])
+process_fidelity_err = compute_process_fidelity(gate_matrices["normalized_cnot"])
 display_fidelity(process_fidelity, error=process_fidelity_err)
 
 
@@ -94,21 +88,15 @@ params_err_dir: params_type = {
     "mu_fc_phi": 0.001,
 }
 
-if attenuate_light:
-    theoretical_c_phase, theoretical_cnot, theoretical_cnot_err = plot_cphase_and_cnot(
-        basis,
-        "2-2' Transition",
-        params_dir,
-        params_err_dir,
-        attenuate_light,
-        save_fig=True,
-    )
-else:
-    theoretical_c_phase, theoretical_cnot, theoretical_cnot_err = plot_cphase_and_cnot(
-        basis, "2-2' Transition", params_dir, params_err_dir, save_fig=True
-    )
+# theoretical_c_phase, theoretical_cnot, theoretical_cnot_err = plot_cphase_and_cnot(
+#     basis,
+#     "2-2' Transition",
+#     params_dir,
+#     params_err_dir,
+#     attenuate_light,
+#     save_fig=True,
+# )
 
-
-process_fidelity = compute_process_fidelity(theoretical_cnot)
-process_fidelity_err = compute_process_fidelity(theoretical_cnot_err)
-display_fidelity(process_fidelity, process_fidelity_err)
+# process_fidelity = compute_process_fidelity(theoretical_cnot)
+# process_fidelity_err = compute_process_fidelity(theoretical_cnot_err)
+# display_fidelity(process_fidelity, process_fidelity_err)

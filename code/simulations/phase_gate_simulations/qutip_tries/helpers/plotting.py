@@ -2,7 +2,7 @@ from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
 import qutip as qt
 import matplotlib.pyplot as plt
-from typing import Callable, Dict, Any, Literal
+from typing import Callable, Dict, Any, Literal, TypedDict
 from helpers.printing import print_data
 from helpers.generic_computations import normalize_matrix
 from helpers.compute_reflection_parameters import (
@@ -14,6 +14,15 @@ from helpers.error_computation import (
     compute_reflection_amplitude_error,
 )
 from rich import print
+
+
+class GateMatrices(TypedDict):
+    cphase_matrix: Any
+    cphase_matrix_err: Any
+    normalized_cphase: Any
+    cnot_matrix: Any
+    cnot_matrix_err: Any
+    normalized_cnot: Any
 
 
 def plot_qswitch_dynamics(
@@ -358,7 +367,7 @@ def plot_cphase_and_cnot(
     params_dir_err: params_type,
     attenuate_light: bool = False,
     save_fig: bool = False,
-):
+) -> GateMatrices:
     results = {}
 
     for label, detunings in basis.items():
@@ -428,7 +437,7 @@ def plot_cphase_and_cnot(
 
     print_data(title, basis, results)
 
-    input_matrix = np.array(
+    cphase_matrix = np.array(
         [
             [r_0_pi, 0.0, 0.0, 0.0],
             [0.0, r_1_pi, 0.0, 0.0],
@@ -436,7 +445,7 @@ def plot_cphase_and_cnot(
             [0.0, 0.0, 0.0, r_1_V],
         ]
     )
-    input_matrix_err = np.array(
+    cphase_matrix_err = np.array(
         [
             [dr_0_pi, 0.0, 0.0, 0.0],
             [0.0, dr_1_pi, 0.0, 0.0],
@@ -505,8 +514,8 @@ def plot_cphase_and_cnot(
     cnot_labels = ["|1,+⟩", "|1,-⟩", "|0,+⟩", "|0,-⟩"]
 
     normalized_cphase, normalized_cnot = plot_two_matrices_styled_grid(
-        mat_left=input_matrix,
-        err_left=input_matrix_err,
+        mat_left=cphase_matrix,
+        err_left=cphase_matrix_err,
         labels_left=c_phase_labels,
         title_left="C-PHASE basis",
         mat_right=cnot_matrix,
@@ -516,4 +525,12 @@ def plot_cphase_and_cnot(
         title_figure=title,
         save_fig=save_fig,
     )
-    return normalized_cphase, normalized_cnot, cnot_matrix_err
+
+    return {
+        "cphase_matrix": cphase_matrix,
+        "cphase_matrix_err": cphase_matrix_err,
+        "normalized_cphase": normalized_cphase,
+        "cnot_matrix": cnot_matrix,
+        "cnot_matrix_err": cnot_matrix_err,
+        "normalized_cnot": normalized_cnot,
+    }
