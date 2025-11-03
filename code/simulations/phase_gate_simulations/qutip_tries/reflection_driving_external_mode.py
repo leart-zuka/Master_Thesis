@@ -2,10 +2,8 @@ from typing import Literal
 import numpy as np
 import matplotlib.pyplot as plt
 import qutip as qt
-from helpers.input_shapes import input_shape
+from helpers.input_shapes import input_shape, real_input_shape
 from helpers.plotting import plot_photon_number_and_population
-from helpers.fidelity_calculations import compute_mode_fidelities
-from helpers.printing import mini_bar
 from rich.console import Console
 from rich.table import Table
 from rich import box
@@ -15,15 +13,16 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
 rerun_sim = True
-# rerun_sim = False
+rerun_sim = False
 
-# --- minimal parameters (use your actual numbers) ---
-G0_kc = 2 * np.pi * 0.0386  # 2-1' splitting
-# G0_kc *= np.sqrt(30 / 24)
-Kappa = 2 * np.pi * 0.058
-Kappa_oc = 2 * np.pi * 0.049
+# ---------------- params -----------------
+Mu_fr = 0.978
+Mu_fc = 0.873
+G0_kc = 2 * np.pi * 0.0353  # 2-1' splitting
+Kappa = 2 * np.pi * 0.058 * Mu_fc
+Kappa_oc = Kappa * 0.85
 Kappa_internal = Kappa - Kappa_oc
-Gamma_5P32_5S = 2 * np.pi * 0.006065 / 2
+Gamma_5P32_5S = 2 * np.pi * 0.006065
 
 Delta = 0
 
@@ -33,13 +32,13 @@ External_Photon_modes = 2
 
 # time grid (use same spacing you prefer)
 tlist = np.linspace(0.0, 1000, 1000)
-args = {"amp": 1, "t0": 1000, "tau": 70.0, "tau_start": 91.0, "sigma": 1.0}
+args = {"amp": 1.0, "t0": 1000, "tau": 70.0, "tau_start": 91.0, "sigma": 1.0}
 
 atom_0 = qt.basis(Atom_dimensions, 0)
 atom_1 = qt.basis(Atom_dimensions, 1)
 atom_bad_1 = qt.basis(Atom_dimensions, 2)
 atom_bad_2 = qt.basis(Atom_dimensions, 3)
-atom_e = qt.basis(Atom_dimensions, 4)
+atom_e = qt.basis(Atom_dimensions, 2)
 
 psi_0 = qt.tensor(
     qt.fock(External_Photon_modes, 0),
@@ -69,29 +68,6 @@ psi_bad_2 = qt.tensor(
     qt.fock(Photon_dimensions, 0),
     atom_bad_2,
 )
-psi_out_ideal_0 = qt.tensor(
-    -qt.fock(External_Photon_modes, 0),
-    qt.fock(External_Photon_modes, 0),
-    qt.fock(Photon_dimensions, 0),
-    qt.fock(Photon_dimensions, 0),
-    atom_0,
-)
-psi_out_ideal_test = qt.tensor(
-    qt.fock(External_Photon_modes, 0),
-    qt.fock(External_Photon_modes, 0),
-    qt.fock(Photon_dimensions, 0),
-    qt.fock(Photon_dimensions, 0),
-    atom_0,
-)
-
-psi_out_ideal_1 = qt.tensor(
-    qt.fock(External_Photon_modes, 0),
-    qt.fock(External_Photon_modes, 0),
-    qt.fock(Photon_dimensions, 0),
-    qt.fock(Photon_dimensions, 0),
-    atom_1,
-)
-
 
 b_pi = qt.tensor(
     qt.destroy(External_Photon_modes),
@@ -129,6 +105,7 @@ sigma = qt.tensor(
     qt.qeye(Photon_dimensions),
     atom_1 * atom_e.dag(),
 )
+
 sigma_bad_1 = qt.tensor(
     qt.qeye(External_Photon_modes),
     qt.qeye(External_Photon_modes),
@@ -148,18 +125,13 @@ sigma_bad_2 = qt.tensor(
 def run_sim(
     driving_field_destr_operator: qt.Qobj, e_obs, c_obs, psi: qt.Qobj
 ) -> qt.Result:
-    H_0 = (
-        Delta
-        * sigma.dag()
-        * sigma  # detuning for atomic transition away from |1> <-> |e>
-        + Delta * a_pi.dag() * a_pi  # detuning for cavity resonance away from whatever
-        + (Delta + 0.5) * a_v.dag() * a_v  # detuning for V mode of cavity (~ 500 MHz)
-    )
+    H_0 = (Delta + 0.5) * a_v.dag() * a_v  # detuning for V mode of cavity (~ 500 MHz)
     H_int_pi = G0_kc * (a_pi * sigma.dag() + a_pi.dag() * sigma)
-    H_int_v = 0.01 * G0_kc * (a_v * sigma.dag() + a_v.dag() * sigma)
+    H_int_v = 0.1 * G0_kc * (a_v * sigma.dag() + a_v.dag() * sigma)
     H_couple_pi = (
         1j
         * Kappa_oc
+        * Mu_fc
         * (
             driving_field_destr_operator.dag() * a_pi
             - a_pi.dag() * driving_field_destr_operator
@@ -168,7 +140,7 @@ def run_sim(
     H_couple_v = (
         1j
         * Kappa_oc
-        * 0.01
+        * 0.1
         * (
             driving_field_destr_operator.dag() * a_v
             - a_v.dag() * driving_field_destr_operator
@@ -180,7 +152,7 @@ def run_sim(
         * (driving_field_destr_operator.dag() - driving_field_destr_operator)
     )
 
-    H = [H_0 + H_int_pi + H_couple_pi, [H_drive, input_shape]]
+    H = [H_0 + H_int_pi + H_int_v + H_couple_pi + H_couple_v, [H_drive, input_shape]]
     out = qt.mesolve(
         H,
         psi,
@@ -206,12 +178,15 @@ e_obs = {
 }
 
 c_obs = [
-    np.sqrt(2 * Kappa_internal) * a_pi,
-    # np.sqrt(2 * Kappa_internal) * a_v,
+    np.sqrt(Kappa_internal) * a_pi,
+    np.sqrt(Kappa_oc) * a_pi,
+    np.sqrt(Kappa_internal) * a_v,
+    np.sqrt(Kappa_oc) * a_v,
     np.sqrt(2 * Kappa_oc) * b_pi,
-    # np.sqrt(2 * Kappa_oc) * b_v,
-    np.sqrt(2 * Gamma_5P32_5S * 1 / 8) * sigma_bad_1,
-    # np.sqrt(2 * Gamma_5P32_5S * 1 / 8) * sigma_bad_2,
+    np.sqrt(2 * Kappa_oc) * b_v,
+    np.sqrt(2 * Gamma_5P32_5S * 2 / 5) * sigma,
+    np.sqrt(2 * Gamma_5P32_5S * 3 / 10) * sigma_bad_1,
+    np.sqrt(2 * Gamma_5P32_5S * 3 / 10) * sigma_bad_2,
 ]
 
 if rerun_sim:
@@ -231,7 +206,6 @@ else:
 
 # ----------------------------------
 
-
 plot_photon_number_and_population(tlist, out_0, out_1)
 
 
@@ -240,7 +214,9 @@ plot_photon_number_and_population(tlist, out_0, out_1)
 def compute_output_field(
     input_field: np.ndarray, results: qt.Result, cavity_mode: Literal["a_pi", "a_v"]
 ) -> np.ndarray:
-    out = input_field + np.sqrt(2 * Kappa_oc) * np.array(results.e_data[cavity_mode])
+    out = input_field * Mu_fr + np.sqrt(2 * Kappa_oc) * np.array(
+        results.e_data[cavity_mode]
+    )
     return out
 
 
@@ -266,9 +242,9 @@ plt.plot(tlist, np.imag(field_out_1), linestyle=":", label=r"$Im(out_{\pi,|1\ran
 plt.legend()
 plt.show()
 #
-ampl_in = sum(np.nan_to_num(abs(field_in)) ** 2)
-ampl_0 = sum(np.nan_to_num(abs(field_out_0)) ** 2)
-ampl_1 = sum(np.nan_to_num(abs(field_out_1)) ** 2)
+ampl_in = sum(np.nan_to_num(np.abs(field_in)) ** 2) * (tlist[1] - tlist[0])
+ampl_0 = sum(np.nan_to_num(np.abs(field_out_0)) ** 2) * (tlist[1] - tlist[0])
+ampl_1 = sum(np.nan_to_num(np.abs(field_out_1)) ** 2) * (tlist[1] - tlist[0])
 norm_0 = ampl_0 / ampl_in
 norm_1 = ampl_1 / ampl_in
 
@@ -290,15 +266,10 @@ phase_0 = np.mean(np.angle(field_out_0 / field_in))
 phase_1 = np.mean(np.angle(field_out_1 / field_in))
 
 # Add rows to the table
-table.add_row("Input Amplitude", f"{ampl_in:.7f}", f"{ampl_in:.7f}")
-table.add_row("Reflection Amplitude", f"{ampl_0:.7f}", f"{ampl_1:.7f}")
-table.add_row("Normalized Amplitude", mini_bar(norm_0), mini_bar(norm_1))
+table.add_row("Input Amplitude |a_in|²", f"{ampl_in:.7f}", f"{ampl_in:.7f}")
+table.add_row("Reflection Amplitude |a|²", f"{ampl_0:.7f}", f"{ampl_1:.7f}")
+table.add_row("Normalized Amplitude |a|²/|a_in|²", f"{norm_0:.7f}", f"{norm_1:.7f}")
 table.add_row("Reflection Phase (rad)", f"{phase_0:.7f}", f"{phase_1:.7f}")
-table.add_row(
-    "Normalized Amp × Phase",
-    f"{(ampl_0 / ampl_in * np.real(np.exp(-1j * phase_0))):.7f}",
-    f"{(ampl_1 / ampl_in * np.real(np.exp(-1j * phase_1))):.7f}",
-)
 
 # Print the table
 console.print(table)
