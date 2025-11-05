@@ -308,6 +308,7 @@ def plot_two_matrices_styled_grid(
     err_left: np.ndarray | None = None,
     err_right: np.ndarray | None = None,
     title_figure=None,
+    show_fig: bool = False,
     save_fig: bool = False,
 ):
     """
@@ -353,7 +354,8 @@ def plot_two_matrices_styled_grid(
         plt.suptitle(f"Truth table for {title_figure}", fontsize=16, y=0.98)
     if save_fig:
         plt.savefig(f"{title_figure}.svg", dpi=300, pad_inches=0.08)
-    plt.show()
+    if show_fig:
+        plt.show()
     return norm_left, norm_right
 
 
@@ -366,6 +368,8 @@ def plot_cphase_and_cnot(
     params_dir: params_type,
     params_dir_err: params_type,
     attenuate_light: bool = False,
+    special_attenuation: float | None = None,
+    show_fig: bool = True,
     save_fig: bool = False,
 ) -> GateMatrices:
     results = {}
@@ -403,10 +407,12 @@ def plot_cphase_and_cnot(
         r_0_V = results["|0,V>"]["|r|^2"]
         r_1_V = results["|1,V>"]["|r|^2"]
 
-        avg_pi = (r_0_pi + r_1_pi) / 2
-        avg_v = (r_0_V + r_1_V) / 2
-        reduction_v_polarization = avg_pi / avg_v
-        reduction_v_polarization = 0.4466
+        if special_attenuation:
+            reduction_v_polarization = special_attenuation
+        else:
+            avg_pi = (r_0_pi + r_1_pi) / 2
+            avg_v = (r_0_V + r_1_V) / 2
+            reduction_v_polarization = avg_pi / avg_v
 
         results["|0,V>"]["r"] *= np.sqrt(reduction_v_polarization)
         results["|1,V>"]["r"] *= np.sqrt(reduction_v_polarization)
@@ -513,18 +519,23 @@ def plot_cphase_and_cnot(
     c_phase_labels = ["|0,π⟩", "|1,π⟩", "|0,V⟩", "|1,V⟩"]
     cnot_labels = ["|1,+⟩", "|1,-⟩", "|0,+⟩", "|0,-⟩"]
 
-    normalized_cphase, normalized_cnot = plot_two_matrices_styled_grid(
-        mat_left=cphase_matrix,
-        err_left=cphase_matrix_err,
-        labels_left=c_phase_labels,
-        title_left="C-PHASE basis",
-        mat_right=cnot_matrix,
-        err_right=cnot_matrix_err,
-        labels_right=cnot_labels,
-        title_right="CNOT basis",
-        title_figure=title,
-        save_fig=save_fig,
-    )
+    if show_fig:
+        normalized_cphase, normalized_cnot = plot_two_matrices_styled_grid(
+            mat_left=cphase_matrix,
+            err_left=cphase_matrix_err,
+            labels_left=c_phase_labels,
+            title_left="C-PHASE basis",
+            mat_right=cnot_matrix,
+            err_right=cnot_matrix_err,
+            labels_right=cnot_labels,
+            title_right="CNOT basis",
+            title_figure=title,
+            show_fig=show_fig,
+            save_fig=save_fig,
+        )
+    else:
+        normalized_cphase = normalize_matrix(cphase_matrix)
+        normalized_cnot = normalize_matrix(cnot_matrix)
 
     return {
         "cphase_matrix": cphase_matrix,
