@@ -1,0 +1,263 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import qutip as qt
+from rich import print
+
+
+g = 24.0  # MHz
+DetC = 0  # MHz - cavity detuning
+k = 58.0  # MHz - cavity decay rate
+kr = k * 0.85  # MHz
+km = k * 0.125  # MHz
+kt = k * 0.025  # MHz
+DetA = 0  # MHz
+gamma = 3  # MHz
+sh = 6  # Size of the Hilbert space
+mmFC_ = 0.873 * np.exp(-1j * 0.024)  # mode matching
+mmFR_ = 0.978 * np.exp(-1j * 0.0)  # mode matching
+fA = 0  # atomic resonance frequency
+fC = 0  # cavity resonance frequency
+fS = 3.7  # MHz, sdev cavity shaking
+p_atomnoise = 3.3e-2  # atom detects photon altough there was no photon
+p_darkcount = 0.56e-6 * 600  # µs * Hz
+nu_SPD = 0.5  # SPD efficiency
+p0Noise = 0.033
+
+# Dephasing parameters
+angleSD = 0.01
+time = 1  # microseconds
+iterations = 100
+
+C = g**2 / (2 * k * gamma)
+chi = kr * 2 * C / k / (2 * C + 1)
+RyPi2 = (
+    np.cos(np.pi / 2 / 2) * qt.identity(2) - 1j * np.sin(np.pi / 2 / 2) * qt.sigmay()
+)
+
+
+def rMM(N, fP, mmFC, mmFR):
+    return mmFR - mmFC**2 * 2 * kr / (
+        N * g**2 / (1j * (fP - fA) + gamma) + (1j * (fP - fC) + k)
+    )
+
+
+def tMM(N, fP, mmFC):
+    return (
+        mmFC
+        * 2
+        * np.sqrt(kr * kt)
+        * (1j * (fP - fA) + gamma)
+        / (N * g**2 + (1j * (fP - fC) + k) * (1j * (fP - fA) + gamma))
+    )
+
+
+def mMM(N, fP, mmFC):
+    return (
+        mmFC
+        * 2
+        * np.sqrt(kr * km)
+        * (1j * (fP - fA) + gamma)
+        / (N * g**2 + (1j * (fP - fC) + k) * (1j * (fP - fA) + gamma))
+    )
+
+
+def aMM(N, fP, mmFC):
+    return (
+        mmFC
+        * 2
+        * np.sqrt(kr * gamma)
+        * np.sqrt(N)
+        * g
+        / (N * g**2 + (1j * (fP - fC) + k) * (1j * (fP - fA) + gamma))
+    )
+
+
+def rOrth(N, fP, mmFC, mmFR):
+    return (
+        np.sqrt((mmFR - mmFC**2))
+        * mmFC
+        * 2
+        * kr
+        / (N * g**2 / (1j * (fP - fA) + gamma) + (1j * (fP - fC) + k))
+    )
+
+
+# Function that calculates the atomic state
+def NDQDatomMM(alpha, mm_fc, mm_fr, atomic_starting_state: int):
+    # OUTPUTS
+    # atomEndState: state of the atom after the full protocol
+    # photAtomDM = qt.Qobj()
+
+    # for d in cavitydetuningsj
+    detuning = 0
+
+    r = qt.coherent(sh, rMM(atomic_starting_state, detuning, mm_fc, mm_fr) * alpha)
+    t = qt.coherent(sh, tMM(atomic_starting_state, detuning, mm_fc) * alpha)
+    m = qt.coherent(sh, mMM(atomic_starting_state, detuning, mm_fc) * alpha)
+    a = qt.coherent(sh, aMM(atomic_starting_state, detuning, mm_fc) * alpha)
+    rO = qt.coherent(sh, rOrth(atomic_starting_state, detuning, mm_fc, mm_fr) * alpha)
+    # photAtom = (qt.tensor(rUp, tUp, mUp, aUp, qt.ket('1')) + qt.tensor(rDown, tDown, mDown, aDown, qt.ket('0')))
+    photAtom = qt.tensor(r, t, m, a, rO, qt.ket(f"{atomic_starting_state}"))
+    photAtomDM = qt.ket2dm(photAtom)
+
+    # photAtomDM /= len(cavitydetunings)
+    atomAP = photAtomDM.ptrace(5)
+
+    # atomAP = atom_dephasing(atomAP, angleSD, time, iterations)
+
+    # atomEndState = RyPi2 * atomAP * RyPi2.dag()
+    atomEndState = atomAP
+
+    return atomEndState
+
+
+# Function that calculates the photonic state
+def NDQDphotonMM(alpha, mm_fc, mm_fr):
+    # OUTPUTS
+    # rPhotA0DM: reflected photon state after detecting the atom in state 0
+    # rPhotA1DM: reflected photon state after detecting the atom in state 1
+
+    # photA0DM, photA1DM = qt.Qobj(), qt.Qobj()
+    # for d in cavitydetunings:
+    detuning = 0
+
+    r0 = qt.coherent(sh, rMM(0, detuning, mm_fc, mm_fr) * alpha)
+    t0 = qt.coherent(sh, tMM(0, detuning, mm_fc) * alpha)
+    m0 = qt.coherent(sh, mMM(0, detuning, mm_fc) * alpha)
+    a0 = qt.coherent(sh, aMM(0, detuning, mm_fc) * alpha)
+    rOrth0 = qt.coherent(sh, rOrth(0, detuning, mm_fc, mm_fr) * alpha)
+
+    r1 = qt.coherent(sh, rMM(1, detuning, mm_fc, mm_fr) * alpha)
+    t1 = qt.coherent(sh, tMM(1, detuning, mm_fc) * alpha)
+    m1 = qt.coherent(sh, mMM(1, detuning, mm_fc) * alpha)
+    a1 = qt.coherent(sh, aMM(1, detuning, mm_fc) * alpha)
+    rOrth1 = qt.coherent(sh, rOrth(1, detuning, mm_fc, mm_fr) * alpha)
+
+    photon_0 = qt.tensor(r0, t0, m0, a0, rOrth0) / np.sqrt(
+        -2 * np.exp(-2 * chi * abs(mm_fc) ** 2 * alpha**2)
+    )
+    photon_1 = qt.tensor(r1, t1, m1, a1, rOrth1) / np.sqrt(
+        2 * np.exp(-2 * chi * abs(mm_fc) ** 2 * alpha**2)
+    )
+
+    photA0DM = qt.ket2dm(photon_0)
+    photA1DM = qt.ket2dm(photon_1)
+    rPhotA0DM = photA0DM.ptrace(0)
+    rPhotA1DM = photA1DM.ptrace(0)
+    return rPhotA0DM, rPhotA1DM
+
+
+alpha2Array = np.logspace(-2, 0.8, 20)  # array with alpha**2 values
+alphaArray = np.sqrt(alpha2Array)
+p0 = np.zeros(len(alphaArray))
+p1 = np.zeros(len(alphaArray))
+rPhotNumA0 = np.zeros(len(alphaArray))
+rPhotNumA1 = np.zeros(len(alphaArray))
+g2_values_wmm = np.zeros(len(alphaArray))
+g2_values_womm = np.zeros(len(alphaArray))
+efficiency = np.zeros(len(alphaArray))
+efficiency_dc = np.zeros(len(alphaArray))
+
+for i, alpha in enumerate(alphaArray):
+    print(i)
+
+    atom_end_state_0 = NDQDatomMM(alpha, mmFC_, mmFR_, atomic_starting_state=0)
+    p0[i] = abs(qt.bra("0") * atom_end_state_0 * qt.ket("0"))
+
+    atom_end_state_1 = NDQDatomMM(alpha, mmFC_, mmFR_, atomic_starting_state=1)
+    p1[i] = abs(qt.bra("1") * atom_end_state_1 * qt.ket("1"))
+
+    (rPhotA0DM, rPhotA1DM) = NDQDphotonMM(alpha, mmFC_, mmFR_)
+    rPhotNumA0[i] = qt.expect(qt.create(sh) * qt.destroy(sh), rPhotA0DM).real
+    rPhotNumA1[i] = qt.expect(qt.create(sh) * qt.destroy(sh), rPhotA1DM).real
+
+    # -- calculate probability for having >1 and >2 photons in photonic pulse
+    pFockBigger0, pFockBigger1 = 0, 0
+    for fff in range(sh):
+        if fff > 0:
+            pFockBigger0 += abs(rPhotA0DM[fff, fff])
+        if fff > 1:
+            pFockBigger1 += abs(rPhotA0DM[fff, fff])
+
+    g2_nominator = qt.expect(
+        qt.create(sh) * qt.create(sh) * qt.destroy(sh) * qt.destroy(sh), rPhotA0DM
+    )
+
+    g2_denominator = qt.expect(qt.create(sh) * qt.destroy(sh), rPhotA0DM) ** 2
+    g2_ = g2_nominator / g2_denominator  # g2 without dc
+
+    g2_values_wmm[i] = np.real(
+        g2_ * pFockBigger1 + 2 * pFockBigger0 * p_darkcount + p_darkcount**2
+    ) / (pFockBigger1 + 2 * pFockBigger0 * p_darkcount + p_darkcount**2)
+
+
+p0Meas = p0 + (1 - p0) * p0Noise
+rPhotNumMeas = rPhotNumA0 * p0 / p0Meas + rPhotNumA1 * (p0Meas - p0) / p0Meas
+
+
+blueDark = (0, 0.4, 0.7)
+blueLight = (0.5, 0.8, 1)
+orangeDark = (1, 0.6, 0)
+orangeLight = (1, 0.8, 0.0)
+greenDark = (0, 0.6, 0.2)
+greenLight = (0.7, 1, 0.5)
+redDark = (0.9, 0, 0)
+greyLight = (0.7, 0.7, 0.7)
+
+afs = 14  # axis font size
+ils = 11  # inset label size
+
+
+# ------ Main plots ------
+fig1 = plt.figure(1, figsize=(6, 6))
+plt.clf()
+fig1.text(-0.0, 0.97, "a", fontsize=afs, weight="bold")
+fig1.text(-0.0, 0.5, "b", fontsize=afs, weight="bold")
+ax1 = fig1.add_subplot(2, 1, 1)
+
+# plt.plot(alpha2Array, efficiency, color=blueLight, zorder=-1)
+# plt.plot(alpha2Array, efficiency_dc, linestyle="-", color=blueLight, zorder=-1)
+plt.plot(alpha2Array, p0Meas, color=greenLight, zorder=-1)
+print(p0Meas)
+# plt.plot(alpha2Array, p0, color=greenLight, zorder=-1)
+
+plt.ylabel("Detection probability", fontsize=afs)
+ax1.set_ylim(0, 1)
+ax1.axhline(p_atomnoise, linestyle="--", color=greyLight)
+ax1.legend(fontsize=afs - 1, loc=1, handletextpad=-0.2)
+
+
+ax3 = fig1.add_subplot(2, 1, 2)
+plt.plot(alpha2Array, rPhotNumMeas, color=blueLight, zorder=-1)
+plt.plot(alpha2Array, rPhotNumA0, color=blueLight, linestyle="--", zorder=-1)
+# plt.plot(alpha2Array, rPhotNumA1, color=orangeLight, zorder=-1)
+
+
+plt.ylabel(r"$\mathrm{\bar{n}_{oq}(0_a)}$", fontsize=afs)
+plt.xlabel(r"$\mathrm{|\alpha|^2}$", labelpad=-3, fontsize=afs)
+ax3.set_ylim(0, 1.49)
+
+ax1.set_position([0.13, 0.08 + 0.45, 0.86, 0.45])
+ax3.set_position([0.13, 0.08, 0.86, 0.45])
+ax1.tick_params(labelsize=afs - 1, direction="in", top=True, right=True)
+ax1.tick_params(which="minor", direction="in", top=True)
+ax3.tick_params(labelsize=afs - 1, direction="in", top=True, right=True)
+ax3.tick_params(which="minor", direction="in", top=True)
+
+# plt.setp((ax1, ax3, ins), xscale='log', xlim=[0.02,6])
+
+ins = ax3.inset_axes([0.13, 0.55, 0.45, 0.41])
+
+
+ins.plot(alpha2Array, g2_values_wmm, color=orangeLight, zorder=-1)
+# ins.plot(alpha2Array, g2_values_womm, linestyle="--", color=blueLight, zorder=-1)
+ins.set_ylabel(r"$\mathrm{g^{(2)}(0)}$", labelpad=3, fontsize=ils)
+ins.set_xlabel(r"$\mathrm{|\alpha|^2}$", labelpad=-4, fontsize=ils)
+ins.set_ylim(0, 1.4)
+ins.tick_params(labelsize=ils, direction="in", top=True, right=True)
+ins.tick_params(which="minor", direction="in", top=True)
+
+plt.setp((ax1, ax3, ins), xscale="log", xlim=[0.025, 6])
+ins.set_xlim = [0.1, 6]
+# plt.savefig("photonnumber_plot_bs.svg")
+plt.show()
