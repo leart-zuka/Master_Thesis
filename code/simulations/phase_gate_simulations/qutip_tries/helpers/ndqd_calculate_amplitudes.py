@@ -3,7 +3,6 @@ import qutip as qt
 
 
 def get_reflection_amplitudes(
-    sh: int,
     N: int,
     g: float,
     fP: float,
@@ -16,178 +15,19 @@ def get_reflection_amplitudes(
     kt: float,
     km: float,
     gamma: float,
-    alpha: float,
 ):
-    r_pi = qt.coherent(
-        sh,
-        rMM(
-            N=N,
-            g=g,
-            fP=fP,
-            fA=fA,
-            fC=fC,
-            mmFC=mm_fc,
-            mmFR=mm_fr,
-            k=k,
-            kr=kr,
-            gamma=gamma,
-        )
-        * alpha,
+    amps_pi = dict(
+        r=rMM(N, g, fP, fA, fC, mm_fc, mm_fr, k, kr, gamma),
+        t=tMM(N, g, fP, fA, fC, mm_fc, k, kr, kt, gamma),
+        m=mMM(N, g, fP, fA, fC, mm_fc, k, kr, km, gamma),
+        a=aMM(N, g, fP, fA, fC, mm_fc, k, kr, gamma),
+        rO=rOrth(N, g, fP, fA, fC, mm_fc, mm_fr, k, kr, gamma),
     )
-    print(r_pi)
-
-    t_pi = qt.coherent(
-        sh,
-        tMM(
-            N=N,
-            g=g,
-            fP=0,
-            fA=fA,
-            fC=fC,
-            mmFC=mm_fc,
-            k=k,
-            kr=kr,
-            kt=kt,
-            gamma=gamma,
-        )
-        * alpha,
+    amps_v = dict(
+        r=rMM(N, g, fP + 500.0, fA, fC, mm_fc, mm_fr, k, kr, gamma),
+        t=tMM(N, g, fP + 500.0, fA, fC, mm_fc, k, kr, kt, gamma),
+        m=mMM(N, g, fP + 500.0, fA, fC, mm_fc, k, kr, km, gamma),
+        a=aMM(N, g, fP + 500.0, fA, fC, mm_fc, k, kr, gamma),
+        rO=rOrth(N, g, fP + 500.0, fA, fC, mm_fc, mm_fr, k, kr, gamma),
     )
-
-    m_pi = qt.coherent(
-        sh,
-        mMM(
-            N=0,
-            g=g,
-            fP=0,
-            fA=fA,
-            fC=fC,
-            mmFC=mm_fc,
-            k=k,
-            kr=kr,
-            km=km,
-            gamma=gamma,
-        )
-        * alpha,
-    )
-
-    a_pi = qt.coherent(
-        sh,
-        aMM(
-            N=0,
-            g=g,
-            fP=0,
-            fA=fA,
-            fC=fC,
-            mmFC=mm_fc,
-            k=k,
-            kr=kr,
-            gamma=gamma,
-        )
-        * alpha,
-    )
-
-    rO_pi = qt.coherent(
-        sh,
-        rOrth(
-            N=0,
-            g=g,
-            fP=0,
-            fA=fA,
-            fC=fC,
-            mmFC=mm_fc,
-            mmFR=mm_fr,
-            k=k,
-            kr=kr,
-            gamma=gamma,
-        )
-        * alpha,
-    )
-
-    r_v = qt.coherent(
-        sh,
-        rMM(
-            N=N,
-            g=g,
-            fP=fP + 500,
-            fA=fA,
-            fC=fC,
-            mmFC=mm_fc,
-            mmFR=mm_fr,
-            k=k,
-            kr=kr,
-            gamma=gamma,
-        )
-        * alpha,
-    )
-
-    t_v = qt.coherent(
-        sh,
-        tMM(
-            N=N,
-            g=g,
-            fP=fP + 500,
-            fA=fA,
-            fC=fC,
-            mmFC=mm_fc,
-            k=k,
-            kr=kr,
-            kt=kt,
-            gamma=gamma,
-        )
-        * alpha,
-    )
-
-    m_v = qt.coherent(
-        sh,
-        mMM(
-            N=N,
-            g=g,
-            fP=fP + 500,
-            fA=fA,
-            fC=fC,
-            mmFC=mm_fc,
-            k=k,
-            kr=kr,
-            km=km,
-            gamma=gamma,
-        )
-        * alpha,
-    )
-
-    a_v = qt.coherent(
-        sh,
-        aMM(
-            N=N,
-            g=g,
-            fP=fP + 500,
-            fA=fA,
-            fC=fC,
-            mmFC=mm_fc,
-            k=k,
-            kr=kr,
-            gamma=gamma,
-        )
-        * alpha,
-    )
-
-    rO_v = qt.coherent(
-        sh,
-        rOrth(
-            N=N,
-            g=g,
-            fP=fP + 500,
-            fA=fA,
-            fC=fC,
-            mmFC=mm_fc,
-            mmFR=mm_fr,
-            k=k,
-            kr=kr,
-            gamma=gamma,
-        )
-        * alpha,
-    )
-
-    pi = [r_pi, t_pi, m_pi, a_pi, rO_pi]
-    v = [r_v, t_v, m_v, a_v, rO_v]
-
-    return pi, v
+    return amps_pi, amps_v
