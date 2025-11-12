@@ -11,7 +11,7 @@ km = k * 0.125  # MHz
 kt = k * 0.025  # MHz
 DetA = 0  # MHz
 gamma = 3  # MHz
-sh = 3  # Size of the Hilbert space
+sh = 6  # Size of the Hilbert space
 mm_fc = 0.873 * np.exp(-1j * 0.024)  # mode matching
 mm_fr = 0.978 * np.exp(-1j * 0.0)  # mode matching
 fA = 0  # atomic resonance frequency
@@ -76,55 +76,89 @@ alphaArray = np.sqrt(alpha2Array)
 atom0 = qt.basis(2, 0)
 atom0_dm = qt.ket2dm(atom0)
 
-state_fidelity = np.zeros(len(alpha2Array))
+prob_0_plus = np.zeros(len(alpha2Array))
+prob_0_minus = np.zeros(len(alpha2Array))
+
+
+def coh_overlap(beta1, beta2):
+    return np.exp(-0.5 * (abs(beta1) ** 2 + abs(beta2) ** 2) + np.conj(beta1) * beta2)
+
 
 for i, alpha in enumerate(alphaArray):
     print(i, alpha)
-    r_pi = qt.coherent(sh, rMM(0, 0, mm_fc, mm_fr) * alpha)
-    t_pi = qt.coherent(sh, tMM(0, 0, mm_fc) * alpha)
-    m_pi = qt.coherent(sh, mMM(0, 0, mm_fc) * alpha)
-    a_pi = qt.coherent(sh, aMM(0, 0, mm_fc) * alpha)
-    rO_pi = qt.coherent(sh, rOrth(0, 0, mm_fc, mm_fr) * alpha)
 
-    # Prepare state for V pol
-    r_v = qt.coherent(sh, rMM(0, 0 + 500, mm_fc, mm_fr) * alpha)
-    t_v = qt.coherent(sh, tMM(0, 0 + 500, mm_fc) * alpha)
-    m_v = qt.coherent(sh, mMM(0, 0 + 500, mm_fc) * alpha)
-    a_v = qt.coherent(sh, aMM(0, 0 + 500, mm_fc) * alpha)
-    rO_v = qt.coherent(sh, rOrth(0, 0 + 500, mm_fc, mm_fr) * alpha)
+    print("---------------------------")
+    betas_pi = np.array(
+        [
+            rMM(0, 0, mm_fc, mm_fr) * alpha,
+            tMM(0, 0, mm_fc) * alpha,
+            mMM(0, 0, mm_fc) * alpha,
+            aMM(0, 0, mm_fc) * alpha,
+            rOrth(0, 0, mm_fc, mm_fr) * alpha,
+        ]
+    )
+    betas_V = np.array(
+        [
+            rMM(0, 500, mm_fc, mm_fr) * alpha,
+            tMM(0, 500, mm_fc) * alpha,
+            mMM(0, 500, mm_fc) * alpha,
+            aMM(0, 500, mm_fc) * alpha,
+            rOrth(0, 500, mm_fc, mm_fr) * alpha,
+        ]
+    )
 
-    overlap = np.exp(-2 * abs(mm_fc) ** 2 * abs(alpha) ** 2)
-    norm_plus = np.sqrt(2.0 * (1.0 + np.real(overlap)))
-    norm_minus = np.sqrt(2.0 * (1.0 - np.real(overlap)))
+    beta_r_pi = betas_pi[0]  # reflected-mode displacement for π
+    beta_r_V = betas_V[0]  # reflected-mode displacement for V
 
-    photon_plus = (
-        qt.tensor(r_pi, t_pi, m_pi, a_pi, rO_pi) + qt.tensor(r_v, t_v, m_v, a_v, rO_v)
-    ) / np.sqrt(norm_plus)
+    ket_pi = qt.tensor(*[qt.coherent(sh, b) for b in betas_pi])
+    ket_V = qt.tensor(*[qt.coherent(sh, b) for b in betas_V])
+
+    photon_plus = (ket_pi + ket_V).unit()
+    photon_minus = (-ket_pi + ket_V).unit()
 
     plus_0 = qt.tensor(photon_plus, atom0)
     plus_0_dm = qt.ket2dm(plus_0)
+    minus_0 = qt.tensor(photon_minus, atom0)
+    minus_0_dm = qt.ket2dm(plus_0)
 
-    r_pi_ideal = qt.coherent(sh, (-1.0 + 0.0j) * alpha)
-    t_pi_ideal = qt.coherent(sh, 0 * alpha)
-    m_pi_ideal = qt.coherent(sh, 0 * alpha)
-    a_pi_ideal = qt.coherent(sh, 0 * alpha)
-    rO_pi_ideal = qt.coherent(sh, 0 * alpha)
-    # Prepare state for V pol
-    r_v_ideal = qt.coherent(sh, 1.0 * alpha)
-    t_v_ideal = qt.coherent(sh, 0 * alpha)
-    m_v_ideal = qt.coherent(sh, 0 * alpha)
-    a_v_ideal = qt.coherent(sh, 0 * alpha)
-    rO_v_ideal = qt.coherent(sh, 0 * alpha)
-    photon_plus_ideal = (
-        qt.tensor(r_pi_ideal, t_pi_ideal, m_pi_ideal, a_pi_ideal, rO_pi_ideal)
-        + qt.tensor(r_v_ideal, t_v_ideal, m_v_ideal, a_v_ideal, rO_v_ideal)
-    ) / np.sqrt(norm_plus)
+    rho_r = plus_0_dm.ptrace(0)  # keep subsystem index 0 (reflected mode)
+    rho_r /= rho_r.tr()  # renormalize to kill tiny drift
 
-    plus_0_ideal = qt.tensor(photon_plus_ideal, atom0)
-    plus_0_dm_ideal = qt.ket2dm(plus_0)
+    Ov_r = coh_overlap(beta_r_V, beta_r_pi)  # ⟨r_V | r_π⟩
+    ket_rV = qt.coherent(sh, beta_r_V)
+    ket_rPi = qt.coherent(sh, beta_r_pi)
+    norm_minus_r = np.sqrt(2.0 - 2.0 * np.real(Ov_r))
+    ket_minus_r = (ket_rV + ket_rPi).unit()
+    Pi_minus_r = qt.ket2dm(ket_minus_r)
 
-    state_fidelity[i] = qt.fidelity(plus_0_dm, plus_0_dm_ideal)
+    # probability that the reflected mode is in |- > after sending |+>
+    P_minus = (Pi_minus_r * rho_r).tr().real
+    prob_0_minus[i] = P_minus
 
+    # --- reduce to reflected mode (index 0) and renormalize
+    rho_r = minus_0_dm.ptrace(0)
+    rho_r /= rho_r.tr()
 
-plt.plot(alpha2Array, state_fidelity)
+    # --- projector onto |+> on the reflected mode: (|r_V> + |r_π>)/√(2 + 2 Re⟨r_V|r_π⟩)
+    beta_r_V = betas_V[0]
+    beta_r_pi = betas_pi[0]
+    Ov_r = coh_overlap(beta_r_V, beta_r_pi)
+
+    ket_rV = qt.coherent(sh, beta_r_V)
+    ket_rPi = qt.coherent(sh, beta_r_pi)
+    norm_plus_r = np.sqrt(2.0 + 2.0 * np.real(Ov_r))
+    ket_plus_r = (ket_rV + ket_rPi).unit()
+    Pi_plus_r = qt.ket2dm(ket_plus_r)
+
+    # --- probability: P( |+>_r | sent |−> )
+    P_plus = (Pi_plus_r * rho_r).tr().real
+    prob_0_plus[i] = P_plus
+
+plt.semilogx(
+    alpha2Array, prob_0_minus, label="sending plus, getting out minus", color="green"
+)
+plt.semilogx(
+    alpha2Array, prob_0_plus, label="sending minus, getting out plus", color="blue"
+)
+plt.legend()
 plt.show()
