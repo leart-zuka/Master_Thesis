@@ -1,14 +1,13 @@
 from helpers.ndqd_amplitudes import rMM, tMM, mMM, aMM, rOrth
-import qutip as qt
+import numpy as np
 
 
 def get_reflection_amplitudes(
     N: int,
     g: float,
-    fP: float,
-    fA: float,
-    fC: float,
+    d_w_r: float,
     mm_fc: complex,
+    mm_fc_phi: complex,
     mm_fr: complex,
     k: float,
     kr: float,
@@ -17,17 +16,19 @@ def get_reflection_amplitudes(
     gamma: float,
 ):
     amps_pi = dict(
-        r=rMM(N, g, fP, fA, fC, mm_fc, mm_fr, k, kr, gamma),
-        t=tMM(N, g, fP, fA, fC, mm_fc, k, kr, kt, gamma),
-        m=mMM(N, g, fP, fA, fC, mm_fc, k, kr, km, gamma),
-        a=aMM(N, g, fP, fA, fC, mm_fc, k, kr, gamma),
-        rO=rOrth(N, g, fP, fA, fC, mm_fc, mm_fr, k, kr, gamma),
+        r=rMM(N, g, 2 * np.pi * d_w_r, mm_fc, mm_fc_phi, mm_fr, k, kr, gamma),
+        t=tMM(N, g, 2 * np.pi * d_w_r, mm_fc_phi, mm_fc, k, kr, kt, gamma),
+        m=mMM(N, g, 2 * np.pi * d_w_r, mm_fc_phi, mm_fc, k, kr, km, gamma),
+        a=aMM(N, g, 2 * np.pi * d_w_r, mm_fc_phi, mm_fc, k, kr, gamma),
+        rO=rOrth(N, g, 2 * np.pi * d_w_r, mm_fc_phi, mm_fc, mm_fr, k, kr, gamma),
     )
     amps_v = dict(
-        r=rMM(N, g, fP + 500.0, fA, fC, mm_fc, mm_fr, k, kr, gamma),
-        t=tMM(N, g, fP + 500.0, fA, fC, mm_fc, k, kr, kt, gamma),
-        m=mMM(N, g, fP + 500.0, fA, fC, mm_fc, k, kr, km, gamma),
-        a=aMM(N, g, fP + 500.0, fA, fC, mm_fc, k, kr, gamma),
-        rO=rOrth(N, g, fP + 500.0, fA, fC, mm_fc, mm_fr, k, kr, gamma),
+        r=rMM(N, g, 2 * np.pi * (d_w_r + 0.5), mm_fc, mm_fc_phi, mm_fr, k, kr, gamma),
+        t=tMM(N, g, 2 * np.pi * (d_w_r + 0.5), mm_fc_phi, mm_fc, k, kr, kt, gamma),
+        m=mMM(N, g, 2 * np.pi * (d_w_r + 0.5), mm_fc_phi, mm_fc, k, kr, km, gamma),
+        a=aMM(N, g, 2 * np.pi * (d_w_r + 0.5), mm_fc_phi, mm_fc, k, kr, gamma),
+        rO=rOrth(
+            N, g, 2 * np.pi * (d_w_r + 0.5), mm_fc_phi, mm_fc, mm_fr, k, kr, gamma
+        ),
     )
     return amps_pi, amps_v

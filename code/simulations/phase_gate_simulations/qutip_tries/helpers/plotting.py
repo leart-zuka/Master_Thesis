@@ -533,6 +533,7 @@ def plot_cphase_and_cnot(
             show_fig=show_fig,
             save_fig=save_fig,
         )
+
     else:
         normalized_cphase = normalize_matrix(cphase_matrix)
         normalized_cnot = normalize_matrix(cnot_matrix)

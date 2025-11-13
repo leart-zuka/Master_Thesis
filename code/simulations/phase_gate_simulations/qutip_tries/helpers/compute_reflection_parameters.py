@@ -82,3 +82,18 @@ def compute_process_fidelity(measured_matrix: np.ndarray):
 
         process_fidelity += np.trace(e_u.conj().T @ e).real
     return process_fidelity / dimensions**2
+
+
+def compute_signal_fidelity(measured_matrix: np.ndarray):
+    ideal_cnot = np.array(
+        [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0]], dtype=complex
+    )
+    V_cols = [measured_matrix[:, j] for j in range(4)]
+    U_cols = [ideal_cnot[:, j] for j in range(4)]
+
+    F_sig_cols = np.array(
+        [np.abs(np.vdot(U_cols[j], V_cols[j])) ** 2 for j in range(4)]
+    )
+
+    F_sig = 1 / 4 * np.sum(F_sig_cols)
+    return F_sig
