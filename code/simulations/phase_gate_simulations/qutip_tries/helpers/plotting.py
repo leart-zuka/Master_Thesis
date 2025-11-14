@@ -459,6 +459,7 @@ def plot_cphase_and_cnot(
             [0.0, 0.0, 0.0, dr_1_V],
         ]
     )
+
     cnot_matrix = np.array(
         [
             [
@@ -487,6 +488,7 @@ def plot_cphase_and_cnot(
             ],
         ]
     )
+
     cnot_matrix_err = np.array(
         [
             [
