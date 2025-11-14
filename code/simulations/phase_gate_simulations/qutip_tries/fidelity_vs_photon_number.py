@@ -35,7 +35,7 @@ U_ideal = np.array(
 )
 
 
-alpha2Array = np.logspace(-2, 3, 100)
+alpha2Array = np.logspace(-2, 0, 100)
 alphaArray = np.sqrt(alpha2Array)
 
 atom0 = qt.basis(2, 0)
@@ -86,9 +86,13 @@ def refl_block(N, d_w_r, alpha):
 
 
 def col_normalize(M):
+    """
+    Note: to be used when we're using complex reflection amplitudes in our matrix, and not probabilities :>
+    """
     M = M.copy()
     for j in range(M.shape[1]):
         norm = np.linalg.norm(M[:, j])
+        print(f"Norm: {norm}")
         if norm > 0:
             M[:, j] /= norm
     return M
@@ -259,55 +263,24 @@ for i, alpha in enumerate(alphaArray):
 
     R0 = refl_block(0, 0, alpha)
     R1 = refl_block(1, 0, alpha)
-    K_ref = np.array(
-        [
-            [R1[1][1], 0, 0, 0],
-            [0, R0[1][1], 0, 0],
-            [0, 0, R1[0][0], 0],
-            [0, 0, 0, R0[0][0]],
-        ]
-    )
-
-    K_cnot_ref = (
-        np.kron(I2, H) @ K_ref @ np.kron(I2, H)
-    )  # unitary operation to transform to CNOT basis
-
     c_0_pi = R0[0][0]
     c_1_pi = R1[0][0]
     c_0_V = R0[1][1]
     c_1_V = R1[1][1]
+    K_ref = np.array(
+        [
+            [c_1_V, 0, 0, 0],  # |1,V>
+            [0, c_0_V, 0, 0],  # |0,V>
+            [0, 0, c_1_pi, 0],  # |1,pi>
+            [0, 0, 0, c_0_pi],  # |0,pi>
+        ]
+    )
 
-    # K_cnot_ref = np.array(
-    #     [
-    #         [
-    #             np.abs((c_1_pi + c_1_V) / 2) ** 2,
-    #             np.abs((-c_1_pi + c_1_V) / 2) ** 2,
-    #             0,
-    #             0,
-    #         ],
-    #         [
-    #             np.abs((-c_1_pi + c_1_V) / 2) ** 2,
-    #             np.abs((c_1_pi + c_1_V) / 2) ** 2,
-    #             0,
-    #             0,
-    #         ],
-    #         [
-    #             0,
-    #             0,
-    #             np.abs((+c_0_pi + c_0_V) / 2) ** 2,
-    #             np.abs((-c_0_pi + c_0_V) / 2) ** 2,
-    #         ],
-    #         [
-    #             0,
-    #             0,
-    #             np.abs((-c_0_pi + c_0_V) / 2) ** 2,
-    #             np.abs((+c_0_pi + c_0_V) / 2) ** 2,
-    #         ],
-    #     ]
-    # )
+    K_cnot_ref = np.abs(
+        np.kron(I2, H) @ K_ref @ np.kron(I2, H)
+    )  # unitary operation to transform to CNOT basis
 
-    K_cnot_heralded = col_normalize(K_cnot_ref)
-    # K_cnot_heralded = normalize_matrix(K_cnot_ref)
+    K_cnot_heralded = normalize_matrix(K_cnot_ref)
     if alpha == 1.0:
         print(K_ref)
         print("-----------")
@@ -322,18 +295,19 @@ for i, alpha in enumerate(alphaArray):
 
     # --------------------------------
 
-    col_norms = normalizations(K_cnot_ref)
-    # col_norms = np.linalg.norm(K_cnot_ref, axis=0)
+    # col_norms = normalizations(K_cnot_ref)
+    col_norms = np.linalg.norm(K_cnot_ref, axis=0)
     s_cols = col_norms**2
 
-    V_cols = [
-        (K_cnot_heralded[:, j]) if col_norms[j] > 0 else np.zeros(4, complex)
-        for j in range(4)
-    ]
+    V_cols = [K_cnot_heralded[:, j] for j in range(4)]
     U_cols = [U_ideal[:, j] for j in range(4)]
     F_sig_cols = np.array(
         [np.abs(np.vdot(U_cols[j], V_cols[j])) ** 2 for j in range(4)]
     )  # constant vs alpha
+
+    if alpha == 1.0:
+        print(F_sig_cols)
+        print(np.sum(F_sig_cols) / 4)
 
     F_random = 0.5
     F_ge2 = 0.5
