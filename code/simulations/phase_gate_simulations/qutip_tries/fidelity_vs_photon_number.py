@@ -1,4 +1,3 @@
-from typing import List, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 import qutip as qt
@@ -35,7 +34,7 @@ U_ideal = np.array(
 )
 
 
-alpha2Array = np.logspace(-2, 0, 100)
+alpha2Array = np.logspace(-2, 2, 100)
 alphaArray = np.sqrt(alpha2Array)
 
 atom0 = qt.basis(2, 0)
@@ -267,11 +266,13 @@ for i, alpha in enumerate(alphaArray):
     c_1_pi = R1[0][0]
     c_0_V = R0[1][1]
     c_1_V = R1[1][1]
+    c_0_V *= np.sqrt(0.17)
+    c_1_V *= np.sqrt(0.17)
     K_ref = np.array(
         [
             [c_1_V, 0, 0, 0],  # |1,V>
-            [0, c_0_V, 0, 0],  # |0,V>
-            [0, 0, c_1_pi, 0],  # |1,pi>
+            [0, c_1_pi, 0, 0],  # |0,V>
+            [0, 0, c_0_V, 0],  # |1,pi>
             [0, 0, 0, c_0_pi],  # |0,pi>
         ]
     )
@@ -280,7 +281,36 @@ for i, alpha in enumerate(alphaArray):
         np.kron(I2, H) @ K_ref @ np.kron(I2, H)
     )  # unitary operation to transform to CNOT basis
 
-    K_cnot_heralded = normalize_matrix(K_cnot_ref)
+    K_cnot_ref = np.array(
+        [
+            [
+                c_1_pi + c_1_V / 2,
+                (-c_1_pi + c_1_V) / 2,
+                0,
+                0,
+            ],
+            [
+                (-c_1_pi + c_1_V) / 2,
+                (c_1_pi + c_1_V) / 2,
+                0,
+                0,
+            ],
+            [
+                0,
+                0,
+                (+c_0_pi + c_0_V) / 2,
+                (-c_0_pi + c_0_V) / 2,
+            ],
+            [
+                0,
+                0,
+                (-c_0_pi + c_0_V) / 2,
+                (+c_0_pi + c_0_V) / 2,
+            ],
+        ]
+    )
+
+    K_cnot_heralded = col_normalize(K_cnot_ref)
     if alpha == 1.0:
         print(K_ref)
         print("-----------")
@@ -328,9 +358,6 @@ for i, alpha in enumerate(alphaArray):
         0.25 * np.sum(f1 * F_sig_cols + fge2 * F_ge2 + fdark * F_random) - F_ge2
     ) * np.exp(-(1 - eta) * alpha**2)
 
-    F_click[i] = F_ge2 + (
-        0.25 * np.sum(f1 * F_sig_cols + fdark * F_random) - F_ge2
-    ) * np.exp(-(1 - eta) * alpha**2)
     P_click_avg[i] = 0.25 * np.sum(P_click_cols)
 
 
