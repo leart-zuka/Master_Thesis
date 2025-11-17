@@ -6,6 +6,7 @@ from helpers.ndqd_calculate_amplitudes import get_reflection_amplitudes
 from helpers.figure_of_merits import to_pm, coh, p_click
 from helpers.ndqd_amplitudes import rMM
 from helpers.generic_computations import normalize_matrix, normalizations
+from helpers.compute_reflection_parameters import compute_process_fidelity
 
 params_dir = {
     "g": 2 * np.pi * 0.024,
@@ -19,7 +20,7 @@ params_dir = {
     "mu_fc_phi": 0.024,
 }
 
-sh = 10  # Size of the Hilbert space
+sh = 5  # Size of the Hilbert space
 p_atomnoise = 3.3e-2  # atom detects photon altough there was no photon
 pdc = 0.56e-6 * 600  # dark count rate
 eta = (
@@ -34,18 +35,25 @@ U_ideal = np.array(
 )
 
 
-alpha2Array = np.logspace(-2, 2, 100)
+alpha2Array = np.logspace(-2, 2, 20)
 alphaArray = np.sqrt(alpha2Array)
 
 atom0 = qt.basis(2, 0)
 atom0_dm = qt.ket2dm(atom0)
+atom1 = qt.basis(2, 1)
+atom1_dm = qt.ket2dm(atom1)
 
-ov_uncond = np.zeros(len(alpha2Array))  # your original |<+|−>| over all modes
+ov_uncond = np.zeros(len(alpha2Array))
 D_click = np.zeros(len(alpha2Array))  # click distinguishability with SPD
 fidelity = np.zeros(len(alpha2Array))
+overlap_plus_0 = np.zeros(len(alpha2Array))
+overlap_minus_0 = np.zeros(len(alpha2Array))
+overlap_plus_1 = np.zeros(len(alpha2Array))
+overlap_minus_1 = np.zeros(len(alpha2Array))
 
 F_click = np.zeros_like(alpha2Array, dtype=float)
 P_click_avg = np.zeros_like(alpha2Array, dtype=float)
+F_process = np.zeros(len(alpha2Array))
 
 H = (1 / np.sqrt(2)) * np.array([[1, 1], [1, -1]], dtype=complex)
 I2 = np.eye(2, dtype=complex)
@@ -91,7 +99,6 @@ def col_normalize(M):
     M = M.copy()
     for j in range(M.shape[1]):
         norm = np.linalg.norm(M[:, j])
-        print(f"Norm: {norm}")
         if norm > 0:
             M[:, j] /= norm
     return M
@@ -141,6 +148,7 @@ for i, alpha in enumerate(alphaArray):
         coh(sh, m_plus_0),
         coh(sh, a_plus_0),
         coh(sh, rO_plus_0),
+        atom0,
     ]
 
     norm_pi_0 = np.sqrt(
@@ -167,6 +175,7 @@ for i, alpha in enumerate(alphaArray):
         coh(sh, m_minus_0),
         coh(sh, a_minus_0),
         coh(sh, rO_minus_0),
+        atom0,
     ]
     ket_minus_0 = qt.tensor(*modes_minus_0)
 
@@ -221,6 +230,7 @@ for i, alpha in enumerate(alphaArray):
         coh(sh, m_plus_1),
         coh(sh, a_plus_1),
         coh(sh, rO_plus_1),
+        atom1,
     ]
 
     norm_pi_1 = np.sqrt(
@@ -239,7 +249,7 @@ for i, alpha in enumerate(alphaArray):
         + abs(out_1["rO_v"]) ** 2
     )
 
-    ket_plus_1 = qt.tensor(*modes_plus_0)
+    ket_plus_1 = qt.tensor(*modes_plus_1)
 
     modes_minus_1 = [
         coh(sh, r_minus_1),
@@ -247,16 +257,51 @@ for i, alpha in enumerate(alphaArray):
         coh(sh, m_minus_1),
         coh(sh, a_minus_1),
         coh(sh, rO_minus_1),
+        atom1,
     ]
     ket_minus_1 = qt.tensor(*modes_minus_1)
 
-    ov = ket_plus_1.dag() * ket_minus_0
+    ov = ket_plus_1.dag() * ket_minus_1
 
     ov_uncond[i] = np.abs(ov)
 
     pc_plus = p_click(r_plus_1, eta=eta, pdc=pdc)
     pc_minus = p_click(r_minus_1, eta=eta, pdc=pdc)
-    D_click[i] = np.abs(pc_plus - pc_minus)
+    # D_click[i] = np.abs(pc_plus - pc_minus)
+
+    # --------------------------------------------
+
+    out_0_ideal = {
+        "r_pi": -1 * alpha_pi,
+        "r_v": 1 * alpha_v,
+    }
+    out_1_ideal = {
+        "r_pi": 1 * alpha_pi,
+        "r_v": 1 * alpha_v,
+    }
+
+    r_plus_0_ideal, r_minus_0_ideal = to_pm(out_0_ideal["r_pi"], out_0_ideal["r_v"])
+    modes_plus_0_ideal = [coh(sh, r_plus_0_ideal), atom0]
+    modes_minus_0_ideal = [coh(sh, r_minus_0_ideal), atom0]
+
+    r_plus_1_ideal, r_minus_1_ideal = to_pm(out_1_ideal["r_pi"], out_1_ideal["r_v"])
+    modes_plus_1_ideal = [coh(sh, r_plus_1_ideal), atom1]
+    modes_minus_1_ideal = [coh(sh, r_minus_1_ideal), atom1]
+
+    ket_plus_0_ideal = qt.tensor(*modes_plus_0_ideal)
+    proj_plus_0 = ket_plus_0_ideal * ket_plus_0_ideal.dag()
+    ket_minus_0_ideal = qt.tensor(*modes_minus_0_ideal)
+    proj_minus_0 = ket_minus_0_ideal * ket_minus_0_ideal.dag()
+
+    ket_plus_1_ideal = qt.tensor(*modes_plus_1_ideal)
+    proj_plus_1 = ket_plus_1_ideal * ket_plus_1_ideal.dag()
+    ket_minus_1_ideal = qt.tensor(*modes_minus_1_ideal)
+    proj_minus_1 = ket_minus_1_ideal * ket_minus_1_ideal.dag()
+
+    overlap_plus_0[i] = qt.expect(proj_plus_0, ket_plus_0.ptrace([0, 5]))
+    overlap_minus_0[i] = qt.expect(proj_minus_0, ket_minus_0.ptrace([0, 5]))
+    overlap_plus_1[i] = qt.expect(proj_plus_1, ket_plus_1.ptrace([0, 5]))
+    overlap_minus_1[i] = qt.expect(proj_minus_1, ket_minus_1.ptrace([0, 5]))
 
     # --------------------------------------------
 
@@ -311,13 +356,6 @@ for i, alpha in enumerate(alphaArray):
     )
 
     K_cnot_heralded = col_normalize(K_cnot_ref)
-    if alpha == 1.0:
-        print(K_ref)
-        print("-----------")
-        print(K_cnot_ref)
-        print("-----------")
-        print(K_cnot_heralded)
-
     F_proc_heralded = (np.abs(np.trace(U_ideal.conj().T @ K_cnot_heralded)) ** 2) / (
         d * d
     )
@@ -325,7 +363,6 @@ for i, alpha in enumerate(alphaArray):
 
     # --------------------------------
 
-    # col_norms = normalizations(K_cnot_ref)
     col_norms = np.linalg.norm(K_cnot_ref, axis=0)
     s_cols = col_norms**2
 
@@ -355,15 +392,19 @@ for i, alpha in enumerate(alphaArray):
 
     # operational, click-conditioned average fidelity over basis inputs
     F_click[i] = F_ge2 + (
-        0.25 * np.sum(f1 * F_sig_cols + fge2 * F_ge2 + fdark * F_random) - F_ge2
+        0.25 * np.sum(f1 * F_sig_cols + fdark * F_random) - F_ge2
     ) * np.exp(-(1 - eta) * alpha**2)
 
     P_click_avg[i] = 0.25 * np.sum(P_click_cols)
 
+    # --------------------------------------------
 
 fig, ax1 = plt.subplots()
 ax1.set_xscale("log")
-ax1.plot(alpha2Array, ov_uncond, label="|⟨+|−⟩| (uncond, all modes)", lw=2, c="red")
+ax1.plot(alpha2Array, overlap_plus_0, label=r"$|\langle +_{ideal}|+⟩|$ for 0")
+ax1.plot(alpha2Array, overlap_minus_0, label=r"$|\langle -_{ideal}|-⟩|$ for 0")
+ax1.plot(alpha2Array, overlap_plus_1, label=r"$|\langle +_{ideal}|+⟩|$ for 1")
+ax1.plot(alpha2Array, overlap_minus_1, label=r"$|\langle -_{ideal}|-⟩|$ for 1")
 ax1.set_xlabel("mean input photons  |α|²")
 ax1.set_ylabel("overlap")
 ax1.grid(True, alpha=0.3)
@@ -386,7 +427,7 @@ idx = np.argmax(F_click)
 x_max = alpha2Array[idx]
 y_max = F_click[idx]
 plt.annotate(
-    f"|α|² = {x_max:.3f}\nF = {y_max:.3f}",
+    f"F = {y_max:.3f}\n|α|² = {x_max:.3f}",
     xy=(x_max, y_max),
     xytext=(
         x_max - 0.3 * (max(F_click) - min(alpha2Array)),
@@ -397,8 +438,8 @@ plt.annotate(
     bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.8),
 )
 
-ax.set_xlabel("mean input photons  |α|²")
-ax.set_ylabel("click-conditioned fidelity")
+ax.set_xlabel("mean input photons |α|²")
+ax.set_ylabel("click-conditioned signal fidelity")
 ax.legend()
 ax.grid(True, alpha=0.3)
 plt.tight_layout()
