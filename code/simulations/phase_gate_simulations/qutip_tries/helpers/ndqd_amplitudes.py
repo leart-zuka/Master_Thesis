@@ -33,8 +33,7 @@ def tMM(
         * np.exp(-1j * mm_fc_phi)
         * 2
         * np.sqrt(kr * kt)
-        * (1j * (d_w_r) + gamma)
-        / (N * g**2 + (1j * (d_w_r) + k) * (1j * (d_w_r) + gamma))
+        / (N * g**2 / (1j * d_w_r + gamma) + (1j * d_w_r + k))
     )
 
 
@@ -54,8 +53,7 @@ def mMM(
         * np.exp(-1j * mm_fc_phi)
         * 2
         * np.sqrt(kr * km)
-        * (1j * (d_w_r) + gamma)
-        / (N * g**2 + (1j * (d_w_r) + k) * (1j * (d_w_r) + gamma))
+        / (N * g**2 / (1j * d_w_r + gamma) + (1j * (d_w_r) + k))
     )
 
 
@@ -71,10 +69,10 @@ def aMM(
 ):
     return (
         mm_fc
+        * np.exp(-1j * mm_fc_phi)
         * 2
-        * np.sqrt(kr * gamma)
-        * np.sqrt(N)
         * g
+        * np.sqrt(kr * gamma * N)
         / (N * g**2 + (1j * (d_w_r) + k) * (1j * (d_w_r) + gamma))
     )
 
@@ -91,7 +89,7 @@ def rOrth(
     gamma: float,
 ):
     return (
-        np.sqrt((mm_fr - (mm_fc * np.exp(-1j * mm_fc_phi)) ** 2))
+        np.sqrt(mm_fr - (mm_fc * np.exp(-1j * mm_fc_phi)) ** 2)
         * mm_fc
         * 2
         * kr
