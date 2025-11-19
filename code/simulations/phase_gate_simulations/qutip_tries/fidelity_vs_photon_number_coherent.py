@@ -102,12 +102,14 @@ for i, alpha in enumerate(alphaArray):
 
     n_r_0_pi = np.abs(out_0["r_pi"]) ** 2
     n_loss_0_pi = sum(np.abs(out_0[f"{p}_pi"]) ** 2 for p in loss_ports)
+    n_tot_0_pi = n_r_0_pi + n_loss_0_pi
 
     n_r_0_v = np.abs(out_0["r_v"]) ** 2
     n_loss_0_v = sum(np.abs(out_0[f"{p}_v"]) ** 2 for p in loss_ports)
+    n_tot_0_v = n_r_0_v + n_loss_0_v
 
     loss_0_pi[i] = n_loss_0_pi / alpha
-    loss_0_V[i] = n_r_0_v / alpha
+    loss_0_V[i] = n_loss_0_v / alpha
 
     # --------------------------------------------
 
@@ -126,9 +128,11 @@ for i, alpha in enumerate(alphaArray):
 
     n_r_1_pi = np.abs(out_1["r_pi"]) ** 2
     n_loss_1_pi = sum(np.abs(out_1[f"{p}_pi"]) ** 2 for p in loss_ports)
+    n_tot_1_pi = n_r_1_pi + n_loss_1_pi
 
     n_r_1_v = np.abs(out_1["r_v"]) ** 2
     n_loss_1_v = sum(np.abs(out_1[f"{p}_v"]) ** 2 for p in loss_ports)
+    n_tot_1_v = n_r_1_v + n_loss_1_v
 
     loss_1_pi[i] = n_loss_1_pi / alpha
     loss_1_V[i] = n_loss_1_v / alpha
@@ -159,8 +163,8 @@ ax.set_xscale("log")
 
 ax.plot(alpha2Array, loss_0_pi, linestyle="-", label=r"$tr(\rho_{0,\pi})$")
 ax.plot(alpha2Array, loss_0_V, linestyle="--", label=r"$tr(\rho_{0,V})$")
-# ax.plot(alpha2Array, loss_1_pi, linestyle="-.", label=r"$tr(\rho_{1,\pi})$")
-# ax.plot(alpha2Array, loss_1_V, linestyle=":", label=r"$tr(\rho_{1,V})$")
+ax.plot(alpha2Array, loss_1_pi, linestyle="-.", label=r"$tr(\rho_{1,\pi})$")
+ax.plot(alpha2Array, loss_1_V, linestyle=":", label=r"$tr(\rho_{1,V})$")
 
 ax.set_xlabel("mean input photons  |α|²")
 ax.set_ylabel("loss")
