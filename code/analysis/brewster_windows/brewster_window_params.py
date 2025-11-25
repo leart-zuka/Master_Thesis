@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.constants import c
+import matplotlib.pyplot as plt
 
 
 def calculate_refraction_index(wavelength: float):
@@ -75,3 +76,30 @@ r_s_2, r_p_2, output_angle = calculate_reflectance_and_angle(
 
 print(f"Total transmission for s: {calculate_t_tot(r_s_1, r_s_2)}")
 print(f"Total transmission for p: {calculate_t_tot(r_p_1, r_p_2)}")
+
+n_range = np.linspace(1.3, 1.7, 1000)
+transmission = np.zeros_like(n_range)
+
+for i in range(len(n_range)):
+    brewster_angle = calculate_brewster_angle(n_range[i], n_air)
+    brewster_angle_degree = np.degrees(brewster_angle)
+    r_s_1, r_p_1, brewster_angle_2 = calculate_reflectance_and_angle(
+        n_air, n_range[i], brewster_angle
+    )
+    r_s_2, r_p_2, output_angle = calculate_reflectance_and_angle(
+        n_range[i], n_air, brewster_angle_2
+    )
+    transmission[i] = calculate_t_tot(r_s_1, r_s_2)
+
+plt.plot(n_range, transmission)
+plt.show()
+
+target = 0.75
+
+idx = np.abs(transmission - target).argmin()
+
+print("--------------")
+print("Ideal params")
+print(f"Total Transmission: {transmission[idx]}")
+print(f"Refractive Index for BW: {n_range[idx]}")
+print("--------------")
