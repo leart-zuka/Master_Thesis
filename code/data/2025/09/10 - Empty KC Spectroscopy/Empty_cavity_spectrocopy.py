@@ -446,8 +446,10 @@ print("Linewidth = %.2f(%.2f) MHz" % (mean_linewidth, std_of_mean_linewidth))
 # print(std_of_mean_linewidth)
 # print(np.std(list_linewidth))
 ax1.set_title(
-    "KC transmission with EOM sidebands @ 300 MHz\n"
-    + "Linewidth FWHM: %.2f(%.f) MHz" % (mean_linewidth, std_of_mean_linewidth * 100)
+    # "KC transmission with EOM sidebands @ 300 MHz\n"
+    "KC transmission \n"
+    + r"Linewidth FWHM; $2\kappa$= %.2f(%.f) MHz"
+    % (mean_linewidth, std_of_mean_linewidth * 100)
 )
 
 # print(list_linewidth)
@@ -476,8 +478,10 @@ print(
 # print(np.std(list_linewidth))
 ax2.set_title(
     "KC reflection \n"
-    + "Mode matching fiber-cavity: %.3f(%.f)\n" % (mean_MM_fc, std_of_mean_MM_fc * 1000)
-    + "Mode matching fiber-reflected light: %.3f(%.f)"
+    + r"Mode matching fiber-cavity; $\mu_{fc}$ = %.3f(%.f)"
+    % (mean_MM_fc, std_of_mean_MM_fc * 1000)
+    + "\n"
+    + r"Mode matching fiber-reflected light; $\mu_{fr}$ = %.3f(%.f)"
     % (mean_MM_fr, std_of_mean_MM_fr * 1000)
 )
 ax2.set_ylim(0, 1.1)
