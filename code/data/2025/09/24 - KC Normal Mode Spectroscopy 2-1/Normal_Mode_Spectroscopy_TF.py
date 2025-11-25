@@ -821,19 +821,7 @@ class AtomAnalysis:
                 -((x - mu) ** 2) / (2 * sigma**2)
             )
 
-        def R_coupled(
-            detuning,
-            f_res,
-            A,
-            g,
-            kappa,
-            kappa_oc,
-            MM_rf,
-            MM_fc,
-            gamma,
-            offset,
-            a,
-        ):
+        def R_coupled(detuning, f_res, g, c):
             """Reflection model of a coupled atom–cavity system.
 
             Parameters
@@ -868,92 +856,66 @@ class AtomAnalysis:
                 Reflected intensity at the given detuning.
             """
             # Effective atomic decay including optional detuning-dependent slope
-            Gamma = gamma + a * detuning
+            # Gamma = gamma + a * detuning
+            # Gamma = gamma
 
             # Cooperativity-like denominator term
             C_d = g**2 / (
-                2
-                * (Gamma + 1j * (detuning - f_res))
-                * (kappa + 1j * (detuning - f_res))
+                2 * (3.0 + 1j * (detuning - f_res)) * (58 + 1j * (detuning - f_res))
             )
 
             # Reflection amplitude → squared magnitude → intensity
             return (
-                A
-                * abs(
-                    MM_rf
-                    - (MM_fc * np.exp(1j * 0.0) ** 2)
+                abs(
+                    0.978
+                    - (0.871 * np.exp(1j * 0.0) ** 2)
                     * 2
-                    * kappa_oc
-                    / ((kappa + 1j * (detuning - f_res)) * (2 * C_d + 1))
+                    * 58
+                    * 0.85
+                    / ((58 + 1j * (detuning - f_res)) * (2 * C_d + 1))
                 )
                 ** 2
-                + offset
+                + c
             )
 
         # 2. Fit the EMG to the histogram
 
         p0 = [
-            -27,  # A (normalization, negative guess here to match scaling of data)
-            0.182,  # f_res (MHz offset of resonance)
-            30,  # g (coupling strength, MHz)
-            58,  # kappa (total cavity decay rate, MHz)
-            58 * 0.85,  # kappa_oc (outcoupling, ~85% of total kappa)
-            0.978,  # MM_rf (close to ideal)
-            0.873,  # MM_fc (80% coupling in)
-            3.0333,  # gamma (free space decay rate, MHz)
-            0.01,  # offset (background level)
-            0.0,  # a (slope term for detuning-dependent broadening)
+            -40,  # f_res (MHz offset of resonance)
+            50,  # g (coupling strength, MHz)
+            0,
         ]
 
         bounds = (
-            [
-                -np.inf,
-                0.01,
-                10,
-                58,
-                49,
-                0.972,
-                0.871,
-                3.0318,
-                -np.inf,
-                -np.inf,
-            ],
-            [
-                np.inf,
-                0.3,
-                50,
-                59,
-                50,
-                0.984,
-                0.875,
-                3.0354,
-                np.inf,
-                np.inf,
-            ],
+            [-100, 10, -1],
+            [0, 50, 1],
         )  # Avoid zero/negative sigma/lambda
+
+        norm_coefficient = 0.20780113085143606
+
         popt, pcov = curve_fit(
-            R_coupled, freq_NMS, list_SDmean[0], p0=p0, bounds=bounds, maxfev=10000
+            R_coupled,
+            freq_NMS,
+            list_SDmean[0] / norm_coefficient,
+            p0=p0,
+            bounds=bounds,
+            maxfev=100000,
         )
 
-        print(popt)
+        # print(popt)
         pcov = np.sqrt(np.diag(pcov))
         plt.rcParams.update({"font.size": 14})
         phfig = plt.figure(figsize=[12, 8])
         phfig.suptitle(
-            filename + "\n Memory Spectroscopy with KC @ +500MHz detuning"
-            "\n $\\mathbf{g:\\ %.1f\\ MHz\\ \\pm\\ %.1f\\ MHz}$"
-            "\n kappa/kappa_oc: %.1f MHz +/- %.1f MHz /%.1f MHz "
-            "\n MM_fr: %.3f"
-            "\n MM_fc: %.3f"
-            "\n gamma: %.1f MHz "
-            % (popt[2], pcov[2], popt[3], pcov[3], popt[4], popt[5], popt[6], popt[7])
+            # filename + "\n Memory Spectroscopy with KC @ +500MHz detuning"
+            "Normal Mode Spectroscopy with KC\n"
+            + r"g: %.1f MHz $\pm$ %.1f MHz" % (popt[1], pcov[1])
         )
         ax = phfig.add_subplot(1, 1, 1)
         ax.errorbar(
             freq_NMS,
-            list_SDmean[0],
-            list_err_SDmean[0],
+            list_SDmean[0] / norm_coefficient,
+            list_err_SDmean[0] / norm_coefficient,
             linestyle="",
             marker="o",
             label="Measurement data",
@@ -966,16 +928,24 @@ class AtomAnalysis:
             linewidth=3,
             linestyle="-.",
         )
+        # ax.plot(
+        #     freq_NMS,
+        #     R_coupled(freq_NMS, *p0),
+        #     label="Personal guess",
+        #     color="green",
+        #     linewidth=3,
+        #     linestyle="-.",
+        # )
         ax.set_ylabel("Reflection (a.u.)")
         ax.legend()
-        ax.set_xlabel("Frequency (MHz)")
+        ax.set_xlabel(r"Detuning $\Delta$ (MHz)")
         plt.tight_layout()
         # plt.show()
-        phfig.savefig(f"{path}/{filename}_reflection_spectrum.jpg")
-        with open("data_from_fit.csv", "w") as file:
-            file.write("x,y\n")
-            for i in range(len(freq_NMS)):
-                file.write(f"{freq_NMS[i]},{R_coupled(freq_NMS[i], *popt)}\n")
+        phfig.savefig(f"{path}/{filename}_reflection_spectrum.svg")
+        # with open("data_from_fit.csv", "w") as file:
+        #     file.write("x,y\n")
+        #     for i in range(len(freq_NMS)):
+        #         file.write(f"{freq_NMS[i]},{R_coupled(freq_NMS[i], *popt)}\n")
 
 
 if __name__ == "__main__":
@@ -1004,7 +974,7 @@ if __name__ == "__main__":
         "freqSpan": 250,  # in MHz
         "PointsPerScan": 200,  # including up and down ramp
         "TrialsPerPoint": 40,
-        "freqCenter": 200,
+        "freqCenter": 125,
     }
 
     analysis.dataEval_noramlModeSpectroscopy(
