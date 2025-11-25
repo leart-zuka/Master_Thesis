@@ -392,12 +392,12 @@ class Analyzer:
         if fit_function:
             p0 = [
                 -27,  # A (normalization, negative guess here to match scaling of data)
-                0.182,  # f_res (MHz offset of resonance)
+                0.187,  # f_res (MHz offset of resonance)
                 30,  # g (coupling strength, MHz)
                 58,  # kappa (total cavity decay rate, MHz)
                 58 * 0.85,  # kappa_oc (outcoupling, ~85% of total kappa)
-                0.882,  # MM_rf (close to ideal)
-                0.882,  # MM_fc (80% coupling in)
+                0.978,  # MM_rf (close to ideal)
+                0.873,  # MM_fc (80% coupling in)
                 3.0333,  # gamma (free space decay rate, MHz)
                 0.01,  # offset (background level)
                 0.0,  # a (slope term for detuning-dependent broadening)
@@ -410,8 +410,8 @@ class Analyzer:
                     10,
                     58,
                     49,
-                    0.881,
-                    0.881,
+                    0.972,
+                    0.871,
                     3.0318,
                     -np.inf,
                     -np.inf,
@@ -422,8 +422,8 @@ class Analyzer:
                     50,
                     59,
                     50,
-                    0.883,
-                    0.883,
+                    0.984,
+                    0.875,
                     3.0354,
                     np.inf,
                     np.inf,
@@ -438,6 +438,7 @@ class Analyzer:
                 maxfev=10000,
             )
 
+            pcov = np.sqrt(np.diag(pcov))
             plt.plot(
                 frequency_span,
                 R_coupled(frequency_span, *popt),
@@ -445,6 +446,13 @@ class Analyzer:
                 color="red",
                 linewidth=3,
                 linestyle="-.",
+            )
+            plt.suptitle(
+                "\n $\\mathbf{g:\\ %.1f\\ MHz\\ \\pm\\ %.1f\\ MHz}$"
+                % (
+                    popt[2],
+                    pcov[2],
+                )
             )
 
         plt.errorbar(
@@ -464,7 +472,7 @@ class Analyzer:
         if self.data_arr is None:
             self.data_arr = get_data_from_main_h5_file(base, file_name, file_type)
 
-        for atom_number in track(atom_dict.keys()):
+        for atom_number in atom_dict.keys():
             data_array = self.data_arr[atom_number]
 
             start_sync_fast_trigger = np.searchsorted(

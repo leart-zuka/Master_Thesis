@@ -12,7 +12,7 @@ def R_coupled(
     MM_fc,
     gamma,
     offset,
-    a,
+    # a,
 ):
     """Reflection model of a coupled atom–cavity system.
 
@@ -48,8 +48,8 @@ def R_coupled(
         Reflected intensity at the given detuning.
     """
     # Effective atomic decay including optional detuning-dependent slope
-    Gamma = gamma + a * detuning
-
+    # Gamma = gamma + a * detuning
+    Gamma = gamma
     # Cooperativity-like denominator term
     C_d = g**2 / (
         2 * (Gamma + 1j * (detuning - f_res)) * (kappa + 1j * (detuning - f_res))
