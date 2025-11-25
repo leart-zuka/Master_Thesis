@@ -112,9 +112,8 @@ for i, alpha in enumerate(alphaArray):
         ]
     )
 
-    K_cnot_ref = np.abs(
-        np.kron(I2, H) @ K_ref @ np.kron(I2, H)
-    )  # unitary operation to transform to CNOT basis
+    K_cnot_ref = np.abs(np.kron(I2, H) @ K_ref @ np.kron(I2, H))
+    # unitary operation to transform to CNOT basis
 
     K_cnot_heralded = col_normalize(K_cnot_ref)
     F_proc_heralded = (np.abs(np.trace(U_ideal.conj().T @ K_cnot_heralded)) ** 2) / (
@@ -151,8 +150,6 @@ for i, alpha in enumerate(alphaArray):
         0.25 * np.sum(f1 * F_sig_cols + fdark * F_random + fge2 * F_ge2) - F_ge2
     ) * np.exp(-(1 - eta) * alpha**2)
 
-    P_click_avg[i] = 0.25 * np.sum(P_click_cols)
-
     # --------------------------------------------
 
 fig, ax = plt.subplots()
@@ -178,5 +175,5 @@ ax.set_ylabel("Click-Conditioned fidelity")
 ax.legend()
 ax.grid(True, alpha=0.3)
 plt.tight_layout()
-# plt.savefig("fidelity_vs_photon_numbers.pdf")
+plt.savefig("fidelity_vs_photon_numbers_bw.pdf")
 plt.show()
