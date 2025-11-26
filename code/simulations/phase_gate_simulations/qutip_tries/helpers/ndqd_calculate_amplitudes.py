@@ -32,3 +32,50 @@ def get_reflection_amplitudes(
         ),
     )
     return amps_pi, amps_v
+
+
+if __name__ == "__main__":
+    params_dir = {
+        "g": 2 * np.pi * 0.024,
+        "kappa": 2 * np.pi * 0.058,
+        "kappa_oc": 2 * np.pi * 0.058 * 0.85,
+        "kappa_m": 2 * np.pi * 0.058 * 0.125,
+        "kappa_t": 2 * np.pi * 0.058 * 0.025,
+        "gamma": 2 * np.pi * 0.006065,
+        "mu_rf": 0.978,
+        "mu_fc": 0.873,
+        "mu_fc_phi": 0.024,
+    }
+
+    out_0_pi, out_0_v = get_reflection_amplitudes(
+        0,
+        params_dir["g"],
+        0,
+        params_dir["mu_fc"],
+        params_dir["mu_fc_phi"],
+        params_dir["mu_rf"],
+        params_dir["kappa"],
+        params_dir["kappa_oc"],
+        params_dir["kappa_t"],
+        params_dir["kappa_m"],
+        params_dir["gamma"],
+    )
+
+    out_1_pi, out_1_v = get_reflection_amplitudes(
+        1,
+        params_dir["g"],
+        0,
+        params_dir["mu_fc"],
+        params_dir["mu_fc_phi"],
+        params_dir["mu_rf"],
+        params_dir["kappa"],
+        params_dir["kappa_oc"],
+        params_dir["kappa_t"],
+        params_dir["kappa_m"],
+        params_dir["gamma"],
+    )
+
+    print(out_0_pi["r"])
+    print(out_1_pi["r"])
+    print(out_0_v["r"])
+    print(out_1_v["r"])
