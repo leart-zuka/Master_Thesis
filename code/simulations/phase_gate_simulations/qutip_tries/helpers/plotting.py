@@ -369,6 +369,7 @@ def plot_cphase_and_cnot(
     params_dir_err: params_type,
     attenuate_light: bool = False,
     special_attenuation: float | None = None,
+    display_data: bool = True,
     show_fig: bool = True,
     save_fig: bool = False,
 ) -> GateMatrices:
@@ -441,7 +442,8 @@ def plot_cphase_and_cnot(
     dr_0_V = np.abs(d_0_V) ** 2
     dr_1_V = np.abs(d_1_V) ** 2
 
-    print_data(title, basis, results)
+    if display_data:
+        print_data(title, basis, results)
 
     cphase_matrix = np.array(
         [
@@ -548,3 +550,121 @@ def plot_cphase_and_cnot(
         "cnot_matrix_err": cnot_matrix_err,
         "normalized_cnot": normalized_cnot,
     }
+
+
+def plot_photon_number_statistics_qutip(
+    qt_result_0: qt.Result,
+    qt_result_1: qt.Result,
+    base: Literal["pi", "v"],
+    tlist: np.ndarray,
+    Kappa: float,
+):
+    fig = plt.figure(figsize=(12, 8))
+    gs = fig.add_gridspec(2, 2, height_ratios=[1.2, 1], hspace=0.4, wspace=0.3)
+
+    ax1 = fig.add_subplot(gs[0, :])
+    if base == "pi":
+        ax1.set_title(r"Driving only with $\pi$")
+        ax1.plot(
+            tlist * Kappa,
+            qt_result_0.e_data["n_cav_pi"],
+            linestyle="-",
+            label=r"$n_{\pi,|0\rangle}$",
+        )
+        ax1.plot(
+            tlist * Kappa,
+            qt_result_1.e_data["n_cav_pi"],
+            linestyle="-",
+            label=r"$n_{\pi,|1\rangle}$",
+        )
+    else:
+        ax1.set_title(r"Driving only with $V$")
+        ax1.plot(
+            tlist * Kappa,
+            qt_result_0.e_data[f"n_cav_{base}"],
+            linestyle="-",
+            label=r"$n_{V,|0\rangle}$",
+        )
+        ax1.plot(
+            tlist * Kappa,
+            qt_result_1.e_data[f"n_cav_{base}"],
+            linestyle="-",
+            label=r"$n_{V,|1\rangle}$",
+        )
+    ax1.legend()
+    ax1.set_xlabel(r"$\kappa t$")
+    ax1.set_ylabel("Photon number")
+
+    ax2 = fig.add_subplot(gs[1, 0])
+    ax2.set_title(r"Population of $|0\rangle$")
+    ax2.plot(
+        tlist * Kappa, qt_result_0.e_data["P(0)"], linestyle="-", label=r"$|0\rangle$"
+    )
+    ax2.plot(
+        tlist * Kappa, qt_result_0.e_data["P(1)"], linestyle="--", label=r"$|1\rangle$"
+    )
+    ax2.plot(
+        tlist * Kappa, qt_result_0.e_data["P(e)"], linestyle="-.", label=r"$|e\rangle$"
+    )
+    ax2.legend()
+    ax2.set_xlabel(r"$\kappa t$")
+    ax2.set_ylabel("Population")
+
+    ax3 = fig.add_subplot(gs[1, 1])
+    ax3.set_title(r"Population of $|1\rangle$")
+    ax3.plot(
+        tlist * Kappa, qt_result_1.e_data["P(0)"], linestyle="--", label=r"$|0\rangle$"
+    )
+    ax3.plot(
+        tlist * Kappa, qt_result_1.e_data["P(1)"], linestyle="-", label=r"$|1\rangle$"
+    )
+    ax3.plot(
+        tlist * Kappa, qt_result_1.e_data["P(e)"], linestyle="-.", label=r"$|e\rangle$"
+    )
+    ax3.legend()
+    ax3.set_xlabel(r"$\kappa t$")
+    ax3.set_ylabel("Population")
+
+    plt.tight_layout()
+    plt.show()
+
+
+def plot_output_field_qutip(
+    field_in: np.ndarray,
+    field_out_0: np.ndarray,
+    field_out_1: np.ndarray,
+    base: Literal["pi", "v"],
+    tlist: np.ndarray,
+    Kappa: float,
+):
+    plt.figure()
+    plt.title(f"Field amplitudes vs Time in {base}-basis")
+    plt.plot(tlist * Kappa, field_in, linestyle="-", label=rf"in_{base}")
+    plt.plot(
+        tlist * Kappa,
+        np.real(field_out_0),
+        linestyle="--",
+        label=r"$Re(out_{{{state},|0\rangle}})$".format(state=base),
+    )
+    plt.plot(
+        tlist * Kappa,
+        np.imag(field_out_0),
+        linestyle=":",
+        label=r"$Im(out_{{{state},|0\rangle}})$".format(state=base),
+    )
+    plt.plot(
+        tlist * Kappa,
+        np.real(field_out_1),
+        linestyle="-.",
+        label=r"$Re(out_{{{state},|1\rangle}})$".format(state=base),
+    )
+    plt.plot(
+        tlist * Kappa,
+        np.imag(field_out_1),
+        linestyle=":",
+        label=r"$Im(out_{{{state},|1\rangle}})$".format(state=base),
+    )
+    plt.legend()
+    plt.xlabel(r"$\kappa t$")
+    plt.ylabel("Field Amplitude")
+    plt.show()
