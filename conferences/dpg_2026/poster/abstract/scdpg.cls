@@ -1,0 +1,772 @@
+\NeedsTeXFormat{LaTeX2e}%
+\ProvidesPackage{scdpg}%
+\newif\ifsc@Compilation\sc@Compilationfalse
+\newif\ifsc@Organizer\sc@Organizerfalse
+\newif\ifsc@Final\sc@Finalfalse
+\newif\ifsc@Online\sc@Onlinefalse
+\newif\ifsc@PageNumbers\sc@PageNumbersfalse
+\newif\ifsc@ThumbIndex\sc@ThumbIndexfalse
+\DeclareOption{organizer}{\sc@Organizertrue}%
+\DeclareOption{compilation}{\sc@Compilationtrue}%
+\DeclareOption{final}{\sc@Finaltrue}%
+\DeclareOption{online}{\sc@Onlinetrue}%
+\DeclareOption{pagenumbers}{\sc@PageNumberstrue}%
+\DeclareOption{thumbindex}{\sc@ThumbIndextrue}%
+\ProcessOptions
+\renewcommand\normalsize{\fontsize{8}{9.5}\selectfont}%
+\pagenumbering{arabic}%
+\def\@listi{\setlength\leftmargin{1.5em}%
+          \setlength\labelsep{.5em}%
+          \setlength\labelwidth{\leftmargin}%
+          \addtolength\labelwidth{-\labelsep}%
+          \parsep3\p@\@plus2\p@\@minus\p@%
+          \topsep6\p@\@plus2\p@\@minus3\p@%
+          \itemsep3\p@\@plus2\p@\@minus\p@}%
+\newcommand\labelitemi{\textbullet}%
+\lineskiplimit0pt%
+\abovedisplayskip0pt%
+\belowdisplayskip\abovedisplayskip
+\abovedisplayshortskip\abovedisplayskip
+\belowdisplayshortskip\abovedisplayskip
+\parindent0em%
+\parskip0ex%
+\RequirePackage[english,ngerman]{babel}%
+\RequirePackage{multicol}%
+\RequirePackage{exscale}%
+\RequirePackage{amsmath}%
+\RequirePackage{amssymb}%
+\RequirePackage{marvosym}%
+\RequirePackage{graphics}%
+\RequirePackage{lscape}%
+\RequirePackage{eso-pic}%
+\RequirePackage[T1]{fontenc}%
+\RequirePackage[resetfonts]{cmap}%
+\ifsc@ThumbIndex
+  \RequirePackage[a4paper]{geometry}%
+  \geometry{paperwidth=230mm,paperheight=317mm,%
+            top=10mm,bottom=27mm,outer=21mm,textwidth=188mm,%
+            headheight=15mm,headsep=5mm,%
+            nofoot,includeheadfoot}%
+  \special{papersize=23.0cm 31.7cm}
+  \usepackage{ifthen,color,graphicx}%
+  \setlength{\unitlength}{1cm}
+  \newlength\sc@ThumbPos%
+  \newlength\sc@ThumbSize%
+  \newlength\sc@ThumbBorder%
+  \newcommand\scThumbPos[1]{\setlength\sc@ThumbPos{#1}}%
+  \newcommand\scThumbSize[1]{\setlength\sc@ThumbSize{#1}}%
+  \newcommand\scThumbBorder[1]{\setlength\sc@ThumbBorder{#1}}%
+  \newcommand\scThumbText[1]{%
+    \gdef\sc@ThumbText{#1}%
+    \savebox{\sc@InfoBox}{\scThumbIndexFont#1}%
+    \sc@ThumbSize\wd\sc@InfoBox
+    \ifx\sc@ThumbText\@empty\else\addtolength\sc@ThumbSize{2\sc@ThumbBorder}\fi%
+    \addtolength\sc@ThumbPos{-\sc@ThumbSize}%
+  }%
+  \setlength\sc@ThumbPos{300mm}%
+  \setlength\sc@ThumbSize{0mm}%
+  \setlength\sc@ThumbBorder{2.5mm}%
+  \gdef\sc@ThumbText{}%
+  \AddToShipoutPicture{%
+    \setlength\unitlength{1cm}
+    \put(1,0){\line(0,1){0.5}}%
+    \put(0,1){\line(1,0){0.5}}%
+    \put(1,31.7){\line(0,-1){0.5}}%
+    \put(0,30.7){\line(1,0){0.5}}%
+    \put(22,31.7){\line(0,-1){0.5}}%
+    \put(23,30.7){\line(-1,0){0.5}}%
+    \put(22,0){\line(0,1){0.5}}%
+    \put(23,1){\line(-1,0){0.5}}%
+    \long\gdef\scPut(#1,#2)#3{%
+      \@killglue\raise#2%
+      \hb@xt@\z@{\kern#1\unitlength #3\hss}%
+      \ignorespaces}%
+    \ifthenelse{\equal\sc@ThumbText{}}{}{
+      \ifthenelse{\isodd{\value{page}}}{%
+        \scPut(21.2,\sc@ThumbPos){\rule{1.3cm}{\sc@ThumbSize}}%
+        \scPut(21.7,\sc@ThumbPos){\textcolor{white}{\rotatebox[origin=l]{90}{\raisebox{0pt}[0pt][0pt]{\hspace*{\sc@ThumbBorder}\scThumbIndexFont\sc@ThumbText}}}}%
+      }{%
+        \scPut(0.5,\sc@ThumbPos){\rule{1.3cm}{\sc@ThumbSize}}%
+        \scPut(1.3,\sc@ThumbPos){\textcolor{white}{\rotatebox[origin=r]{-90}{\raisebox{0pt}[0pt][0pt]{\scThumbIndexFont\sc@ThumbText\hspace*{\sc@ThumbBorder}}}}}%
+      }%
+    }%
+  }%
+\else
+  \newcommand\scThumbSize[1]{}%
+  \newcommand\scThumbPos[1]{}%
+  \newcommand\scThumbText[1]{}%
+  \usepackage[a4paper]{geometry}%
+  \geometry{top=0mm,bottom=17mm,outer=11mm,textwidth=188mm,%
+            headheight=15mm,headsep=5mm,%
+            nofoot,includeheadfoot}%
+\fi
+\ifsc@Compilation
+  \renewcommand{\@oddhead}{\makebox[0pt][l]{\rule[-1mm]{188mm}{0.1mm}}\scHeadlineSize\bfseries\leftmark\hfil\rightmark}%
+  \renewcommand{\@evenhead}{\@oddhead}%
+  \ifsc@PageNumbers
+    \renewcommand{\@oddfoot}{\hfil\raisebox{-10mm}[0pt][0pt]{\scPartInfoSize\thepage}\hfil}%
+  \else
+    \renewcommand{\@oddfoot}{}%
+  \fi
+  \renewcommand{\@evenfoot}{\@oddfoot}%
+\else
+  \pagestyle{empty}%
+\fi
+\newcommand\scAbstractHeadSize{\fontsize{9}{11}\selectfont}%
+\newcommand\scAbstractInfoSize{\fontsize{14}{18}\selectfont}%
+\newcommand\scSessionTimeLocationSize{\fontsize{10}{12}\selectfont}%
+\newcommand\scSessionNameSize{\fontsize{12}{14}\selectfont}%
+\newcommand\scPartMainHeadingSize{\fontsize{14}{18}\selectfont}%
+\newcommand\scPartHeadingSize{\fontsize{12}{14}\selectfont}%
+\newcommand\scPartInfoSize{\fontsize{10}{12}\selectfont}%
+\newcommand\scHeadlineSize{\fontsize{10}{12}\selectfont}%
+\newcommand\scIndexSize{\fontsize{7}{7.7}\selectfont}%
+\newcommand\scThumbIndexFont{\fontsize{10}{12}\selectfont\bfseries\sffamily}%
+\setlength\columnsep{6mm}%
+\setlength\columnseprule{0.1mm}%
+\setlength\premulticols{30mm}%
+\setcounter{columnbadness}{9999}%
+\ifsc@Online
+\RequirePackage[bookmarks=false,pdfborder=0 0 0]{hyperref}%
+\fi
+\newcounter{sc@AuthorCount}%
+\newcounter{sc@AuthorLoop}%
+\newcounter{sc@AffiliationCount}%
+\newcounter{sc@AffiliationLoop}%
+\newcounter{sc@InfoCount}%
+\newcounter{sc@InfoColumn}%
+\newcounter{sc@InfoLoop}%
+\newcounter{sc@CollaborationsCount}%
+\newsavebox{\sc@InfoBox}%
+\newlength\sc@InfoLength%
+\newlength\sc@InfoWidthI%
+\newlength\sc@InfoWidthII%
+\newlength\sc@InfoWidthIII%
+\newlength\sc@InfoWidthIV%
+\newlength\sc@InfoWidthV%
+\newif\ifInOpening\InOpeningfalse
+\def\sc@LanguageEn{en}%
+\def\sc@LanguageDe{de}%
+\def\sc@LanguageNone{None}%
+\def\sc@PVSession{PV}%
+\def\sc@NoAbstracts{noAbstracts}%
+\DeclareOldFontCommand{\rm}{\normalfont\rmfamily}{\mathrm}%
+\DeclareOldFontCommand{\sf}{\normalfont\sffamily}{\mathsf}%
+\DeclareOldFontCommand{\tt}{\normalfont\ttfamily}{\mathtt}%
+\DeclareOldFontCommand{\bf}{\normalfont\bfseries}{\mathbf}%
+\DeclareOldFontCommand{\it}{\normalfont\itshape}{\mathit}%
+\DeclareOldFontCommand{\sl}{\normalfont\slshape}{\@nomath\sl}%
+\DeclareOldFontCommand{\sc}{\normalfont\scshape}{\@nomath\sc}%
+\newcommand\scBookLanguage[1]{%
+  \gdef\sc@BookLanguage{#1}%
+  \ifx\sc@BookLanguage\sc@LanguageEn
+    \selectlanguage{english}%
+    \gdef\sc@ContributionTypeTalk{Talk}%
+    \gdef\sc@ContributionTypePoster{Poster}%
+  \fi
+  \ifx\sc@BookLanguage\sc@LanguageDe
+    \selectlanguage{ngerman}%
+    \gdef\sc@ContributionTypeTalk{Vortrag}%
+    \gdef\sc@ContributionTypePoster{Poster}
+  \fi
+}%
+\newcommand\scBookTitle[1]{\gdef\sc@BookTitle{#1}}%
+\scBookTitle{}%
+\newcommand\scConference[1]{\gdef\sc@Conference{#1}}%
+\newcommand\scLanguage[1]{\gdef\sc@Language{#1}}%
+\newcommand\scTitle[1]{\gdef\sc@Title{#1}}%
+\newcommand\scCollaborationName[1]{\gdef\sc@CollaborationName{#1}}%
+\newcommand\sc@ShowLink[1]{}%
+\newcommand\scAuthor[4]{%
+  \stepcounter{sc@AuthorCount}%
+  \global\@namedef{sc@Author\Roman{sc@AuthorCount}}%
+                  {\def\tmp{#1}\if\tmp\@empty\else{$\bullet$}\fi
+                   #2 #3\sc@ShowLink{$^{#4}$}}%
+}%
+\newcommand\scAffiliation[2]{%
+  \stepcounter{sc@AffiliationCount}%
+  \global\@namedef{sc@Affiliation\Roman{sc@AffiliationCount}}%
+                  {\sc@ShowLink{$^{#1}$}#2}%
+}
+\long\def\scBeginText#1\scEndText{%
+  \gdef\sc@Text{#1}
+}%
+\newcommand\scCite[2]{\par\noindent{[#1]~#2}}%
+\newcommand\scPart[1]{\gdef\sc@Part{#1}}%
+\newcommand\scContributionType[1]{\gdef\sc@ContributionType{#1}}%
+\newcommand\scTopic[1]{\gdef\sc@Topic{#1}}%
+\newcommand\scKeywords[1]{\gdef\sc@Keywords{#1}}%
+\newcommand\scEmail[1]{\gdef\sc@Email{#1}}%
+\newcommand\scCountry[1]{\gdef\sc@Country{#1}}%
+\newcommand\scSubmitTime[1]{\gdef\sc@SubmitTime{#1}}%
+\newcommand\scChangeTime[1]{\gdef\sc@ChangeTime{#1}}%
+\newcommand\scAbstractPart[1]{\gdef\sc@AbstractPart{#1}}
+\newcommand\scAbstractPartNumber[1]{\gdef\sc@AbstractPartNumber{#1}}
+\newcommand\scAbstractSession[1]{\gdef\sc@AbstractSession{#1}}
+\newcommand\scAbstractSessionNumber[1]{\gdef\sc@AbstractSessionNumber{#1}}
+\newcommand\scAbstractStart[1]{\gdef\sc@AbstractStart{#1}}
+\newcommand\scAbstractEnd[1]{\gdef\sc@AbstractEnd{#1}}
+\newcommand\scAbstractDay[1]{\gdef\sc@AbstractDay{#1}}
+\newcommand\scAbstractLocation[1]{\gdef\sc@AbstractLocation{#1}}
+\newcommand\scSessionPart[1]{\gdef\sc@SessionPart{#1}}
+\newcommand\scSessionKey[1]{\gdef\sc@SessionKey{#1}}
+\newcommand\scSessionJoinPart[1]{\gdef\sc@SessionJoinPart{#1}}
+\newcommand\scSessionJoinKey[1]{\gdef\sc@SessionJoinKey{#1}}
+\newcommand\scSessionTitle[1]{\gdef\sc@SessionTitle{#1}}
+\newcommand\scSessionChair[1]{\gdef\sc@SessionChair{#1}}
+\newcommand\scSessionSynopsis[1]{\gdef\sc@SessionSynopsis{#1}}
+\newcommand\scSessionDay[1]{\gdef\sc@SessionDay{#1}}
+\newcommand\scSessionBeginTime[1]{\gdef\sc@SessionBeginTime{#1}}
+\newcommand\scSessionEndTime[1]{\gdef\sc@SessionEndTime{#1}}
+\newcommand\scSessionLocation[1]{\gdef\sc@SessionLocation{#1}}
+\scSessionChair{}
+\scSessionSynopsis{}
+\newenvironment{scDescription}[1]{%
+  \begin{list}{%
+  }{%
+    \raggedright
+    \renewcommand\makelabel[1]{##1:\hfil}%
+    \setlength\topsep{0pt}%
+    \setlength\partopsep{0pt}%
+    \setlength\itemsep{0pt}%
+    \setlength\parsep{0pt}%
+    \setlength\rightmargin{0pt}%
+    \setlength\listparindent{0pt}%
+    \setlength\itemindent{0pt}%
+    \setlength\labelsep{1em}%
+    \settowidth\labelwidth{\makelabel{#1}}%
+    \setlength\leftmargin{\labelwidth}%
+    \addtolength\leftmargin{\labelsep}%
+  }%
+}{%
+  \end{list}%
+}%
+\newcommand\scShowAuthors
+{%
+  \renewcommand\sc@ShowLink[1]{}%
+  \ifnum\value{sc@AuthorCount}>1\relax
+    \ifnum\value{sc@AffiliationCount}>1\relax
+      \renewcommand\sc@ShowLink[1]{##1}%
+    \fi
+  \fi
+  \setcounter{sc@AuthorLoop}{0}%
+  \loop
+    \stepcounter{sc@AuthorLoop}%
+    \ifnum\value{sc@AuthorLoop}>1\relax
+      \ifnum\value{sc@AuthorLoop}=\value{sc@AuthorCount}\relax
+        \ifx\sc@Language\sc@LanguageEn
+          \ifnum\value{sc@AuthorCount}>2\relax
+            {, and }%
+          \else
+            { and }%
+          \fi
+        \fi
+        \ifx\sc@Language\sc@LanguageDe
+          { und }%
+        \fi
+      \else
+          {, }%
+      \fi
+    \fi
+    \textsc{\@nameuse{sc@Author\Roman{sc@AuthorLoop}}}%
+    \ifnum\value{sc@AuthorLoop}<\value{sc@AuthorCount}\relax
+  \repeat
+}%
+\newcommand\scShowAffiliations
+{%
+  \setcounter{sc@AffiliationLoop}{0}%
+  \loop
+    \stepcounter{sc@AffiliationLoop}%
+    { --- }%
+    \@nameuse{sc@Affiliation\Roman{sc@AffiliationLoop}}%
+    \ifnum\value{sc@AffiliationLoop}<\value{sc@AffiliationCount}\relax
+  \repeat
+}%
+\newcommand\scOrganizeBox[2]{%
+  \framebox{%
+    \hspace*{0.2em}%
+    \parbox{2cm}{%
+      \centerline{\fontsize{6}{8}\selectfont\vphantom{Ag}#1}%
+      \vspace{1ex}%
+      \hrule
+      \vspace{2ex}%
+      \centerline{\fontsize{14}{18}\selectfont\vphantom{Ag}#2}%
+      \vspace*{1ex}%
+    }%
+    \hspace*{0.2em}%
+  }%
+}%
+\newenvironment{scAbstract}{%
+  \setcounter{sc@AuthorCount}{0}%
+  \setcounter{sc@AffiliationCount}{0}%
+  \gdef\sc@CollaborationName{}%
+  \gdef\sc@AbstractPart{}%
+  \gdef\sc@AbstractPartNumber{}%
+  \gdef\sc@AbstractSession{}%
+  \gdef\sc@AbstractSessionNumber{}%
+  \gdef\sc@AbstractStart{}%
+  \gdef\sc@AbstractEnd{}%
+  \gdef\sc@AbstractDay{}%
+  \gdef\sc@AbstractLocation{}%
+  \gdef\sc@ChangeTime{}%
+  \gdef\sc@SubmitTime{}%
+  \gdef\sc@Keywords{}%
+}{%
+  \ifx\sc@SessionChair\sc@NoAbstracts\else
+  \ifx\sc@Language\sc@LanguageNone\begin{otherlanguage*}{english}\fi
+  \ifx\sc@Language\sc@LanguageEn\begin{otherlanguage*}{english}\fi
+  \ifx\sc@Language\sc@LanguageDe\begin{otherlanguage*}{ngerman}\fi
+  \ifsc@Compilation
+    \ifsc@Final
+      \vtop{\hsize\linewidth
+    \fi
+    {%
+      \scAbstractHeadSize
+      \ifx\sc@ContributionType\sc@ContributionTypeTalk\else
+        \ifx\sc@ContributionType\sc@ContributionTypePoster\else
+          \textbf{\sc@ContributionType}
+        \fi
+      \fi
+      \hfill
+      \ifx\sc@SessionPart\sc@PVSession PV \uppercase\expandafter{\romannumeral\sc@SessionKey}\else\sc@SessionPart{} \sc@SessionKey.\sc@AbstractSessionNumber\fi
+      \ifsc@Organizer\textit{~(\sc@AbstractPartNumber)}\fi\quad
+      \sc@AbstractDay{} \sc@AbstractStart\quad
+      \ifsc@Online
+        \ifx\sc@SessionPart\sc@PVSession
+          \hypertarget{\sc@SessionKey}{\sc@AbstractLocation}%
+        \else
+          \hypertarget{\sc@AbstractSessionNumber}{\sc@AbstractLocation}%
+        \fi
+      \else
+        \sc@AbstractLocation
+      \fi
+      \par
+    }%
+    \vspace{0.2ex}%
+  \else
+    \linewidth136.5mm
+    \ifsc@Organizer
+      \AddToShipoutPicture*{%
+        \setlength\unitlength{1cm}
+        \put(17,26){\scOrganizeBox{Part}{\sc@AbstractPart}}%
+        \put(17,24){\scOrganizeBox{Number in Part}{\sc@AbstractPartNumber}}%
+        \put(17,22){\scOrganizeBox{Session}{\sc@AbstractSession}}%
+        \put(17,20){\scOrganizeBox{Number in session}{\sc@AbstractSessionNumber}}%
+        \put(17,18){\scOrganizeBox{Start}{\sc@AbstractStart}}%
+        \put(17,16){\scOrganizeBox{End}{\sc@AbstractEnd}}%
+        \put(17,14){\scOrganizeBox{Day}{\sc@AbstractDay}}%
+        \put(17,12){\scOrganizeBox{Location}{\sc@AbstractLocation}}%
+      }%
+    \else
+      \ifx\sc@Language\sc@LanguageEn{\scAbstractInfoSize\bfseries\sffamily Contribution submission to the conference \sc@Conference\par}\fi
+      \ifx\sc@Language\sc@LanguageDe{\scAbstractInfoSize\bfseries\sffamily Beitragsanmeldung zur Konferenz \sc@Conference\par}\fi
+      \vspace{3ex}%
+    \fi
+    \linewidth91mm
+    \setbox0=\vtop{\hsize\linewidth
+  \fi
+  \textbf{\sc@Title}%
+  { --- }%
+  \scShowAuthors
+  \ifx\sc@CollaborationName\@empty\else
+    \ifx\sc@Language\sc@LanguageEn{ for the \sc@CollaborationName-Collaboration}\fi
+    \ifx\sc@Language\sc@LanguageDe{ f\"ur die \sc@CollaborationName-Kollaboration}\fi
+  \fi
+  \scShowAffiliations
+  \par
+  \ifsc@Compilation
+    \ifsc@Final
+      }%
+    \fi
+  \fi
+  \vspace{0.8ex}%
+  {\setlength\parindent{1em}\noindent\sc@Text\par}%
+  \ifsc@Compilation
+    \vspace{2ex}%
+  \else%
+    }%
+    \ifsc@Organizer
+      \scalebox{1.5}{\box0}%
+    \else
+      \ifdim\dp0>25\baselineskip
+        \setbox1=\vsplit0 to 25\baselineskip
+        \immediate\write16{**************************}%
+        \immediate\write16{*** ABSTRACT TOO LONG! ***}%
+        \immediate\write16{**************************}%
+        \framebox{\scalebox{1.5}{\box1}}\par
+        \vspace{1ex}%
+        \ifx\sc@Language\sc@LanguageEn(Futher material exceeds the size limit indicated by the box.)\par\fi
+        \ifx\sc@Language\sc@LanguageDe(Weiteres Material \"uberschreitet das Gr\"o{\ss}enlimit, das durch die Box gezeigt wird.)\par\fi
+      \else
+        \scalebox{1.5}{\box0}%
+      \fi
+    \fi
+    \vspace{5ex}%
+    {%
+      \linewidth136.5mm
+      \scAbstractInfoSize\bfseries\sffamily
+      \begin{scDescription}{Submitted}%
+        \item[Part]\sc@Part
+        \item[Type]\sc@ContributionType
+        \item[Topic]\sc@Topic
+        \item[Keywords]\sc@Keywords
+        \item[Email]\sc@Email
+        \ifx\sc@SubmitTime\@empty\else\item[Submitted]\sc@SubmitTime\fi
+        \ifx\sc@ChangeTime\@empty\else\item[Changed]\sc@ChangeTime\fi
+      \end{scDescription}%
+    }%
+  \fi
+  \end{otherlanguage*}
+  \fi
+}%
+\newenvironment{scCollaboration}{%
+  \setcounter{sc@AuthorCount}{0}%
+  \setcounter{sc@AffiliationCount}{0}%
+  \ifsc@Compilation\else\begin{multicols}{2}\fi
+}{%
+  \let\sc@Language\sc@BookLanguage
+  \ifsc@Compilation
+    \stepcounter{sc@CollaborationsCount}%
+    \ifsc@Online
+      \hypertarget{\thesc@CollaborationsCount}{%
+        \ifx\sc@BookLanguage\sc@LanguageEn\textbf{Coll \thesc@CollaborationsCount: \sc@CollaborationName-Collaboration}\fi
+        \ifx\sc@BookLanguage\sc@LanguageDe\textbf{Koll \thesc@CollaborationsCount: \sc@CollaborationName-Kollaboration}\fi
+      }%
+    \else
+      \ifx\sc@BookLanguage\sc@LanguageEn\textbf{Coll \thesc@CollaborationsCount: \sc@CollaborationName-Collaboration}\fi
+      \ifx\sc@BookLanguage\sc@LanguageDe\textbf{Koll \thesc@CollaborationsCount: \sc@CollaborationName-Kollaboration}\fi
+    \fi
+  \else
+    \ifx\sc@BookLanguage\sc@LanguageEn\textbf{\sc@CollaborationName-Collaboration}\fi
+    \ifx\sc@BookLanguage\sc@LanguageDe\textbf{\sc@CollaborationName-Kollaboration}\fi
+  \fi
+  \par\scShowAuthors\scShowAffiliations\par
+  \ifsc@Compilation\vspace{2ex}\else\end{multicols}\fi
+}%
+\newcommand\scBreak[1]{%
+  \ifx\sc@SessionChair\sc@NoAbstracts\else\ifx\sc@SessionPart\sc@PVSession\else
+  \vspace{1ex}{\bfseries\scAbstractHeadSize#1\par}\vspace{2ex}%
+  \fi\fi
+}%
+\newcommand\scSessionHead[1]{\vspace{#1}\vspace{#1}%
+                             {\centering\scSessionNameSize\bfseries\sffamily\sc@SessionPart{} \sc@SessionKey: \sc@SessionTitle\par}%
+                             \ifx\sc@SessionSynopsis\@empty\else\begin{scPartText}\scPartInfoSize\sc@SessionSynopsis\end{scPartText}\vspace{-7mm}\fi
+                             \ifx\sc@SessionChair\@empty\else
+                              \ifx\sc@SessionChair\sc@NoAbstracts\else
+                               \def\tmp{T}\ifx\sc@SessionPart\tmp{\centering\scSessionTimeLocationSize\sffamily Convenor: \sc@SessionChair\par}\fi%
+                               \def\tmp{HK}\ifx\sc@SessionPart\tmp{\centering\scSessionTimeLocationSize\sffamily Convenor: \sc@SessionChair\par}\fi%
+                               \def\tmp{TUT}\ifx\sc@SessionPart\tmp{\centering\scSessionTimeLocationSize\sffamily Chair: \sc@SessionChair\par}\fi%
+                               \def\tmp{CPP}\ifx\sc@SessionPart\tmp{\centering\scSessionTimeLocationSize\sffamily Chair: \sc@SessionChair\par}\fi%
+                               \def\tmp{HL}\ifx\sc@SessionPart\tmp{\centering\scSessionTimeLocationSize\sffamily Chair: \sc@SessionChair\par}\fi%
+                               \def\tmp{MI}\ifx\sc@SessionPart\tmp{\centering\scSessionTimeLocationSize\sffamily Chair: \sc@SessionChair\par}\fi%
+                               \def\tmp{SYQR}\ifx\sc@SessionPart\tmp{\centering\scSessionTimeLocationSize\sffamily Chair: \sc@SessionChair\par}\fi%
+                              \fi
+                             \fi
+                             \vspace{2ex}%
+                             \vspace{#1}%
+                             {\scSessionTimeLocationSize
+                             \ifx\sc@BookLanguage\sc@LanguageEn Time: \fi
+                             \ifx\sc@BookLanguage\sc@LanguageDe Zeit: \fi
+                             \sc@SessionDay{}
+                             \def\tmp{0:00}%
+                             \ifx\sc@SessionBeginTime\tmp
+                             \ifx\sc@BookLanguage\sc@LanguageEn all day\fi
+                             \ifx\sc@BookLanguage\sc@LanguageDe ganztags\fi
+                             \else
+                             \sc@SessionBeginTime--\sc@SessionEndTime
+                             \fi\hfill
+                             \ifx\sc@BookLanguage\sc@LanguageEn Location: \fi
+                             \ifx\sc@BookLanguage\sc@LanguageDe Raum: \fi
+                             \sc@SessionLocation\par}%
+                             \ifx\sc@BookTitle\@empty
+                                 \markright{\sc@SessionDay}%
+                             \else
+                                 \markboth{\sc@BookTitle{} -- \sc@SessionPart}{\sc@SessionDay}%
+                             \fi
+                             \vspace{#1}}
+\newenvironment{scSession}[1][0pt]{%
+  \ifx\sc@SessionChair\sc@NoAbstracts\scSessionHead{#1}\vspace{2ex}\ifx\sc@BookLanguage\sc@LanguageDe Siehe \sc@SessionJoinPart{} \sc@SessionJoinKey{} f\"ur Details zu dieser Sitzung.\else See \sc@SessionJoinPart{} \sc@SessionJoinKey{} for details of this session.\fi\par\vspace{2ex}\else
+  \ifx\sc@SessionPart\sc@PVSession\else\begin{multicols}{2}[\scSessionHead{#1}]\fi\fi
+}%
+{%
+  \ifx\sc@SessionChair\sc@NoAbstracts\else
+  \ifx\sc@SessionPart\sc@PVSession\else\end{multicols}\vspace{3ex}\fi\fi
+  \scSessionChair{}%
+  \scSessionSynopsis{}%
+}%
+\newenvironment{scSessions}[2]{%
+  \def\tmp{#1}\ifx\tmp\sc@PVSession
+    \ifx\sc@BookTitle\@empty
+        \markboth{#2 (#1)}{}%
+    \else
+        \markboth{\sc@BookTitle{} -- #1}{}%
+    \fi
+    \begin{multicols}{2}%
+  \fi
+}%
+{%
+  \ifx\sc@SessionPart\sc@PVSession
+    \end{multicols}%
+  \fi
+}%
+\newenvironment{scCollaborations}{%
+  \setcounter{sc@CollaborationsCount}{0}%
+  \ifx\sc@BookTitle\@empty
+      \markboth{\ifx\sc@BookLanguage\sc@LanguageEn Collaborations (Coll)\fi
+                \ifx\sc@BookLanguage\sc@LanguageDe Kollaborationen (Koll)\fi}{}%
+  \else
+      \markboth{\sc@BookTitle}{\ifx\sc@BookLanguage\sc@LanguageEn Collaborations (Coll)\fi\ifx\sc@BookLanguage\sc@LanguageDe Kollaborationen (Koll)\fi}%
+  \fi
+  \begin{multicols}{2}%
+}%
+{%
+  \end{multicols}%
+}%
+\newenvironment{scBreakSession}[1][0pt]{%
+  \scSessionHead{#1}\par
+}%
+{%
+  \vspace{4mm}%
+}%
+\newenvironment{scIndex}{%
+  \ifx\sc@BookTitle\@empty
+      \markboth{\ifx\sc@BookLanguage\sc@LanguageEn Author Index\fi
+                \ifx\sc@BookLanguage\sc@LanguageDe Autorenverzeichnis\fi}{}%
+  \else
+      \markboth{\sc@BookTitle}{\ifx\sc@BookLanguage\sc@LanguageEn Author Index\fi\ifx\sc@BookLanguage\sc@LanguageDe Autorenverzeichnis\fi}%
+  \fi
+  \sffamily\scIndexSize\flushleft
+  \begin{multicols}{4}%
+}%
+{%
+  \end{multicols}%
+}%
+\newcommand\scIndexItem[2]%
+{%
+  \hangafter=1\hangindent2em%
+  #1\hspace{1em}\dotfill\nobreak#2\hfill\par
+}%
+\newcommand\scIndexEntry[2]{%
+  \hangafter=1\hangindent1em#1%
+  \hspace{1em}\dotfill\nobreak#2\hfill\par
+}%
+\newcommand\scIndexColEntry[2]{%
+  \hangafter=1\hangindent1em#1%
+  \ifx\sc@BookLanguage\sc@LanguageEn-Collaboration\fi
+  \ifx\sc@BookLanguage\sc@LanguageDe-Kollaboration\fi
+  \hspace{1em}\dotfill\nobreak#2\hfill\par
+}%
+\newcommand\scIndexReference[5]{%
+  \def\tmp{#1}\ifx\tmp\@empty\else{$\bullet$}\fi
+  \def\tmp{#2}%
+  \ifx\tmp\sc@PVSession
+    \ifsc@Online
+      \hyperref{pv.pdf}{}{#3}{PV~\uppercase\expandafter{\romannumeral#3}}%
+    \else
+      PV~\uppercase\expandafter{\romannumeral#3}%
+    \fi
+  \else
+    \ifsc@Online
+      \lowercase\expandafter{\expandafter
+        \def\expandafter\tmp\expandafter{#2#3.pdf}%
+      }%
+      \expandafter\hyperref\expandafter{\tmp}{}{#4}{#2~#3.#4}%
+    \else
+      #2~#3.#4%
+    \fi
+  \fi
+}%
+\newcommand\scIndexReferenceCollaboration[1]{\ifsc@Online\hyperref{collaborations.pdf}{}{#1}{\ifx\sc@BookLanguage\sc@LanguageEn Coll\fi\ifx\sc@BookLanguage\sc@LanguageDe Koll\fi~#1}\else\ifx\sc@BookLanguage\sc@LanguageEn Coll\fi\ifx\sc@BookLanguage\sc@LanguageDe Koll\fi~#1\fi}%
+\newcommand\scIndexReferenceSeparator{, }%
+\renewcommand\cite[1]{\ClassError{scdpg}{citation labeling not available}{instead of \string\cite{label} and \string\bibitem{label} use [1] and \string\scCite{1}{reference}}}%
+\renewcommand\label[1]{\ClassError{scdpg}{don't use labels}{use the numbers directly}}%
+\renewcommand\ref[1]{\ClassError{scdpg}{don't use labels}{use the numbers directly}}%
+\newcommand\scNoUseTeX{\ClassError{scdpg}{submission system not in LaTeX mode}{you can't use LaTeX to process such a submission directly}}%
+\tolerance=500%
+\emergencystretch=20pt%
+% opening
+\newenvironment{scPartOpening}[2]{%
+  \InOpeningtrue
+  \scPartInfoSize
+  \ifx\sc@BookTitle\@empty
+      \markboth{#2 (#1)}{\ifx\sc@BookLanguage\sc@LanguageEn Overview\fi
+                         \ifx\sc@BookLanguage\sc@LanguageDe \"Ubersicht\fi}%
+  \else
+      \markboth{\sc@BookTitle{} -- #1}{\ifx\sc@BookLanguage\sc@LanguageEn Overview\fi
+                                     \ifx\sc@BookLanguage\sc@LanguageDe \"Ubersicht\fi}%
+  \fi
+}{%
+  \clearpage
+}%
+\newcommand\scPartMainHeading[1]{%
+  \vspace*{5mm}%
+  {\centering\scPartMainHeadingSize\bfseries\sffamily#1\par}%
+  \vspace{5mm}%
+}%
+\newcommand\scPartHeading[1]{%
+  {\scPartHeadingSize\bfseries\sffamily#1\par}%
+  \vspace{3mm}%
+}%
+\newcommand\scPartHeadingComment[1]{%
+  \par\scPartInfoSize\mdseries\rmfamily#1%
+}%
+\newcommand\scPartOneAddress[1]{%
+  {\centering#1\par}
+  \vspace{5mm}%
+}%
+\newcommand\scPartTwoAddresses[2]{%
+  \hfil\parbox[t]{0.4\linewidth}{\centering#1}\quad
+  \parbox[t]{0.4\linewidth}{\centering#2}\hfil\par
+  \vspace{5mm}%
+}%
+\newcommand\scPartThreeAddresses[3]{%
+  \hfil\parbox[t]{0.3\linewidth}{\centering#1}\quad
+  \parbox[t]{0.3\linewidth}{\centering#2}\quad
+  \parbox[t]{0.3\linewidth}{\centering#3}\hfil\par
+  \vspace{5mm}%
+}%
+\newenvironment{scPartText}{%
+  \list{}{\setlength\leftmargin{5em}\setlength\rightmargin{\leftmargin}}%
+  \item\relax
+}{%
+  \endlist
+  \vspace{5mm}%
+}%
+% opening lists
+\newcommand\scAuthorInfo[3]{\def\tmp{#1}\ifx\tmp\@empty\else{$\bullet$}\fi#2 #3}%
+\newcommand\scAuthorInfoSeparator{, }%
+%show presenting author only:
+%\newcommand\scAuthorInfo[3]{\def\tmp{#1}\ifx\tmp\@empty\else#2 #3\fi}%
+%\newcommand\scAuthorInfoSeparator{}%
+\newcommand\scTime[2]{\def\tmp{#2}\def\colon{:}\ifx\tmp\colon{\hphantom{0}}\fi#1#2}%
+\newcommand\sc@SetInfoColumn[1]{
+  \stepcounter{sc@InfoColumn}%
+  \savebox{\sc@InfoBox}{#1}%
+  \expandafter\ifdim\@nameuse{sc@InfoWidth\Roman{sc@InfoColumn}}<\wd\sc@InfoBox
+    \@nameuse{sc@InfoWidth\Roman{sc@InfoColumn}}\wd\sc@InfoBox
+  \fi
+  \global\@namedef{sc@InfoColumn\Roman{sc@InfoColumn}Row\Roman{sc@InfoCount}}{#1}%
+}%
+\newcommand\scAbstractInfo[9]{%
+  \stepcounter{sc@InfoCount}%
+  \setcounter{sc@InfoColumn}{0}%
+  \sc@SetInfoColumn{\def\tmp{#1}\ifx\tmp\sc@PVSession PV \uppercase\expandafter{\romannumeral#2}\else#1 #2.#7\fi\hspace{1.2em}}%
+  \sc@SetInfoColumn{#4\hspace{1.2em}}%
+  \sc@SetInfoColumn{\scTime#5--\scTime#6{}\hspace{1.5em}}%
+  \sc@SetInfoColumn{#3\hspace{1.5em}}%
+  \sc@SetInfoColumn{\textbf{#8} --- \textsc{#9}\par\vspace{-\prevdepth}}%
+  \ifsc@Online
+    \edef\infocount{\roman{sc@InfoCount}}%
+    \def\tmp{#1}\ifx\tmp\sc@PVSession
+      \lowercase{%
+        \global\@namedef{sc@file\infocount}{#1}%
+        \global\@namedef{sc@anchor\infocount}{#2}%
+      }%
+    \else
+      \lowercase{%
+        \global\@namedef{sc@file\infocount}{#1#2}%
+        \global\@namedef{sc@anchor\infocount}{#7}%
+      }%
+    \fi
+  \fi
+  \global\@namedef{sc@InfoColumnIgnoreRow\Roman{sc@InfoCount}}{#4}%
+}%
+\newenvironment{scAbstractList}[1]{%
+  \def\tmp{#1}\ifx\tmp\@empty\else\scPartHeading{#1}\fi%
+  \setcounter{sc@InfoCount}{0}%
+  \setlength\sc@InfoWidthI{0pt}%
+  \setlength\sc@InfoWidthII{0pt}%
+  \setlength\sc@InfoWidthIII{0pt}%
+  \setlength\sc@InfoWidthIV{0pt}%
+  \setlength\sc@InfoWidthV{0pt}%
+}{%
+  \setlength\sc@InfoLength{\linewidth}%
+  \addtolength\sc@InfoLength{-\sc@InfoWidthI}%
+  \addtolength\sc@InfoLength{-\sc@InfoWidthII}%
+  \addtolength\sc@InfoLength{-\sc@InfoWidthIII}%
+  \addtolength\sc@InfoLength{-\sc@InfoWidthIV}%
+  \setcounter{sc@InfoLoop}{0}%
+  \loop
+    \stepcounter{sc@InfoLoop}%
+    \edef\tmp{\@nameuse{sc@InfoColumnIgnoreRow\Roman{sc@InfoLoop}}}%
+    \ifx\tmp\@empty
+      \rule{0pt}{\baselineskip}
+    \else
+      \ifsc@Online
+        \expandafter\hyperref\expandafter{\@nameuse{sc@file\roman{sc@InfoLoop}}.pdf}{}{\@nameuse{sc@anchor\roman{sc@InfoLoop}}}{%
+          \raisebox{0pt}[0pt][0pt]{\makebox[\sc@InfoWidthI][l]{\@nameuse{sc@InfoColumnIRow\Roman{sc@InfoLoop}}}}%
+          \raisebox{0pt}[0pt][0pt]{\makebox[\sc@InfoWidthII][l]{\@nameuse{sc@InfoColumnIIRow\Roman{sc@InfoLoop}}}}%
+          \raisebox{0pt}[0pt][0pt]{\makebox[\sc@InfoWidthIII][l]{\@nameuse{sc@InfoColumnIIIRow\Roman{sc@InfoLoop}}}}%
+          \raisebox{0pt}[0pt][0pt]{\makebox[\sc@InfoWidthIV][l]{\@nameuse{sc@InfoColumnIVRow\Roman{sc@InfoLoop}}}}%
+          \raisebox{0pt}[\baselineskip]{\parbox[t]{\sc@InfoLength}{\@nameuse{sc@InfoColumnVRow\Roman{sc@InfoLoop}}}}%
+        }%
+      \else
+        \raisebox{0pt}[0pt][0pt]{\makebox[\sc@InfoWidthI][l]{\@nameuse{sc@InfoColumnIRow\Roman{sc@InfoLoop}}}}%
+        \raisebox{0pt}[0pt][0pt]{\makebox[\sc@InfoWidthII][l]{\@nameuse{sc@InfoColumnIIRow\Roman{sc@InfoLoop}}}}%
+        \raisebox{0pt}[0pt][0pt]{\makebox[\sc@InfoWidthIII][l]{\@nameuse{sc@InfoColumnIIIRow\Roman{sc@InfoLoop}}}}%
+        \raisebox{0pt}[0pt][0pt]{\makebox[\sc@InfoWidthIV][l]{\@nameuse{sc@InfoColumnIVRow\Roman{sc@InfoLoop}}}}%
+        \raisebox{0pt}[\baselineskip]{\parbox[t]{\sc@InfoLength}{\@nameuse{sc@InfoColumnVRow\Roman{sc@InfoLoop}}}}%
+      \fi
+    \fi
+    \par
+    \ifnum\value{sc@InfoLoop}<\value{sc@InfoCount}\relax
+  \repeat
+  \vspace{10mm}%
+}%
+\newcommand\scSessionInfo[8]{%
+  \stepcounter{sc@InfoCount}%
+  \setcounter{sc@InfoColumn}{0}%
+  \sc@SetInfoColumn{#1 \def\zero{0}\def\tmp{#7}\ifx\tmp\zero#2\else#2.1--#2.#7\fi\hspace{1.2em}}%
+  \def\tmp{Mo-Fr}\def\tmpa{#4}\ifx\tmp\tmpa\sc@SetInfoColumn{#4}\else\sc@SetInfoColumn{#4\hspace{1.2em}}\fi
+  \def\tmp{0:00}\def\tmpa{#5}\ifx\tmp\tmpa
+    \ifx\sc@BookLanguage\sc@LanguageEn\sc@SetInfoColumn{\hfill all day\hspace{1.5em}}\fi
+    \ifx\sc@BookLanguage\sc@LanguageDe\sc@SetInfoColumn{\hfill ganztags\hspace{1.5em}}\fi
+  \else
+    \sc@SetInfoColumn{\scTime#5--\scTime#6\hspace{1.5em}}
+  \fi
+  \sc@SetInfoColumn{#3\hspace{1.5em}}%
+  \sc@SetInfoColumn{\textbf{#8}\par\vspace{-\prevdepth}}%
+  \ifsc@Online
+    \edef\infocount{\roman{sc@InfoCount}}%
+    \lowercase{%
+      \global\@namedef{sc@file\infocount}{#1#2}%
+    }%
+  \fi
+}%
+\newenvironment{scSessionList}[1]{%
+  \scPartHeading{#1}%
+  \setcounter{sc@InfoCount}{0}%
+  \setlength\sc@InfoWidthI{0pt}%
+  \setlength\sc@InfoWidthII{0pt}%
+  \setlength\sc@InfoWidthIII{0pt}%
+  \setlength\sc@InfoWidthIV{0pt}%
+  \setlength\sc@InfoWidthV{0pt}%
+}{%
+  \setlength\sc@InfoLength{\linewidth}%
+  \addtolength\sc@InfoLength{-\sc@InfoWidthI}%
+  \addtolength\sc@InfoLength{-\sc@InfoWidthII}%
+  \addtolength\sc@InfoLength{-\sc@InfoWidthIII}%
+  \addtolength\sc@InfoLength{-\sc@InfoWidthIV}%
+  \setcounter{sc@InfoLoop}{0}%
+  \loop
+    \stepcounter{sc@InfoLoop}%
+    \ifsc@Online
+      \expandafter\hyperref\expandafter{\@nameuse{sc@file\roman{sc@InfoLoop}}.pdf}{}{}{%
+        \raisebox{0pt}[0pt][0pt]{\makebox[\sc@InfoWidthI][l]{\@nameuse{sc@InfoColumnIRow\Roman{sc@InfoLoop}}}}%
+        \raisebox{0pt}[0pt][0pt]{\makebox[\sc@InfoWidthII][l]{\@nameuse{sc@InfoColumnIIRow\Roman{sc@InfoLoop}}}}%
+        \raisebox{0pt}[0pt][0pt]{\makebox[\sc@InfoWidthIII][l]{\@nameuse{sc@InfoColumnIIIRow\Roman{sc@InfoLoop}}}}%
+        \raisebox{0pt}[0pt][0pt]{\makebox[\sc@InfoWidthIV][l]{\@nameuse{sc@InfoColumnIVRow\Roman{sc@InfoLoop}}}}%
+        \raisebox{0pt}[\baselineskip]{\parbox[t]{\sc@InfoLength}{\@nameuse{sc@InfoColumnVRow\Roman{sc@InfoLoop}}}}%
+      }%
+    \else
+      \raisebox{0pt}[0pt][0pt]{\makebox[\sc@InfoWidthI][l]{\@nameuse{sc@InfoColumnIRow\Roman{sc@InfoLoop}}}}%
+      \raisebox{0pt}[0pt][0pt]{\makebox[\sc@InfoWidthII][l]{\@nameuse{sc@InfoColumnIIRow\Roman{sc@InfoLoop}}}}%
+      \raisebox{0pt}[0pt][0pt]{\makebox[\sc@InfoWidthIII][l]{\@nameuse{sc@InfoColumnIIIRow\Roman{sc@InfoLoop}}}}%
+      \raisebox{0pt}[0pt][0pt]{\makebox[\sc@InfoWidthIV][l]{\@nameuse{sc@InfoColumnIVRow\Roman{sc@InfoLoop}}}}%
+      \raisebox{0pt}[\baselineskip]{\parbox[t]{\sc@InfoLength}{\@nameuse{sc@InfoColumnVRow\Roman{sc@InfoLoop}}}}%
+    \fi
+    \par
+    \ifnum\value{sc@InfoLoop}<\value{sc@InfoCount}\relax
+  \repeat
+  \vspace{10mm}%
+}%
