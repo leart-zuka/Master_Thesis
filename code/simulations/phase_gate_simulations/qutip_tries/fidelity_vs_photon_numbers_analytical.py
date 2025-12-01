@@ -11,7 +11,7 @@ params_dir = {
     "kappa_oc": 2 * np.pi * 0.058 * 0.85,
     "kappa_m": 2 * np.pi * 0.058 * 0.125,
     "kappa_t": 2 * np.pi * 0.058 * 0.025,
-    "gamma": 2 * np.pi * 0.006065,
+    "gamma": 2 * np.pi * 0.006065 / 2,
     "mu_rf": 0.978,
     "mu_fc": 0.873,
     "mu_fc_phi": 0.024,
@@ -31,11 +31,6 @@ U_ideal = np.array(
 
 alpha2Array = np.logspace(-2, 1.5, 100)
 alphaArray = np.sqrt(alpha2Array)
-
-atom0 = qt.basis(2, 0)
-atom0_dm = qt.ket2dm(atom0)
-atom1 = qt.basis(2, 1)
-atom1_dm = qt.ket2dm(atom1)
 
 fidelity = np.zeros(len(alpha2Array))
 
@@ -101,8 +96,8 @@ for i, alpha in enumerate(alphaArray):
     c_1_pi = R1[0][0]
     c_0_V = R0[1][1]
     c_1_V = R1[1][1]
-    c_0_V *= np.sqrt(0.17)
-    c_1_V *= np.sqrt(0.17)
+    c_0_V *= np.sqrt(0.24)
+    c_1_V *= np.sqrt(0.24)
     K_ref = np.array(
         [
             [c_1_V, 0, 0, 0],  # |1,V>
