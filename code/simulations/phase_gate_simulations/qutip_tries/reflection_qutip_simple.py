@@ -138,16 +138,21 @@ e_obs = {
     "a_v": a_v,
 }
 
+p_e_to_1 = 3 / 59
+p_e_to_dark = 56 / 59
+
 c_obs = [
     np.sqrt(Kappa_oc) * a_pi,
     np.sqrt(Kappa_oc) * a_v,
     np.sqrt(Kappa_internal) * a_pi,
     np.sqrt(Kappa_internal) * a_v,
-    np.sqrt(Gamma_5P32_5S) * sigma,
-    np.sqrt(1 / 120 * Gamma_5P32_5S) * sigma_bad,
-    np.sqrt(1 / 120 * Gamma_5P32_5S) * sigma_bad,
-    np.sqrt(5 / 24 * Gamma_5P32_5S) * sigma_bad,
-    np.sqrt(5 / 24 * Gamma_5P32_5S) * sigma_bad,
+    # np.sqrt(1 / 40 * Gamma_5P32_5S) * sigma,
+    # np.sqrt(1 / 120 * Gamma_5P32_5S) * sigma_bad,
+    # np.sqrt(1 / 120 * Gamma_5P32_5S) * sigma_bad,
+    # np.sqrt(5 / 24 * Gamma_5P32_5S) * sigma_bad,
+    # np.sqrt(5 / 24 * Gamma_5P32_5S) * sigma_bad,
+    np.sqrt(p_e_to_1 * Gamma_5P32_5S) * sigma,  # |e> -> |1>
+    np.sqrt(p_e_to_dark * Gamma_5P32_5S) * sigma_bad,  # |e> -> |dark>
 ]
 
 
@@ -161,20 +166,20 @@ def compute_output_field(
     return alpha_out
 
 
-out_0 = run_sim(driving_field_destr_operator=a_v, e_obs=e_obs, c_obs=c_obs, psi=psi_0)
-out_1 = run_sim(driving_field_destr_operator=a_v, e_obs=e_obs, c_obs=c_obs, psi=psi_1)
+out_0 = run_sim(driving_field_destr_operator=a_pi, e_obs=e_obs, c_obs=c_obs, psi=psi_0)
+out_1 = run_sim(driving_field_destr_operator=a_pi, e_obs=e_obs, c_obs=c_obs, psi=psi_1)
 
 field_in: np.ndarray = input_shape(tlist, args)
 field_out_0 = compute_output_field(
-    input_field=field_in, results=out_0, cavity_mode="a_v"
+    input_field=field_in, results=out_0, cavity_mode="a_pi"
 )
 field_out_1 = compute_output_field(
-    input_field=field_in, results=out_1, cavity_mode="a_v"
+    input_field=field_in, results=out_1, cavity_mode="a_pi"
 )
 
-plot_photon_number_statistics_qutip(out_0, out_1, "v", tlist, Kappa)
+plot_photon_number_statistics_qutip(out_0, out_1, "pi", tlist, Kappa)
 
-plot_output_field_qutip(field_in, field_out_0, field_out_1, "v", tlist, Kappa)
+plot_output_field_qutip(field_in, field_out_0, field_out_1, "pi", tlist, Kappa)
 
 
 ampl_in = sum(np.nan_to_num(np.abs(field_in)) ** 2) * (tlist[1] - tlist[0])
