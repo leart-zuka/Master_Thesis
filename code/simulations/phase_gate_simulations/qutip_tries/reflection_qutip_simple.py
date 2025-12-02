@@ -28,10 +28,10 @@ Delta_c_v = 2 * np.pi * 0.5
 Delta_a = 2 * np.pi * 0
 
 Atom_dimensions = 4
-Photon_dimensions = 3
+Photon_dimensions = 2
 
 tlist = np.linspace(0.0, 8000, 1000)
-args = {"amp": 0.0194, "t0": 4000, "tau": 70.0, "tau_start": 91.0, "sigma": 1500.0}
+args = {"amp": 0.0198, "t0": 4000, "tau": 70.0, "tau_start": 91.0, "sigma": 1500.0}
 
 atom_0 = qt.basis(Atom_dimensions, 0)
 atom_1 = qt.basis(Atom_dimensions, 1)
@@ -161,91 +161,91 @@ def compute_output_field(
     return alpha_out
 
 
-#
-# out_0 = run_sim(driving_field_destr_operator=a_pi, e_obs=e_obs, c_obs=c_obs, psi=psi_0)
-# out_1 = run_sim(driving_field_destr_operator=a_pi, e_obs=e_obs, c_obs=c_obs, psi=psi_1)
-#
-# field_in: np.ndarray = input_shape(tlist, args)
-# field_out_0 = compute_output_field(
-#     input_field=field_in, results=out_0, cavity_mode="a_pi"
-# )
-# field_out_1 = compute_output_field(
-#     input_field=field_in, results=out_1, cavity_mode="a_pi"
-# )
-#
-# plot_photon_number_statistics_qutip(out_0, out_1, "pi", tlist, Kappa)
-#
-# plot_output_field_qutip(field_in, field_out_0, field_out_1, "pi", tlist, Kappa)
-#
-#
-# ampl_in = sum(np.nan_to_num(np.abs(field_in)) ** 2) * (tlist[1] - tlist[0])
-# ampl_0 = sum(np.nan_to_num(np.abs(field_out_0)) ** 2) * (tlist[1] - tlist[0])
-# ampl_1 = sum(np.nan_to_num(np.abs(field_out_1)) ** 2) * (tlist[1] - tlist[0])
-# norm_0 = ampl_0 / ampl_in
-# norm_1 = ampl_1 / ampl_in
-# n_phot_0 = sum(np.nan_to_num(out_0.e_data["n_cav_pi"])) * (tlist[1] - tlist[0])
-# n_phot_1 = sum(np.nan_to_num(out_1.e_data["n_cav_pi"])) * (tlist[1] - tlist[0])
-# print(ampl_in)
-#
-# console = Console()
-#
-# # Create a rich table
-# table = Table(
-#     title="[bold cyan]Reflection Analysis Results[/bold cyan]",
-#     box=box.ROUNDED,
-#     header_style="bold magenta",
-# )
-#
-# table.add_column("Quantity", justify="left", style="cyan", no_wrap=True)
-# table.add_column("|0⟩ Value", justify="right", style="red")
-# table.add_column("|1⟩ Value", justify="right", style="blue")
-#
-# # Compute values
-# phase_0 = np.mean(np.angle(np.real(field_out_0) / field_in))
-# phase_1 = np.mean(np.angle(np.real(field_out_1) / field_in))
-#
-# # Add rows to the table
-# table.add_row("Input Amplitude |a_in|²", f"{ampl_in:.7f}", f"{ampl_in:.7f}")
-# table.add_row("Reflection Amplitude |a|²", f"{ampl_0:.7f}", f"{ampl_1:.7f}")
-# table.add_row("Normalized Amplitude |a|²/|a_in|²", f"{norm_0:.7f}", f"{norm_1:.7f}")
-# table.add_row("Reflection Phase (rad)", f"{phase_0:.7f}", f"{phase_1:.7f}")
-#
-# # Print the table
-# console.print(table)
-#
-alpha2Array = np.logspace(-5, 1.5, 20)
-alphaArray = np.sqrt(alpha2Array)
-R_0 = np.zeros_like(alpha2Array)
-R_1 = np.zeros_like(alpha2Array)
+out_0 = run_sim(driving_field_destr_operator=a_v, e_obs=e_obs, c_obs=c_obs, psi=psi_0)
+out_1 = run_sim(driving_field_destr_operator=a_v, e_obs=e_obs, c_obs=c_obs, psi=psi_1)
 
-for i, alpha in enumerate(alphaArray):
-    print(i, alpha)
-    args = {"amp": alpha, "t0": 4000, "tau": 70.0, "tau_start": 91.0, "sigma": 1500.0}
-    out_0 = run_sim(
-        driving_field_destr_operator=a_pi, e_obs=e_obs, c_obs=c_obs, psi=psi_0
-    )
-    out_1 = run_sim(
-        driving_field_destr_operator=a_pi, e_obs=e_obs, c_obs=c_obs, psi=psi_1
-    )
-    field_in: np.ndarray = input_shape(tlist, args)
-    field_out_0 = compute_output_field(
-        input_field=field_in, results=out_0, cavity_mode="a_pi"
-    )
-    field_out_1 = compute_output_field(
-        input_field=field_in, results=out_1, cavity_mode="a_pi"
-    )
-    ampl_in = sum(np.nan_to_num(np.abs(field_in)) ** 2) * (tlist[1] - tlist[0])
-    ampl_0 = sum(np.nan_to_num(np.abs(field_out_0)) ** 2) * (tlist[1] - tlist[0])
-    ampl_1 = sum(np.nan_to_num(np.abs(field_out_1)) ** 2) * (tlist[1] - tlist[0])
-    norm_0 = ampl_0 / ampl_in
-    norm_1 = ampl_1 / ampl_in
-    R_0[i] = np.array(out_0.e_data["P(0)"][-1])
-    R_0[i] = norm_0
-    R_1[i] = np.array(out_1.e_data["P(1)"][-1])
-    R_1[i] = norm_1
+field_in: np.ndarray = input_shape(tlist, args)
+field_out_0 = compute_output_field(
+    input_field=field_in, results=out_0, cavity_mode="a_v"
+)
+field_out_1 = compute_output_field(
+    input_field=field_in, results=out_1, cavity_mode="a_v"
+)
 
-plt.plot(alpha2Array, R_0, label=r"$R_{|0,\pi}$", c="blue")
-plt.plot(alpha2Array, R_1, label=r"$R_{|1,\pi}$", c="red")
-plt.xscale("log")
-plt.legend()
-plt.show()
+plot_photon_number_statistics_qutip(out_0, out_1, "v", tlist, Kappa)
+
+plot_output_field_qutip(field_in, field_out_0, field_out_1, "v", tlist, Kappa)
+
+
+ampl_in = sum(np.nan_to_num(np.abs(field_in)) ** 2) * (tlist[1] - tlist[0])
+ampl_0 = sum(np.nan_to_num(np.abs(field_out_0)) ** 2) * (tlist[1] - tlist[0])
+ampl_1 = sum(np.nan_to_num(np.abs(field_out_1)) ** 2) * (tlist[1] - tlist[0])
+norm_0 = ampl_0 / ampl_in
+norm_1 = ampl_1 / ampl_in
+n_phot_0 = sum(np.nan_to_num(out_0.e_data["n_cav_pi"])) * (tlist[1] - tlist[0])
+n_phot_1 = sum(np.nan_to_num(out_1.e_data["n_cav_pi"])) * (tlist[1] - tlist[0])
+print(sum(field_out_0) * (tlist[1] - tlist[0]))
+print(ampl_in)
+
+console = Console()
+
+# Create a rich table
+table = Table(
+    title="[bold cyan]Reflection Analysis Results[/bold cyan]",
+    box=box.ROUNDED,
+    header_style="bold magenta",
+)
+
+table.add_column("Quantity", justify="left", style="cyan", no_wrap=True)
+table.add_column("|0⟩ Value", justify="right", style="red")
+table.add_column("|1⟩ Value", justify="right", style="blue")
+
+# Compute values
+phase_0 = np.mean(np.angle(np.real(field_out_0) / field_in))
+phase_1 = np.mean(np.angle(np.real(field_out_1) / field_in))
+
+# Add rows to the table
+table.add_row("Input Amplitude |a_in|²", f"{ampl_in:.7f}", f"{ampl_in:.7f}")
+table.add_row("Reflection Amplitude |a|²", f"{ampl_0:.7f}", f"{ampl_1:.7f}")
+table.add_row("Normalized Amplitude |a|²/|a_in|²", f"{norm_0:.7f}", f"{norm_1:.7f}")
+table.add_row("Reflection Phase (rad)", f"{phase_0:.7f}", f"{phase_1:.7f}")
+
+# Print the table
+console.print(table)
+
+# alpha2Array = np.logspace(-5, 1.5, 20)
+# alphaArray = np.sqrt(alpha2Array)
+# R_0 = np.zeros_like(alpha2Array)
+# R_1 = np.zeros_like(alpha2Array)
+#
+# for i, alpha in enumerate(alphaArray):
+#     print(i, alpha)
+#     args = {"amp": alpha, "t0": 4000, "tau": 70.0, "tau_start": 91.0, "sigma": 1500.0}
+#     out_0 = run_sim(
+#         driving_field_destr_operator=a_pi, e_obs=e_obs, c_obs=c_obs, psi=psi_0
+#     )
+#     out_1 = run_sim(
+#         driving_field_destr_operator=a_pi, e_obs=e_obs, c_obs=c_obs, psi=psi_1
+#     )
+#     field_in: np.ndarray = input_shape(tlist, args)
+#     field_out_0 = compute_output_field(
+#         input_field=field_in, results=out_0, cavity_mode="a_pi"
+#     )
+#     field_out_1 = compute_output_field(
+#         input_field=field_in, results=out_1, cavity_mode="a_pi"
+#     )
+#     ampl_in = sum(np.nan_to_num(np.abs(field_in)) ** 2) * (tlist[1] - tlist[0])
+#     ampl_0 = sum(np.nan_to_num(np.abs(field_out_0)) ** 2) * (tlist[1] - tlist[0])
+#     ampl_1 = sum(np.nan_to_num(np.abs(field_out_1)) ** 2) * (tlist[1] - tlist[0])
+#     norm_0 = ampl_0 / ampl_in
+#     norm_1 = ampl_1 / ampl_in
+#     R_0[i] = np.array(out_0.e_data["P(0)"][-1])
+#     R_0[i] = norm_0
+#     R_1[i] = np.array(out_1.e_data["P(1)"][-1])
+#     R_1[i] = norm_1
+#
+# plt.plot(alpha2Array, R_0, label=r"$R_{|0,\pi}$", c="blue")
+# plt.plot(alpha2Array, R_1, label=r"$R_{|1,\pi}$", c="red")
+# plt.xscale("log")
+# plt.legend()
+# plt.show()
