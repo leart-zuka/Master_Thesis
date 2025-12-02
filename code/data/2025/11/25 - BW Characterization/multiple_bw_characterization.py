@@ -155,7 +155,7 @@ for amount_of_bw, (file_h, file_v) in files.items():
     ax.axhline(avg_v, color=color_V, linestyle=style_mean, alpha=0.9)
 
     ax.set_title(f"{amount_of_bw}: Power vs Time")
-    ax.set_xlabel("Sample index")
+    ax.set_xlabel("Time bin")
     ax.set_ylabel("Power [mW]")
     ax.legend(loc="center right")
     ax.grid(True)
@@ -163,4 +163,5 @@ for amount_of_bw, (file_h, file_v) in files.items():
     ax_index += 1
 
 plt.tight_layout()
+plt.savefig("brewster_window_characterization_multiple.svg")
 plt.show()

@@ -1,28 +1,13 @@
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
 from rich.console import Console
 from rich.table import Table
-
-plt.style.use("seaborn-v0_8")
-
-# --------------------------
-# FILES
-# --------------------------
-files = {
-    "BW1": ("bw1_h.csv", "bw1_v.csv"),
-    "BW2": ("bw2_h.csv", "bw2_v.csv"),
-    "BW3": ("bw3_h.csv", "bw3_v.csv"),
-    "BW4": ("bw4_h.csv", "bw4_v.csv"),
-    "BW5": ("bw5_h.csv", "bw5_v.csv"),
-    "BW6": ("bw6_h.csv", "bw6_v.csv"),
-    "BW7": ("bw7_h.csv", "bw7_v.csv"),
-    "BW8": ("bw8_h.csv", "bw8_v.csv"),
-}
 
 baseline_h_file = "baseline_h.csv"
 baseline_v_file = "baseline_v.csv"
 
+plt.style.use("seaborn-v0_8")
 
 color_H_base = "C2"
 color_V_base = "C1"
@@ -50,20 +35,24 @@ err_0_v = np.std(power_0_v)
 
 print(f"Baseline Power in V = {avg_0_v * 1000:.1f} ± {err_0_v * 1000:.1f} µW\n")
 
-# --------------------------
-# PLOTTING GRID
-# --------------------------
+files = {
+    "1 BW": ("1BW_h.csv", "1BW_v.csv"),
+    "2 BW": ("2BW_h.csv", "2BW_v.csv"),
+    "3 BW": ("3BW_h.csv", "3BW_v.csv"),
+    "4 BW": ("4BW_h.csv", "4BW_v.csv"),
+    "5 BW": ("5BW_h.csv", "5BW_v.csv"),
+    "6 BW": ("6BW_h.csv", "6BW_v.csv"),
+    "7 BW": ("7BW_h.csv", "7BW_v.csv"),
+    "8 BW": ("8BW_h.csv", "8BW_v.csv"),
+}
+
+
 fig, axs = plt.subplots(4, 2, figsize=(12, 10))
 axs = axs.flatten()
 
-# Axis index
 ax_index = 0
 
-
-# --------------------------
-# PROCESS EACH BREWSTER WINDOW
-# --------------------------
-for bw_name, (file_h, file_v) in files.items():
+for amount_of_bw, (file_h, file_v) in files.items():
     # --- Load H ---
     df_h = pd.read_csv(f"./cleaned/{file_h}", delimiter=";")
     ph = (df_h[" S 0 [mW]"].to_numpy() + df_h[" S 1 [mW]"].to_numpy()) / 2
@@ -92,7 +81,7 @@ for bw_name, (file_h, file_v) in files.items():
 
     table = Table(show_header=False, box=None)
 
-    console.print(f"[bold cyan]--- {bw_name} ---[/bold cyan]")
+    console.print(f"[bold cyan]--- {amount_of_bw} ---[/bold cyan]")
 
     t = Table(
         title=None,
@@ -117,12 +106,10 @@ for bw_name, (file_h, file_v) in files.items():
     )
 
     console.print(t)
-    console.print("[dim]" + "─" * 42 + "[/dim]")  # --------------------------
-    # PLOT
-    # --------------------------
+    console.print("[dim]" + "─" * 42 + "[/dim]")
+
     ax = axs[ax_index]
 
-    # x-axis indices just to visualize raw power time series
     x_h = np.arange(len(ph))
     x_v = np.arange(len(pv))
     x_b_h = np.arange(len(power_0_h))
@@ -151,7 +138,7 @@ for bw_name, (file_h, file_v) in files.items():
     ax.plot(
         x_h,
         ph,
-        label=f"{bw_name} – H",
+        label=f"{amount_of_bw} – H",
         color=color_H,
         linestyle=style_bw,
         linewidth=2,
@@ -160,7 +147,7 @@ for bw_name, (file_h, file_v) in files.items():
     ax.plot(
         x_v,
         pv,
-        label=f"{bw_name} – V",
+        label=f"{amount_of_bw} – V",
         color=color_V,
         linestyle=style_bw,
         linewidth=2,
@@ -171,15 +158,13 @@ for bw_name, (file_h, file_v) in files.items():
     ax.axhline(avg_h, color=color_H, linestyle=style_mean, alpha=0.9)
     ax.axhline(avg_v, color=color_V, linestyle=style_mean, alpha=0.9)
 
-    ax.set_title(f"{bw_name}: Power vs Time")
-    ax.set_xlabel("Time bin")
+    ax.set_title(f"{amount_of_bw}: Power vs Time")
+    ax.set_xlabel("Sample index")
     ax.set_ylabel("Power [mW]")
     ax.legend(loc="center right")
     ax.grid(True)
 
     ax_index += 1
 
-
 plt.tight_layout()
-plt.savefig("bw_characterization_single.svg")
 plt.show()

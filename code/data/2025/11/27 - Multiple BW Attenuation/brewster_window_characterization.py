@@ -172,7 +172,7 @@ for bw_name, (file_h, file_v) in files.items():
     ax.axhline(avg_v, color=color_V, linestyle=style_mean, alpha=0.9)
 
     ax.set_title(f"{bw_name}: Power vs Time")
-    ax.set_xlabel("Time bin")
+    ax.set_xlabel("Sample index")
     ax.set_ylabel("Power [mW]")
     ax.legend(loc="center right")
     ax.grid(True)
@@ -181,5 +181,4 @@ for bw_name, (file_h, file_v) in files.items():
 
 
 plt.tight_layout()
-plt.savefig("bw_characterization_single.svg")
 plt.show()
