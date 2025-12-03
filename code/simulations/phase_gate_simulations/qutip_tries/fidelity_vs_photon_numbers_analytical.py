@@ -1,9 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import qutip as qt
 from rich import print
 from helpers.ndqd_amplitudes import rMM
-from helpers.generic_computations import normalize_matrix
 
 params_dir = {
     "g": 2 * np.pi * 0.024,
@@ -114,7 +112,6 @@ for i, alpha in enumerate(alphaArray):
     F_proc_heralded = (np.abs(np.trace(U_ideal.conj().T @ K_cnot_heralded)) ** 2) / (
         d * d
     )
-    K_cnot = normalize_matrix(np.abs(K_cnot_ref))
     fidelity[i] = F_proc_heralded
 
     # --------------------------------
