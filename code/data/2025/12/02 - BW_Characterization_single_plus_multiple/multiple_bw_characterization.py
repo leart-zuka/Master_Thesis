@@ -147,4 +147,7 @@ for amount_of_bw, (file_h, file_v) in files.items():
     ax_index += 1
 
 plt.tight_layout()
+plt.title("Characterization of Brewster Windows in Series")
+plt.savefig("multiple_brewster_window_characterization.pdf")
+plt.savefig("multiple_brewster_window_characterization.svg")
 plt.show()

@@ -147,4 +147,7 @@ for bw_name, (file_h, file_v) in files.items():
     ax_index += 1
 
 plt.tight_layout()
+plt.title("Characterization of single Brewster Windows")
+plt.savefig("single_brewster_window_characterization.pdf")
+plt.savefig("single_brewster_window_characterization.svg")
 plt.show()
