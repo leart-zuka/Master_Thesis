@@ -1,0 +1,64 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{none/global//global/global/global}
+    \entry{WallsMilburn2008}{book}{}{}
+      \name{author}{2}{}{%
+        {{hash=a416f93c6ef972517e2b484cdd1d9913}{%
+           family={Walls},
+           familyi={W\bibinitperiod},
+           given={D.\bibnamedelimi F.},
+           giveni={D\bibinitperiod\bibinitdelim F\bibinitperiod}}}%
+        {{hash=514ccdb42f45be431e1bd6620ad2230c}{%
+           family={Milburn},
+           familyi={M\bibinitperiod},
+           given={G.\bibnamedelimi J.},
+           giveni={G\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Berlin, Heidelberg}%
+      }
+      \list{publisher}{1}{%
+        {Springer}%
+      }
+      \strng{namehash}{e9f189678e5e06e79c90d4c4b4e3f1f4}
+      \strng{fullhash}{e9f189678e5e06e79c90d4c4b4e3f1f4}
+      \strng{fullhashraw}{e9f189678e5e06e79c90d4c4b4e3f1f4}
+      \strng{bibnamehash}{e9f189678e5e06e79c90d4c4b4e3f1f4}
+      \strng{authorbibnamehash}{e9f189678e5e06e79c90d4c4b4e3f1f4}
+      \strng{authornamehash}{e9f189678e5e06e79c90d4c4b4e3f1f4}
+      \strng{authorfullhash}{e9f189678e5e06e79c90d4c4b4e3f1f4}
+      \strng{authorfullhashraw}{e9f189678e5e06e79c90d4c4b4e3f1f4}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{edition}{2nd}
+      \field{isbn}{978-3-540-28574-8}
+      \field{title}{Quantum Optics}
+      \field{year}{2008}
+      \verb{doi}
+      \verb 10.1007/978-3-540-28574-8
+      \endverb
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

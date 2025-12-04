@@ -1,0 +1,45 @@
+% preamble/commands.tex
+
+\newcommand{\tikzmark}[1]{\tikz[overlay,remember picture] \node (#1) {};}
+
+\newcommand{\paulix}{\sigma_\mathrm{x}}
+\newcommand{\pauliy}{\sigma_\mathrm{y}}
+\newcommand{\pauliz}{\sigma_\mathrm{z}}
+
+\newcommand{\zt}[2]{\ensuremath{{#1}_{\mathrm{#2}}}}
+\newcommand{\zv}[2]{\ensuremath{{#1}_{#2}}}
+\newcommand{\pipulse}{\ensuremath{\pi\text{-pulse}}}
+
+% Thesis metadata setters
+\newcommand{\university}[1]{\def\customuniversity{#1}}
+\newcommand{\institute}[1]{\def\custominstitute{#1}}
+\newcommand{\program}[1]{\def\customprogram{#1}}
+\newcommand{\thesistitle}[1]{\def\customthesistitle{#1}}
+\newcommand{\thesisauthor}[1]{\def\customthesisauthor{#1}}
+\newcommand{\supervisor}[1]{\def\customsupervisor{#1}}
+\newcommand{\examiner}[1]{\def\customexaminer{#1}}
+
+% Cover page command
+\newcommand{\MakeFrontCover}{
+    \begin{titlepage}
+    \centering
+    \includegraphics[width=0.49\linewidth]{Figures/Cover/tum-logo.pdf} \hfill
+    \includegraphics[width=0.49\linewidth]{Figures/Cover/mpg-logo.pdf} \hfill
+    \par\vspace{1cm}
+    \Large{\customuniversity}\\
+    \Large{\custominstitute}\\
+    \vspace{1cm}
+    \rule{\textwidth}{1pt}\\
+    \vspace{0.5cm}
+    \Huge\textbf{\customthesistitle}\\[0.5cm]
+    \rule{\textwidth}{1pt}\\
+    \vspace{1cm}
+    {\huge \textbf{\customthesisauthor}}\\
+    \vspace{1cm}
+    \Large{Thesis submitted within the \customprogram}\\
+    \vspace{1cm}
+    {\Large Supervisor:  \customsupervisor}\\
+    {\Large Second Examiner:  \customexaminer}\\
+    \vfill
+    {\Large \today}
+    \end{titlepage}}

@@ -1,0 +1,13 @@
+% preamble/tocformat.tex
+
+\makeatletter
+\renewcommand*{\l@paragraph}[1]{%
+  \@dottedtocline{4}{7.0em}{1em}{\numberline{\textbullet}\gobble@numberline #1}%
+}
+\renewcommand*{\l@subparagraph}[1]{%
+  \@dottedtocline{5}{8em}{1em}{\numberline{\textendash}\gobble@numberline #1}%
+}
+\newcommand*{\gobble@numberline}{%
+  \@ifnextchar\numberline{\@gobbletwo}{}%
+}
+\makeatother

@@ -1,14 +1,34 @@
-\documentclass{article}
-\usepackage{graphicx} % Required for inserting images
+\documentclass[oneside]{book}
 
-\title{master_thesis}
-\author{Leart Zuka}
-\date{September 2025}
+\input{tex/preamble}    
+\input{tex/commands}   
+\input{tex/tocformat} 
+
+\usepackage[backend=biber,style=numeric-comp, sorting=none]{biblatex}
+\addbibresource{sources.bib}
+
+\thesistitle{An atom-photon quantum gate using an atomic clock qubit and a birrefringent cavity}
+\thesisauthor{Leart Zuka}
+\supervisor{Prof. Dr. Gerhard Rempe}
+\examiner{}
+\university{Technical University of Munich}
+\institute{Max Planck Institute of Quantum Optics}
+\program{M.Sc. Condensed Matter Physics}
+
 
 \begin{document}
 
-\maketitle
+\MakeFrontCover
 
-\section{Introduction}
+\tableofcontents
+
+
+\appendix
+\import{chapters/appendix}{calculations.tex}
+
+\newpage
+\printbibliography[heading=bibintoc]
+
+\import{chapters/appendix}{declarations.tex}
 
 \end{document}
