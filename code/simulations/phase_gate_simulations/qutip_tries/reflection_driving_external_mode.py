@@ -13,20 +13,20 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
 rerun_sim = True
-rerun_sim = False
+# rerun_sim = False
 
 # ---------------- params -----------------
 Mu_fr = 0.978
 Mu_fc = 0.873
-G0_kc = 2 * np.pi * 0.0353  # 2-1' splitting
+G0_kc = 2 * np.pi * 0.024  # 2-1' splitting
 Kappa = 2 * np.pi * 0.058 * Mu_fc
 Kappa_oc = Kappa * 0.85
 Kappa_internal = Kappa - Kappa_oc
-Gamma_5P32_5S = 2 * np.pi * 0.006065
+Gamma_5P32_5S = 2 * np.pi * 0.006065 / 2
 
 Delta = 0
 
-Atom_dimensions = 5
+Atom_dimensions = 3
 Photon_dimensions = 2
 External_Photon_modes = 2
 
@@ -36,8 +36,8 @@ args = {"amp": 1.0, "t0": 1000, "tau": 70.0, "tau_start": 91.0, "sigma": 1.0}
 
 atom_0 = qt.basis(Atom_dimensions, 0)
 atom_1 = qt.basis(Atom_dimensions, 1)
-atom_bad_1 = qt.basis(Atom_dimensions, 2)
-atom_bad_2 = qt.basis(Atom_dimensions, 3)
+# atom_bad_1 = qt.basis(Atom_dimensions, 2)
+# atom_bad_2 = qt.basis(Atom_dimensions, 3)
 atom_e = qt.basis(Atom_dimensions, 2)
 
 psi_0 = qt.tensor(
@@ -54,20 +54,21 @@ psi_1 = qt.tensor(
     qt.fock(Photon_dimensions, 0),
     atom_1,
 )
-psi_bad_1 = qt.tensor(
-    qt.fock(External_Photon_modes, 0),
-    qt.fock(External_Photon_modes, 0),
-    qt.fock(Photon_dimensions, 0),
-    qt.fock(Photon_dimensions, 0),
-    atom_bad_1,
-)
-psi_bad_2 = qt.tensor(
-    qt.fock(External_Photon_modes, 0),
-    qt.fock(External_Photon_modes, 0),
-    qt.fock(Photon_dimensions, 0),
-    qt.fock(Photon_dimensions, 0),
-    atom_bad_2,
-)
+
+# psi_bad_1 = qt.tensor(
+#     qt.fock(External_Photon_modes, 0),
+#     qt.fock(External_Photon_modes, 0),
+#     qt.fock(Photon_dimensions, 0),
+#     qt.fock(Photon_dimensions, 0),
+#     atom_bad_1,
+# )
+# psi_bad_2 = qt.tensor(
+#     qt.fock(External_Photon_modes, 0),
+#     qt.fock(External_Photon_modes, 0),
+#     qt.fock(Photon_dimensions, 0),
+#     qt.fock(Photon_dimensions, 0),
+#     atom_bad_2,
+# )
 
 b_pi = qt.tensor(
     qt.destroy(External_Photon_modes),
@@ -106,26 +107,29 @@ sigma = qt.tensor(
     atom_1 * atom_e.dag(),
 )
 
-sigma_bad_1 = qt.tensor(
-    qt.qeye(External_Photon_modes),
-    qt.qeye(External_Photon_modes),
-    qt.qeye(Photon_dimensions),
-    qt.qeye(Photon_dimensions),
-    atom_bad_1 * atom_e.dag(),
-)
-sigma_bad_2 = qt.tensor(
-    qt.qeye(External_Photon_modes),
-    qt.qeye(External_Photon_modes),
-    qt.qeye(Photon_dimensions),
-    qt.qeye(Photon_dimensions),
-    atom_bad_2 * atom_e.dag(),
-)
+# sigma_bad_1 = qt.tensor(
+#     qt.qeye(External_Photon_modes),
+#     qt.qeye(External_Photon_modes),
+#     qt.qeye(Photon_dimensions),
+#     qt.qeye(Photon_dimensions),
+#     atom_bad_1 * atom_e.dag(),
+# )
+# sigma_bad_2 = qt.tensor(
+#     qt.qeye(External_Photon_modes),
+#     qt.qeye(External_Photon_modes),
+#     qt.qeye(Photon_dimensions),
+#     qt.qeye(Photon_dimensions),
+#     atom_bad_2 * atom_e.dag(),
+# )
 
 
 def run_sim(
     driving_field_destr_operator: qt.Qobj, e_obs, c_obs, psi: qt.Qobj
 ) -> qt.Result:
-    H_0 = (Delta + 0.5) * a_v.dag() * a_v  # detuning for V mode of cavity (~ 500 MHz)
+    H_0 = (
+        Delta * a_pi.dag() * a_pi + Delta * sigma.dag() * sigma
+        # + (Delta + 0.5) * a_v.dag() * a_v
+    )  # detuning for V mode of cavity (~ 500 MHz)
     H_int_pi = G0_kc * (a_pi * sigma.dag() + a_pi.dag() * sigma)
     H_int_v = 0.1 * G0_kc * (a_v * sigma.dag() + a_v.dag() * sigma)
     H_couple_pi = (
@@ -152,7 +156,7 @@ def run_sim(
         * (driving_field_destr_operator.dag() - driving_field_destr_operator)
     )
 
-    H = [H_0 + H_int_pi + H_int_v + H_couple_pi + H_couple_v, [H_drive, input_shape]]
+    H = [H_0 + H_int_pi + H_couple_pi, [H_drive, input_shape]]
     out = qt.mesolve(
         H,
         psi,
@@ -178,26 +182,26 @@ e_obs = {
 }
 
 c_obs = [
-    np.sqrt(Kappa_internal) * a_pi,
-    np.sqrt(Kappa_oc) * a_pi,
-    np.sqrt(Kappa_internal) * a_v,
-    np.sqrt(Kappa_oc) * a_v,
-    np.sqrt(2 * Kappa_oc) * b_pi,
-    np.sqrt(2 * Kappa_oc) * b_v,
-    np.sqrt(2 * Gamma_5P32_5S * 2 / 5) * sigma,
-    np.sqrt(2 * Gamma_5P32_5S * 3 / 10) * sigma_bad_1,
-    np.sqrt(2 * Gamma_5P32_5S * 3 / 10) * sigma_bad_2,
+    # np.sqrt(2 * Kappa_internal) * a_pi,
+    np.sqrt(2 * Kappa_oc) * a_pi,
+    # np.sqrt(Kappa_internal) * a_v,
+    # np.sqrt(Kappa_oc) * a_v,
+    # np.sqrt(2 * Kappa_oc) * b_pi,
+    # np.sqrt(2 * Kappa_oc) * b_v,
+    np.sqrt(2 * Gamma_5P32_5S) * sigma,
+    # np.sqrt(2 * Gamma_5P32_5S * 3 / 10) * sigma_bad_1,
+    # np.sqrt(2 * Gamma_5P32_5S * 3 / 10) * sigma_bad_2,
 ]
 
 if rerun_sim:
     out_0 = run_sim(
         driving_field_destr_operator=b_pi, e_obs=e_obs, c_obs=c_obs, psi=psi_0
     )
-    qt.qsave(out_0, "./cache/out_0")
+    # qt.qsave(out_0, "./cache/out_0")
     out_1 = run_sim(
         driving_field_destr_operator=b_pi, e_obs=e_obs, c_obs=c_obs, psi=psi_1
     )
-    qt.qsave(out_1, "./cache/out_1")
+    # qt.qsave(out_1, "./cache/out_1")
 else:
     out_0 = qt.qload("./cache/out_0")
     out_1 = qt.qload("./cache/out_1")

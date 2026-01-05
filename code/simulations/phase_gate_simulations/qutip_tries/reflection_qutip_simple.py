@@ -28,9 +28,9 @@ Delta_c_v = 2 * np.pi * 0.5
 Delta_a = 2 * np.pi * 0
 
 Atom_dimensions = 4
-Photon_dimensions = 2
+Photon_dimensions = 3
 
-tlist = np.linspace(0.0, 8000, 1000)
+tlist = np.linspace(0.0, 8000, 10000)
 args = {"amp": 0.0198, "t0": 4000, "tau": 70.0, "tau_start": 91.0, "sigma": 1500.0}
 
 atom_0 = qt.basis(Atom_dimensions, 0)
