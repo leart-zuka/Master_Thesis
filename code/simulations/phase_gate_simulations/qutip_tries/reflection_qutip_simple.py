@@ -104,9 +104,7 @@ def run_sim(
     )
 
     eta_main = np.sqrt(0.9)
-    eta_main = 0.9
     eta_cross = np.sqrt(0.1)
-    eta_cross = 0.1
 
     if driving_field_destr_operator is a_pi:
         drive_op = eta_main * a_pi + eta_cross * a_v
@@ -163,20 +161,20 @@ def compute_output_field(
     return alpha_out
 
 
-out_0 = run_sim(driving_field_destr_operator=a_v, e_obs=e_obs, c_obs=c_obs, psi=psi_0)
-out_1 = run_sim(driving_field_destr_operator=a_v, e_obs=e_obs, c_obs=c_obs, psi=psi_1)
+out_0 = run_sim(driving_field_destr_operator=a_pi, e_obs=e_obs, c_obs=c_obs, psi=psi_0)
+out_1 = run_sim(driving_field_destr_operator=a_pi, e_obs=e_obs, c_obs=c_obs, psi=psi_1)
 
 field_in: np.ndarray = input_shape(tlist, args)
 field_out_0 = compute_output_field(
-    input_field=field_in, results=out_0, cavity_mode="a_v"
+    input_field=field_in, results=out_0, cavity_mode="a_pi"
 )
 field_out_1 = compute_output_field(
-    input_field=field_in, results=out_1, cavity_mode="a_v"
+    input_field=field_in, results=out_1, cavity_mode="a_pi"
 )
 
-plot_photon_number_statistics_qutip(out_0, out_1, "v", tlist, Kappa)
+plot_photon_number_statistics_qutip(out_0, out_1, "pi", tlist, Kappa)
 
-plot_output_field_qutip(field_in, field_out_0, field_out_1, "v", tlist, Kappa)
+plot_output_field_qutip(field_in, field_out_0, field_out_1, "pi", tlist, Kappa)
 
 
 ampl_in = sum(np.nan_to_num(np.abs(field_in)) ** 2) * (tlist[1] - tlist[0])
@@ -212,3 +210,14 @@ table.add_row("Reflection Phase (rad)", f"{phase_0:.7f}", f"{phase_1:.7f}")
 
 # Print the table
 console.print(table)
+
+
+# Sum fucking around
+
+dt = tlist[1] - tlist[0]
+f_0 = field_out_0 / np.sqrt(np.sum(np.abs(field_out_0) ** 2) * dt)
+c_0 = np.sum(np.conj(f_0) * field_out_0 * dt)
+N_in = np.sum(np.abs(field_in) ** 2) * dt
+P0 = out_0.e_data["P(0)"][-1]
+F_0 = P0 * (np.abs(c_0) ** 2 / N_in)
+print(F_0)
