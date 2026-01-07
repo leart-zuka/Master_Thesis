@@ -19,9 +19,13 @@ from PyQt5.QtWidgets import (
     QFormLayout,
     QFrame,
 )
+
+
 from PyQt5.QtCore import Qt
+from PyQt5 import QtGui
 
 from waveplates import Polarization_Waveplates
+import typing
 
 
 SETTINGS_FILE = Path("waveplate_settings.json")
@@ -98,6 +102,11 @@ class WaveplateGUI(QMainWindow):
         load_btn.clicked.connect(self.load_json)
         save_json_btn.clicked.connect(self.save_json)
 
+        exit_btn = QPushButton("Exit")
+        exit_btn.setMinimumSize(120, 40)
+        exit_btn.clicked.connect(self.close)
+        exit_btn.setShortcut("Ctrl+Q")
+
         io_layout.addWidget(load_btn)
         io_layout.addWidget(save_json_btn)
 
@@ -106,6 +115,7 @@ class WaveplateGUI(QMainWindow):
         right_layout.addWidget(save_btn)
         right_layout.addStretch()
         right_layout.addLayout(io_layout)
+        right_layout.addWidget(exit_btn)
 
         # proportions
         main_layout.addWidget(left_frame, 3)
@@ -208,6 +218,16 @@ class WaveplateGUI(QMainWindow):
                     border-radius: 4px;
                     padding: 4px;
                 }
+
+                QPushButton#exitButton {
+                    background-color: #8b0000;
+                    border: 1px solid #cc4444;
+                    color: #ffffff;
+                }
+
+                QPushButton#exitButton:hover {
+                    background-color: #b22222;
+                }
             """)
 
     def flash_button(self, button, duration_ms=300):
@@ -221,6 +241,13 @@ class WaveplateGUI(QMainWindow):
         button.setProperty("saved", False)
         button.style().unpolish(button)
         button.style().polish(button)
+
+    def closeEvent(self, event):
+        try:
+            self.polarization_waveplates.close()
+        except Exception as e:
+            print("Shutdown error:", e)
+        event.accept()
 
 
 # if __name__ == "__main__":

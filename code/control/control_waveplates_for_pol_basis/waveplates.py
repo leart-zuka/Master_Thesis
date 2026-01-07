@@ -22,3 +22,6 @@ class Polarization_Waveplates:
             print(f"Whole error: \n {e}")
             self.controller.close_connection()
             sys.exit()
+
+    def close(self):
+        self.controller.close_connection()
