@@ -140,7 +140,9 @@ for xn in attenuations_additions:
 
 plt.grid(True, alpha=0.3)
 plt.tight_layout()
-plt.title("Process Fidelity for different Transmission of V polarized light")
+plt.title(
+    "Process Fidelity for different Transmission of V polarized portion of incoming light"
+)
 plt.tight_layout()
 plt.savefig("attenuation_fidelity.svg")
 plt.show()
