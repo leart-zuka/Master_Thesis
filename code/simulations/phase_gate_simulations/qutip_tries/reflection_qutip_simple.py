@@ -30,8 +30,8 @@ Delta_a = 2 * np.pi * 0
 Atom_dimensions = 4
 Photon_dimensions = 3
 
-tlist = np.linspace(0.0, 8000, 10000)
-args = {"amp": 0.0198, "t0": 4000, "tau": 70.0, "tau_start": 91.0, "sigma": 1500.0}
+tlist = np.linspace(0.0, 8000, 1000)
+args = {"amp": 0.0195, "t0": 4000, "tau": 70.0, "tau_start": 91.0, "sigma": 1500.0}
 
 atom_0 = qt.basis(Atom_dimensions, 0)
 atom_1 = qt.basis(Atom_dimensions, 1)
@@ -104,7 +104,9 @@ def run_sim(
     )
 
     eta_main = np.sqrt(0.9)
+    eta_main = 0.9
     eta_cross = np.sqrt(0.1)
+    eta_cross = 0.1
 
     if driving_field_destr_operator is a_pi:
         drive_op = eta_main * a_pi + eta_cross * a_v
@@ -138,19 +140,14 @@ e_obs = {
     "a_v": a_v,
 }
 
-p_e_to_1 = 3 / 59
-p_e_to_dark = 56 / 59
+p_e_to_1 = 1 / 15
+p_e_to_dark = 14 / 15
 
 c_obs = [
     np.sqrt(Kappa_oc) * a_pi,
     np.sqrt(Kappa_oc) * a_v,
     np.sqrt(Kappa_internal) * a_pi,
     np.sqrt(Kappa_internal) * a_v,
-    # np.sqrt(1 / 40 * Gamma_5P32_5S) * sigma,
-    # np.sqrt(1 / 120 * Gamma_5P32_5S) * sigma_bad,
-    # np.sqrt(1 / 120 * Gamma_5P32_5S) * sigma_bad,
-    # np.sqrt(5 / 24 * Gamma_5P32_5S) * sigma_bad,
-    # np.sqrt(5 / 24 * Gamma_5P32_5S) * sigma_bad,
     np.sqrt(p_e_to_1 * Gamma_5P32_5S) * sigma,  # |e> -> |1>
     np.sqrt(p_e_to_dark * Gamma_5P32_5S) * sigma_bad,  # |e> -> |dark>
 ]
@@ -166,20 +163,20 @@ def compute_output_field(
     return alpha_out
 
 
-out_0 = run_sim(driving_field_destr_operator=a_pi, e_obs=e_obs, c_obs=c_obs, psi=psi_0)
-out_1 = run_sim(driving_field_destr_operator=a_pi, e_obs=e_obs, c_obs=c_obs, psi=psi_1)
+out_0 = run_sim(driving_field_destr_operator=a_v, e_obs=e_obs, c_obs=c_obs, psi=psi_0)
+out_1 = run_sim(driving_field_destr_operator=a_v, e_obs=e_obs, c_obs=c_obs, psi=psi_1)
 
 field_in: np.ndarray = input_shape(tlist, args)
 field_out_0 = compute_output_field(
-    input_field=field_in, results=out_0, cavity_mode="a_pi"
+    input_field=field_in, results=out_0, cavity_mode="a_v"
 )
 field_out_1 = compute_output_field(
-    input_field=field_in, results=out_1, cavity_mode="a_pi"
+    input_field=field_in, results=out_1, cavity_mode="a_v"
 )
 
-plot_photon_number_statistics_qutip(out_0, out_1, "pi", tlist, Kappa)
+plot_photon_number_statistics_qutip(out_0, out_1, "v", tlist, Kappa)
 
-plot_output_field_qutip(field_in, field_out_0, field_out_1, "pi", tlist, Kappa)
+plot_output_field_qutip(field_in, field_out_0, field_out_1, "v", tlist, Kappa)
 
 
 ampl_in = sum(np.nan_to_num(np.abs(field_in)) ** 2) * (tlist[1] - tlist[0])
@@ -189,8 +186,6 @@ norm_0 = ampl_0 / ampl_in
 norm_1 = ampl_1 / ampl_in
 n_phot_0 = sum(np.nan_to_num(out_0.e_data["n_cav_pi"])) * (tlist[1] - tlist[0])
 n_phot_1 = sum(np.nan_to_num(out_1.e_data["n_cav_pi"])) * (tlist[1] - tlist[0])
-print(sum(field_out_0) * (tlist[1] - tlist[0]))
-print(ampl_in)
 
 console = Console()
 
@@ -217,40 +212,3 @@ table.add_row("Reflection Phase (rad)", f"{phase_0:.7f}", f"{phase_1:.7f}")
 
 # Print the table
 console.print(table)
-
-# alpha2Array = np.logspace(-5, 1.5, 20)
-# alphaArray = np.sqrt(alpha2Array)
-# R_0 = np.zeros_like(alpha2Array)
-# R_1 = np.zeros_like(alpha2Array)
-#
-# for i, alpha in enumerate(alphaArray):
-#     print(i, alpha)
-#     args = {"amp": alpha, "t0": 4000, "tau": 70.0, "tau_start": 91.0, "sigma": 1500.0}
-#     out_0 = run_sim(
-#         driving_field_destr_operator=a_pi, e_obs=e_obs, c_obs=c_obs, psi=psi_0
-#     )
-#     out_1 = run_sim(
-#         driving_field_destr_operator=a_pi, e_obs=e_obs, c_obs=c_obs, psi=psi_1
-#     )
-#     field_in: np.ndarray = input_shape(tlist, args)
-#     field_out_0 = compute_output_field(
-#         input_field=field_in, results=out_0, cavity_mode="a_pi"
-#     )
-#     field_out_1 = compute_output_field(
-#         input_field=field_in, results=out_1, cavity_mode="a_pi"
-#     )
-#     ampl_in = sum(np.nan_to_num(np.abs(field_in)) ** 2) * (tlist[1] - tlist[0])
-#     ampl_0 = sum(np.nan_to_num(np.abs(field_out_0)) ** 2) * (tlist[1] - tlist[0])
-#     ampl_1 = sum(np.nan_to_num(np.abs(field_out_1)) ** 2) * (tlist[1] - tlist[0])
-#     norm_0 = ampl_0 / ampl_in
-#     norm_1 = ampl_1 / ampl_in
-#     R_0[i] = np.array(out_0.e_data["P(0)"][-1])
-#     R_0[i] = norm_0
-#     R_1[i] = np.array(out_1.e_data["P(1)"][-1])
-#     R_1[i] = norm_1
-#
-# plt.plot(alpha2Array, R_0, label=r"$R_{|0,\pi}$", c="blue")
-# plt.plot(alpha2Array, R_1, label=r"$R_{|1,\pi}$", c="red")
-# plt.xscale("log")
-# plt.legend()
-# plt.show()
