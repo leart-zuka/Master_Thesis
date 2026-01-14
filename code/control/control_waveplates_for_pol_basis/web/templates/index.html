@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Waveplate Control</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="left">
+            {% for pol in settings %}
+            <button class="pol-btn" onclick="selectPol('{{ pol }}')">
+                {{ pol }}
+            </button>
+            {% endfor %}
+        </div>
+
+        <div class="right">
+            <h2>Waveplate Angles</h2>
+
+            <label>QWP</label>
+            <input type="number" id="qwp" step="0.001">
+
+            <label>HWP</label>
+            <input type="number" id="hwp" step="0.001">
+
+            <button onclick="savePol()">Save to Polarization</button>
+            <button class="exit" onclick="exitApp()">Exit</button>
+
+            <h3>Log</h3>
+            <div id="log" class="log-panel"></div>
+        </div>
+
+    </div>
+
+    <script>
+        const SETTINGS = {{settings | tojson }};
+    </script>
+    <script src="/static/app.js"></script>
+
+</body>
+
+</html>
