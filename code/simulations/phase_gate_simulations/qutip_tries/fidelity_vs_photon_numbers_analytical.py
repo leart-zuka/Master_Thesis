@@ -27,7 +27,7 @@ U_ideal = np.array(
 )
 
 
-alpha2Array = np.logspace(-2, 1.5, 100)
+alpha2Array = np.logspace(-5, 1.5, 100)
 alphaArray = np.sqrt(alpha2Array)
 
 fidelity = np.zeros(len(alpha2Array))
@@ -126,7 +126,7 @@ for i, alpha in enumerate(alphaArray):
     )
 
     F_random = 0.25
-    F_ge2 = 0.25
+    F_ge2 = 0.5
     n_det_cols = eta * alpha**2 * s_cols  # mean detected counts per input basis
     P0 = np.exp(-n_det_cols)
     P1 = n_det_cols * P0

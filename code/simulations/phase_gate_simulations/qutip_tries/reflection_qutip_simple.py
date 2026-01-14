@@ -7,6 +7,7 @@ from helpers.plotting import (
     plot_output_field_qutip,
     plot_photon_number_statistics_qutip,
 )
+from helpers.plotting import styled_3d_bar
 from rich.console import Console
 from rich.table import Table
 from rich import box
@@ -113,7 +114,7 @@ def run_sim(
     else:
         raise ValueError("Pol must be either 'pi' or 'v'")
 
-    H_drive = 1j * Mu_fc * np.sqrt(Kappa_oc) * (drive_op.dag() - drive_op)
+    H_drive = 1j * Mu_fc * np.sqrt(Kappa_oc) * (drive_op - drive_op.dag())
 
     H = [H_0 + H_int, [H_drive, input_shape]]
     out = qt.mesolve(
@@ -157,67 +158,300 @@ def compute_output_field(
     alpha_in = input_field
     alpha_ref = Mu_fr * alpha_in
     a_cav = np.array(results.e_data[cavity_mode])
-    alpha_out = alpha_ref - Mu_fc * np.sqrt(Kappa_oc) * a_cav
+    alpha_out = alpha_ref + Mu_fc * np.sqrt(Kappa_oc) * a_cav
     return alpha_out
 
 
-out_0 = run_sim(driving_field_destr_operator=a_pi, e_obs=e_obs, c_obs=c_obs, psi=psi_0)
-out_1 = run_sim(driving_field_destr_operator=a_pi, e_obs=e_obs, c_obs=c_obs, psi=psi_1)
+def run_sim_plus_analysis(e_obs, c_obs):
+    field_in: np.ndarray = input_shape(tlist, args)
+    field_in_cross: np.ndarray = np.zeros_like(field_in)
+    out_0_pi = run_sim(
+        driving_field_destr_operator=a_pi,
+        e_obs=e_obs,
+        c_obs=c_obs,
+        psi=psi_0,
+    )
+    out_1_pi = run_sim(
+        driving_field_destr_operator=a_pi,
+        e_obs=e_obs,
+        c_obs=c_obs,
+        psi=psi_1,
+    )
+    out_0_v = run_sim(
+        driving_field_destr_operator=a_v,
+        e_obs=e_obs,
+        c_obs=c_obs,
+        psi=psi_0,
+    )
+    out_1_v = run_sim(
+        driving_field_destr_operator=a_v,
+        e_obs=e_obs,
+        c_obs=c_obs,
+        psi=psi_1,
+    )
 
-field_in: np.ndarray = input_shape(tlist, args)
-field_out_0 = compute_output_field(
-    input_field=field_in, results=out_0, cavity_mode="a_pi"
-)
-field_out_1 = compute_output_field(
-    input_field=field_in, results=out_1, cavity_mode="a_pi"
-)
+    field_out_0_in_pi_out_pi = compute_output_field(
+        input_field=field_in, results=out_0_pi, cavity_mode="a_pi"
+    )
+    field_out_0_in_pi_out_v = compute_output_field(
+        input_field=field_in_cross, results=out_0_pi, cavity_mode="a_v"
+    )
+    field_out_1_in_pi_out_pi = compute_output_field(
+        input_field=field_in, results=out_1_pi, cavity_mode="a_pi"
+    )
+    field_out_1_in_pi_out_v = compute_output_field(
+        input_field=field_in_cross, results=out_1_pi, cavity_mode="a_v"
+    )
+    field_out_0_in_v_out_pi = compute_output_field(
+        input_field=field_in_cross, results=out_0_v, cavity_mode="a_pi"
+    )
+    field_out_0_in_v_out_v = compute_output_field(
+        input_field=field_in, results=out_0_v, cavity_mode="a_v"
+    )
+    field_out_1_in_v_out_pi = compute_output_field(
+        input_field=field_in_cross, results=out_1_v, cavity_mode="a_pi"
+    )
+    field_out_1_in_v_out_v = compute_output_field(
+        input_field=field_in, results=out_1_v, cavity_mode="a_v"
+    )
 
-plot_photon_number_statistics_qutip(out_0, out_1, "pi", tlist, Kappa)
+    plot_photon_number_statistics_qutip(out_0_pi, out_1_pi, "pi", tlist, Kappa)
+    plot_photon_number_statistics_qutip(out_0_v, out_1_v, "v", tlist, Kappa)
 
-plot_output_field_qutip(field_in, field_out_0, field_out_1, "pi", tlist, Kappa)
+    plot_output_field_qutip(
+        field_in, field_out_0_in_pi_out_pi, field_out_1_in_pi_out_pi, "pi", tlist, Kappa
+    )
+    plot_output_field_qutip(
+        field_in, field_out_0_in_v_out_v, field_out_1_in_v_out_pi, "v", tlist, Kappa
+    )
+
+    ampl_in = sum(np.nan_to_num(np.abs(field_in)) ** 2) * (tlist[1] - tlist[0])
+    ampl_0_pi = sum(np.nan_to_num(np.abs(field_out_0_in_pi_out_pi)) ** 2) * (
+        tlist[1] - tlist[0]
+    )
+    ampl_1_pi = sum(np.nan_to_num(np.abs(field_out_1_in_pi_out_pi)) ** 2) * (
+        tlist[1] - tlist[0]
+    )
+    norm_0_pi = ampl_0_pi / ampl_in
+    norm_1_pi = ampl_1_pi / ampl_in
+    ampl_0_v = sum(np.nan_to_num(np.abs(field_out_0_in_v_out_v)) ** 2) * (
+        tlist[1] - tlist[0]
+    )
+    ampl_1_v = sum(np.nan_to_num(np.abs(field_out_1_in_v_out_v)) ** 2) * (
+        tlist[1] - tlist[0]
+    )
+    norm_0_v = ampl_0_v / ampl_in
+    norm_1_v = ampl_1_v / ampl_in
+
+    console = Console()
+
+    # Create a rich table
+    table = Table(
+        title="[bold cyan]Reflection Analysis Results[/bold cyan]",
+        box=box.ROUNDED,
+        header_style="bold magenta",
+    )
+
+    table.add_column("Quantity", justify="left", style="cyan", no_wrap=True)
+    table.add_column("|0,pi⟩ Value", justify="right", style="red")
+    table.add_column("|0,v⟩ Value", justify="right", style="orange1")
+    table.add_column("|1,pi⟩ Value", justify="right", style="blue")
+    table.add_column("|1,v⟩ Value", justify="right", style="green3")
+
+    # Compute values
+    phase_0_pi = np.mean(np.angle(np.real(field_out_0_in_pi_out_pi) / field_in))
+    phase_1_pi = np.mean(np.angle(np.real(field_out_1_in_pi_out_pi) / field_in))
+    phase_0_v = np.mean(np.angle(np.real(field_out_0_in_v_out_v) / field_in))
+    phase_1_v = np.mean(np.angle(np.real(field_out_1_in_v_out_v) / field_in))
+
+    # Add rows to the table
+    table.add_row(
+        "Reflection Amplitude |a|²",
+        f"{ampl_0_pi:.7f}",
+        f"{ampl_0_v:.7f}",
+        f"{ampl_1_pi:.7f}",
+        f"{ampl_1_v:.7f}",
+    )
+    table.add_row(
+        "Normalized Amplitude |a|²/|a_in|²",
+        f"{norm_0_pi * 100:.7f}%",
+        f"{norm_0_v * 100:.7f}%",
+        f"{norm_1_pi * 100:.7f}%",
+        f"{norm_1_v * 100:.7f}%",
+    )
+    table.add_row(
+        "Reflection Phase (rad)",
+        f"{phase_0_pi:.7f}",
+        f"{phase_0_v:.7f}",
+        f"{phase_1_pi:.7f}",
+        f"{phase_1_v:.7f}",
+    )
+    table.add_row(
+        "Population at end",
+        f"{out_0_pi.e_data['P(0)'][-1] * 100:.7f}%",
+        f"{out_0_pi.e_data['P(0)'][-1] * 100:.7f}%",
+        f"{out_1_pi.e_data['P(1)'][-1] * 100:.7f}%",
+        f"{out_1_v.e_data['P(1)'][-1] * 100:.7f}%",
+    )
+
+    # Print the table
+    console.print(table)
+
+    return (
+        out_0_pi,
+        out_0_v,
+        out_1_pi,
+        out_1_v,
+        tlist,
+        field_in,
+        field_in_cross,
+        field_out_0_in_pi_out_pi,
+        field_out_0_in_pi_out_v,
+        field_out_1_in_pi_out_pi,
+        field_out_1_in_pi_out_v,
+        field_out_0_in_v_out_pi,
+        field_out_0_in_v_out_v,
+        field_out_1_in_v_out_pi,
+        field_out_1_in_v_out_v,
+    )
 
 
-ampl_in = sum(np.nan_to_num(np.abs(field_in)) ** 2) * (tlist[1] - tlist[0])
-ampl_0 = sum(np.nan_to_num(np.abs(field_out_0)) ** 2) * (tlist[1] - tlist[0])
-ampl_1 = sum(np.nan_to_num(np.abs(field_out_1)) ** 2) * (tlist[1] - tlist[0])
-norm_0 = ampl_0 / ampl_in
-norm_1 = ampl_1 / ampl_in
-n_phot_0 = sum(np.nan_to_num(out_0.e_data["n_cav_pi"])) * (tlist[1] - tlist[0])
-n_phot_1 = sum(np.nan_to_num(out_1.e_data["n_cav_pi"])) * (tlist[1] - tlist[0])
-
-console = Console()
-
-# Create a rich table
-table = Table(
-    title="[bold cyan]Reflection Analysis Results[/bold cyan]",
-    box=box.ROUNDED,
-    header_style="bold magenta",
-)
-
-table.add_column("Quantity", justify="left", style="cyan", no_wrap=True)
-table.add_column("|0⟩ Value", justify="right", style="red")
-table.add_column("|1⟩ Value", justify="right", style="blue")
-
-# Compute values
-phase_0 = np.mean(np.angle(np.real(field_out_0) / field_in))
-phase_1 = np.mean(np.angle(np.real(field_out_1) / field_in))
-
-# Add rows to the table
-table.add_row("Input Amplitude |a_in|²", f"{ampl_in:.7f}", f"{ampl_in:.7f}")
-table.add_row("Reflection Amplitude |a|²", f"{ampl_0:.7f}", f"{ampl_1:.7f}")
-table.add_row("Normalized Amplitude |a|²/|a_in|²", f"{norm_0:.7f}", f"{norm_1:.7f}")
-table.add_row("Reflection Phase (rad)", f"{phase_0:.7f}", f"{phase_1:.7f}")
-
-# Print the table
-console.print(table)
-
-
-# Sum fucking around
+(
+    out_0_pi,
+    out_0_v,
+    out_1_pi,
+    out_1_v,
+    tlist,
+    field_in,
+    field_in_cross,
+    field_out_0_in_pi_out_pi,
+    field_out_0_in_pi_out_v,
+    field_out_1_in_pi_out_pi,
+    field_out_1_in_pi_out_v,
+    field_out_0_in_v_out_pi,
+    field_out_0_in_v_out_v,
+    field_out_1_in_v_out_pi,
+    field_out_1_in_v_out_v,
+) = run_sim_plus_analysis(e_obs, c_obs)
 
 dt = tlist[1] - tlist[0]
-f_0 = field_out_0 / np.sqrt(np.sum(np.abs(field_out_0) ** 2) * dt)
-c_0 = np.sum(np.conj(f_0) * field_out_0 * dt)
-N_in = np.sum(np.abs(field_in) ** 2) * dt
-P0 = out_0.e_data["P(0)"][-1]
-F_0 = P0 * (np.abs(c_0) ** 2 / N_in)
-print(F_0)
+
+norm_0_pi = np.sqrt(
+    np.sum(np.abs(field_out_0_in_pi_out_pi) ** 2 + np.abs(field_out_0_in_pi_out_v) ** 2)
+    * dt
+)
+f_0_in_pi_out_pi = field_out_0_in_pi_out_pi / norm_0_pi
+f_0_in_pi_out_v = field_out_0_in_pi_out_v / norm_0_pi
+
+f_ideal_pi = field_in / np.sqrt(np.sum(np.abs(field_in) ** 2) * dt)
+
+c_0_in_pi_out_pi = np.sum(np.conj(f_ideal_pi) * f_0_in_pi_out_pi) * dt
+c_0_in_pi_out_v = np.sum(np.conj(f_ideal_pi) * f_0_in_pi_out_v) * dt
+F_ph_in_pi_out_pi = np.abs(c_0_in_pi_out_pi) ** 2
+F_ph_in_pi_out_v = np.abs(c_0_in_pi_out_v) ** 2
+print(out_0_pi.e_data["P(0)"][-1] * F_ph_in_pi_out_pi)
+print(out_0_pi.e_data["P(0)"][-1] * F_ph_in_pi_out_v)
+
+
+def normalize_joint_mode(field_pi, field_v, dt):
+    """
+    Normalize a joint (pi, V) photonic output mode.
+    """
+    norm = np.sqrt(np.sum(np.abs(field_pi) ** 2 + np.abs(field_v) ** 2) * dt)
+    return field_pi / norm, field_v / norm
+
+
+def project_onto_ideal(field_out, field_ideal, dt):
+    """
+    Project a normalized output mode onto an ideal mode.
+    """
+    return np.abs(np.sum(np.conj(field_ideal) * field_out) * dt) ** 2
+
+
+# =========================
+# Ideal photon modes
+# =========================
+
+f_ideal_pi = field_in / np.sqrt(np.sum(np.abs(field_in) ** 2) * dt)
+f_ideal_v = (
+    field_in_cross / np.sqrt(np.sum(np.abs(field_in_cross) ** 2) * dt)
+    if np.any(field_in_cross)
+    else np.zeros_like(field_in)
+)
+
+# =========================
+# Atomic survival probs
+# =========================
+
+P0_pi = out_0_pi.e_data["P(0)"][-1]
+P1_pi = out_1_pi.e_data["P(1)"][-1]
+P0_v = out_0_v.e_data["P(0)"][-1]
+P1_v = out_1_v.e_data["P(1)"][-1]
+
+# =====================================================
+# |0, pi> input
+# =====================================================
+
+f0_pi_pi, f0_pi_v = normalize_joint_mode(
+    field_out_0_in_pi_out_pi, field_out_0_in_pi_out_v, dt
+)
+
+T_0pi_0pi = P0_pi * project_onto_ideal(f0_pi_pi, f_ideal_pi, dt)
+T_0pi_0v = P0_pi * project_onto_ideal(f0_pi_v, f_ideal_pi, dt)
+
+# =====================================================
+# |1, pi> input
+# =====================================================
+
+f1_pi_pi, f1_pi_v = normalize_joint_mode(
+    field_out_1_in_pi_out_pi, field_out_1_in_pi_out_v, dt
+)
+
+T_1pi_1pi = P1_pi * project_onto_ideal(f1_pi_pi, f_ideal_pi, dt)
+T_1pi_1v = P1_pi * project_onto_ideal(f1_pi_v, f_ideal_pi, dt)
+
+# =====================================================
+# |0, V> input
+# =====================================================
+
+f0_v_pi, f0_v_v = normalize_joint_mode(
+    field_out_0_in_v_out_pi, field_out_0_in_v_out_v, dt
+)
+
+T_0v_0pi = P0_v * project_onto_ideal(f0_v_pi, f_ideal_pi, dt)
+T_0v_0v = P0_v * project_onto_ideal(f0_v_v, f_ideal_pi, dt)
+
+# =====================================================
+# |1, V> input
+# =====================================================
+
+f1_v_pi, f1_v_v = normalize_joint_mode(
+    field_out_1_in_v_out_pi, field_out_1_in_v_out_v, dt
+)
+
+T_1v_1pi = P1_v * project_onto_ideal(f1_v_pi, f_ideal_pi, dt)
+T_1v_1v = P1_v * project_onto_ideal(f1_v_v, f_ideal_pi, dt)
+
+# =====================================================
+# Assemble 4×4 truth table
+# Ordering:
+# |0,pi>, |0,V>, |1,pi>, |1,V>
+# =====================================================
+
+truth_table = np.array(
+    [
+        [T_0pi_0pi, T_0pi_0v, 0.0, 0.0],
+        [T_0v_0pi, T_0v_0v, 0.0, 0.0],
+        [0.0, 0.0, T_1pi_1pi, T_1pi_1v],
+        [0.0, 0.0, T_1v_1pi, T_1v_1v],
+    ]
+)
+
+print("Truth table (post-selected):")
+print(truth_table)
+
+c_phase_labels = ["|0,π⟩", "|1,π⟩", "|0,V⟩", "|1,V⟩"]
+fig = plt.figure()
+ax = fig.add_subplot(1, 1, 1, projection="3d")
+styled_3d_bar(ax, truth_table, c_phase_labels)
+plt.show()
