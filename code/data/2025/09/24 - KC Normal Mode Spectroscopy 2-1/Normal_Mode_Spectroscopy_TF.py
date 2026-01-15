@@ -940,7 +940,7 @@ class AtomAnalysis:
         ax.legend()
         ax.set_xlabel(r"Detuning $\Delta$ (MHz)")
         plt.tight_layout()
-        # plt.show()
+        plt.show()
         phfig.savefig(f"{path}/{filename}_reflection_spectrum.svg")
         # with open("data_from_fit.csv", "w") as file:
         #     file.write("x,y\n")
