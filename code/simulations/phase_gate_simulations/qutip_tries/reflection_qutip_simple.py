@@ -32,7 +32,8 @@ Atom_dimensions = 4
 Photon_dimensions = 3
 
 tlist = np.linspace(0.0, 8000, 1000)
-args = {"amp": 0.0195, "t0": 4000, "tau": 70.0, "tau_start": 91.0, "sigma": 1500.0}
+args = {"amp": 0.0195, "t0": 4000, "tau": 70.0,
+        "tau_start": 91.0, "sigma": 1500.0}
 
 atom_0 = qt.basis(Atom_dimensions, 0)
 atom_1 = qt.basis(Atom_dimensions, 1)
@@ -62,6 +63,9 @@ a_v = qt.tensor(
     qt.qeye(Photon_dimensions),  # Pi mode
     qt.qeye(Atom_dimensions),
 )
+
+a_plus = (a_v + a_pi) / np.sqrt(2)
+a_minus = (a_v - a_pi) / np.sqrt(2)
 
 
 sigma = qt.tensor(
@@ -111,6 +115,10 @@ def run_sim(
         drive_op = eta_main * a_pi + eta_cross * a_v
     elif driving_field_destr_operator is a_v:
         drive_op = eta_main * a_v + eta_cross * a_pi
+    elif driving_field_destr_operator is a_plus:
+        drive_op = a_plus
+    elif driving_field_destr_operator is a_minus:
+        drive_op = a_minus
     else:
         raise ValueError("Pol must be either 'pi' or 'v'")
 
@@ -137,6 +145,10 @@ e_obs = {
     "n_cav_v": a_v.dag() * a_v,
     "a_pi": a_pi,
     "a_v": a_v,
+    "a_plus": a_plus,
+    "a_minus": a_minus,
+    "n_plus": a_plus.dag() * a_plus,
+    "n_minus": a_minus.dag() * a_minus,
 }
 
 p_e_to_1 = 1 / 15
@@ -162,7 +174,7 @@ def compute_output_field(
     return alpha_out
 
 
-def run_sim_plus_analysis(e_obs, c_obs):
+def run_sim_plus_analysis_in_cphase_basis(e_obs, c_obs):
     field_in: np.ndarray = input_shape(tlist, args)
     field_in_cross: np.ndarray = np.zeros_like(field_in)
     out_0_pi = run_sim(
@@ -259,8 +271,10 @@ def run_sim_plus_analysis(e_obs, c_obs):
     table.add_column("|1,v⟩ Value", justify="right", style="green3")
 
     # Compute values
-    phase_0_pi = np.mean(np.angle(np.real(field_out_0_in_pi_out_pi) / field_in))
-    phase_1_pi = np.mean(np.angle(np.real(field_out_1_in_pi_out_pi) / field_in))
+    phase_0_pi = np.mean(
+        np.angle(np.real(field_out_0_in_pi_out_pi) / field_in))
+    phase_1_pi = np.mean(
+        np.angle(np.real(field_out_1_in_pi_out_pi) / field_in))
     phase_0_v = np.mean(np.angle(np.real(field_out_0_in_v_out_v) / field_in))
     phase_1_v = np.mean(np.angle(np.real(field_out_1_in_v_out_v) / field_in))
 
@@ -332,12 +346,13 @@ def run_sim_plus_analysis(e_obs, c_obs):
     field_out_0_in_v_out_v,
     field_out_1_in_v_out_pi,
     field_out_1_in_v_out_v,
-) = run_sim_plus_analysis(e_obs, c_obs)
+) = run_sim_plus_analysis_in_cphase_basis(e_obs, c_obs)
 
 dt = tlist[1] - tlist[0]
 
 norm_0_pi = np.sqrt(
-    np.sum(np.abs(field_out_0_in_pi_out_pi) ** 2 + np.abs(field_out_0_in_pi_out_v) ** 2)
+    np.sum(np.abs(field_out_0_in_pi_out_pi) ** 2 +
+           np.abs(field_out_0_in_pi_out_v) ** 2)
     * dt
 )
 f_0_in_pi_out_pi = field_out_0_in_pi_out_pi / norm_0_pi
