@@ -71,7 +71,8 @@ def compute_process_fidelity(measured_matrix: np.ndarray):
         np.kron(b1, b2) / 2 for b1 in pauli_operators for b2 in pauli_operators
     ]
 
-    ideal_cnot = np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0]])
+    ideal_cnot = np.array(
+        [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0]])
 
     process_fidelity = 0
     dimensions = 4
