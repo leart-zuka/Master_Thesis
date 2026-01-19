@@ -139,14 +139,16 @@ for i, alpha in enumerate(alphaArray):
 
     # operational, click-conditioned average fidelity over basis inputs
     F_click[i] = F_ge2 + (
-        0.25 * np.sum(f1 * F_sig_cols + fdark * F_random + fge2 * F_ge2) - F_ge2
+        0.25 * np.sum(f1 * F_sig_cols + fdark *
+                      F_random + fge2 * F_ge2) - F_ge2
     ) * np.exp(-(1 - eta) * alpha**2)
 
     # --------------------------------------------
 
 fig, ax = plt.subplots()
 ax.set_xscale("log")
-ax.plot(alpha2Array, F_click, label=r"$F_{\rm click}(\alpha)$", c="tab:blue", lw=2)
+ax.plot(alpha2Array, F_click,
+        label=r"$F_{\rm click}(\alpha)$", c="tab:blue", lw=2)
 idx = np.argmax(F_click)
 x_max = alpha2Array[idx]
 y_max = F_click[idx]

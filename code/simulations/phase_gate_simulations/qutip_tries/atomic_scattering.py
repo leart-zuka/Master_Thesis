@@ -2,8 +2,7 @@ from typing import Literal
 import numpy as np
 import matplotlib.pyplot as plt
 import qutip as qt
-from helpers.ndqd_calculate_amplitudes import get_reflection_amplitudes
-from rich import print
+from helpers.ndqd_amplitudes import get_reflection_amplitudes
 
 
 params_dir = {
@@ -115,11 +114,13 @@ atom_0 = qt.basis(2, 0)
 atom_1 = qt.basis(2, 1)
 
 RyPi2 = (
-    np.cos(np.pi / 2 / 2) * qt.identity(2) - 1j * np.sin(np.pi / 2 / 2) * qt.sigmay()
+    np.cos(np.pi / 2 / 2) * qt.identity(2) - 1j *
+    np.sin(np.pi / 2 / 2) * qt.sigmay()
 )
 
 for i, alpha in enumerate(alphaArray):
-    psi_tot = full_reflected_state_after_superposition_light(0, alpha, 3, params_dir)
+    psi_tot = full_reflected_state_after_superposition_light(
+        0, alpha, 3, params_dir)
     rho_tot = qt.ket2dm(psi_tot)
     rho_atom = RyPi2 * rho_tot.ptrace(5) * RyPi2.dag()
     prob[i] = calculate_det_prob(rho_atom, 0)
