@@ -1,122 +1,164 @@
+from dataclasses import dataclass
+from typing import Dict, Callable, Literal, List
 import numpy as np
 import qutip as qt
-from typing import List, Dict, Tuple
 
 
-class CavityQEDSystem:
-    """
-    A class representing a quantum cavity QED system with multiple photon modes
-    and a single atom with an arbitrary number of levels.
+@dataclass(frozen=True)
+class CavityParams:
+    Delta_c_pi: float
+    Delta_c_v: float
+    Kappa_oc: float
+    v_transmission: float = 1.0
 
-    Attributes:
-    ----------
-    photon_dimensions : List[int]
-        A list where each element specifies the truncation level (Hilbert space dimension)
-        for each cavity mode.
-    atom_dimensions : int
-        The number of levels in the atom.
-    """
 
-    def __init__(self, photon_dimensions: List[int], atom_dimensions: int) -> None:
-        """
-        Initialize the Cavity QED system with specified photon mode dimensions and atomic levels.
+@dataclass(frozen=True)
+class AtomParams:
+    Delta_a: float
+    G0_kc: float
 
-        Parameters
-        ----------
-        photon_dimensions : List[int]
-            A list of integers, where each integer specifies the truncation level (Hilbert space dimension)
-            of a single cavity photon mode. For example, [2, 3] represents two modes: one truncated at 2 levels,
-            the other at 3.
 
-        atom_dimensions : int
-            An integer representing the number of energy levels in the atom (e.g., 3 for a Λ-type or ladder-type atom).
+@dataclass(frozen=True)
+class DriveParams:
+    Mu_fc: float
+    Mu_fr: float
+    polarization: Literal["pi", "v", "plus", "minus"]
+    input_shape: Callable[[float, Dict[str, float]], float]
+    args: Dict[str, float]
 
-        Attributes
-        ----------
-        photon_dimensions : List[int]
-            Stores the dimensionality of each photon mode.
 
-        atom_dimensions : int
-            Number of discrete atomic energy levels in the system.
+@dataclass(frozen=True)
+class Operators:
+    a_pi: qt.Qobj
+    a_v: qt.Qobj
+    sigma: qt.Qobj
 
-        annihilation_operators : List[qt.Qobj]
-            List of annihilation operators, one per photon mode, properly tensor-extended to act on the full system Hilbert space.
 
-        projection_operators : Dict[Tuple[int, int], qt.Qobj]
-            Dictionary mapping atomic level pairs (i, j) to projection or transition operators |i⟩⟨j| tensor-extended
-            with identity operators over the photon modes.
+@dataclass
+class AtomSystem:
+    dim: int
+    Delta_a: float
+    Gamma: float
+    p_e_to_1: float = 1 / 15
+    p_e_to_dark: float = 14 / 15
 
-        atomic_states : List[qt.Qobj]
-            List of atomic basis states |0⟩, |1⟩, ..., |n⟩ represented as `qutip.basis` vectors, each extended with
-            photon Hilbert space identity.
-        """
-        self.photon_dimensions = photon_dimensions
-        self.atom_dimensions = atom_dimensions
-        self.annihilation_operators = self.annihilation_operator()
-        self.projection_operators = self.projection_operator()
-        self.atomic_states = self.atom_states()
+    def __post_init__(self):
+        # Basis states
+        self.state_0 = qt.basis(self.dim, 0)
+        self.state_1 = qt.basis(self.dim, 1)
+        self.state_dark = qt.basis(self.dim, 2)
+        self.state_e = qt.basis(self.dim, 3)
 
-    def annihilation_operator(self) -> Dict[str, qt.Qobj]:
-        """
-        Constructs the annihilation (lowering) operators for each photon mode.
+        # Projectors
+        self.P0 = self.state_0 * self.state_0.dag()
+        self.P1 = self.state_1 * self.state_1.dag()
+        self.Pe = self.state_e * self.state_e.dag()
 
-        Each operator acts non-trivially only on its corresponding mode, and is
-        tensored with identity operators over the atom and all other modes.
+        # Lowering operators
+        self.sigma = self.state_1 * self.state_e.dag()
+        self.sigma_bad = self.state_dark * self.state_e.dag()
 
-        Returns:
-        -------
-        dict:
-        A dictionary mapping mode labels (e.g., 'a0', 'a1') to Qobj operators
-        in the full Hilbert space.
-        """
-        identity_op_atom = qt.qeye(self.atom_dimensions)
-        cavity_modes = np.size(self.photon_dimensions)
 
-        annihilation_ops: Dict[str, qt.Qobj] = {}
-        for mode_index_i in range(cavity_modes):
-            tensor_factors = [identity_op_atom]
-            for mode_index_j, dimension in enumerate(self.photon_dimensions):
-                if mode_index_i == mode_index_j:
-                    tensor_factors.append(qt.destroy(dimension))
-                else:
-                    tensor_factors.append(qt.qeye(dimension))
-            annihilation_ops[f"a{mode_index_i}"] = qt.tensor(tensor_factors)
-        return annihilation_ops
+@dataclass
+class CavitySystem:
+    photon_dim: int
+    atom_dim: int
 
-    def projection_operator(self) -> Dict[Tuple[int, int], qt.Qobj]:
-        """
-        Constructs atomic transition operators |i⟩⟨j| embedded in the full system Hilbert space.
+    Delta_c_pi: float
+    Delta_c_v: float
+    G0_kc: float
+    Kappa: float
+    v_transmission: float = 1.0
 
-        Each operator acts non-trivially only on the atomic subsystem and is tensored with
-        the identity operator on the photon modes.
+    def __post_init__(self):
+        self.Kappa_oc = self.Kappa * 0.85
+        self.Kappa_internal = self.Kappa - self.Kappa_oc
 
-        Returns:
-            -------
-        Dict[Tuple[int, int, int], qt.Qobj]:
-            A dictionary mapping (i, j) → Qobj operator for |i⟩⟨j| ⊗ I_field,
-            where i and j are atomic level indices.
-        """
-        basis_states = self.atom_states()
-        transitions: Dict[Tuple[int, int], qt.Qobj] = {}
-        id_field = qt.tensor([qt.qeye(dim) for dim in self.photon_dimensions])
-        for i in range(self.atom_dimensions):
-            for j in range(self.atom_dimensions):
-                ket_i = basis_states[i]
-                bra_j = basis_states[j].dag()
-                op_ij = qt.tensor(ket_i * bra_j, id_field)
-                transitions[(i, j)] = op_ij
+        eye_p = qt.qeye(self.photon_dim)
+        eye_a = qt.qeye(self.atom_dim)
 
-        return transitions
+        # Annihilation operators
+        self.a_v = qt.tensor(
+            qt.destroy(self.photon_dim),
+            eye_p,
+            eye_a,
+        )
 
-    def atom_states(self) -> List[qt.Qobj]:
-        """
-        Generates the atomic basis states for the single atom in the system.
+        self.a_pi = qt.tensor(
+            eye_p,
+            qt.destroy(self.photon_dim),
+            eye_a,
+        )
 
-        Returns:
-        -------
-        List[qt.Qobj]:
-            A list of Qobj basis vectors |0>, |1>, ..., |d-1>, where d is the number
-            of atomic levels (`self.atom_dimensions`). These are not embedded in the
-            full Hilbert space—they are local to the atom.
-        """
-        return [qt.basis(self.atom_dimensions, i) for i in range(self.atom_dimensions)]
+
+@dataclass
+class SystemOperators:
+    atom: AtomSystem
+    cavity: CavitySystem
+
+    def __post_init__(self):
+        eye_v = qt.qeye(self.cavity.photon_dim)
+        eye_pi = qt.qeye(self.cavity.photon_dim)
+        eye_a = qt.qeye(self.atom.dim)
+
+        # Lift atomic operators into full Hilbert space
+        self.sigma = qt.tensor(eye_v, eye_pi, self.atom.sigma)
+        self.sigma_bad = qt.tensor(eye_v, eye_pi, self.atom.sigma_bad)
+
+        self.P0 = qt.tensor(eye_v, eye_pi, self.atom.P0)
+        self.P1 = qt.tensor(eye_v, eye_pi, self.atom.P1)
+        self.Pe = qt.tensor(eye_v, eye_pi, self.atom.Pe)
+
+
+@dataclass
+class Dissipation:
+    ops: SystemOperators
+    cavity: CavitySystem
+    atom: AtomSystem
+
+    def collapse_operators(self) -> List[qt.Qobj]:
+        return [
+            np.sqrt(self.cavity.Kappa_oc) * self.cavity.a_pi,
+            np.sqrt(self.cavity.Kappa_oc) * self.cavity.a_v,
+            np.sqrt(self.cavity.Kappa_internal) * self.cavity.a_pi,
+            np.sqrt(self.cavity.Kappa_internal) * self.cavity.a_v,
+            np.sqrt(self.atom.p_e_to_1 * self.atom.Gamma) * self.ops.sigma,
+            np.sqrt(self.atom.p_e_to_dark * self.atom.Gamma) * self.ops.sigma_bad,
+        ]
+
+
+@dataclass
+class Observables:
+    ops: SystemOperators
+    cavity: CavitySystem
+
+    def expectation_ops(self) -> Dict[str, qt.Qobj]:
+        return {
+            "P(0)": self.ops.P0,
+            "P(1)": self.ops.P1,
+            "P(e)": self.ops.Pe,
+            "n_cav_pi": self.cavity.a_pi.dag() * self.cavity.a_pi,
+            "n_cav_v": self.cavity.a_v.dag() * self.cavity.a_v,
+            "a_pi": self.cavity.a_pi,
+            "a_v": self.cavity.a_v,
+        }
+
+
+@dataclass
+class InitialStates:
+    cavity: CavitySystem
+    atom: AtomSystem
+
+    def psi_atom_0(self) -> qt.Qobj:
+        return qt.tensor(
+            qt.fock(self.cavity.photon_dim, 0),
+            qt.fock(self.cavity.photon_dim, 0),
+            self.atom.state_0,
+        )
+
+    def psi_atom_1(self) -> qt.Qobj:
+        return qt.tensor(
+            qt.fock(self.cavity.photon_dim, 0),
+            qt.fock(self.cavity.photon_dim, 0),
+            self.atom.state_1,
+        )

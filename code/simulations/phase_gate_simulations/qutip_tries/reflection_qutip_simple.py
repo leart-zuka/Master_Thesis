@@ -8,6 +8,16 @@ from helpers.plotting import (
     plot_photon_number_statistics_qutip,
     styled_3d_bar,
 )
+from helpers.generic_cavity_operators import (
+    DriveParams,
+    AtomSystem,
+    CavitySystem,
+    SystemOperators,
+    Dissipation,
+    Observables,
+    InitialStates,
+)
+from helpers.compute_simulation import simulate, compute_output_field
 
 from helpers.compute_reflection_parameters import compute_process_fidelity
 from rich.console import Console
@@ -17,254 +27,173 @@ import warnings
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
-
-Mu_fr = 0.978
-Mu_fc = 0.873
-G0_kc = 2 * np.pi * 0.024  # 2-1' splitting
-Kappa = 2 * np.pi * 0.058
-Kappa_oc = Kappa * 0.85
-Kappa_internal = Kappa - Kappa_oc
-Gamma_5P32_5S = 2 * np.pi * 0.006065
-
-Delta_c_pi = 2 * np.pi * 0
-Delta_c_v = 2 * np.pi * 0.5
-Delta_a = 2 * np.pi * 0
-
-Atom_dimensions = 4
-Photon_dimensions = 3
-
 tlist = np.linspace(0.0, 8000, 1000)
-args = {"amp": 0.0195, "t0": 4000, "tau": 70.0,
-        "tau_start": 91.0, "sigma": 1500.0}
+args = {"amp": 0.0195, "t0": 4000, "tau": 70.0, "tau_start": 91.0, "sigma": 1500.0}
 
-atom_0 = qt.basis(Atom_dimensions, 0)
-atom_1 = qt.basis(Atom_dimensions, 1)
-atom_dark = qt.basis(Atom_dimensions, 2)
-atom_e = qt.basis(Atom_dimensions, 3)
-
-psi_0 = qt.tensor(
-    qt.fock(Photon_dimensions, 0),  # V mode
-    qt.fock(Photon_dimensions, 0),  # Pi mode
-    atom_0,
-)
-psi_1 = qt.tensor(
-    qt.fock(Photon_dimensions, 0),  # V mode
-    qt.fock(Photon_dimensions, 0),  # Pi mode
-    atom_1,
+atom = AtomSystem(
+    dim=4,
+    Delta_a=2 * np.pi * 0,
+    Gamma=2 * np.pi * 0.006065,
 )
 
-
-a_pi = qt.tensor(
-    qt.qeye(Photon_dimensions),  # V mode
-    qt.destroy(Photon_dimensions),  # Pi mode
-    qt.qeye(Atom_dimensions),
+cavity = CavitySystem(
+    photon_dim=3,
+    atom_dim=4,
+    Delta_c_pi=2 * np.pi * 0,
+    Delta_c_v=2 * np.pi * 0.5,
+    G0_kc=2 * np.pi * 0.024,
+    Kappa=2 * np.pi * 0.058,
+    v_transmission=1.0,
 )
 
-a_v = qt.tensor(
-    qt.destroy(Photon_dimensions),  # V mode
-    qt.qeye(Photon_dimensions),  # Pi mode
-    qt.qeye(Atom_dimensions),
-)
+ops = SystemOperators(atom=atom, cavity=cavity)
 
-a_plus = (a_v + a_pi) / np.sqrt(2)
-a_minus = (a_v - a_pi) / np.sqrt(2)
+dissipation = Dissipation(ops=ops, cavity=cavity, atom=atom)
+observables = Observables(ops=ops, cavity=cavity)
+
+states = InitialStates(cavity=cavity, atom=atom)
 
 
-sigma = qt.tensor(
-    qt.qeye(Photon_dimensions),  # V mode
-    qt.qeye(Photon_dimensions),  # Pi mode
-    atom_1 * atom_e.dag(),
-)
-sigma_bad = qt.tensor(
-    qt.qeye(Photon_dimensions),  # V mode
-    qt.qeye(Photon_dimensions),  # Pi mode
-    atom_dark * atom_e.dag(),
-)
-
-P0 = qt.tensor(
-    qt.qeye(Photon_dimensions),  # V mode
-    qt.qeye(Photon_dimensions),  # Pi mode
-    atom_0 * atom_0.dag(),
-)
-P1 = qt.tensor(
-    qt.qeye(Photon_dimensions),  # V mode
-    qt.qeye(Photon_dimensions),  # Pi mode
-    atom_1 * atom_1.dag(),
-)
-Pe = qt.tensor(
-    qt.qeye(Photon_dimensions),  # V mode
-    qt.qeye(Photon_dimensions),  # Pi mode
-    atom_e * atom_e.dag(),
-)
-
-
-def run_sim(
-    driving_field_destr_operator: qt.Qobj,
-    e_obs,
-    c_obs,
-    psi: qt.Qobj,
-    v_transmission: float = 1,
-) -> qt.Result:
-    H_0 = (
-        Delta_c_pi * a_pi.dag() * a_pi
-        + (Delta_c_pi + Delta_c_v) * a_v.dag() * a_v
-        + Delta_a * sigma.dag() * sigma
-    )
-    H_int = G0_kc * (a_pi * sigma.dag() + a_pi.dag() * sigma) + G0_kc * (
-        a_v * sigma.dag() + a_v.dag() * sigma
-    )
-
-    H = [H_0 + H_int]
-
-    prefactor = 1j * Mu_fc * np.sqrt(Kappa_oc)
-
-    eta_main = np.sqrt(0.9)
-    eta_cross = np.sqrt(0.1)
-
-    if driving_field_destr_operator is a_pi:
-        drive_op = eta_main * a_pi + eta_cross * np.sqrt(v_transmission) * a_v
-        H.append([prefactor * (drive_op - drive_op.dag()), input_shape])
-    elif driving_field_destr_operator is a_v:
-        drive_op = eta_main * a_pi + eta_cross * np.sqrt(v_transmission) * a_v
-        H.append(
-            [
-                prefactor * (drive_op - drive_op.dag()),
-                input_shape,
-            ]
-        )
-    elif driving_field_destr_operator is a_plus:
-        H.append([prefactor * (a_pi - a_pi.dag()), input_shape / np.sqrt(2)])
-        H.append(
-            [
-                prefactor * np.sqrt(v_transmission) * (a_v - a_v.dag()),
-                input_shape / np.sqrt(2),
-            ]
-        )
-
-    elif driving_field_destr_operator is a_minus:
-        H.append([prefactor * (a_pi - a_pi.dag()), -input_shape / np.sqrt(2)])
-        H.append(
-            [
-                prefactor * np.sqrt(v_transmission) * (a_v - a_v.dag()),
-                input_shape / np.sqrt(2),
-            ]
-        )
-    else:
-        raise ValueError("Pol must be either 'pi' or 'v'")
-
-    out = qt.mesolve(
-        H,
-        psi,
-        tlist,
-        c_obs,
-        e_obs,
-        args,
-        options=qt.Options(store_states=True, progress_bar="enhanced"),
-    )
-    return out
-
-
-e_obs = {
-    "P(0)": P0,
-    "P(1)": P1,
-    "P(e)": Pe,
-    "n_cav_pi": a_pi.dag() * a_pi,
-    "n_cav_v": a_v.dag() * a_v,
-    "a_pi": a_pi,
-    "a_v": a_v,
-    "a_plus": a_plus,
-    "a_minus": a_minus,
-    "n_plus": a_plus.dag() * a_plus,
-    "n_minus": a_minus.dag() * a_minus,
-}
-
-p_e_to_1 = 1 / 15
-p_e_to_dark = 14 / 15
-
-c_obs = [
-    np.sqrt(Kappa_oc) * a_pi,
-    np.sqrt(Kappa_oc) * a_v,
-    np.sqrt(Kappa_internal) * a_pi,
-    np.sqrt(Kappa_internal) * a_v,
-    np.sqrt(p_e_to_1 * Gamma_5P32_5S) * sigma,  # |e> -> |1>
-    np.sqrt(p_e_to_dark * Gamma_5P32_5S) * sigma_bad,  # |e> -> |dark>
-]
-
-
-def compute_output_field(
-    input_field: np.ndarray,
-    results: qt.Result,
-    cavity_mode: Literal["a_pi", "a_v", "a_plus", "a_minus"],
-) -> np.ndarray:
-    alpha_in = input_field
-    alpha_ref = Mu_fr * alpha_in
-    a_cav = np.array(results.e_data[cavity_mode])
-    alpha_out = alpha_ref + Mu_fc * np.sqrt(Kappa_oc) * a_cav
-    return alpha_out
-
-
-def run_sim_plus_analysis_in_cphase_basis(e_obs, c_obs):
+def run_sim_plus_analysis_in_cphase_basis(
+    tlist, cavity, atom, Mu_fc: float, Mu_fr: float, e_obs, c_obs
+):
     field_in: np.ndarray = input_shape(tlist, args)
     field_in_cross: np.ndarray = np.zeros_like(field_in)
-    out_0_pi = run_sim(
-        driving_field_destr_operator=a_pi,
-        e_obs=e_obs,
-        c_obs=c_obs,
+
+    drive_pi = DriveParams(
+        Mu_fc=Mu_fc,
+        Mu_fr=Mu_fr,
+        polarization="pi",
+        input_shape=input_shape,
+        args=args,
+    )
+
+    out_0_pi = simulate(
         psi=psi_0,
+        tlist=tlist,
+        system=ops,
+        cavity=cavity,
+        atom=atom,
+        drive=drive_pi,
+        c_ops=c_obs,
+        e_ops=e_obs,
     )
-    out_1_pi = run_sim(
-        driving_field_destr_operator=a_pi,
-        e_obs=e_obs,
-        c_obs=c_obs,
+
+    out_1_pi = simulate(
         psi=psi_1,
+        tlist=tlist,
+        system=ops,
+        cavity=cavity,
+        atom=atom,
+        drive=drive_pi,
+        c_ops=c_obs,
+        e_ops=e_obs,
     )
-    out_0_v = run_sim(
-        driving_field_destr_operator=a_v,
-        e_obs=e_obs,
-        c_obs=c_obs,
+
+    drive_v = DriveParams(
+        Mu_fc=Mu_fc,
+        Mu_fr=Mu_fr,
+        polarization="v",
+        input_shape=input_shape,
+        args=args,
+    )
+    out_0_v = simulate(
         psi=psi_0,
+        tlist=tlist,
+        system=ops,
+        cavity=cavity,
+        atom=atom,
+        drive=drive_v,
+        c_ops=c_obs,
+        e_ops=e_obs,
     )
-    out_1_v = run_sim(
-        driving_field_destr_operator=a_v,
-        e_obs=e_obs,
-        c_obs=c_obs,
+
+    out_1_v = simulate(
         psi=psi_1,
+        tlist=tlist,
+        system=ops,
+        cavity=cavity,
+        atom=atom,
+        drive=drive_v,
+        c_ops=c_obs,
+        e_ops=e_obs,
     )
 
     field_out_0_in_pi_out_pi = compute_output_field(
-        input_field=field_in, results=out_0_pi, cavity_mode="a_pi"
+        input_field=field_in,
+        results=out_0_pi,
+        cavity_mode="a_pi",
+        Mu_fc=drive_pi.Mu_fc,
+        Mu_fr=drive_pi.Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
     )
     field_out_0_in_pi_out_v = compute_output_field(
-        input_field=field_in_cross, results=out_0_pi, cavity_mode="a_v"
+        input_field=field_in,
+        results=out_0_pi,
+        cavity_mode="a_v",
+        Mu_fc=drive_pi.Mu_fc,
+        Mu_fr=drive_pi.Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
     )
     field_out_1_in_pi_out_pi = compute_output_field(
-        input_field=field_in, results=out_1_pi, cavity_mode="a_pi"
+        input_field=field_in,
+        results=out_1_pi,
+        cavity_mode="a_pi",
+        Mu_fc=drive_pi.Mu_fc,
+        Mu_fr=drive_pi.Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
     )
     field_out_1_in_pi_out_v = compute_output_field(
-        input_field=field_in_cross, results=out_1_pi, cavity_mode="a_v"
+        input_field=field_in,
+        results=out_1_pi,
+        cavity_mode="a_v",
+        Mu_fc=drive_pi.Mu_fc,
+        Mu_fr=drive_pi.Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
     )
+
     field_out_0_in_v_out_pi = compute_output_field(
-        input_field=field_in_cross, results=out_0_v, cavity_mode="a_pi"
+        input_field=field_in,
+        results=out_0_v,
+        cavity_mode="a_pi",
+        Mu_fc=drive_v.Mu_fc,
+        Mu_fr=drive_v.Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
     )
     field_out_0_in_v_out_v = compute_output_field(
-        input_field=field_in, results=out_0_v, cavity_mode="a_v"
+        input_field=field_in,
+        results=out_0_v,
+        cavity_mode="a_v",
+        Mu_fc=drive_v.Mu_fc,
+        Mu_fr=drive_v.Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
     )
     field_out_1_in_v_out_pi = compute_output_field(
-        input_field=field_in_cross, results=out_1_v, cavity_mode="a_pi"
+        input_field=field_in,
+        results=out_1_v,
+        cavity_mode="a_pi",
+        Mu_fc=drive_v.Mu_fc,
+        Mu_fr=drive_v.Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
     )
     field_out_1_in_v_out_v = compute_output_field(
-        input_field=field_in, results=out_1_v, cavity_mode="a_v"
+        input_field=field_in,
+        results=out_1_v,
+        cavity_mode="a_v",
+        Mu_fc=drive_v.Mu_fc,
+        Mu_fr=drive_v.Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
     )
 
-    plot_photon_number_statistics_qutip(out_0_pi, out_1_pi, "pi", tlist, Kappa)
-    plot_photon_number_statistics_qutip(out_0_v, out_1_v, "v", tlist, Kappa)
+    # plot_photon_number_statistics_qutip(out_0_pi, out_1_pi, "pi", tlist, Kappa)
+    # plot_photon_number_statistics_qutip(out_0_v, out_1_v, "v", tlist, Kappa)
 
-    plot_output_field_qutip(
-        field_in, field_out_0_in_pi_out_pi, field_out_1_in_pi_out_pi, "pi", tlist, Kappa
-    )
-    plot_output_field_qutip(
-        field_in, field_out_0_in_v_out_v, field_out_1_in_v_out_pi, "v", tlist, Kappa
-    )
+    # plot_output_field_qutip(
+    #     field_in, field_out_0_in_pi_out_pi, field_out_1_in_pi_out_pi, "pi", tlist, Kappa
+    # )
+    # plot_output_field_qutip(
+    #     field_in, field_out_0_in_v_out_v, field_out_1_in_v_out_pi, "v", tlist, Kappa
+    # )
 
     ampl_in = sum(np.nan_to_num(np.abs(field_in)) ** 2) * (tlist[1] - tlist[0])
     ampl_0_pi = sum(np.nan_to_num(np.abs(field_out_0_in_pi_out_pi)) ** 2) * (
@@ -300,10 +229,8 @@ def run_sim_plus_analysis_in_cphase_basis(e_obs, c_obs):
     table.add_column("|1,v⟩ Value", justify="right", style="green3")
 
     # Compute values
-    phase_0_pi = np.mean(
-        np.angle(np.real(field_out_0_in_pi_out_pi) / field_in))
-    phase_1_pi = np.mean(
-        np.angle(np.real(field_out_1_in_pi_out_pi) / field_in))
+    phase_0_pi = np.mean(np.angle(np.real(field_out_0_in_pi_out_pi) / field_in))
+    phase_1_pi = np.mean(np.angle(np.real(field_out_1_in_pi_out_pi) / field_in))
     phase_0_v = np.mean(np.angle(np.real(field_out_0_in_v_out_v) / field_in))
     phase_1_v = np.mean(np.angle(np.real(field_out_1_in_v_out_v) / field_in))
 
@@ -359,240 +286,220 @@ def run_sim_plus_analysis_in_cphase_basis(e_obs, c_obs):
     )
 
 
-# def analyze_plus_minus(
-#     out,
-#     psi_label,  # "0" or "1" (only for printing)
-#     expect_flip: bool,  # True for |0>, False for |1>
-# ):
-#     dt = tlist[1] - tlist[0]
+ops = SystemOperators(atom=atom, cavity=cavity)
+
+dissipation = Dissipation(ops=ops, cavity=cavity, atom=atom)
+observables = Observables(ops=ops, cavity=cavity)
+
+states = InitialStates(cavity=cavity, atom=atom)
+
+psi_0 = states.psi_atom_0()
+psi_1 = states.psi_atom_1()
+
+c_ops = dissipation.collapse_operators()
+e_ops = observables.expectation_ops()
+
+drive = DriveParams(
+    Mu_fc=0.873,
+    Mu_fr=0.978,
+    polarization="pi",
+    input_shape=input_shape,
+    args=args,
+)
+
+# out_0 = simulate(
+#     psi=psi_0,
+#     tlist=tlist,
+#     system=ops,
+#     cavity=cavity,
+#     atom=atom,
+#     drive=drive,
+#     c_ops=c_ops,
+#     e_ops=e_ops,
+# )
 #
-#     field_in = input_shape(tlist, args)
-#     f_ideal = field_in / np.sqrt(np.sum(np.abs(field_in) ** 2) * dt)
-#
-#     out_pi = compute_output_field(field_in, out, cavity_mode="a_pi")
-#     out_v = compute_output_field(field_in, out, cavity_mode="a_v")
-#
-#     # normalize photon
-#     norm = np.sqrt(np.sum(np.abs(out_pi) ** 2 + np.abs(out_v) ** 2) * dt)
-#     out_pi /= norm
-#     out_v /= norm
-#
-#     # mode overlaps
-#     c_pi = np.sum(np.conj(f_ideal) * out_pi) * dt
-#     c_v = np.sum(np.conj(f_ideal) * out_v) * dt
-#
-#     # rotate to ± basis
-#     A_plus = (c_v + c_pi) / np.sqrt(2)
-#     A_minus = (c_v - c_pi) / np.sqrt(2)
-#
-#     P_plus = np.abs(A_plus) ** 2
-#     P_minus = np.abs(A_minus) ** 2
-#
-#     # atomic survival probability
-#     if psi_label == "1":
-#         P_atom = out.e_data["P(1)"][-1]
-#     else:
-#         P_atom = out.e_data["P(0)"][-1]
-#
-#     if expect_flip:
-#         return P_atom * P_minus, P_atom * P_plus
-#     else:
-#         return P_atom * P_plus, P_atom * P_minus
-#
-#
-# T_vals = np.linspace(0.05, 1.0, 5)
-#
-# results = []
-#
-# for T_V in T_vals:
-#     print(f"Scanning T_V = {T_V:.3f}")
-#
-#     # |1> atom (NO flip)
-#     out_1_pl = run_sim(a_plus, e_obs, c_obs, psi_1, v_transmission=T_V)
-#     out_1_min = run_sim(a_minus, e_obs, c_obs, psi_1, v_transmission=T_V)
-#
-#     F_1_pp, L_1_pm = analyze_plus_minus(out_1_pl, "1", expect_flip=False)
-#     F_1_mm, L_1_mp = analyze_plus_minus(out_1_min, "1", expect_flip=False)
-#
-#     # |0> atom (FLIP)
-#     out_0_pl = run_sim(a_plus, e_obs, c_obs, psi_0, v_transmission=T_V)
-#     out_0_min = run_sim(a_minus, e_obs, c_obs, psi_0, v_transmission=T_V)
-#
-#     F_0_pm, L_0_pp = analyze_plus_minus(out_0_pl, "0", expect_flip=True)
-#     F_0_mp, L_0_mm = analyze_plus_minus(out_0_min, "0", expect_flip=True)
-#
-#     F_avg = 0.25 * (F_1_pp + F_1_mm + F_0_pm + F_0_mp)
-#
-#     results.append(
-#         dict(
-#             T=T_V,
-#             F_avg=F_avg,
-#             F_1_pp=F_1_pp,
-#             F_1_mm=F_1_mm,
-#             F_0_pm=F_0_pm,
-#             F_0_mp=F_0_mp,
-#         )
-#     )
-#
-#
-# best = max(results, key=lambda x: x["F_avg"])
-#
-# print("\n================ OPTIMAL BREWSTER TRANSMISSION ================")
-# print(f"T_V* = {best['T']:.3f}")
-# print(f"Average gate fidelity = {best['F_avg']:.4f}\n")
-#
-# print("Truth table (conditional fidelities):")
-# print(f"|1>|+> → |+> : {best['F_1_pp']:.4f}")
-# print(f"|1>|-> → |-> : {best['F_1_mm']:.4f}")
-# print(f"|0>|+> → |-> : {best['F_0_pm']:.4f}")
-# print(f"|0>|-> → |+> : {best['F_0_mp']:.4f}")
-#
-#
-# plt.plot([r["T"] for r in results], [r["F_avg"] for r in results], "o-")
-# plt.xlabel("V polarization transmission $T_V$")
-# plt.ylabel("Average CNOT fidelity")
-# plt.grid()
-# plt.show()
-#
+# out_1 = simulate(
+#     psi=psi_1,
+#     tlist=tlist,
+#     system=ops,
+#     cavity=cavity,
+#     atom=atom,
+#     drive=drive,
+#     c_ops=c_ops,
+#     e_ops=e_ops,
+# )
 
-out_1_pl = qt.qload("out_1_pl")
-# out_1_pl = run_sim(a_plus, e_obs, c_obs, psi_1, 0.24)
-# qt.qsave(out_1_pl, "out_1_pl")
+# plot_photon_number_statistics_qutip(out_0, out_1, "pi", tlist, cavity.Kappa)
 
-dt = tlist[1] - tlist[0]
+field_in: np.ndarray = input_shape(tlist, args)
+# field_out_0_in_pi_out_pi = compute_output_field(
+#     input_field=field_in,
+#     results=out_0,
+#     cavity_mode="a_pi",
+#     Mu_fc=drive.Mu_fc,
+#     Mu_fr=drive.Mu_fr,
+#     Kappa_oc=cavity.Kappa_oc,
+# )
+# field_out_1_in_pi_out_pi = compute_output_field(
+#     input_field=field_in,
+#     results=out_1,
+#     cavity_mode="a_pi",
+#     Mu_fc=drive.Mu_fc,
+#     Mu_fr=drive.Mu_fr,
+#     Kappa_oc=cavity.Kappa_oc,
+# )
 
-field_in = input_shape(tlist, args)
-f_ideal = field_in / np.sqrt(np.sum(np.abs(field_in) ** 2) * dt)
-
-out_pi = compute_output_field(field_in, out_1_pl, cavity_mode="a_pi")
-out_v = compute_output_field(field_in, out_1_pl, cavity_mode="a_v")
-
-norm = np.sqrt(np.sum(np.abs(out_pi) ** 2 + np.abs(out_v) ** 2) * dt)
-out_pi /= norm
-out_v /= norm
-
-c_pi = np.sum(np.conj(f_ideal) * out_pi) * dt
-c_v = np.sum(np.conj(f_ideal) * out_v) * dt
-
-A_plus = (c_v + c_pi) / np.sqrt(2)
-A_minus = (c_v - c_pi) / np.sqrt(2)
-
-P_plus = np.abs(A_plus) ** 2
-P_minus = np.abs(A_minus) ** 2
-
-P1 = out_1_pl.e_data["P(1)"][-1]
-
-print("Conditional |+⟩ fidelity:", P1 * P_plus)
-print("Leakage to |−⟩:", P1 * P_minus)
-print("Check sum: ", P_plus + P_minus)
-
-
-out_1_min = qt.qload("out_1_min")
-# out_1_min = run_sim(a_minus, e_obs, c_obs, psi_1, 0.24)
-# qt.qsave(out_1_min, "out_1_min")
-field_in = input_shape(tlist, args)
-f_ideal = field_in / np.sqrt(np.sum(np.abs(field_in) ** 2) * dt)
-
-out_pi = compute_output_field(
-    field_in / np.sqrt(2), out_1_min, cavity_mode="a_pi")
-out_v = compute_output_field(
-    field_in / np.sqrt(2), out_1_min, cavity_mode="a_v")
-
-norm = np.sqrt(np.sum(np.abs(out_pi) ** 2 + np.abs(out_v) ** 2) * dt)
-
-out_pi /= norm
-out_v /= norm
-
-c_pi = np.sum(np.conj(f_ideal) * out_pi) * dt
-c_v = np.sum(np.conj(f_ideal) * out_v) * dt
-
-A_plus = (c_v + c_pi) / np.sqrt(2)
-A_minus = (c_v - c_pi) / np.sqrt(2)
-
-P_plus = np.abs(A_plus) ** 2
-P_minus = np.abs(A_minus) ** 2
-
-
-P1 = out_1_min.e_data["P(1)"][-1]
-
-print("Conditional |-⟩ fidelity:", P1 * P_plus)
-print("Leakage to |+⟩:", P1 * P_minus)
-print("Check sum:", P_minus + P_plus)
-
-
-out_0_pl = qt.qload("out_0_pl")
-# out_0_pl = run_sim(a_plus, e_obs, c_obs, psi_0, 0.24)
-# qt.qsave(out_0_pl, "out_0_pl")
-
-out_pi = compute_output_field(
-    field_in / np.sqrt(2), out_0_pl, cavity_mode="a_pi")
-out_v = compute_output_field(
-    field_in / np.sqrt(2), out_0_pl, cavity_mode="a_v")
-
-norm = np.sqrt(np.sum(np.abs(out_pi) ** 2 + np.abs(out_v) ** 2) * dt)
-out_pi /= norm
-out_v /= norm
-
-c_pi = np.sum(np.conj(f_ideal) * out_pi) * dt
-c_v = np.sum(np.conj(f_ideal) * out_v) * dt
-
-A_minus = (c_v - c_pi) / np.sqrt(2)
-A_plus = (c_v + c_pi) / np.sqrt(2)
-
-P_minus = np.abs(A_minus) ** 2
-P_plus = np.abs(A_plus) ** 2
-
-P0 = out_0_pl.e_data["P(0)"][-1]
-
-print("Conditional |+⟩ → |−⟩ fidelity:", P0 * P_minus)
-print("Leakage to |+⟩:", P0 * P_plus)
-print("Photon check sum:", P_minus + P_plus)
-
-
-out_0_min = qt.qload("out_0_min")
-# out_0_min = run_sim(a_minus, e_obs, c_obs, psi_0, 0.24)
-# qt.qsave(out_0_min, "out_0_min")
-
-out_pi = compute_output_field(
-    field_in / np.sqrt(2), out_0_min, cavity_mode="a_pi")
-out_v = compute_output_field(
-    field_in / np.sqrt(2), out_0_min, cavity_mode="a_v")
-
-norm = np.sqrt(np.sum(np.abs(out_pi) ** 2 + np.abs(out_v) ** 2) * dt)
-out_pi /= norm
-out_v /= norm
-
-c_pi = np.sum(np.conj(f_ideal) * out_pi) * dt
-c_v = np.sum(np.conj(f_ideal) * out_v) * dt
-
-A_plus = (c_v - c_pi) / np.sqrt(2)
-A_minus = (c_v + c_pi) / np.sqrt(2)
-
-P_plus = np.abs(A_plus) ** 2
-P_minus = np.abs(A_minus) ** 2
-
-P0 = out_0_min.e_data["P(0)"][-1]
-
-print("Conditional |−⟩ → |+⟩ fidelity:", P0 * P_plus)
-print("Leakage to |−⟩:", P0 * P_minus)
-print("Photon check sum:", P_plus + P_minus)
-# (
-#     out_0_pi,
-#     out_0_v,
-#     out_1_pi,
-#     out_1_v,
-#     tlist,
+# plot_output_field_qutip(
 #     field_in,
-#     field_in_cross,
 #     field_out_0_in_pi_out_pi,
-#     field_out_0_in_pi_out_v,
 #     field_out_1_in_pi_out_pi,
-#     field_out_1_in_pi_out_v,
-#     field_out_0_in_v_out_pi,
-#     field_out_0_in_v_out_v,
-#     field_out_1_in_v_out_pi,
-#     field_out_1_in_v_out_v,
-# ) = run_sim_plus_analysis_in_cphase_basis(e_obs, c_obs)
+#     "pi",
+#     tlist,
+#     cavity.Kappa,
+# )
+
+# out_1_pl = qt.qload("out_1_pl")
+# # out_1_pl = run_sim(a_plus, e_obs, c_obs, psi_1, 0.24)
+# # qt.qsave(out_1_pl, "out_1_pl")
+#
+# dt = tlist[1] - tlist[0]
+#
+# field_in = input_shape(tlist, args)
+# f_ideal = field_in / np.sqrt(np.sum(np.abs(field_in) ** 2) * dt)
+#
+# out_pi = compute_output_field(field_in, out_1_pl, cavity_mode="a_pi")
+# out_v = compute_output_field(field_in, out_1_pl, cavity_mode="a_v")
+#
+# norm = np.sqrt(np.sum(np.abs(out_pi) ** 2 + np.abs(out_v) ** 2) * dt)
+# out_pi /= norm
+# out_v /= norm
+#
+# c_pi = np.sum(np.conj(f_ideal) * out_pi) * dt
+# c_v = np.sum(np.conj(f_ideal) * out_v) * dt
+#
+# A_plus = (c_v + c_pi) / np.sqrt(2)
+# A_minus = (c_v - c_pi) / np.sqrt(2)
+#
+# P_plus = np.abs(A_plus) ** 2
+# P_minus = np.abs(A_minus) ** 2
+#
+# P1 = out_1_pl.e_data["P(1)"][-1]
+#
+# print("Conditional |+⟩ fidelity:", P1 * P_plus)
+# print("Leakage to |−⟩:", P1 * P_minus)
+# print("Check sum: ", P_plus + P_minus)
+#
+#
+# out_1_min = qt.qload("out_1_min")
+# # out_1_min = run_sim(a_minus, e_obs, c_obs, psi_1, 0.24)
+# # qt.qsave(out_1_min, "out_1_min")
+# field_in = input_shape(tlist, args)
+# f_ideal = field_in / np.sqrt(np.sum(np.abs(field_in) ** 2) * dt)
+#
+# out_pi = compute_output_field(
+#     field_in / np.sqrt(2), out_1_min, cavity_mode="a_pi")
+# out_v = compute_output_field(
+#     field_in / np.sqrt(2), out_1_min, cavity_mode="a_v")
+#
+# norm = np.sqrt(np.sum(np.abs(out_pi) ** 2 + np.abs(out_v) ** 2) * dt)
+#
+# out_pi /= norm
+# out_v /= norm
+#
+# c_pi = np.sum(np.conj(f_ideal) * out_pi) * dt
+# c_v = np.sum(np.conj(f_ideal) * out_v) * dt
+#
+# A_plus = (c_v + c_pi) / np.sqrt(2)
+# A_minus = (c_v - c_pi) / np.sqrt(2)
+#
+# P_plus = np.abs(A_plus) ** 2
+# P_minus = np.abs(A_minus) ** 2
+#
+#
+# P1 = out_1_min.e_data["P(1)"][-1]
+#
+# print("Conditional |-⟩ fidelity:", P1 * P_plus)
+# print("Leakage to |+⟩:", P1 * P_minus)
+# print("Check sum:", P_minus + P_plus)
+#
+#
+# out_0_pl = qt.qload("out_0_pl")
+# # out_0_pl = run_sim(a_plus, e_obs, c_obs, psi_0, 0.24)
+# # qt.qsave(out_0_pl, "out_0_pl")
+#
+# out_pi = compute_output_field(
+#     field_in / np.sqrt(2), out_0_pl, cavity_mode="a_pi")
+# out_v = compute_output_field(
+#     field_in / np.sqrt(2), out_0_pl, cavity_mode="a_v")
+#
+# norm = np.sqrt(np.sum(np.abs(out_pi) ** 2 + np.abs(out_v) ** 2) * dt)
+# out_pi /= norm
+# out_v /= norm
+#
+# c_pi = np.sum(np.conj(f_ideal) * out_pi) * dt
+# c_v = np.sum(np.conj(f_ideal) * out_v) * dt
+#
+# A_minus = (c_v - c_pi) / np.sqrt(2)
+# A_plus = (c_v + c_pi) / np.sqrt(2)
+#
+# P_minus = np.abs(A_minus) ** 2
+# P_plus = np.abs(A_plus) ** 2
+#
+# P0 = out_0_pl.e_data["P(0)"][-1]
+#
+# print("Conditional |+⟩ → |−⟩ fidelity:", P0 * P_minus)
+# print("Leakage to |+⟩:", P0 * P_plus)
+# print("Photon check sum:", P_minus + P_plus)
+#
+#
+# out_0_min = qt.qload("out_0_min")
+# # out_0_min = run_sim(a_minus, e_obs, c_obs, psi_0, 0.24)
+# # qt.qsave(out_0_min, "out_0_min")
+#
+# out_pi = compute_output_field(
+#     field_in / np.sqrt(2), out_0_min, cavity_mode="a_pi")
+# out_v = compute_output_field(
+#     field_in / np.sqrt(2), out_0_min, cavity_mode="a_v")
+#
+# norm = np.sqrt(np.sum(np.abs(out_pi) ** 2 + np.abs(out_v) ** 2) * dt)
+# out_pi /= norm
+# out_v /= norm
+#
+# c_pi = np.sum(np.conj(f_ideal) * out_pi) * dt
+# c_v = np.sum(np.conj(f_ideal) * out_v) * dt
+#
+# A_plus = (c_v - c_pi) / np.sqrt(2)
+# A_minus = (c_v + c_pi) / np.sqrt(2)
+#
+# P_plus = np.abs(A_plus) ** 2
+# P_minus = np.abs(A_minus) ** 2
+#
+# P0 = out_0_min.e_data["P(0)"][-1]
+#
+# print("Conditional |−⟩ → |+⟩ fidelity:", P0 * P_plus)
+# print("Leakage to |−⟩:", P0 * P_minus)
+# print("Photon check sum:", P_plus + P_minus)
+
+
+(
+    out_0_pi,
+    out_0_v,
+    out_1_pi,
+    out_1_v,
+    tlist,
+    field_in,
+    field_in_cross,
+    field_out_0_in_pi_out_pi,
+    field_out_0_in_pi_out_v,
+    field_out_1_in_pi_out_pi,
+    field_out_1_in_pi_out_v,
+    field_out_0_in_v_out_pi,
+    field_out_0_in_v_out_v,
+    field_out_1_in_v_out_pi,
+    field_out_1_in_v_out_v,
+) = run_sim_plus_analysis_in_cphase_basis(
+    tlist, cavity, atom, Mu_fc=0.873, Mu_fr=0.978, e_obs=e_ops, c_obs=c_ops
+)
 #
 # dt = tlist[1] - tlist[0]
 #
