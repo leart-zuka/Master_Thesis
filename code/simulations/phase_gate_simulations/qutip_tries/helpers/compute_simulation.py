@@ -1,66 +1,154 @@
-from typing import Callable, Dict, Tuple, List, Any
+from typing import Callable, Dict, Tuple, List, Any, Literal
 import numpy as np
 import qutip as qt
 
 
 def simulate(
-    initial_atom_state: qt.Qobj,
-    projection_operators: Dict[Tuple[int, int], qt.Qobj],
-    annihilation_operators: Dict[str, qt.Qobj],
-    Photon_dimensions: List[int],
-    Photon_polarization: str,
-    G_pi_KC: float,
-    Kappa_oc: float,
-    real_input_shape: Callable[[float, Dict[str, float]], float],
-    tlist: np.ndarray[Any, np.dtype[np.float32]],
-    c_ops: List[qt.Qobj],
-    observables: List[qt.Qobj],
+    *,
+    psi: qt.Qobj,
+    polarization: Literal["pi", "v", "plus", "minus"],
+    tlist: np.ndarray,
+    input_shape: Callable[[float, Dict[str, float]], float],
     args: Dict[str, float],
+    a_pi: qt.Qobj,
+    a_v: qt.Qobj,
+    sigma: qt.Qobj,
+    Delta_c_pi: float,
+    Delta_c_v: float,
+    Delta_a: float,
+    G0_kc: float,
+    Mu_fc: float,
+    Kappa_oc: float,
+    c_ops: List[qt.Qobj],
+    e_ops: Dict[str, qt.Qobj],
+    v_transmission: float = 1.0,
 ) -> qt.Result:
     """
-    Simulates the time evolution of a quantum system consisting of an atom interacting
-    with a single mode of the electromagnetic field, driven by a polarized light pulse.
+    Time-domain simulation of a driven atom–cavity system with polarization-resolved input.
 
-    Parameters:
-        initial_atom_state (qt.Qobj): Initial quantum state of the atom.
-        projection_operators (Dict[Tuple[int, int], qt.Qobj]): Dictionary of atomic projection operators,
-            indexed by state transitions (e.g., (1, 4)).
-        annihilation_operators (Dict[str, qt.Qobj]): Dictionary of annihilation operators for photon modes
-            (e.g., {"a0": ..., "a1": ...}).
-        Photon_dimensions (List[int]): List of Hilbert space dimensions for each photon mode.
-        Photon_polarization (str): Key for selecting the driven polarization mode (e.g., "a0").
-        G_pi_KC (float): Jaynes–Cummings coupling strength between the atom and the cavity field.
-        Kappa_oc (float): Decay rate of the optical cavity.
-        real_input_shape (Callable[[float, Dict[str, float]], float]): Time-dependent function representing
-            the envelope of the input pulse.
-        tlist (np.ndarray): Array of time points at which to solve the system.
-        c_ops (List[qt.Qobj]): List of collapse operators representing system losses.
-        observables (List[qt.Qobj]): List of observables to record during simulation.
-        args (Dict[str, float]): Dictionary of arguments passed to time-dependent functions.
+    Parameters
+    ----------
+    psi :
+        Initial joint atom–cavity state.
+    polarization :
+        Input photon polarization. One of {"pi", "v", "plus", "minus"}.
+    tlist :
+        Time grid for the solver.
+    input_shape :
+        Real-valued temporal envelope of the incoming photon.
+    args :
+        Arguments passed to input_shape.
+    a_pi, a_v :
+        Cavity annihilation operators for π and V polarization modes.
+    sigma :
+        Atomic lowering operator.
+    Delta_c_pi, Delta_c_v :
+        Detunings of the π and V cavity modes.
+    Delta_a :
+        Atomic detuning.
+    G0_kc :
+        Atom–cavity coupling strength.
+    Mu_fc :
+        Input–output coupling prefactor.
+    Kappa_oc :
+        Output coupling rate of the cavity.
+    c_ops :
+        Collapse operators.
+    e_ops :
+        Expectation value operators.
+    v_transmission :
+        Power transmission for V polarization (Brewster windows).
 
-    Returns:
-        qt.Result: Result object containing the system evolution, including expectation values,
-        states, and other simulation data.
+    Returns
+    -------
+    qt.Result
+        QuTiP result object containing the full evolution.
     """
-    photon_states = [qt.basis(dim, 0) for dim in Photon_dimensions]
-    initial_states = [initial_atom_state] + photon_states
-    psi0 = qt.tensor(initial_states)
-    H_jc = G_pi_KC * projection_operators[(1, 4)] * annihilation_operators["a0"].dag()
-    H_drive = np.sqrt(2 * Kappa_oc) * (
-        annihilation_operators[Photon_polarization]
-        + annihilation_operators[Photon_polarization].dag()
-    )
-    H = [H_jc + H_jc.dag(), [H_drive, real_input_shape]]
 
-    return qt.mesolve(
+    # ─────────────────────────────────────────────
+    # Bare Hamiltonian
+    # ─────────────────────────────────────────────
+    H_0 = (
+        Delta_c_pi * a_pi.dag() * a_pi
+        + (Delta_c_pi + Delta_c_v) * a_v.dag() * a_v
+        + Delta_a * sigma.dag() * sigma
+    )
+
+    H_int = G0_kc * (
+        a_pi * sigma.dag() + a_pi.dag() * sigma + a_v * sigma.dag() + a_v.dag() * sigma
+    )
+
+    H = [H_0 + H_int]
+
+    # Common drive prefactor
+    drive_prefactor = 1j * Mu_fc * np.sqrt(Kappa_oc)
+
+    # ─────────────────────────────────────────────
+    # Drive terms by polarization
+    # ─────────────────────────────────────────────
+    if polarization == "pi":
+        H.append(
+            [
+                drive_prefactor * (a_pi - a_pi.dag()),
+                input_shape,
+            ]
+        )
+
+    elif polarization == "v":
+        H.append(
+            [
+                drive_prefactor * np.sqrt(v_transmission) * (a_v - a_v.dag()),
+                input_shape,
+            ]
+        )
+
+    elif polarization == "plus":
+        # |+> = (|V> + |π>) / √2
+        H.append(
+            [
+                drive_prefactor * (a_pi - a_pi.dag()),
+                lambda t, args: input_shape(t, args) / np.sqrt(2),
+            ]
+        )
+        H.append(
+            [
+                drive_prefactor * np.sqrt(v_transmission) * (a_v - a_v.dag()),
+                lambda t, args: input_shape(t, args) / np.sqrt(2),
+            ]
+        )
+
+    elif polarization == "minus":
+        # |-> = (|V> - |π>) / √2
+        H.append(
+            [
+                drive_prefactor * (a_pi - a_pi.dag()),
+                lambda t, args: -input_shape(t, args) / np.sqrt(2),
+            ]
+        )
+        H.append(
+            [
+                drive_prefactor * np.sqrt(v_transmission) * (a_v - a_v.dag()),
+                lambda t, args: input_shape(t, args) / np.sqrt(2),
+            ]
+        )
+
+    else:
+        raise ValueError(f"Unknown polarization: {polarization}")
+
+    # ─────────────────────────────────────────────
+    # Time evolution
+    # ─────────────────────────────────────────────
+    result = qt.mesolve(
         H,
-        psi0,
+        psi,
         tlist,
         c_ops,
-        observables,
+        e_ops,
         args,
         options=qt.Options(store_states=True, progress_bar="enhanced"),
     )
+
+    return result
 
 
 def simulate_w_H0(
@@ -112,9 +200,11 @@ def simulate_w_H0(
     psi0 = qt.tensor(initial_states)
     H_0 = (
         Delta_a * projection_operators[(4, 1)] * projection_operators[(1, 4)]
-        + Delta_c * annihilation_operators["a0"].dag() * annihilation_operators["a0"]
+        + Delta_c *
+        annihilation_operators["a0"].dag() * annihilation_operators["a0"]
     )
-    H_jc = G_pi_KC * projection_operators[(1, 4)] * annihilation_operators["a0"].dag()
+    H_jc = G_pi_KC * \
+        projection_operators[(1, 4)] * annihilation_operators["a0"].dag()
     H_drive = (
         annihilation_operators[Photon_polarization]
         + annihilation_operators[Photon_polarization].dag()
@@ -176,7 +266,8 @@ def simulate_v2(
     photon_states = [qt.basis(dim, 0) for dim in Photon_dimensions]
     initial_states = [initial_atom_state] + photon_states
     psi0 = qt.tensor(initial_states)
-    H_jc = G_pi_KC * projection_operators[(1, 4)] * annihilation_operators["a0"].dag()
+    H_jc = G_pi_KC * \
+        projection_operators[(1, 4)] * annihilation_operators["a0"].dag()
     a_super = (
         annihilation_operators["a1"] + sign * annihilation_operators["a0"]
     ) / np.sqrt(2)

@@ -34,7 +34,8 @@ Atom_dimensions = 4
 Photon_dimensions = 3
 
 tlist = np.linspace(0.0, 8000, 1000)
-args = {"amp": 0.0195, "t0": 4000, "tau": 70.0, "tau_start": 91.0, "sigma": 1500.0}
+args = {"amp": 0.0195, "t0": 4000, "tau": 70.0,
+        "tau_start": 91.0, "sigma": 1500.0}
 
 atom_0 = qt.basis(Atom_dimensions, 0)
 atom_1 = qt.basis(Atom_dimensions, 1)
@@ -117,18 +118,6 @@ def run_sim(
 
     prefactor = 1j * Mu_fc * np.sqrt(Kappa_oc)
 
-    def field_pi_plus(t, args):
-        return input_shape(t, args) / np.sqrt(2)
-
-    def field_v_plus(t, args):
-        return input_shape(t, args) / np.sqrt(2)
-
-    def field_pi_minus(t, args):
-        return -input_shape(t, args) / np.sqrt(2)
-
-    def field_v_minus(t, args):
-        return input_shape(t, args) / np.sqrt(2)
-
     eta_main = np.sqrt(0.9)
     eta_cross = np.sqrt(0.1)
 
@@ -144,15 +133,21 @@ def run_sim(
             ]
         )
     elif driving_field_destr_operator is a_plus:
-        H.append([prefactor * (a_pi - a_pi.dag()), field_pi_plus])
+        H.append([prefactor * (a_pi - a_pi.dag()), input_shape / np.sqrt(2)])
         H.append(
-            [prefactor * np.sqrt(v_transmission) * (a_v - a_v.dag()), field_v_plus]
+            [
+                prefactor * np.sqrt(v_transmission) * (a_v - a_v.dag()),
+                input_shape / np.sqrt(2),
+            ]
         )
 
     elif driving_field_destr_operator is a_minus:
-        H.append([prefactor * (a_pi - a_pi.dag()), field_pi_minus])
+        H.append([prefactor * (a_pi - a_pi.dag()), -input_shape / np.sqrt(2)])
         H.append(
-            [prefactor * np.sqrt(v_transmission) * (a_v - a_v.dag()), field_v_minus]
+            [
+                prefactor * np.sqrt(v_transmission) * (a_v - a_v.dag()),
+                input_shape / np.sqrt(2),
+            ]
         )
     else:
         raise ValueError("Pol must be either 'pi' or 'v'")
@@ -305,8 +300,10 @@ def run_sim_plus_analysis_in_cphase_basis(e_obs, c_obs):
     table.add_column("|1,v⟩ Value", justify="right", style="green3")
 
     # Compute values
-    phase_0_pi = np.mean(np.angle(np.real(field_out_0_in_pi_out_pi) / field_in))
-    phase_1_pi = np.mean(np.angle(np.real(field_out_1_in_pi_out_pi) / field_in))
+    phase_0_pi = np.mean(
+        np.angle(np.real(field_out_0_in_pi_out_pi) / field_in))
+    phase_1_pi = np.mean(
+        np.angle(np.real(field_out_1_in_pi_out_pi) / field_in))
     phase_0_v = np.mean(np.angle(np.real(field_out_0_in_v_out_v) / field_in))
     phase_1_v = np.mean(np.angle(np.real(field_out_1_in_v_out_v) / field_in))
 
@@ -496,8 +493,10 @@ out_1_min = qt.qload("out_1_min")
 field_in = input_shape(tlist, args)
 f_ideal = field_in / np.sqrt(np.sum(np.abs(field_in) ** 2) * dt)
 
-out_pi = compute_output_field(field_in / np.sqrt(2), out_1_min, cavity_mode="a_pi")
-out_v = compute_output_field(field_in / np.sqrt(2), out_1_min, cavity_mode="a_v")
+out_pi = compute_output_field(
+    field_in / np.sqrt(2), out_1_min, cavity_mode="a_pi")
+out_v = compute_output_field(
+    field_in / np.sqrt(2), out_1_min, cavity_mode="a_v")
 
 norm = np.sqrt(np.sum(np.abs(out_pi) ** 2 + np.abs(out_v) ** 2) * dt)
 
@@ -525,8 +524,10 @@ out_0_pl = qt.qload("out_0_pl")
 # out_0_pl = run_sim(a_plus, e_obs, c_obs, psi_0, 0.24)
 # qt.qsave(out_0_pl, "out_0_pl")
 
-out_pi = compute_output_field(field_in / np.sqrt(2), out_0_pl, cavity_mode="a_pi")
-out_v = compute_output_field(field_in / np.sqrt(2), out_0_pl, cavity_mode="a_v")
+out_pi = compute_output_field(
+    field_in / np.sqrt(2), out_0_pl, cavity_mode="a_pi")
+out_v = compute_output_field(
+    field_in / np.sqrt(2), out_0_pl, cavity_mode="a_v")
 
 norm = np.sqrt(np.sum(np.abs(out_pi) ** 2 + np.abs(out_v) ** 2) * dt)
 out_pi /= norm
@@ -552,8 +553,10 @@ out_0_min = qt.qload("out_0_min")
 # out_0_min = run_sim(a_minus, e_obs, c_obs, psi_0, 0.24)
 # qt.qsave(out_0_min, "out_0_min")
 
-out_pi = compute_output_field(field_in / np.sqrt(2), out_0_min, cavity_mode="a_pi")
-out_v = compute_output_field(field_in / np.sqrt(2), out_0_min, cavity_mode="a_v")
+out_pi = compute_output_field(
+    field_in / np.sqrt(2), out_0_min, cavity_mode="a_pi")
+out_v = compute_output_field(
+    field_in / np.sqrt(2), out_0_min, cavity_mode="a_v")
 
 norm = np.sqrt(np.sum(np.abs(out_pi) ** 2 + np.abs(out_v) ** 2) * dt)
 out_pi /= norm
