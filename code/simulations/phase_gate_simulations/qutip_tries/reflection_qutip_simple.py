@@ -17,7 +17,12 @@ from helpers.generic_cavity_operators import (
     Observables,
     InitialStates,
 )
-from helpers.compute_simulation import simulate, compute_output_field
+from helpers.compute_simulation import (
+    simulate,
+    compute_output_field,
+    run_sim_plus_analysis_in_cphase_basis,
+    run_sim_plus_analysis_in_cnot_basis,
+)
 
 from helpers.compute_reflection_parameters import compute_process_fidelity
 from rich.console import Console
@@ -46,253 +51,12 @@ cavity = CavitySystem(
     v_transmission=1.0,
 )
 
-ops = SystemOperators(atom=atom, cavity=cavity)
+system = SystemOperators(atom=atom, cavity=cavity)
 
-dissipation = Dissipation(ops=ops, cavity=cavity, atom=atom)
-observables = Observables(ops=ops, cavity=cavity)
-
-states = InitialStates(cavity=cavity, atom=atom)
-
-
-def run_sim_plus_analysis_in_cphase_basis(
-    tlist, cavity, atom, Mu_fc: float, Mu_fr: float, e_obs, c_obs
-):
-    field_in: np.ndarray = input_shape(tlist, args)
-    field_in_cross: np.ndarray = np.zeros_like(field_in)
-
-    drive_pi = DriveParams(
-        Mu_fc=Mu_fc,
-        Mu_fr=Mu_fr,
-        polarization="pi",
-        input_shape=input_shape,
-        args=args,
-    )
-
-    out_0_pi = simulate(
-        psi=psi_0,
-        tlist=tlist,
-        system=ops,
-        cavity=cavity,
-        atom=atom,
-        drive=drive_pi,
-        c_ops=c_obs,
-        e_ops=e_obs,
-    )
-
-    out_1_pi = simulate(
-        psi=psi_1,
-        tlist=tlist,
-        system=ops,
-        cavity=cavity,
-        atom=atom,
-        drive=drive_pi,
-        c_ops=c_obs,
-        e_ops=e_obs,
-    )
-
-    drive_v = DriveParams(
-        Mu_fc=Mu_fc,
-        Mu_fr=Mu_fr,
-        polarization="v",
-        input_shape=input_shape,
-        args=args,
-    )
-    out_0_v = simulate(
-        psi=psi_0,
-        tlist=tlist,
-        system=ops,
-        cavity=cavity,
-        atom=atom,
-        drive=drive_v,
-        c_ops=c_obs,
-        e_ops=e_obs,
-    )
-
-    out_1_v = simulate(
-        psi=psi_1,
-        tlist=tlist,
-        system=ops,
-        cavity=cavity,
-        atom=atom,
-        drive=drive_v,
-        c_ops=c_obs,
-        e_ops=e_obs,
-    )
-
-    field_out_0_in_pi_out_pi = compute_output_field(
-        input_field=field_in,
-        results=out_0_pi,
-        cavity_mode="a_pi",
-        Mu_fc=drive_pi.Mu_fc,
-        Mu_fr=drive_pi.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-    )
-    field_out_0_in_pi_out_v = compute_output_field(
-        input_field=field_in,
-        results=out_0_pi,
-        cavity_mode="a_v",
-        Mu_fc=drive_pi.Mu_fc,
-        Mu_fr=drive_pi.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-    )
-    field_out_1_in_pi_out_pi = compute_output_field(
-        input_field=field_in,
-        results=out_1_pi,
-        cavity_mode="a_pi",
-        Mu_fc=drive_pi.Mu_fc,
-        Mu_fr=drive_pi.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-    )
-    field_out_1_in_pi_out_v = compute_output_field(
-        input_field=field_in,
-        results=out_1_pi,
-        cavity_mode="a_v",
-        Mu_fc=drive_pi.Mu_fc,
-        Mu_fr=drive_pi.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-    )
-
-    field_out_0_in_v_out_pi = compute_output_field(
-        input_field=field_in,
-        results=out_0_v,
-        cavity_mode="a_pi",
-        Mu_fc=drive_v.Mu_fc,
-        Mu_fr=drive_v.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-    )
-    field_out_0_in_v_out_v = compute_output_field(
-        input_field=field_in,
-        results=out_0_v,
-        cavity_mode="a_v",
-        Mu_fc=drive_v.Mu_fc,
-        Mu_fr=drive_v.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-    )
-    field_out_1_in_v_out_pi = compute_output_field(
-        input_field=field_in,
-        results=out_1_v,
-        cavity_mode="a_pi",
-        Mu_fc=drive_v.Mu_fc,
-        Mu_fr=drive_v.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-    )
-    field_out_1_in_v_out_v = compute_output_field(
-        input_field=field_in,
-        results=out_1_v,
-        cavity_mode="a_v",
-        Mu_fc=drive_v.Mu_fc,
-        Mu_fr=drive_v.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-    )
-
-    # plot_photon_number_statistics_qutip(out_0_pi, out_1_pi, "pi", tlist, Kappa)
-    # plot_photon_number_statistics_qutip(out_0_v, out_1_v, "v", tlist, Kappa)
-
-    # plot_output_field_qutip(
-    #     field_in, field_out_0_in_pi_out_pi, field_out_1_in_pi_out_pi, "pi", tlist, Kappa
-    # )
-    # plot_output_field_qutip(
-    #     field_in, field_out_0_in_v_out_v, field_out_1_in_v_out_pi, "v", tlist, Kappa
-    # )
-
-    ampl_in = sum(np.nan_to_num(np.abs(field_in)) ** 2) * (tlist[1] - tlist[0])
-    ampl_0_pi = sum(np.nan_to_num(np.abs(field_out_0_in_pi_out_pi)) ** 2) * (
-        tlist[1] - tlist[0]
-    )
-    ampl_1_pi = sum(np.nan_to_num(np.abs(field_out_1_in_pi_out_pi)) ** 2) * (
-        tlist[1] - tlist[0]
-    )
-    norm_0_pi = ampl_0_pi / ampl_in
-    norm_1_pi = ampl_1_pi / ampl_in
-    ampl_0_v = sum(np.nan_to_num(np.abs(field_out_0_in_v_out_v)) ** 2) * (
-        tlist[1] - tlist[0]
-    )
-    ampl_1_v = sum(np.nan_to_num(np.abs(field_out_1_in_v_out_v)) ** 2) * (
-        tlist[1] - tlist[0]
-    )
-    norm_0_v = ampl_0_v / ampl_in
-    norm_1_v = ampl_1_v / ampl_in
-
-    console = Console()
-
-    # Create a rich table
-    table = Table(
-        title="[bold cyan]Reflection Analysis Results[/bold cyan]",
-        box=box.ROUNDED,
-        header_style="bold magenta",
-    )
-
-    table.add_column("Quantity", justify="left", style="cyan", no_wrap=True)
-    table.add_column("|0,pi⟩ Value", justify="right", style="red")
-    table.add_column("|0,v⟩ Value", justify="right", style="orange1")
-    table.add_column("|1,pi⟩ Value", justify="right", style="blue")
-    table.add_column("|1,v⟩ Value", justify="right", style="green3")
-
-    # Compute values
-    phase_0_pi = np.mean(np.angle(np.real(field_out_0_in_pi_out_pi) / field_in))
-    phase_1_pi = np.mean(np.angle(np.real(field_out_1_in_pi_out_pi) / field_in))
-    phase_0_v = np.mean(np.angle(np.real(field_out_0_in_v_out_v) / field_in))
-    phase_1_v = np.mean(np.angle(np.real(field_out_1_in_v_out_v) / field_in))
-
-    # Add rows to the table
-    table.add_row(
-        "Reflection Amplitude |a|²",
-        f"{ampl_0_pi:.7f}",
-        f"{ampl_0_v:.7f}",
-        f"{ampl_1_pi:.7f}",
-        f"{ampl_1_v:.7f}",
-    )
-    table.add_row(
-        "Normalized Amplitude |a|²/|a_in|²",
-        f"{norm_0_pi * 100:.7f}%",
-        f"{norm_0_v * 100:.7f}%",
-        f"{norm_1_pi * 100:.7f}%",
-        f"{norm_1_v * 100:.7f}%",
-    )
-    table.add_row(
-        "Reflection Phase (rad)",
-        f"{phase_0_pi:.7f}",
-        f"{phase_0_v:.7f}",
-        f"{phase_1_pi:.7f}",
-        f"{phase_1_v:.7f}",
-    )
-    table.add_row(
-        "Population at end",
-        f"{out_0_pi.e_data['P(0)'][-1] * 100:.7f}%",
-        f"{out_0_pi.e_data['P(0)'][-1] * 100:.7f}%",
-        f"{out_1_pi.e_data['P(1)'][-1] * 100:.7f}%",
-        f"{out_1_v.e_data['P(1)'][-1] * 100:.7f}%",
-    )
-
-    # Print the table
-    console.print(table)
-
-    return (
-        out_0_pi,
-        out_0_v,
-        out_1_pi,
-        out_1_v,
-        tlist,
-        field_in,
-        field_in_cross,
-        field_out_0_in_pi_out_pi,
-        field_out_0_in_pi_out_v,
-        field_out_1_in_pi_out_pi,
-        field_out_1_in_pi_out_v,
-        field_out_0_in_v_out_pi,
-        field_out_0_in_v_out_v,
-        field_out_1_in_v_out_pi,
-        field_out_1_in_v_out_v,
-    )
-
-
-ops = SystemOperators(atom=atom, cavity=cavity)
-
-dissipation = Dissipation(ops=ops, cavity=cavity, atom=atom)
-observables = Observables(ops=ops, cavity=cavity)
+dissipation = Dissipation(ops=system, cavity=cavity, atom=atom)
+observables = Observables(ops=system, cavity=cavity)
 
 states = InitialStates(cavity=cavity, atom=atom)
-
 psi_0 = states.psi_atom_0()
 psi_1 = states.psi_atom_1()
 
@@ -310,7 +74,18 @@ drive = DriveParams(
 # out_0 = simulate(
 #     psi=psi_0,
 #     tlist=tlist,
-#     system=ops,
+#     system=system,
+#     cavity=cavity,
+#     atom=atom,
+#     drive=drive,
+#     c_ops=c_ops,
+#     e_ops=e_ops,
+# )
+# #
+# out_1 = simulate(
+#     psi=psi_1,
+#     tlist=tlist,
+#     system=system,
 #     cavity=cavity,
 #     atom=atom,
 #     drive=drive,
@@ -318,20 +93,9 @@ drive = DriveParams(
 #     e_ops=e_ops,
 # )
 #
-# out_1 = simulate(
-#     psi=psi_1,
-#     tlist=tlist,
-#     system=ops,
-#     cavity=cavity,
-#     atom=atom,
-#     drive=drive,
-#     c_ops=c_ops,
-#     e_ops=e_ops,
-# )
-
 # plot_photon_number_statistics_qutip(out_0, out_1, "pi", tlist, cavity.Kappa)
-
-field_in: np.ndarray = input_shape(tlist, args)
+#
+# field_in: np.ndarray = input_shape(tlist, args)
 # field_out_0_in_pi_out_pi = compute_output_field(
 #     input_field=field_in,
 #     results=out_0,
@@ -348,7 +112,7 @@ field_in: np.ndarray = input_shape(tlist, args)
 #     Mu_fr=drive.Mu_fr,
 #     Kappa_oc=cavity.Kappa_oc,
 # )
-
+#
 # plot_output_field_qutip(
 #     field_in,
 #     field_out_0_in_pi_out_pi,
@@ -357,7 +121,6 @@ field_in: np.ndarray = input_shape(tlist, args)
 #     tlist,
 #     cavity.Kappa,
 # )
-
 # out_1_pl = qt.qload("out_1_pl")
 # # out_1_pl = run_sim(a_plus, e_obs, c_obs, psi_1, 0.24)
 # # qt.qsave(out_1_pl, "out_1_pl")
@@ -480,6 +243,22 @@ field_in: np.ndarray = input_shape(tlist, args)
 # print("Leakage to |−⟩:", P0 * P_minus)
 # print("Photon check sum:", P_plus + P_minus)
 
+CNOT = run_sim_plus_analysis_in_cnot_basis(
+    tlist=tlist,
+    cavity=cavity,
+    atom=atom,
+    Mu_fc=0.873,
+    Mu_fr=0.978,
+    e_obs=e_ops,
+    c_obs=c_ops,
+    input_shape=input_shape,
+    args=args,
+    system=system,
+    psi_0=psi_0,
+    psi_1=psi_1,
+)
+print(CNOT)
+exit()
 
 (
     out_0_pi,
@@ -498,7 +277,18 @@ field_in: np.ndarray = input_shape(tlist, args)
     field_out_1_in_v_out_pi,
     field_out_1_in_v_out_v,
 ) = run_sim_plus_analysis_in_cphase_basis(
-    tlist, cavity, atom, Mu_fc=0.873, Mu_fr=0.978, e_obs=e_ops, c_obs=c_ops
+    tlist=tlist,
+    cavity=cavity,
+    atom=atom,
+    Mu_fc=0.873,
+    Mu_fr=0.978,
+    e_obs=e_ops,
+    c_obs=c_ops,
+    input_shape=input_shape,
+    args=args,
+    system=system,
+    psi_0=psi_0,
+    psi_1=psi_1,
 )
 #
 # dt = tlist[1] - tlist[0]
