@@ -33,7 +33,8 @@ import warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 tlist = np.linspace(0.0, 8000, 1000)
-args = {"amp": 0.0195, "t0": 4000, "tau": 70.0, "tau_start": 91.0, "sigma": 1500.0}
+args = {"amp": 0.0195, "t0": 4000, "tau": 70.0,
+        "tau_start": 91.0, "sigma": 1500.0}
 
 atom = AtomSystem(
     dim=4,
@@ -48,7 +49,7 @@ cavity = CavitySystem(
     Delta_c_v=2 * np.pi * 0.5,
     G0_kc=2 * np.pi * 0.024,
     Kappa=2 * np.pi * 0.058,
-    v_transmission=1.0,
+    v_transmission=0.24,
 )
 
 system = SystemOperators(atom=atom, cavity=cavity)
