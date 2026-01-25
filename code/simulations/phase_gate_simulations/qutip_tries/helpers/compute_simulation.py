@@ -640,10 +640,6 @@ def run_sim_plus_analysis_in_cnot_basis(
     P1_0_plus = out_1_plus.e_data["P(0)"][-1]
     P1_1_plus = out_1_plus.e_data["P(1)"][-1]
 
-    print("Conditional |+⟩ fidelity:", P1_1_plus * P_1_in_plus_out_plus)
-    print("Leakage to |−⟩:", P1_1_plus * P_1_in_plus_out_minus)
-    print("Check sum: ", P_1_in_plus_out_plus + P_1_in_plus_out_minus)
-
     overlap_0_plus_1_plus = P1_0_plus * P_1_in_plus_out_plus
     overlap_0_minus_1_plus = P1_0_plus * P_1_in_plus_out_minus
     overlap_1_plus_1_plus = P1_1_plus * P_1_in_plus_out_plus
@@ -685,10 +681,6 @@ def run_sim_plus_analysis_in_cnot_basis(
 
     P1_0_minus = out_1_minus.e_data["P(0)"][-1]
     P1_1_minus = out_1_minus.e_data["P(1)"][-1]
-
-    print(" |+⟩ fidelity:", P1_1_minus * P_1_in_minus_out_plus)
-    print("|−⟩ fidelity:", P1_1_minus * P_1_in_minus_out_minus)
-    print("Check sum: ", P_1_in_minus_out_plus + P_1_in_minus_out_minus)
 
     overlap_0_plus_1_minus = P1_0_minus * P_1_in_minus_out_plus
     overlap_0_minus_1_minus = P1_0_minus * P_1_in_minus_out_minus

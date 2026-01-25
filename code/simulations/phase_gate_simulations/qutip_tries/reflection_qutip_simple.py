@@ -1,6 +1,4 @@
-from typing import Literal
 import numpy as np
-import qutip as qt
 import matplotlib.pyplot as plt
 from helpers.input_shapes import input_shape
 from helpers.plotting import (
@@ -22,10 +20,11 @@ from helpers.compute_simulation import (
     run_sim_plus_analysis_in_cnot_basis,
 )
 
-from helpers.compute_reflection_parameters import compute_process_fidelity
-from rich.console import Console
-from rich.table import Table
-from rich import box
+from helpers.compute_reflection_parameters import (
+    compute_process_fidelity,
+    compute_signal_fidelity,
+)
+from rich import print
 import warnings
 
 
@@ -70,21 +69,120 @@ drive = DriveParams(
     args=args,
 )
 
-CNOT = run_sim_plus_analysis_in_cnot_basis(
-    tlist=tlist,
-    cavity=cavity,
-    atom=atom,
-    Mu_fc=0.873,
-    Mu_fr=0.978,
-    e_obs=e_ops,
-    c_obs=c_ops,
-    input_shape=input_shape,
-    args=args,
-    system=system,
-    psi_0=psi_0,
-    psi_1=psi_1,
+# CNOT = run_sim_plus_analysis_in_cnot_basis(
+#     tlist=tlist,
+#     cavity=cavity,
+#     atom=atom,
+#     Mu_fc=0.873,
+#     Mu_fr=0.978,
+#     e_obs=e_ops,
+#     c_obs=c_ops,
+#     input_shape=input_shape,
+#     args=args,
+#     system=system,
+#     psi_0=psi_0,
+#     psi_1=psi_1,
+# )
+
+# fidelity = compute_process_fidelity(CNOT)
+# print(fidelity)
+
+transmissions = np.linspace(0.5, 0.6, 20)
+fidelities = np.zeros_like(transmissions)
+
+bw_transmission_fig = plt.figure()
+
+for i, transmission_v in enumerate(transmissions):
+    print(
+        f"Computing Signal Fidelity for transmission of V pol. of: {transmission_v}; Step no. {i}"
+    )
+    cavity = CavitySystem(
+        photon_dim=3,
+        atom_dim=4,
+        Delta_c_pi=2 * np.pi * 0,
+        Delta_c_v=2 * np.pi * 0.5,
+        G0_kc=2 * np.pi * 0.024,
+        Kappa=2 * np.pi * 0.058,
+        v_transmission=transmission_v,
+    )
+    CNOT = run_sim_plus_analysis_in_cnot_basis(
+        tlist=tlist,
+        cavity=cavity,
+        atom=atom,
+        Mu_fc=0.873,
+        Mu_fr=0.978,
+        e_obs=e_ops,
+        c_obs=c_ops,
+        input_shape=input_shape,
+        args=args,
+        system=system,
+        psi_0=psi_0,
+        psi_1=psi_1,
+    )
+    fidelity = compute_signal_fidelity(CNOT)
+    fidelities[i] = fidelity
+
+plt.plot(transmissions, fidelities, label=r"$F_{signal}$")
+plt.legend()
+plt.xlabel("Transmission for V polarization")
+plt.xscale("log")
+plt.ylabel("Signal Fidelity")
+plt.title("Signal Fidelity vs. different transmissions of V polarized light")
+
+# plt.show()
+
+cavity = CavitySystem(
+    photon_dim=3,
+    atom_dim=4,
+    Delta_c_pi=2 * np.pi * 0,
+    Delta_c_v=2 * np.pi * 0.5,
+    G0_kc=2 * np.pi * 0.024,
+    Kappa=2 * np.pi * 0.058,
+    v_transmission=0.55,
 )
-#
+
+
+args = {"amp": 0.0195, "t0": 4000, "tau": 70.0, "tau_start": 91.0, "sigma": 1500.0}
+photon_numbers = np.logspace(-7, 1, 20)
+fidelities = np.zeros_like(photon_numbers)
+
+photon_numbers_fig = plt.figure()
+
+for i, photon_number in enumerate(photon_numbers):
+    print(f"Computing Signal Fidelity photon number of: {photon_number}; Step no. {i}")
+    args = {
+        "amp": photon_number,
+        "t0": 4000,
+        "tau": 70.0,
+        "tau_start": 91.0,
+        "sigma": 1500.0,
+    }
+    CNOT = run_sim_plus_analysis_in_cnot_basis(
+        tlist=tlist,
+        cavity=cavity,
+        atom=atom,
+        Mu_fc=0.873,
+        Mu_fr=0.978,
+        e_obs=e_ops,
+        c_obs=c_ops,
+        input_shape=input_shape,
+        args=args,
+        system=system,
+        psi_0=psi_0,
+        psi_1=psi_1,
+    )
+
+    fidelity = compute_process_fidelity(CNOT)
+    fidelities[i] = fidelity
+
+plt.plot(photon_numbers, fidelities, label=r"$F_{signal}$")
+plt.legend()
+plt.xlabel("Mean Photon numbers")
+plt.xscale("log")
+plt.ylabel("Signal Fidelity")
+plt.title("Signal Fidelity vs. different photon numbers")
+plt.show()
+
 # (
 #     out_0_pi,
 #     out_0_v,
