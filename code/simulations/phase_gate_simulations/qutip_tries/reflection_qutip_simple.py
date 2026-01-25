@@ -1,11 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from helpers.input_shapes import input_shape
-from helpers.plotting import (
-    plot_output_field_qutip,
-    plot_photon_number_statistics_qutip,
-    styled_3d_bar,
-)
+
 from helpers.generic_cavity_operators import (
     DriveParams,
     AtomSystem,
@@ -16,13 +12,13 @@ from helpers.generic_cavity_operators import (
     InitialStates,
 )
 from helpers.compute_simulation import (
-    run_sim_plus_analysis_in_cphase_basis,
     run_sim_plus_analysis_in_cnot_basis,
 )
 
 from helpers.compute_reflection_parameters import (
     compute_process_fidelity,
     compute_signal_fidelity,
+    conditional_output_state,
 )
 from rich import print
 import warnings
@@ -31,7 +27,8 @@ import warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 tlist = np.linspace(0.0, 8000, 1000)
-args = {"amp": 0.0195, "t0": 4000, "tau": 70.0, "tau_start": 91.0, "sigma": 1500.0}
+args = {"amp": 0.0195, "t0": 4000, "tau": 70.0,
+        "tau_start": 91.0, "sigma": 1500.0}
 
 atom = AtomSystem(
     dim=4,
@@ -69,23 +66,25 @@ drive = DriveParams(
     args=args,
 )
 
-# CNOT = run_sim_plus_analysis_in_cnot_basis(
-#     tlist=tlist,
-#     cavity=cavity,
-#     atom=atom,
-#     Mu_fc=0.873,
-#     Mu_fr=0.978,
-#     e_obs=e_ops,
-#     c_obs=c_ops,
-#     input_shape=input_shape,
-#     args=args,
-#     system=system,
-#     psi_0=psi_0,
-#     psi_1=psi_1,
-# )
 
-# fidelity = compute_process_fidelity(CNOT)
+CNOT = run_sim_plus_analysis_in_cnot_basis(
+    tlist=tlist,
+    cavity=cavity,
+    atom=atom,
+    Mu_fc=0.873,
+    Mu_fr=0.978,
+    e_obs=e_ops,
+    c_obs=c_ops,
+    input_shape=input_shape,
+    args=args,
+    system=system,
+    psi_0=psi_0,
+    psi_1=psi_1,
+)
+
+# fidelity = conditional_output_state(CNOT)
 # print(fidelity)
+exit()
 
 transmissions = np.linspace(0.5, 0.6, 20)
 fidelities = np.zeros_like(transmissions)
@@ -94,7 +93,9 @@ bw_transmission_fig = plt.figure()
 
 for i, transmission_v in enumerate(transmissions):
     print(
-        f"Computing Signal Fidelity for transmission of V pol. of: {transmission_v}; Step no. {i}"
+        f"Computing Signal Fidelity for transmission of V pol. of: {
+            transmission_v
+        }; Step no. {i}"
     )
     cavity = CavitySystem(
         photon_dim=3,
@@ -142,14 +143,16 @@ cavity = CavitySystem(
 )
 
 
-args = {"amp": 0.0195, "t0": 4000, "tau": 70.0, "tau_start": 91.0, "sigma": 1500.0}
+args = {"amp": 0.0195, "t0": 4000, "tau": 70.0,
+        "tau_start": 91.0, "sigma": 1500.0}
 photon_numbers = np.logspace(-7, 1, 20)
 fidelities = np.zeros_like(photon_numbers)
 
 photon_numbers_fig = plt.figure()
 
 for i, photon_number in enumerate(photon_numbers):
-    print(f"Computing Signal Fidelity photon number of: {photon_number}; Step no. {i}")
+    print(f"Computing Signal Fidelity photon number of: {
+          photon_number}; Step no. {i}")
     args = {
         "amp": photon_number,
         "t0": 4000,

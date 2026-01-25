@@ -84,7 +84,8 @@ def simulate(
     # ─────────────────────────────────────────────
     H_0 = (
         cavity.Delta_c_pi * cavity.a_pi.dag() * cavity.a_pi
-        + (cavity.Delta_c_pi + cavity.Delta_c_v) * cavity.a_v.dag() * cavity.a_v
+        + (cavity.Delta_c_pi + cavity.Delta_c_v) *
+        cavity.a_v.dag() * cavity.a_v
         + atom.Delta_a * system.sigma.dag() * system.sigma
     )
 
@@ -383,8 +384,10 @@ def run_sim_plus_analysis_in_cphase_basis(
     table.add_column("|1,v⟩ Value", justify="right", style="green3")
 
     # Compute values
-    phase_0_pi = np.mean(np.angle(np.real(field_out_0_in_pi_out_pi) / field_in))
-    phase_1_pi = np.mean(np.angle(np.real(field_out_1_in_pi_out_pi) / field_in))
+    phase_0_pi = np.mean(
+        np.angle(np.real(field_out_0_in_pi_out_pi) / field_in))
+    phase_1_pi = np.mean(
+        np.angle(np.real(field_out_1_in_pi_out_pi) / field_in))
     phase_0_v = np.mean(np.angle(np.real(field_out_0_in_v_out_v) / field_in))
     phase_1_v = np.mean(np.angle(np.real(field_out_1_in_v_out_v) / field_in))
 
@@ -537,7 +540,8 @@ def run_sim_plus_analysis_in_cnot_basis(
     )
 
     norm_0_in_plus = np.sqrt(
-        np.sum(np.abs(out_0_in_plus_out_pi) ** 2 + np.abs(out_0_in_plus_out_v) ** 2)
+        np.sum(np.abs(out_0_in_plus_out_pi) ** 2 +
+               np.abs(out_0_in_plus_out_v) ** 2)
         * dt
     )
     out_0_in_plus_out_pi /= norm_0_in_plus
@@ -546,8 +550,10 @@ def run_sim_plus_analysis_in_cnot_basis(
     c_0_in_plus_out_pi = np.sum(np.conj(f_ideal) * out_0_in_plus_out_pi) * dt
     c_0_in_plus_out_v = np.sum(np.conj(f_ideal) * out_0_in_plus_out_v) * dt
 
-    A_0_in_plus_out_plus = (c_0_in_plus_out_v + c_0_in_plus_out_pi) / np.sqrt(2)
-    A_0_in_plus_out_minus = (c_0_in_plus_out_v - c_0_in_plus_out_pi) / np.sqrt(2)
+    A_0_in_plus_out_plus = (
+        c_0_in_plus_out_v + c_0_in_plus_out_pi) / np.sqrt(2)
+    A_0_in_plus_out_minus = (
+        c_0_in_plus_out_v - c_0_in_plus_out_pi) / np.sqrt(2)
 
     P_0_in_plus_out_plus = np.abs(A_0_in_plus_out_plus) ** 2
     P_0_in_plus_out_minus = np.abs(A_0_in_plus_out_minus) ** 2
@@ -555,10 +561,10 @@ def run_sim_plus_analysis_in_cnot_basis(
     P0_0_plus = out_0_plus.e_data["P(0)"][-1]
     P0_1_plus = out_0_plus.e_data["P(1)"][-1]
 
-    overlap_0_plus_0_plus = P0_0_plus * P_0_in_plus_out_plus
-    overlap_0_minus_0_plus = P0_0_plus * P_0_in_plus_out_minus
-    overlap_1_plus_0_plus = P0_1_plus * P_0_in_plus_out_plus
-    overlap_1_minus_0_plus = P0_1_plus * P_0_in_plus_out_minus
+    overlap_0_plus_0_plus = P_0_in_plus_out_plus
+    overlap_0_minus_0_plus = P_0_in_plus_out_minus
+    overlap_1_plus_0_plus = P_0_in_plus_out_plus
+    overlap_1_minus_0_plus = P_0_in_plus_out_minus
 
     out_0_in_minus_out_pi = compute_output_field(
         input_field=-field_in / np.sqrt(2),
@@ -579,7 +585,8 @@ def run_sim_plus_analysis_in_cnot_basis(
     )
 
     norm_0_in_minus = np.sqrt(
-        np.sum(np.abs(out_0_in_minus_out_pi) ** 2 + np.abs(out_0_in_minus_out_v) ** 2)
+        np.sum(np.abs(out_0_in_minus_out_pi) ** 2 +
+               np.abs(out_0_in_minus_out_v) ** 2)
         * dt
     )
     out_0_in_minus_out_pi /= norm_0_in_minus
@@ -588,8 +595,10 @@ def run_sim_plus_analysis_in_cnot_basis(
     c_0_in_minus_out_pi = np.sum(np.conj(f_ideal) * out_0_in_minus_out_pi) * dt
     c_0_in_minus_out_v = np.sum(np.conj(f_ideal) * out_0_in_minus_out_v) * dt
 
-    A_0_in_minus_out_plus = (c_0_in_minus_out_v + c_0_in_minus_out_pi) / np.sqrt(2)
-    A_0_in_minus_out_minus = (c_0_in_minus_out_v - c_0_in_minus_out_pi) / np.sqrt(2)
+    A_0_in_minus_out_plus = (c_0_in_minus_out_v +
+                             c_0_in_minus_out_pi) / np.sqrt(2)
+    A_0_in_minus_out_minus = (
+        c_0_in_minus_out_v - c_0_in_minus_out_pi) / np.sqrt(2)
 
     P_0_in_minus_out_plus = np.abs(A_0_in_minus_out_plus) ** 2
     P_0_in_minus_out_minus = np.abs(A_0_in_minus_out_minus) ** 2
@@ -597,10 +606,10 @@ def run_sim_plus_analysis_in_cnot_basis(
     P0_0_minus = out_0_minus.e_data["P(0)"][-1]
     P0_1_minus = out_0_minus.e_data["P(1)"][-1]
 
-    overlap_0_plus_0_minus = P0_0_minus * P_0_in_minus_out_plus
-    overlap_0_minus_0_minus = P0_0_minus * P_0_in_minus_out_minus
-    overlap_1_plus_0_minus = P0_1_minus * P_0_in_minus_out_plus
-    overlap_1_minus_0_minus = P0_1_minus * P_0_in_minus_out_minus
+    overlap_0_plus_0_minus = P_0_in_minus_out_plus
+    overlap_0_minus_0_minus = P_0_in_minus_out_minus
+    overlap_1_plus_0_minus = P_0_in_minus_out_plus
+    overlap_1_minus_0_minus = P_0_in_minus_out_minus
 
     out_1_in_plus_out_pi = compute_output_field(
         input_field=field_in / np.sqrt(2),
@@ -621,7 +630,8 @@ def run_sim_plus_analysis_in_cnot_basis(
     )
 
     norm_1_in_plus = np.sqrt(
-        np.sum(np.abs(out_1_in_plus_out_pi) ** 2 + np.abs(out_1_in_plus_out_v) ** 2)
+        np.sum(np.abs(out_1_in_plus_out_pi) ** 2 +
+               np.abs(out_1_in_plus_out_v) ** 2)
         * dt
     )
 
@@ -631,8 +641,10 @@ def run_sim_plus_analysis_in_cnot_basis(
     c_1_in_plus_out_pi = np.sum(np.conj(f_ideal) * out_1_in_plus_out_pi) * dt
     c_1_in_plus_out_v = np.sum(np.conj(f_ideal) * out_1_in_plus_out_v) * dt
 
-    A_1_in_plus_out_plus = (c_1_in_plus_out_v + c_1_in_plus_out_pi) / np.sqrt(2)
-    A_1_in_plus_out_minus = (c_1_in_plus_out_v - c_1_in_plus_out_pi) / np.sqrt(2)
+    A_1_in_plus_out_plus = (
+        c_1_in_plus_out_v + c_1_in_plus_out_pi) / np.sqrt(2)
+    A_1_in_plus_out_minus = (
+        c_1_in_plus_out_v - c_1_in_plus_out_pi) / np.sqrt(2)
 
     P_1_in_plus_out_plus = np.abs(A_1_in_plus_out_plus) ** 2
     P_1_in_plus_out_minus = np.abs(A_1_in_plus_out_minus) ** 2
@@ -640,10 +652,10 @@ def run_sim_plus_analysis_in_cnot_basis(
     P1_0_plus = out_1_plus.e_data["P(0)"][-1]
     P1_1_plus = out_1_plus.e_data["P(1)"][-1]
 
-    overlap_0_plus_1_plus = P1_0_plus * P_1_in_plus_out_plus
-    overlap_0_minus_1_plus = P1_0_plus * P_1_in_plus_out_minus
-    overlap_1_plus_1_plus = P1_1_plus * P_1_in_plus_out_plus
-    overlap_1_minus_1_plus = P1_1_plus * P_1_in_plus_out_minus
+    overlap_0_plus_1_plus = P_1_in_plus_out_plus
+    overlap_0_minus_1_plus = P_1_in_plus_out_minus
+    overlap_1_plus_1_plus = P_1_in_plus_out_plus
+    overlap_1_minus_1_plus = P_1_in_plus_out_minus
 
     out_1_in_minus_out_pi = compute_output_field(
         input_field=-field_in / np.sqrt(2),
@@ -664,7 +676,8 @@ def run_sim_plus_analysis_in_cnot_basis(
     )
 
     norm_1_in_minus = np.sqrt(
-        np.sum(np.abs(out_1_in_minus_out_pi) ** 2 + np.abs(out_1_in_minus_out_v) ** 2)
+        np.sum(np.abs(out_1_in_minus_out_pi) ** 2 +
+               np.abs(out_1_in_minus_out_v) ** 2)
         * dt
     )
     out_1_in_minus_out_pi /= norm_1_in_minus
@@ -673,8 +686,10 @@ def run_sim_plus_analysis_in_cnot_basis(
     c_1_in_minus_out_pi = np.sum(np.conj(f_ideal) * out_1_in_minus_out_pi) * dt
     c_1_in_minus_out_v = np.sum(np.conj(f_ideal) * out_1_in_minus_out_v) * dt
 
-    A_1_in_minus_out_plus = (c_1_in_minus_out_v + c_1_in_minus_out_pi) / np.sqrt(2)
-    A_1_in_minus_out_minus = (c_1_in_minus_out_v - c_1_in_minus_out_pi) / np.sqrt(2)
+    A_1_in_minus_out_plus = (c_1_in_minus_out_v +
+                             c_1_in_minus_out_pi) / np.sqrt(2)
+    A_1_in_minus_out_minus = (
+        c_1_in_minus_out_v - c_1_in_minus_out_pi) / np.sqrt(2)
 
     P_1_in_minus_out_plus = np.abs(A_1_in_minus_out_plus) ** 2
     P_1_in_minus_out_minus = np.abs(A_1_in_minus_out_minus) ** 2
@@ -682,10 +697,10 @@ def run_sim_plus_analysis_in_cnot_basis(
     P1_0_minus = out_1_minus.e_data["P(0)"][-1]
     P1_1_minus = out_1_minus.e_data["P(1)"][-1]
 
-    overlap_0_plus_1_minus = P1_0_minus * P_1_in_minus_out_plus
-    overlap_0_minus_1_minus = P1_0_minus * P_1_in_minus_out_minus
-    overlap_1_plus_1_minus = P1_1_minus * P_1_in_minus_out_plus
-    overlap_1_minus_1_minus = P1_1_minus * P_1_in_minus_out_minus
+    overlap_0_plus_1_minus = P_1_in_minus_out_plus
+    overlap_0_minus_1_minus = P_1_in_minus_out_minus
+    overlap_1_plus_1_minus = P_1_in_minus_out_plus
+    overlap_1_minus_1_minus = P_1_in_minus_out_minus
 
     CNOT = np.array(
         [

@@ -1,6 +1,10 @@
 import numpy as np
 from typing import Tuple, TypedDict
 
+CNOT_IDEAL = np.array(
+    [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0]], dtype=complex
+)
+
 
 class params_type(TypedDict):
     mu_rf: float
@@ -98,3 +102,43 @@ def compute_signal_fidelity(measured_matrix: np.ndarray):
 
     F_sig = 1 / 4 * np.sum(F_sig_cols)
     return F_sig
+
+
+def normalize(vec):
+    n = np.linalg.norm(vec)
+    if n == 0:
+        return vec
+    return vec / n
+
+
+def conditional_output_state(CNOT, input_index):
+    """
+    Returns normalized conditional output state |ψ_out⟩
+    """
+    out_state = CNOT[:, input_index]
+    return normalize(out_state.astype(complex))
+
+
+def ideal_output_state(input_index):
+    basis = np.eye(4, dtype=complex)
+    return CNOT_IDEAL @ basis[:, input_index]
+
+
+def state_fidelity(psi_ideal, psi_actual):
+    return np.abs(np.vdot(psi_ideal, psi_actual)) ** 2
+
+
+def conditional_process_fidelity(CNOT):
+    """
+    Average conditional fidelity over computational basis inputs
+    """
+    fidelities = []
+
+    for i in range(4):
+        psi_out = conditional_output_state(CNOT, i)
+        psi_ideal = ideal_output_state(i)
+
+        F = state_fidelity(psi_ideal, psi_out)
+        fidelities.append(F)
+
+    return np.mean(fidelities)
