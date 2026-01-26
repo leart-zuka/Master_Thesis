@@ -16,9 +16,7 @@ from helpers.compute_simulation import (
 )
 
 from helpers.compute_reflection_parameters import (
-    compute_process_fidelity,
     compute_signal_fidelity,
-    conditional_output_state,
 )
 from rich import print
 import warnings
@@ -43,7 +41,7 @@ cavity = CavitySystem(
     Delta_c_v=2 * np.pi * 0.5,
     G0_kc=2 * np.pi * 0.024,
     Kappa=2 * np.pi * 0.058,
-    v_transmission=0.24,
+    v_transmission=0.0,
 )
 
 system = SystemOperators(atom=atom, cavity=cavity)
@@ -66,70 +64,63 @@ drive = DriveParams(
     args=args,
 )
 
-
-CNOT = run_sim_plus_analysis_in_cnot_basis(
-    tlist=tlist,
-    cavity=cavity,
-    atom=atom,
-    Mu_fc=0.873,
-    Mu_fr=0.978,
-    e_obs=e_ops,
-    c_obs=c_ops,
-    input_shape=input_shape,
-    args=args,
-    system=system,
-    psi_0=psi_0,
-    psi_1=psi_1,
-)
-
-# fidelity = conditional_output_state(CNOT)
-# print(fidelity)
-exit()
-
-transmissions = np.linspace(0.5, 0.6, 20)
-fidelities = np.zeros_like(transmissions)
-
-bw_transmission_fig = plt.figure()
-
-for i, transmission_v in enumerate(transmissions):
-    print(
-        f"Computing Signal Fidelity for transmission of V pol. of: {
-            transmission_v
-        }; Step no. {i}"
-    )
-    cavity = CavitySystem(
-        photon_dim=3,
-        atom_dim=4,
-        Delta_c_pi=2 * np.pi * 0,
-        Delta_c_v=2 * np.pi * 0.5,
-        G0_kc=2 * np.pi * 0.024,
-        Kappa=2 * np.pi * 0.058,
-        v_transmission=transmission_v,
-    )
-    CNOT = run_sim_plus_analysis_in_cnot_basis(
-        tlist=tlist,
-        cavity=cavity,
-        atom=atom,
-        Mu_fc=0.873,
-        Mu_fr=0.978,
-        e_obs=e_ops,
-        c_obs=c_ops,
-        input_shape=input_shape,
-        args=args,
-        system=system,
-        psi_0=psi_0,
-        psi_1=psi_1,
-    )
-    fidelity = compute_signal_fidelity(CNOT)
-    fidelities[i] = fidelity
-
-plt.plot(transmissions, fidelities, label=r"$F_{signal}$")
-plt.legend()
-plt.xlabel("Transmission for V polarization")
-plt.xscale("log")
-plt.ylabel("Signal Fidelity")
-plt.title("Signal Fidelity vs. different transmissions of V polarized light")
-
+# transmissions = np.linspace(0.0, 1.0, 20)
+# fidelities = np.zeros_like(transmissions)
+#
+# bw_transmission_fig = plt.figure()
+#
+# for i, transmission_v in enumerate(transmissions):
+#     print(
+#         f"Computing Signal Fidelity for transmission of V pol. of: {
+#             transmission_v
+#         }; Step no. {i}"
+#     )
+#     cavity = CavitySystem(
+#         photon_dim=3,
+#         atom_dim=4,
+#         Delta_c_pi=2 * np.pi * 0,
+#         Delta_c_v=2 * np.pi * 0.5,
+#         G0_kc=2 * np.pi * 0.024,
+#         Kappa=2 * np.pi * 0.058,
+#         v_transmission=transmission_v,
+#     )
+#     CNOT = run_sim_plus_analysis_in_cnot_basis(
+#         tlist=tlist,
+#         cavity=cavity,
+#         atom=atom,
+#         Mu_fc=0.873,
+#         Mu_fr=0.978,
+#         e_obs=e_ops,
+#         c_obs=c_ops,
+#         input_shape=input_shape,
+#         args=args,
+#         system=system,
+#         psi_0=psi_0,
+#         psi_1=psi_1,
+#     )
+#     fidelity = compute_signal_fidelity(CNOT)
+#     fidelities[i] = fidelity
+#
+# plt.plot(transmissions, fidelities, label=r"$F_{signal}$")
+# plt.legend()
+# plt.xlabel("Transmission for V polarization")
+# plt.ylabel("Signal Fidelity")
+# plt.title("Signal Fidelity vs. different transmissions of V polarized light")
+#
+# idx = np.argmax(fidelities)
+# x_max = transmissions[idx]
+# y_max = fidelities[idx]
+# plt.annotate(
+#     f"T = {x_max:.3f}\nF_signal = {y_max:.3f}",
+#     xy=(x_max, y_max),
+#     xytext=(
+#         x_max - 0.3 * (max(fidelities) - min(transmissions)),
+#         y_max - 0.08 * (max(fidelities) - min(fidelities)),
+#     ),
+#     arrowprops=dict(arrowstyle="->", lw=1.5),
+#     fontsize=10,
+#     bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.8),
+# )
 # plt.show()
 
 cavity = CavitySystem(
@@ -139,7 +130,7 @@ cavity = CavitySystem(
     Delta_c_v=2 * np.pi * 0.5,
     G0_kc=2 * np.pi * 0.024,
     Kappa=2 * np.pi * 0.058,
-    v_transmission=0.55,
+    v_transmission=0.264,
 )
 
 
@@ -175,7 +166,7 @@ for i, photon_number in enumerate(photon_numbers):
         psi_1=psi_1,
     )
 
-    fidelity = compute_process_fidelity(CNOT)
+    fidelity = compute_signal_fidelity(CNOT)
     fidelities[i] = fidelity
 
 plt.plot(photon_numbers, fidelities, label=r"$F_{signal}$")
@@ -184,6 +175,22 @@ plt.xlabel("Mean Photon numbers")
 plt.xscale("log")
 plt.ylabel("Signal Fidelity")
 plt.title("Signal Fidelity vs. different photon numbers")
+
+idx = np.argmax(fidelities)
+x_max = photon_numbers[idx]
+y_max = fidelities[idx]
+plt.annotate(
+    f"T = {x_max:.3f}\nF_signal = {y_max:.3f}",
+    xy=(x_max, y_max),
+    xytext=(
+        x_max - 0.3 * (max(fidelities) - min(photon_numbers)),
+        y_max - 0.08 * (max(fidelities) - min(fidelities)),
+    ),
+    arrowprops=dict(arrowstyle="->", lw=1.5),
+    fontsize=10,
+    bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.8),
+)
+
 plt.show()
 
 # (
