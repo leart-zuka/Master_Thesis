@@ -25,8 +25,7 @@ import warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 tlist = np.linspace(0.0, 8000, 1000)
-args = {"amp": 0.0195, "t0": 4000, "tau": 70.0,
-        "tau_start": 91.0, "sigma": 1500.0}
+args = {"amp": 0.0195, "t0": 4000, "tau": 70.0, "tau_start": 91.0, "sigma": 1500.0}
 
 atom = AtomSystem(
     dim=4,
@@ -84,19 +83,21 @@ drive = DriveParams(
 #         Kappa=2 * np.pi * 0.058,
 #         v_transmission=transmission_v,
 #     )
-#     CNOT = run_sim_plus_analysis_in_cnot_basis(
-#         tlist=tlist,
-#         cavity=cavity,
-#         atom=atom,
-#         Mu_fc=0.873,
-#         Mu_fr=0.978,
-#         e_obs=e_ops,
-#         c_obs=c_ops,
-#         input_shape=input_shape,
-#         args=args,
-#         system=system,
-#         psi_0=psi_0,
-#         psi_1=psi_1,
+#     out_0_plus, out_0_minus, out_1_plus, out_1_minus, CNOT = (
+#         run_sim_plus_analysis_in_cnot_basis(
+#             tlist=tlist,
+#             cavity=cavity,
+#             atom=atom,
+#             Mu_fc=0.873,
+#             Mu_fr=0.978,
+#             e_obs=e_ops,
+#             c_obs=c_ops,
+#             input_shape=input_shape,
+#             args=args,
+#             system=system,
+#             psi_0=psi_0,
+#             psi_1=psi_1,
+#         )
 #     )
 #     fidelity = compute_signal_fidelity(CNOT)
 #     fidelities[i] = fidelity
@@ -121,29 +122,31 @@ drive = DriveParams(
 #     fontsize=10,
 #     bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.8),
 # )
-# plt.show()
+# # plt.show()
+#
+# cavity = CavitySystem(
+#     photon_dim=3,
+#     atom_dim=4,
+#     Delta_c_pi=2 * np.pi * 0,
+#     Delta_c_v=2 * np.pi * 0.5,
+#     G0_kc=2 * np.pi * 0.024,
+#     Kappa=2 * np.pi * 0.058,
+#     v_transmission=0.264,
+# )
+#
 
-cavity = CavitySystem(
-    photon_dim=3,
-    atom_dim=4,
-    Delta_c_pi=2 * np.pi * 0,
-    Delta_c_v=2 * np.pi * 0.5,
-    G0_kc=2 * np.pi * 0.024,
-    Kappa=2 * np.pi * 0.058,
-    v_transmission=0.264,
-)
-
-
-args = {"amp": 0.0195, "t0": 4000, "tau": 70.0,
-        "tau_start": 91.0, "sigma": 1500.0}
-photon_numbers = np.logspace(-7, 1, 20)
+args = {"amp": 0.0195, "t0": 4000, "tau": 70.0, "tau_start": 91.0, "sigma": 1500.0}
+photon_numbers = np.logspace(-5, 0.02, 10)
 fidelities = np.zeros_like(photon_numbers)
+
+atomic_state = np.zeros_like(photon_numbers)
+atomic_state_plus = np.zeros_like(photon_numbers)
+atomic_state_minus = np.zeros_like(photon_numbers)
 
 photon_numbers_fig = plt.figure()
 
 for i, photon_number in enumerate(photon_numbers):
-    print(f"Computing Signal Fidelity photon number of: {
-          photon_number}; Step no. {i}")
+    print(f"Computing Signal Fidelity photon number of: {photon_number}; Step no. {i}")
     args = {
         "amp": photon_number,
         "t0": 4000,
@@ -151,23 +154,31 @@ for i, photon_number in enumerate(photon_numbers):
         "tau_start": 91.0,
         "sigma": 1500.0,
     }
-    CNOT = run_sim_plus_analysis_in_cnot_basis(
-        tlist=tlist,
-        cavity=cavity,
-        atom=atom,
-        Mu_fc=0.873,
-        Mu_fr=0.978,
-        e_obs=e_ops,
-        c_obs=c_ops,
-        input_shape=input_shape,
-        args=args,
-        system=system,
-        psi_0=psi_0,
-        psi_1=psi_1,
+    out_0_plus, out_0_minus, out_1_plus, out_1_minus, CNOT = (
+        run_sim_plus_analysis_in_cnot_basis(
+            tlist=tlist,
+            cavity=cavity,
+            atom=atom,
+            Mu_fc=0.873,
+            Mu_fr=0.978,
+            e_obs=e_ops,
+            c_obs=c_ops,
+            input_shape=input_shape,
+            args=args,
+            system=system,
+            psi_0=psi_0,
+            psi_1=psi_1,
+        )
     )
+    print(CNOT)
 
     fidelity = compute_signal_fidelity(CNOT)
     fidelities[i] = fidelity
+    atomic_state_plus[i] = out_1_plus.e_data["P(1)"][-1]
+    atomic_state_minus[i] = out_1_minus.e_data["P(1)"][-1]
+    atomic_state[i] = (
+        out_1_plus.e_data["P(1)"][-1] + out_1_minus.e_data["P(1)"][-1]
+    ) / 2
 
 plt.plot(photon_numbers, fidelities, label=r"$F_{signal}$")
 plt.legend()
@@ -190,6 +201,36 @@ plt.annotate(
     fontsize=10,
     bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.8),
 )
+
+
+atomic_scattering = plt.figure()
+plt.plot(
+    photon_numbers,
+    atomic_state,
+    label="Mean Probability of atom being in |1> after photon pulse",
+)
+plt.plot(
+    photon_numbers,
+    atomic_state_plus,
+    label="Probability of atom being in |1> after sending |+>",
+)
+plt.plot(
+    photon_numbers,
+    atomic_state_minus,
+    label="Probability of atom being in |1> after sending |->",
+)
+plt.legend()
+plt.xlabel("Mean Photon numbers")
+plt.xscale("log")
+plt.ylabel("P(|1>)")
+plt.title("Atomic Scattering vs. Photon Numbers")
+
+
+plt.figure()
+plt.plot(atomic_state, fidelities, "o-")
+plt.xlabel("Atomic scattering probability")
+plt.ylabel("Signal fidelity")
+plt.legend()
 
 plt.show()
 
