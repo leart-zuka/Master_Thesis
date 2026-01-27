@@ -8,3 +8,12 @@ sim_results/
 *.qu
 *.log
 ComponentLibrary_files/
+*.aux
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
