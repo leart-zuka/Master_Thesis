@@ -10,6 +10,7 @@ sim_results/
 ComponentLibrary_files/
 *.aux
 *.bcf
+*.bbl
 *.blg
 *.fdb_latexmk
 *.fls
