@@ -19,6 +19,109 @@
 
 \refsection{0}
   \datalist[entry]{none/global//global/global/global}
+    \entry{DuanKimble2004}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=98cda514ae57ad62b47d4b50962b5572}{%
+           family={Duan},
+           familyi={D\bibinitperiod},
+           given={L.-M.},
+           giveni={L\bibinithyphendelim M\bibinitperiod}}}%
+        {{hash=aea70dd628dc6535ce5213ef85f63855}{%
+           family={Kimble},
+           familyi={K\bibinitperiod},
+           given={H.\bibnamedelimi J.},
+           giveni={H\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {American Physical Society}%
+      }
+      \strng{namehash}{7045f42d1fb08cb8155550ef4cb83f19}
+      \strng{fullhash}{7045f42d1fb08cb8155550ef4cb83f19}
+      \strng{fullhashraw}{7045f42d1fb08cb8155550ef4cb83f19}
+      \strng{bibnamehash}{7045f42d1fb08cb8155550ef4cb83f19}
+      \strng{authorbibnamehash}{7045f42d1fb08cb8155550ef4cb83f19}
+      \strng{authornamehash}{7045f42d1fb08cb8155550ef4cb83f19}
+      \strng{authorfullhash}{7045f42d1fb08cb8155550ef4cb83f19}
+      \strng{authorfullhashraw}{7045f42d1fb08cb8155550ef4cb83f19}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issue}{12}
+      \field{journaltitle}{Phys. Rev. Lett.}
+      \field{month}{3}
+      \field{title}{Scalable Photonic Quantum Computation through Cavity-Assisted Interactions}
+      \field{volume}{92}
+      \field{year}{2004}
+      \field{pages}{127902}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.1103/PhysRevLett.92.127902
+      \endverb
+      \verb{urlraw}
+      \verb https://link.aps.org/doi/10.1103/PhysRevLett.92.127902
+      \endverb
+      \verb{url}
+      \verb https://link.aps.org/doi/10.1103/PhysRevLett.92.127902
+      \endverb
+    \endentry
+    \entry{Reiserer2014}{article}{}{}
+      \name{author}{4}{}{%
+        {{hash=a732b2b50a46287f8b50c73e321fda42}{%
+           family={Reiserer},
+           familyi={R\bibinitperiod},
+           given={Andreas},
+           giveni={A\bibinitperiod}}}%
+        {{hash=5d423c4ea998407b27c2b1131151133c}{%
+           family={Kalb},
+           familyi={K\bibinitperiod},
+           given={Norbert},
+           giveni={N\bibinitperiod}}}%
+        {{hash=587788e55695ee0af69d9a91fc254c31}{%
+           family={Rempe},
+           familyi={R\bibinitperiod},
+           given={Gerhard},
+           giveni={G\bibinitperiod}}}%
+        {{hash=da5a52f00f0a90347dbef85f137c796d}{%
+           family={Ritter},
+           familyi={R\bibinitperiod},
+           given={Stephan},
+           giveni={S\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Nature Publishing Group}%
+      }
+      \strng{namehash}{0b6040392e74de42721086d4fb992054}
+      \strng{fullhash}{60dc2ac65706a1e220bcee3cc6e4570b}
+      \strng{fullhashraw}{60dc2ac65706a1e220bcee3cc6e4570b}
+      \strng{bibnamehash}{0b6040392e74de42721086d4fb992054}
+      \strng{authorbibnamehash}{0b6040392e74de42721086d4fb992054}
+      \strng{authornamehash}{0b6040392e74de42721086d4fb992054}
+      \strng{authorfullhash}{60dc2ac65706a1e220bcee3cc6e4570b}
+      \strng{authorfullhashraw}{60dc2ac65706a1e220bcee3cc6e4570b}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{14764687}
+      \field{issue}{7495}
+      \field{journaltitle}{Nature}
+      \field{month}{4}
+      \field{title}{A quantum gate between a flying optical photon and a single trapped atom}
+      \field{volume}{508}
+      \field{year}{2014}
+      \field{pages}{237\bibrangedash 240}
+      \range{pages}{4}
+      \verb{doi}
+      \verb 10.1038/nature13177
+      \endverb
+      \verb{urlraw}
+      \verb https://www.nature.com/articles/nature13177
+      \endverb
+      \verb{url}
+      \verb https://www.nature.com/articles/nature13177
+      \endverb
+    \endentry
     \entry{WallsMilburn2008}{book}{}{}
       \name{author}{2}{}{%
         {{hash=a416f93c6ef972517e2b484cdd1d9913}{%
@@ -46,8 +149,8 @@
       \strng{authornamehash}{e9f189678e5e06e79c90d4c4b4e3f1f4}
       \strng{authorfullhash}{e9f189678e5e06e79c90d4c4b4e3f1f4}
       \strng{authorfullhashraw}{e9f189678e5e06e79c90d4c4b4e3f1f4}
-      \field{sortinit}{1}
-      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{edition}{2nd}
