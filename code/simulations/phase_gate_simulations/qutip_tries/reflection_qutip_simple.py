@@ -17,6 +17,8 @@ from helpers.compute_simulation import (
 
 from helpers.compute_reflection_parameters import (
     compute_signal_fidelity,
+    mix_with_noise,
+    effective_cnot,
 )
 from rich import print
 import warnings
@@ -25,8 +27,7 @@ import warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 tlist = np.linspace(0.0, 8000, 1000)
-args = {"amp": 0.042, "t0": 4000, "tau": 70.0,
-        "tau_start": 91.0, "sigma": 1500.0}
+args = {"amp": 0.042, "t0": 4000, "tau": 70.0, "tau_start": 91.0, "sigma": 1500.0}
 
 atom = AtomSystem(
     dim=4,
@@ -161,26 +162,36 @@ cavity = CavitySystem(
 )
 
 
-photon_numbers = np.logspace(-8, -7, 20)
-# photon_numbers = np.linspace(0.01, 0.05, 5)
+photon_numbers = np.logspace(-5, 2, 100)
 fidelities = np.zeros_like(photon_numbers)
-
 atomic_state = np.zeros_like(photon_numbers)
-atomic_state_plus = np.zeros_like(photon_numbers)
-atomic_state_minus = np.zeros_like(photon_numbers)
-
 photon_numbers_fig = plt.figure()
 
-for i, photon_number in enumerate(photon_numbers):
-    print(f"Computing Signal Fidelity photon number of: {
-          photon_number}; Step no. {i}")
+args_ref = {
+    "amp": 1.0,
+    "t0": 4000,
+    "tau": 70.0,
+    "tau_start": 91.0,
+    "sigma": 1500.0,
+}
+dt = tlist[1] - tlist[0]
+field_ref = input_shape(tlist, args_ref)
+
+pulse_norm = np.sum(np.abs(field_ref) ** 2) * dt
+amps = np.sqrt(photon_numbers / pulse_norm)
+
+eta = 0.9 * 0.85 * 0.97
+for i, (n_bar, amp) in enumerate(zip(photon_numbers, amps)):
+    print(f"Computing Signal Fidelity ⟨n⟩ = {n_bar:.3e}, amp = {amp:.3e}; Step {i}")
+
     args = {
-        "amp": photon_number,
+        "amp": amp,
         "t0": 4000,
         "tau": 70.0,
         "tau_start": 91.0,
         "sigma": 1500.0,
     }
+
     out_0_plus, out_0_minus, out_1_plus, out_1_minus, CNOT = (
         run_sim_plus_analysis_in_cnot_basis(
             tlist=tlist,
@@ -197,14 +208,20 @@ for i, photon_number in enumerate(photon_numbers):
             psi_1=psi_1,
         )
     )
+
     print(CNOT)
 
-    fidelity = compute_signal_fidelity(CNOT)
-    fidelities[i] = fidelity
+    CNOT_w_noise = mix_with_noise(CNOT, n_bar)
+    Fidelity_low_photon = compute_signal_fidelity(CNOT_w_noise)
+
+    Fidelity_low_plus_high_photon = 0.25 + (Fidelity_low_photon - 0.25) * np.exp(
+        -(1 - eta) * n_bar
+    )
+    fidelities[i] = Fidelity_low_plus_high_photon
+
     atomic_state[i] = (
         out_1_plus.e_data["P(1)"][-1] + out_1_minus.e_data["P(1)"][-1]
     ) / 2
-
 plt.plot(photon_numbers, fidelities, label=r"$F_{signal}$")
 plt.legend()
 plt.xlabel("Mean Photon numbers")
@@ -212,22 +229,22 @@ plt.xscale("log")
 plt.ylabel("Signal Fidelity")
 plt.title("Signal Fidelity vs. different photon numbers")
 
-# idx = np.argmax(fidelities)
-# x_max = photon_numbers[idx]
-# y_max = fidelities[idx]
-# plt.annotate(
-#     f"T = {x_max:.3f}\nF_signal = {y_max:.3f}",
-#     xy=(x_max, y_max),
-#     xytext=(
-#         x_max,
-#         y_max,
-#     ),
-#     arrowprops=dict(arrowstyle="->", lw=1.5),
-#     fontsize=10,
-#     bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.8),
-# )
+idx = np.argmax(fidelities)
+x_max = photon_numbers[idx]
+y_max = fidelities[idx]
+plt.annotate(
+    f"T = {x_max:.3f}\nF_signal = {y_max:.3f}",
+    xy=(x_max, y_max),
+    xytext=(
+        x_max,
+        y_max,
+    ),
+    arrowprops=dict(arrowstyle="->", lw=1.5),
+    fontsize=10,
+    bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.8),
+)
 
-# photon_numbers_fig.savefig("photon_numbers.svg")
+photon_numbers_fig.savefig("photon_numbers.svg")
 
 
 atomic_scattering = plt.figure()
@@ -242,7 +259,7 @@ plt.xscale("log")
 plt.ylabel("P(|1>)")
 plt.title("Atomic Scattering vs. Photon Numbers")
 
-# atomic_scattering.savefig("atomic_scattering.svg")
+atomic_scattering.savefig("atomic_scattering.svg")
 
 plt.show()
 

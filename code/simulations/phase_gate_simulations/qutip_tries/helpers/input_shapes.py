@@ -3,21 +3,6 @@ import matplotlib.pyplot as plt
 from typing import Dict
 from typing import Union, Callable
 
-#
-# def input_shape(
-#     t: Union[float, np.ndarray], args: Dict[str, float]
-# ) -> Union[float, np.ndarray]:
-#     t0 = args["t0"]
-#     amp = args["amp"]
-#     mu = t0 / 2
-#     sigma = t0 * np.sqrt(1 / 50)
-#
-#     return (
-#         amp
-#         / np.sqrt(2 * np.pi * sigma**2)
-#         * np.exp(-((t - mu) ** 2) / (2 * (sigma) ** 2))
-#     )
-
 
 def input_shape(t, args):
     amp = args["amp"]
