@@ -109,40 +109,16 @@ def mix_with_noise(G_signal, n_bar, eta=1.0, p_dark=1e-4):
 
     G_noise = np.array(
         [
-            [0.5, 0.5, 0, 0],
-            [0.5, 0.5, 0, 0],
-            [0, 0, 0.5, 0.5],
-            [0, 0, 0.5, 0.5],
+            [np.sqrt(0.5), np.sqrt(0.5), 0, 0],
+            [np.sqrt(0.5), np.sqrt(0.5), 0, 0],
+            [0, 0, np.sqrt(0.5), np.sqrt(0.5)],
+            [0, 0, np.sqrt(0.5), np.sqrt(0.5)],
         ]
     )
 
     G_eff = P_sig * G_signal + (1 - P_sig) * G_noise
 
     return G_eff
-
-
-def poisson_prob(n, n_bar):
-    return np.exp(-n_bar) * n_bar**n / factorial(n)
-
-
-def effective_cnot(CNOT_1, duerr_cnots, n_bar, n_max=6):
-    CNOT_eff = np.zeros_like(CNOT_1, dtype=complex)
-
-    # single photon → your simulation
-    P1 = poisson_prob(1, n_bar)
-    CNOT_eff += P1 * CNOT_1
-
-    # multiphoton contributions
-    for n in range(2, n_max + 1):
-        if n in duerr_cnots:
-            CNOT_eff += poisson_prob(n, n_bar) * duerr_cnots[n]
-
-    # renormalize if you postselect on detection
-    norm = np.trace(CNOT_eff).real
-    if norm > 0:
-        CNOT_eff /= norm
-
-    return CNOT_eff
 
 
 def convert_photon_numbers_to_amps(

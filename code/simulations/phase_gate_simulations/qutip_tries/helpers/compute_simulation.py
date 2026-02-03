@@ -523,10 +523,10 @@ def run_sim_plus_analysis_in_cnot_basis(
     if photon_norm < 1e-12:
         random_cnot = np.array(
             [
-                [0.5, 0.5, 0, 0],
-                [0.5, 0.5, 0, 0],
-                [0, 0, 0.5, 0.5],
-                [0, 0, 0.5, 0.5],
+                [np.sqrt(0.5), np.sqrt(0.5), 0, 0],
+                [np.sqrt(0.5), np.sqrt(0.5), 0, 0],
+                [0, 0, np.sqrt(0.5), np.sqrt(0.5)],
+                [0, 0, np.sqrt(0.5), np.sqrt(0.5)],
             ]
         )
         return out_0_plus, out_0_minus, out_1_plus, out_1_minus, random_cnot
