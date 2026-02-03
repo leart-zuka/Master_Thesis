@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Tuple, TypedDict
+from typing import Tuple, TypedDict, Dict
 from scipy.special import factorial
 
 CNOT_IDEAL = np.array(
@@ -143,3 +143,17 @@ def effective_cnot(CNOT_1, duerr_cnots, n_bar, n_max=6):
         CNOT_eff /= norm
 
     return CNOT_eff
+
+
+def convert_photon_numbers_to_amps(
+    tlist: np.ndarray,
+    args_ref: Dict[str, float],
+    photon_numbers: np.ndarray,
+    input_shape,
+):
+    dt = tlist[1] - tlist[0]
+    field_ref = input_shape(tlist, args_ref)
+    pulse_norm = np.sum(np.abs(field_ref) ** 2) * dt
+    amps = np.sqrt(photon_numbers / pulse_norm)
+
+    return amps
