@@ -25,7 +25,7 @@ import warnings
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
-tlist = np.linspace(0.0, 8000, 1000)
+tlist = np.linspace(0.0, 1000, 100)
 
 atom = AtomSystem(
     dim=4,
@@ -60,13 +60,21 @@ fidelities = np.zeros_like(photon_numbers)
 fidelities_analytical = np.zeros_like(photon_numbers)
 fidelities_pure_sim = np.zeros_like(photon_numbers)
 atomic_state = np.zeros_like(photon_numbers)
+# args_ref = {
+#     "amp": 1.0,
+#     "t0": 4000,
+#     "tau": 70.0,
+#     "tau_start": 91.0,
+#     "sigma": 1500.0,
+# }
 args_ref = {
     "amp": 1.0,
-    "t0": 4000,
+    "t0": 500,
     "tau": 70.0,
     "tau_start": 91.0,
-    "sigma": 1500.0,
+    "sigma": 100.0,
 }
+
 
 amps = convert_photon_numbers_to_amps(tlist, args_ref, photon_numbers, input_shape)
 
@@ -102,6 +110,13 @@ if __name__ == "__main__":
             "tau_start": 91.0,
             "sigma": 1500.0,
         }
+        args = {
+            "amp": amp,
+            "t0": 500,
+            "tau": 70.0,
+            "tau_start": 91.0,
+            "sigma": 100.0,
+        }
 
         out_0_plus, out_0_minus, out_1_plus, out_1_minus, CNOT = (
             run_sim_plus_analysis_in_cnot_basis(
@@ -117,10 +132,12 @@ if __name__ == "__main__":
                 system=system,
                 psi_0=psi_0,
                 psi_1=psi_1,
+                post_selection_atom=False,
             )
         )
 
         print(CNOT)
+        print(compute_signal_fidelity(CNOT))
 
         fidelities_pure_sim[i] = compute_signal_fidelity(CNOT)
 
