@@ -57,6 +57,8 @@ e_ops = observables.expectation_ops()
 
 photon_numbers = np.logspace(-5, 2, 100)
 fidelities = np.zeros_like(photon_numbers)
+fidelities_analytical = np.zeros_like(photon_numbers)
+fidelities_pure_sim = np.zeros_like(photon_numbers)
 atomic_state = np.zeros_like(photon_numbers)
 args_ref = {
     "amp": 1.0,
@@ -120,13 +122,20 @@ if __name__ == "__main__":
 
         print(CNOT)
 
-        CNOT_w_noise = mix_with_noise(CNOT, n_bar)
+        fidelities_pure_sim[i] = compute_signal_fidelity(CNOT)
+
+        CNOT_w_noise = mix_with_noise(CNOT, eta=eta, n_bar=n_bar)
         Fidelity_low_photon = compute_signal_fidelity(CNOT_w_noise)
 
-        Fidelity_low_plus_high_photon = 0.25 + (Fidelity_low_photon - 0.25) * np.exp(
+        Fidelity_low_plus_high_photon = 0.5 + (0.9016 - 0.5) * np.exp(
             -(1 - eta) * n_bar
         )
-        fidelities[i] = Fidelity_low_plus_high_photon
+        fidelities_analytical[i] = Fidelity_low_plus_high_photon
+        Fidelity_low_plus_high_photon_plus_sim = 0.5 + (
+            Fidelity_low_photon - 0.5
+        ) * np.exp(-(1 - eta) * n_bar)
+        fidelities_pure_sim[i] = compute_signal_fidelity(CNOT)
+        fidelities[i] = Fidelity_low_plus_high_photon_plus_sim
 
         atomic_state[i] = (
             out_1_plus.e_data["P(1)"][-1] + out_1_minus.e_data["P(1)"][-1]
@@ -171,4 +180,17 @@ if __name__ == "__main__":
 
     atomic_scattering.savefig("atomic_scattering.svg")
 
-    plt.show(block=False)
+    comparisson = plt.figure()
+    plt.plot(photon_numbers, fidelities, label="Sim + Analytical")
+    plt.plot(
+        photon_numbers, fidelities_analytical, label="Analytical with F_1 = 0.9016"
+    )
+    plt.plot(photon_numbers, fidelities_pure_sim, label="Sim")
+    plt.xscale("log")
+    plt.xlabel("Mean Photon Numbers")
+    plt.ylabel("Fidelity")
+    plt.legend()
+    plt.title("Comparisson between different ways of calculating my fidelity")
+    comparisson.savefig("comparisson.svg")
+
+    plt.show()
