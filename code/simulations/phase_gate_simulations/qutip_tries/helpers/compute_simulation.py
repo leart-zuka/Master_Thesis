@@ -339,16 +339,6 @@ def run_sim_plus_analysis_in_cphase_basis(
         Kappa_oc=cavity.Kappa_oc,
     )
 
-    # plot_photon_number_statistics_qutip(out_0_pi, out_1_pi, "pi", tlist, Kappa)
-    # plot_photon_number_statistics_qutip(out_0_v, out_1_v, "v", tlist, Kappa)
-
-    # plot_output_field_qutip(
-    #     field_in, field_out_0_in_pi_out_pi, field_out_1_in_pi_out_pi, "pi", tlist, Kappa
-    # )
-    # plot_output_field_qutip(
-    #     field_in, field_out_0_in_v_out_v, field_out_1_in_v_out_pi, "v", tlist, Kappa
-    # )
-
     ampl_in = sum(np.nan_to_num(np.abs(field_in)) ** 2) * (tlist[1] - tlist[0])
     ampl_0_pi = sum(np.nan_to_num(np.abs(field_out_0_in_pi_out_pi)) ** 2) * (
         tlist[1] - tlist[0]
@@ -547,13 +537,6 @@ def run_sim_plus_analysis_in_cnot_basis(
         Mu_fr=drive_plus.Mu_fr,
         Kappa_oc=cavity.Kappa_oc,
     )
-    #
-    # norm_0_in_plus = np.sqrt(
-    #     np.sum(np.abs(out_0_in_plus_out_pi) ** 2 + np.abs(out_0_in_plus_out_v) ** 2)
-    #     * dt
-    # )
-    # out_0_in_plus_out_pi /= norm_0_in_plus
-    # out_0_in_plus_out_v /= norm_0_in_plus
 
     c_0_in_plus_out_pi = np.sum(np.conj(f_ideal) * out_0_in_plus_out_pi) * dt
     c_0_in_plus_out_v = np.sum(np.conj(f_ideal) * out_0_in_plus_out_v) * dt
@@ -595,13 +578,6 @@ def run_sim_plus_analysis_in_cnot_basis(
         Mu_fr=drive_minus.Mu_fr,
         Kappa_oc=cavity.Kappa_oc,
     )
-    #
-    # norm_0_in_minus = np.sqrt(
-    #     np.sum(np.abs(out_0_in_minus_out_pi) ** 2 + np.abs(out_0_in_minus_out_v) ** 2)
-    #     * dt
-    # )
-    # out_0_in_minus_out_pi /= norm_0_in_minus
-    # out_0_in_minus_out_v /= norm_0_in_minus
 
     c_0_in_minus_out_pi = np.sum(np.conj(f_ideal) * out_0_in_minus_out_pi) * dt
     c_0_in_minus_out_v = np.sum(np.conj(f_ideal) * out_0_in_minus_out_v) * dt
@@ -644,14 +620,6 @@ def run_sim_plus_analysis_in_cnot_basis(
         Kappa_oc=cavity.Kappa_oc,
     )
 
-    # norm_1_in_plus = np.sqrt(
-    #     np.sum(np.abs(out_1_in_plus_out_pi) ** 2 + np.abs(out_1_in_plus_out_v) ** 2)
-    #     * dt
-    # )
-    #
-    # out_1_in_plus_out_pi /= norm_1_in_plus
-    # out_1_in_plus_out_v /= norm_1_in_plus
-
     c_1_in_plus_out_pi = np.sum(np.conj(f_ideal) * out_1_in_plus_out_pi) * dt
     c_1_in_plus_out_v = np.sum(np.conj(f_ideal) * out_1_in_plus_out_v) * dt
 
@@ -692,13 +660,6 @@ def run_sim_plus_analysis_in_cnot_basis(
         Mu_fr=drive_minus.Mu_fr,
         Kappa_oc=cavity.Kappa_oc,
     )
-
-    # norm_1_in_minus = np.sqrt(
-    #     np.sum(np.abs(out_1_in_minus_out_pi) ** 2 + np.abs(out_1_in_minus_out_v) ** 2)
-    #     * dt
-    # )
-    # out_1_in_minus_out_pi /= norm_1_in_minus
-    # out_1_in_minus_out_v /= norm_1_in_minus
 
     c_1_in_minus_out_pi = np.sum(np.conj(f_ideal) * out_1_in_minus_out_pi) * dt
     c_1_in_minus_out_v = np.sum(np.conj(f_ideal) * out_1_in_minus_out_v) * dt
