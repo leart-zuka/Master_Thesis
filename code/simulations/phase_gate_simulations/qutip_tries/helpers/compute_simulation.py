@@ -176,9 +176,7 @@ def simulate(
         c_ops,
         e_ops,
         drive.args,
-        options=qt.Options(
-            store_states=True, progress_bar="enhanced", normalize_output=False
-        ),
+        options=qt.Options(store_states=True, progress_bar="enhanced"),
     )
 
     return result
