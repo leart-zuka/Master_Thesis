@@ -712,9 +712,12 @@ def run_sim_plus_analysis_in_cnot_basis(
             ],
         ]
     )
+
     for j in range(4):
         col_sum = np.sum(CNOT[:, j])
         if col_sum > 0:
             CNOT[:, j] /= col_sum
 
-    return out_0_plus, out_0_minus, out_1_plus, out_1_minus, CNOT
+    P_atom = (P0_0_plus + P0_0_minus + P1_1_minus + P1_1_plus) / 4
+
+    return out_0_plus, out_0_minus, out_1_plus, out_1_minus, CNOT, P_atom

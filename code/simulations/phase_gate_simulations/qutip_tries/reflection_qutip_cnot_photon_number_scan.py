@@ -55,7 +55,7 @@ psi_1 = states.psi_atom_1()
 c_ops = dissipation.collapse_operators()
 e_ops = observables.expectation_ops()
 
-photon_numbers = np.logspace(-5, 2, 100)
+photon_numbers = np.logspace(-5, 2, 20)
 fidelities = np.zeros_like(photon_numbers)
 fidelities_analytical = np.zeros_like(photon_numbers)
 fidelities_pure_sim = np.zeros_like(photon_numbers)
@@ -79,6 +79,7 @@ args_ref = {
 amps = convert_photon_numbers_to_amps(tlist, args_ref, photon_numbers, input_shape)
 
 eta = 0.9 * 0.85 * 0.97
+p_dark = 1e-4
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Scan of Photon Numbers")
@@ -100,6 +101,7 @@ if __name__ == "__main__":
         v_transmission=args.v_polarization_transmission,
     )
 
+    F_1 = 0.9207265414260521
     for i, (n_bar, amp) in enumerate(zip(photon_numbers, amps)):
         print(f"Computing Signal Fidelity ⟨n⟩ = {n_bar:.3e}, amp = {amp:.3e}; Step {i}")
 
@@ -118,7 +120,7 @@ if __name__ == "__main__":
             "sigma": 100.0,
         }
 
-        out_0_plus, out_0_minus, out_1_plus, out_1_minus, CNOT = (
+        out_0_plus, out_0_minus, out_1_plus, out_1_minus, CNOT, P_atom = (
             run_sim_plus_analysis_in_cnot_basis(
                 tlist=tlist,
                 cavity=cavity,
@@ -139,19 +141,22 @@ if __name__ == "__main__":
         print(CNOT)
         print(compute_signal_fidelity(CNOT))
 
-        fidelities_pure_sim[i] = compute_signal_fidelity(CNOT)
+        # Pure Sim
+        fidelities_pure_sim[i] = compute_signal_fidelity(CNOT) * P_atom
 
+        # Analytical
+        P_sig = (eta * n_bar) / (eta * n_bar + p_dark)
+        Fidelity_low_plus_high_photon_analytical = 0.5 + (
+            (P_sig * F_1 + (1 - P_sig) * 0.5) - 0.5
+        ) * np.exp(-(1 - eta) * n_bar)
+        fidelities_analytical[i] = Fidelity_low_plus_high_photon_analytical
+
+        # Sim + Analytical
         CNOT_w_noise = mix_with_noise(CNOT, eta=eta, n_bar=n_bar)
         Fidelity_low_photon = compute_signal_fidelity(CNOT_w_noise)
-
-        Fidelity_low_plus_high_photon = 0.5 + (0.9016 - 0.5) * np.exp(
-            -(1 - eta) * n_bar
-        )
-        fidelities_analytical[i] = Fidelity_low_plus_high_photon
         Fidelity_low_plus_high_photon_plus_sim = 0.5 + (
             Fidelity_low_photon - 0.5
         ) * np.exp(-(1 - eta) * n_bar)
-        fidelities_pure_sim[i] = compute_signal_fidelity(CNOT)
         fidelities[i] = Fidelity_low_plus_high_photon_plus_sim
 
         atomic_state[i] = (
@@ -200,7 +205,7 @@ if __name__ == "__main__":
     comparisson = plt.figure()
     plt.plot(photon_numbers, fidelities, label="Sim + Analytical")
     plt.plot(
-        photon_numbers, fidelities_analytical, label="Analytical with F_1 = 0.9016"
+        photon_numbers, fidelities_analytical, label=f"Analytical with F_1 = {F_1}"
     )
     plt.plot(photon_numbers, fidelities_pure_sim, label="Sim")
     plt.xscale("log")
