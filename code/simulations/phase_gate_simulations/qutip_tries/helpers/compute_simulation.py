@@ -443,7 +443,6 @@ def run_sim_plus_analysis_in_cnot_basis(
     args: Dict[str, float],
     psi_0: qt.Qobj,
     psi_1: qt.Qobj,
-    post_selection_atom: bool = False,
 ):
     drive_plus = DriveParams(
         Mu_fc=Mu_fc,
@@ -550,16 +549,10 @@ def run_sim_plus_analysis_in_cnot_basis(
     P0_0_plus = out_0_plus.e_data["P(0)"][-1]
     P0_1_plus = out_0_plus.e_data["P(1)"][-1]
 
-    if post_selection_atom:
-        overlap_0_plus_0_plus = P_0_in_plus_out_plus
-        overlap_0_minus_0_plus = P_0_in_plus_out_minus
-        overlap_1_plus_0_plus = 0 * P_0_in_plus_out_plus
-        overlap_1_minus_0_plus = 0 * P_0_in_plus_out_minus
-    else:
-        overlap_0_plus_0_plus = P0_0_plus * P_0_in_plus_out_plus
-        overlap_0_minus_0_plus = P0_0_plus * P_0_in_plus_out_minus
-        overlap_1_plus_0_plus = P0_1_plus * P_0_in_plus_out_plus
-        overlap_1_minus_0_plus = P0_1_plus * P_0_in_plus_out_minus
+    overlap_0_plus_0_plus = P0_0_plus * P_0_in_plus_out_plus
+    overlap_0_minus_0_plus = P0_0_plus * P_0_in_plus_out_minus
+    overlap_1_plus_0_plus = P0_1_plus * P_0_in_plus_out_plus
+    overlap_1_minus_0_plus = P0_1_plus * P_0_in_plus_out_minus
 
     out_0_in_minus_out_pi = compute_output_field(
         input_field=-field_in / np.sqrt(2),
@@ -591,16 +584,10 @@ def run_sim_plus_analysis_in_cnot_basis(
     P0_0_minus = out_0_minus.e_data["P(0)"][-1]
     P0_1_minus = out_0_minus.e_data["P(1)"][-1]
 
-    if post_selection_atom:
-        overlap_0_plus_0_minus = P_0_in_minus_out_plus
-        overlap_0_minus_0_minus = P_0_in_minus_out_minus
-        overlap_1_plus_0_minus = 0 * P_0_in_minus_out_plus
-        overlap_1_minus_0_minus = 0 * P_0_in_minus_out_minus
-    else:
-        overlap_0_plus_0_minus = P0_0_minus * P_0_in_minus_out_plus
-        overlap_0_minus_0_minus = P0_0_minus * P_0_in_minus_out_minus
-        overlap_1_plus_0_minus = P0_1_minus * P_0_in_minus_out_plus
-        overlap_1_minus_0_minus = P0_1_minus * P_0_in_minus_out_minus
+    overlap_0_plus_0_minus = P0_0_minus * P_0_in_minus_out_plus
+    overlap_0_minus_0_minus = P0_0_minus * P_0_in_minus_out_minus
+    overlap_1_plus_0_minus = P0_1_minus * P_0_in_minus_out_plus
+    overlap_1_minus_0_minus = P0_1_minus * P_0_in_minus_out_minus
 
     out_1_in_plus_out_pi = compute_output_field(
         input_field=field_in / np.sqrt(2),
@@ -632,16 +619,10 @@ def run_sim_plus_analysis_in_cnot_basis(
     P1_0_plus = out_1_plus.e_data["P(0)"][-1]
     P1_1_plus = out_1_plus.e_data["P(1)"][-1]
 
-    if post_selection_atom:
-        overlap_0_plus_1_plus = 0 * P_1_in_plus_out_plus
-        overlap_0_minus_1_plus = 0 * P_1_in_plus_out_minus
-        overlap_1_plus_1_plus = P_1_in_plus_out_plus
-        overlap_1_minus_1_plus = P_1_in_plus_out_minus
-    else:
-        overlap_0_plus_1_plus = P1_0_plus * P_1_in_plus_out_plus
-        overlap_0_minus_1_plus = P1_0_plus * P_1_in_plus_out_minus
-        overlap_1_plus_1_plus = P1_1_plus * P_1_in_plus_out_plus
-        overlap_1_minus_1_plus = P1_1_plus * P_1_in_plus_out_minus
+    overlap_0_plus_1_plus = P1_0_plus * P_1_in_plus_out_plus
+    overlap_0_minus_1_plus = P1_0_plus * P_1_in_plus_out_minus
+    overlap_1_plus_1_plus = P1_1_plus * P_1_in_plus_out_plus
+    overlap_1_minus_1_plus = P1_1_plus * P_1_in_plus_out_minus
 
     out_1_in_minus_out_pi = compute_output_field(
         input_field=-field_in / np.sqrt(2),
@@ -673,16 +654,10 @@ def run_sim_plus_analysis_in_cnot_basis(
     P1_0_minus = out_1_minus.e_data["P(0)"][-1]
     P1_1_minus = out_1_minus.e_data["P(1)"][-1]
 
-    if post_selection_atom:
-        overlap_0_plus_1_minus = 0 * P_1_in_minus_out_plus
-        overlap_0_minus_1_minus = 0 * P_1_in_minus_out_minus
-        overlap_1_plus_1_minus = P_1_in_minus_out_plus
-        overlap_1_minus_1_minus = P_1_in_minus_out_minus
-    else:
-        overlap_0_plus_1_minus = P1_0_minus * P_1_in_minus_out_plus
-        overlap_0_minus_1_minus = P1_0_minus * P_1_in_minus_out_minus
-        overlap_1_plus_1_minus = P1_1_minus * P_1_in_minus_out_plus
-        overlap_1_minus_1_minus = P1_1_minus * P_1_in_minus_out_minus
+    overlap_0_plus_1_minus = P1_0_minus * P_1_in_minus_out_plus
+    overlap_0_minus_1_minus = P1_0_minus * P_1_in_minus_out_minus
+    overlap_1_plus_1_minus = P1_1_minus * P_1_in_minus_out_plus
+    overlap_1_minus_1_minus = P1_1_minus * P_1_in_minus_out_minus
 
     CNOT = np.array(
         [
@@ -718,6 +693,6 @@ def run_sim_plus_analysis_in_cnot_basis(
         if col_sum > 0:
             CNOT[:, j] /= col_sum
 
-    P_atom = (P0_0_plus + P0_0_minus + P1_1_minus + P1_1_plus) / 4
+    p_atom = (P0_0_plus + P0_0_minus + P1_1_minus + P1_1_plus) / 4
 
-    return out_0_plus, out_0_minus, out_1_plus, out_1_minus, CNOT, P_atom
+    return (out_0_plus, out_0_minus, out_1_plus, out_1_minus, CNOT, p_atom)
