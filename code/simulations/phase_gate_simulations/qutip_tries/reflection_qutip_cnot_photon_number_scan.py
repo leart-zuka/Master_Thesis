@@ -141,13 +141,24 @@ if __name__ == "__main__":
         )
 
         print(CNOT)
+        print(p_atom)
         print(compute_signal_fidelity(CNOT))
+
+        atomic_state[i] = (
+            out_1_plus.e_data["P(1)"][-1]
+            + out_1_minus.e_data["P(1)"][-1]
+            + out_0_plus.e_data["P(0)"][-1]
+            + out_0_plus.e_data["P(0)"][-1]
+        ) / 4
 
         # Pure Sim
         if post_select_atom:
             fidelities_pure_sim[i] = compute_signal_fidelity(CNOT)
         else:
-            fidelities_pure_sim[i] = compute_signal_fidelity(CNOT) * p_atom
+            fidelities_pure_sim[i] = (
+                compute_signal_fidelity(CNOT) * atomic_state[i]
+                + (1 - atomic_state[i]) * 0.5
+            )
 
         # Analytical
         P_sig = (eta * n_bar) / (eta * n_bar + p_dark)
@@ -163,10 +174,6 @@ if __name__ == "__main__":
             Fidelity_low_photon - 0.5
         ) * np.exp(-(1 - eta) * n_bar)
         fidelities[i] = Fidelity_low_plus_high_photon_plus_sim
-
-        atomic_state[i] = (
-            out_1_plus.e_data["P(1)"][-1] + out_1_minus.e_data["P(1)"][-1]
-        ) / 2
 
     photon_numbers_fig = plt.figure()
     plt.plot(photon_numbers, fidelities_pure_sim, label=r"$F_{signal}$")
