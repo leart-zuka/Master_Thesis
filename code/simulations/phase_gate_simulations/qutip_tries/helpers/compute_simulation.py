@@ -197,20 +197,6 @@ def compute_output_field(
     return alpha_out
 
 
-def apply_dark_counts(P_sig, P_dark, P_sim):
-    P_click = P_sig + P_dark
-    if P_click == 0:
-        return np.zeros_like(P_sim), 0.0
-
-    w_real = P_sig / P_click
-    w_dark = P_dark / P_click
-
-    P_dark_outcomes = np.ones_like(P_sim) * np.sqrt(2) / len(P_sim)
-    print(P_dark_outcomes)
-    P_obs = w_real * P_sim + w_dark * P_dark_outcomes
-    return P_obs, P_click
-
-
 def run_sim_plus_analysis_in_cphase_basis(
     tlist: np.ndarray,
     system: SystemOperators,
@@ -520,18 +506,16 @@ def run_sim_plus_analysis_in_cnot_basis(
 
     # Output field part
     dt = tlist[1] - tlist[0]
-    T_window = tlist[-1] - tlist[0]
-    P_dark = 1 - np.exp(-r_dark * T_window)
 
     field_in: np.ndarray = input_shape(tlist, args)
     photon_norm = np.sum(np.abs(field_in) ** 2) * dt
     if photon_norm < 1e-12:
         random_cnot = np.array(
             [
-                [np.sqrt(0.5), np.sqrt(0.5), 0, 0],
-                [np.sqrt(0.5), np.sqrt(0.5), 0, 0],
-                [0, 0, np.sqrt(0.5), np.sqrt(0.5)],
-                [0, 0, np.sqrt(0.5), np.sqrt(0.5)],
+                [0.5, 0.5, 0, 0],
+                [0.5, 0.5, 0, 0],
+                [0, 0, 0.5, 0.5],
+                [0, 0, 0.5, 0.5],
             ]
         )
         return out_0_plus, out_0_minus, out_1_plus, out_1_minus, random_cnot
@@ -572,15 +556,6 @@ def run_sim_plus_analysis_in_cnot_basis(
     overlap_1_plus_0_plus = P0_1_plus * P_0_in_plus_out_plus
     overlap_1_minus_0_plus = P0_1_plus * P_0_in_plus_out_minus
 
-    P_sim = np.array([P_0_in_plus_out_plus, P_0_in_plus_out_minus])
-    P_sig_0_plus = np.sum(P_sim) * eta
-    P_obs, P_click = apply_dark_counts(P_sig_0_plus, P_dark, P_sim)
-
-    overlap_0_plus_0_plus = P0_0_plus * P_obs[0]
-    overlap_0_minus_0_plus = P0_0_plus * P_obs[1]
-    overlap_1_plus_0_plus = P0_1_plus * P_obs[0]
-    overlap_1_minus_0_plus = P0_1_plus * P_obs[1]
-
     out_0_in_minus_out_pi = compute_output_field(
         input_field=-field_in / np.sqrt(2),
         results=out_0_minus,
@@ -615,15 +590,6 @@ def run_sim_plus_analysis_in_cnot_basis(
     overlap_0_minus_0_minus = P0_0_minus * P_0_in_minus_out_minus
     overlap_1_plus_0_minus = P0_1_minus * P_0_in_minus_out_plus
     overlap_1_minus_0_minus = P0_1_minus * P_0_in_minus_out_minus
-
-    P_sim = np.array([P_0_in_minus_out_plus, P_0_in_minus_out_minus])
-    P_sig_0_minus = np.sum(P_sim) * eta
-    P_obs, P_click = apply_dark_counts(P_sig_0_minus, P_dark, P_sim)
-
-    overlap_0_plus_0_minus = P0_0_minus * P_obs[0]
-    overlap_0_minus_0_minus = P0_0_minus * P_obs[1]
-    overlap_1_plus_0_minus = P0_1_minus * P_obs[0]
-    overlap_1_minus_0_minus = P0_1_minus * P_obs[1]
 
     out_1_in_plus_out_pi = compute_output_field(
         input_field=field_in / np.sqrt(2),
@@ -660,15 +626,6 @@ def run_sim_plus_analysis_in_cnot_basis(
     overlap_1_plus_1_plus = P1_1_plus * P_1_in_plus_out_plus
     overlap_1_minus_1_plus = P1_1_plus * P_1_in_plus_out_minus
 
-    P_sim = np.array([P_1_in_plus_out_plus, P_1_in_plus_out_minus])
-    P_sig_1_plus = np.sum(P_sim) * eta
-    P_obs, P_click = apply_dark_counts(P_sig_1_plus, P_dark, P_sim)
-
-    overlap_0_plus_1_plus = P1_0_plus * P_obs[0]
-    overlap_0_minus_1_plus = P1_0_plus * P_obs[1]
-    overlap_1_plus_1_plus = P1_1_plus * P_obs[0]
-    overlap_1_minus_1_plus = P1_1_plus * P_obs[1]
-
     out_1_in_minus_out_pi = compute_output_field(
         input_field=-field_in / np.sqrt(2),
         results=out_1_minus,
@@ -704,15 +661,6 @@ def run_sim_plus_analysis_in_cnot_basis(
     overlap_1_plus_1_minus = P1_1_minus * P_1_in_minus_out_plus
     overlap_1_minus_1_minus = P1_1_minus * P_1_in_minus_out_minus
 
-    P_sim = np.array([P_1_in_minus_out_plus, P_1_in_minus_out_minus])
-    P_sig_1_minus = np.sum(P_sim) * eta
-    P_obs, P_click = apply_dark_counts(P_sig_1_minus, P_dark, P_sim)
-
-    overlap_0_plus_1_minus = P1_0_minus * P_obs[0]
-    overlap_0_minus_1_minus = P1_0_minus * P_obs[1]
-    overlap_1_plus_1_minus = P1_1_minus * P_obs[0]
-    overlap_1_minus_1_minus = P1_1_minus * P_obs[1]
-
     CNOT = np.array(
         [
             [
@@ -743,9 +691,9 @@ def run_sim_plus_analysis_in_cnot_basis(
     )
 
     for j in range(4):
-        col_sum = np.sum(CNOT[:, j] ** 2)
+        col_sum = np.sum(CNOT[:, j])
         if col_sum > 0:
-            CNOT[:, j] /= np.sqrt(col_sum)
+            CNOT[:, j] /= col_sum
 
     p_atom = (P0_0_plus + P0_0_minus + P1_1_minus + P1_1_plus) / 4
 

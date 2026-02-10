@@ -109,10 +109,10 @@ def mix_with_noise(G_signal, n_bar, eta=1.0, p_dark=1e-4):
 
     G_noise = np.array(
         [
-            [np.sqrt(0.5), np.sqrt(0.5), 0, 0],
-            [np.sqrt(0.5), np.sqrt(0.5), 0, 0],
-            [0, 0, np.sqrt(0.5), np.sqrt(0.5)],
-            [0, 0, np.sqrt(0.5), np.sqrt(0.5)],
+            [0.5, 0.5, 0, 0],
+            [0.5, 0.5, 0, 0],
+            [0, 0, 0.5, 0.5],
+            [0, 0, 0.5, 0.5],
         ]
     )
 

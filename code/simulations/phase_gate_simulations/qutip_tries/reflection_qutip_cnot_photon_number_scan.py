@@ -55,7 +55,7 @@ psi_1 = states.psi_atom_1()
 c_ops = dissipation.collapse_operators()
 e_ops = observables.expectation_ops()
 
-photon_numbers = np.logspace(-5, 2, 20)
+photon_numbers = np.logspace(1, 2, 5)
 fidelities = np.zeros_like(photon_numbers)
 fidelities_analytical = np.zeros_like(photon_numbers)
 fidelities_pure_sim = np.zeros_like(photon_numbers)
@@ -144,20 +144,17 @@ if __name__ == "__main__":
         print(p_atom)
         print(compute_signal_fidelity(CNOT))
 
-        atomic_state[i] = (
-            out_1_plus.e_data["P(1)"][-1]
-            + out_1_minus.e_data["P(1)"][-1]
-            + out_0_plus.e_data["P(0)"][-1]
-            + out_0_plus.e_data["P(0)"][-1]
-        ) / 4
+        atomic_state[i] = p_atom
 
         # Pure Sim
         if post_select_atom:
             fidelities_pure_sim[i] = compute_signal_fidelity(CNOT)
         else:
+            Fidelity_plus_noise = compute_signal_fidelity(
+                mix_with_noise(CNOT, n_bar, eta, p_dark)
+            )
             fidelities_pure_sim[i] = (
-                compute_signal_fidelity(CNOT) * atomic_state[i]
-                + (1 - atomic_state[i]) * 0.5
+                Fidelity_plus_noise * atomic_state[i] + (1 - atomic_state[i]) * 0.25
             )
 
         # Analytical
