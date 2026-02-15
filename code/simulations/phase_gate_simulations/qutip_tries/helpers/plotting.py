@@ -353,7 +353,7 @@ def plot_two_matrices_styled_grid(
     if title_figure is not None:
         plt.suptitle(f"Truth table for {title_figure}", fontsize=16, y=0.98)
     if save_fig:
-        plt.savefig(f"{title_figure}.svg", dpi=300, pad_inches=0.08)
+        plt.savefig(f"./plots/{title_figure}.svg", dpi=300, pad_inches=0.08)
     if show_fig:
         plt.show()
     return norm_left, norm_right

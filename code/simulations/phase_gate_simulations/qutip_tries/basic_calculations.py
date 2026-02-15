@@ -144,5 +144,5 @@ plt.title(
     "Process Fidelity for different Transmission of V polarized portion of incoming light"
 )
 plt.tight_layout()
-plt.savefig("attenuation_fidelity.svg")
+plt.savefig("./plots/attenuation_fidelity.svg")
 plt.show()

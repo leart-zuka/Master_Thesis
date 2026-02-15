@@ -139,6 +139,6 @@ if __name__ == "__main__":
         fontsize=10,
         bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.8),
     )
-    bw_transmission_fig.savefig("Brewster_window_transmission.svg")
+    bw_transmission_fig.savefig("./plots/Brewster_window_transmission.svg")
 
     plt.show(block=False)
