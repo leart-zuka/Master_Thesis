@@ -40,7 +40,12 @@ def calculate_total_reduction(
     return total_reduction, reduction_stage_1, reduction_stage_2
 
 
-def calculate_power(frequency: float, mean_photon_number: float, pulse_length: float):
+def calculate_power(
+    frequency: float,
+    mean_photon_number: float,
+    pulse_length: float,
+    total_reduction: float = 1.0,
+):
     """
     This function calculates the power needed to achieve a pulse with a certain mean photon number, frequency and pulselength
 
@@ -52,13 +57,15 @@ def calculate_power(frequency: float, mean_photon_number: float, pulse_length: f
             The mean photon number that is contained within each pulse
         pulse_length : float
             The length of each pulse (this parameter is what is passed on towards the FPGA as a trigger with a certain length)
+        total_reduction: float
+            Reduction from ND filters
 
     Returns
     -------
         power : float
             The power required to achieve such pulses
     """
-    return (mean_photon_number * h * frequency) / pulse_length
+    return (mean_photon_number * h * frequency) / (pulse_length * total_reduction)
 
 
 def calculate_pulse_length(frequency: float, mean_photon_number: float, power: float):
