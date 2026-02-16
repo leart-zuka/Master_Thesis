@@ -34,7 +34,7 @@ atom = AtomSystem(
 )
 
 cavity = CavitySystem(
-    photon_dim=3,
+    photon_dim=4,
     atom_dim=4,
     Delta_c_pi=2 * np.pi * 0,
     Delta_c_v=2 * np.pi * 0.5,
@@ -55,18 +55,11 @@ psi_1 = states.psi_atom_1()
 c_ops = dissipation.collapse_operators()
 e_ops = observables.expectation_ops()
 
-photon_numbers = np.logspace(1, 2, 5)
+photon_numbers = np.logspace(-5, 2, 50)
 fidelities = np.zeros_like(photon_numbers)
 fidelities_analytical = np.zeros_like(photon_numbers)
 fidelities_pure_sim = np.zeros_like(photon_numbers)
 atomic_state = np.zeros_like(photon_numbers)
-# args_ref = {
-#     "amp": 1.0,
-#     "t0": 4000,
-#     "tau": 70.0,
-#     "tau_start": 91.0,
-#     "sigma": 1500.0,
-# }
 args_ref = {
     "amp": 1.0,
     "t0": 500,
@@ -92,7 +85,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     cavity = CavitySystem(
-        photon_dim=3,
+        photon_dim=4,
         atom_dim=4,
         Delta_c_pi=2 * np.pi * 0,
         Delta_c_v=2 * np.pi * 0.5,
@@ -101,20 +94,13 @@ if __name__ == "__main__":
         v_transmission=args.v_polarization_transmission,
     )
 
-    F_1 = 0.9207265414260521
+    F_1 = 0.9013184596970039
 
     post_select_atom = False
 
     for i, (n_bar, amp) in enumerate(zip(photon_numbers, amps)):
         print(f"Computing Signal Fidelity ⟨n⟩ = {n_bar:.3e}, amp = {amp:.3e}; Step {i}")
 
-        args = {
-            "amp": amp,
-            "t0": 4000,
-            "tau": 70.0,
-            "tau_start": 91.0,
-            "sigma": 1500.0,
-        }
         args = {
             "amp": amp,
             "t0": 500,
@@ -151,26 +137,28 @@ if __name__ == "__main__":
             fidelities_pure_sim[i] = compute_signal_fidelity(CNOT)
         else:
             Fidelity_plus_noise = compute_signal_fidelity(
-                mix_with_noise(CNOT, n_bar, eta, p_dark)
+                mix_with_noise(CNOT, eta=eta, n_bar=n_bar, p_dark=p_dark)
             )
-            fidelities_pure_sim[i] = (
-                Fidelity_plus_noise * atomic_state[i] + (1 - atomic_state[i]) * 0.25
-            )
+            fidelities_pure_sim[i] = Fidelity_plus_noise * p_atom + (1 - p_atom) * 0.25
 
         # Analytical
         P_sig = (eta * n_bar) / (eta * n_bar + p_dark)
-        Fidelity_low_plus_high_photon_analytical = 0.5 + (
-            (P_sig * F_1 + (1 - P_sig) * 0.5) - 0.5
+        Fidelity_low_plus_high_photon_analytical = 0.25 + (
+            (P_sig * F_1 + (1 - P_sig) * 0.25) - 0.25
         ) * np.exp(-(1 - eta) * n_bar)
-        fidelities_analytical[i] = Fidelity_low_plus_high_photon_analytical
+        fidelities_analytical[i] = (
+            Fidelity_low_plus_high_photon_analytical * p_atom + (1 - p_atom) * 0.25
+        )
 
         # Sim + Analytical
-        CNOT_w_noise = mix_with_noise(CNOT, eta=eta, n_bar=n_bar)
+        CNOT_w_noise = mix_with_noise(CNOT, eta=eta, n_bar=n_bar, p_dark=p_dark)
         Fidelity_low_photon = compute_signal_fidelity(CNOT_w_noise)
-        Fidelity_low_plus_high_photon_plus_sim = 0.5 + (
-            Fidelity_low_photon - 0.5
+        Fidelity_low_plus_high_photon_plus_sim = 0.25 + (
+            Fidelity_low_photon - 0.25
         ) * np.exp(-(1 - eta) * n_bar)
-        fidelities[i] = Fidelity_low_plus_high_photon_plus_sim
+        fidelities[i] = (
+            Fidelity_low_plus_high_photon_plus_sim * p_atom + (1 - p_atom) * 0.25
+        )
 
     photon_numbers_fig = plt.figure()
     plt.plot(photon_numbers, fidelities_pure_sim, label=r"$F_{signal}$")
@@ -195,7 +183,7 @@ if __name__ == "__main__":
         bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.8),
     )
 
-    photon_numbers_fig.savefig("photon_numbers.svg")
+    photon_numbers_fig.savefig("./plots/photon_numbers.svg")
 
     atomic_scattering = plt.figure()
     plt.plot(
@@ -209,19 +197,19 @@ if __name__ == "__main__":
     plt.ylabel("P(|1>)")
     plt.title("Atomic Scattering vs. Photon Numbers")
 
-    atomic_scattering.savefig("atomic_scattering.svg")
+    atomic_scattering.savefig("./plots/atomic_scattering.svg")
 
-    # comparisson = plt.figure()
-    # plt.plot(photon_numbers, fidelities, label="Sim + Analytical")
-    # plt.plot(
-    #     photon_numbers, fidelities_analytical, label=f"Analytical with F_1 = {F_1}"
-    # )
-    # plt.plot(photon_numbers, fidelities_pure_sim, label="Sim")
-    # plt.xscale("log")
-    # plt.xlabel("Mean Photon Numbers")
-    # plt.ylabel("Fidelity")
-    # plt.legend()
-    # plt.title("Comparisson between different ways of calculating my fidelity")
-    # comparisson.savefig("comparisson.svg")
-    #
+    comparisson = plt.figure()
+    plt.plot(photon_numbers, fidelities, label="Sim + Analytical")
+    plt.plot(
+        photon_numbers, fidelities_analytical, label=f"Analytical with F_1 = {F_1}"
+    )
+    plt.plot(photon_numbers, fidelities_pure_sim, label="Sim")
+    plt.xscale("log")
+    plt.xlabel("Mean Photon Numbers")
+    plt.ylabel("Fidelity")
+    plt.legend()
+    plt.title("Comparisson between different ways of calculating my fidelity")
+    comparisson.savefig("./plots/comparisson.svg")
+
     plt.show()
