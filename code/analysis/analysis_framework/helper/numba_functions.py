@@ -149,8 +149,8 @@ def get_binary_up_and_down(
     scan_duration: float,
     kc_h_data: np.ndarray,
     kc_v_data: np.ndarray,
-    fast_triggers: np.ndarray,
-    fast_triggers_2: np.ndarray,
+    fast_triggers: np.ndarray,  #  new experiment run
+    fast_triggers_2: np.ndarray,  # new trial within experiment
     write_gate: List[float],
 ):
     binary_up = [[] for _ in range(points_per_scan // 2)]
