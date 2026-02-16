@@ -35,11 +35,11 @@ class Analyzer:
 
         # ------ Definition of parameters ------
         self.sync_slow = 0
-        self.sync_fast2 = 1
+        self.sync_fast2 = 1  # QuTau Trigger (new trial within experiment run)
         self.lc_h = 2
         self.lc_v = 3
         self.kc_h = 4
-        self.sync_fast = 5
+        self.sync_fast = 5  # QuTau Trigger 3 (new experiment run)
         self.sd_trig = 6
         self.kc_v = 7
 
@@ -370,6 +370,12 @@ class Analyzer:
 
         print(":waffle: Looping over [purple]Fast Sequence Triggers[/purple] now")
 
+        print(data_arr[self.sync_fast2])
+        print(len(data_arr[self.sync_fast2]))
+        print(data_arr[self.sync_fast])
+        print(len(data_arr[self.sync_fast]))
+        exit()
+
         binary_up, binary_down = get_binary_up_and_down(
             points_per_scan,
             trials_per_point,
@@ -464,6 +470,97 @@ class Analyzer:
             label="Measurement data",
         )
         plt.show()
+
+    def cnot_gate_analysis(
+        self,
+        file_name: str,
+        parameters,
+        path: str | Path | None = None,
+        file_type: str = ".h5",
+        plot_histogramm: bool = False,
+    ):
+
+        if self.data_dir is None:
+            raise Exception("please define a data directory first")
+
+        base = Path(path or self.data_dir)
+
+        file_post_selected = (
+            base / "goodAtomSelectorFiles" / f"{file_name}_goodAtoms.pkl"
+        )
+
+        if not os.path.exists(file_post_selected):
+            self.post_selection(file_name, base, file_type)
+
+        print(f"Analyzing CNOT Gate of file [green]{file_post_selected}[/green]")
+
+        with open(file_post_selected, "rb") as file:
+            atom_dict = pickle.load(file)
+
+        data_arr = self.data_good_atoms(atom_dict, base, file_name, file_type)
+
+        trigger_delay = parameters["trigger_delay"]
+        cooling_duration = parameters["cooling_duration"]
+        optical_pumping_duration = parameters["optical_pumping_duration"]
+        pulse_delay = parameters["pulse_delay"]
+        pulse_duration = parameters["pulse_duration"]
+        sequence_duration = parameters["sequence_duration"]
+
+        binsize = 20 * 1e-9
+
+        # sequence gates
+        optical_pumping_gate = [
+            trigger_delay + cooling_duration,
+            trigger_delay + cooling_duration + optical_pumping_duration,
+        ]
+        write_gate = [
+            optical_pumping_gate[1] + pulse_delay,
+            optical_pumping_gate[1] + pulse_delay + pulse_duration,
+        ]
+
+        # plotting
+        if plot_histogramm:
+            binNum = int(sequence_duration / binsize)
+            detectors = [self.kc_h, self.kc_v, self.lc_h, self.lc_v, self.sd_trig]
+            colors = ["violet", "violet", "tab:blue", "tab:blue", "orange"]
+            fsdelay = {
+                self.kc_h: 0,
+                self.kc_v: 12e-9,
+                self.lc_h: 0,
+                self.lc_v: 0.0,
+                self.sd_trig: 0.0,
+            }
+            channels_histo(
+                data_arr,
+                detectors,
+                write_gate,
+                binNum,
+                self.sync_fast,
+                sequence_duration,
+                fsdelay,
+                file_name,
+                colors,
+            )
+            plt.show(block=True)
+
+        fast_sequence_experimental_run_length = (
+            data_arr[self.sync_fast][-1] - data_arr[self.sync_fast][-2]
+        )
+
+        for i in track(range(len(data_arr[self.sync_fast2][:-1]))):
+            fast_sequence_duration = (
+                data_arr[self.sync_fast2][i + 1] - data_arr[self.sync_fast2][i]
+            )
+            if fast_sequence_duration > fast_sequence_experimental_run_length * 1.1:
+                print(f"Incomplete scan with time: {fast_sequence_duration}")
+                continue
+
+            trial_start_idx = np.searchsorted(
+                data_arr[self.sync_fast], data_arr[self.sync_fast2][i]
+            )
+            next_trial_idx = np.searchsorted(
+                data_arr[self.sync_fast], data_arr[self.sync_fast2][i]
+            )
 
     def data_good_atoms(
         self, atom_dict, base, file_name, file_type
