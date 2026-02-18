@@ -37,7 +37,6 @@ def channels_histo(
 
     for k, det in enumerate(detectors):
         histoDic[det] = np.copy(data_arr[det])
-
         for i in range(len(syncFast) - 1):
             start = syncFast[i] + fsdelay[det]
             FSdur = syncFast[i + 1] - start + fsdelay[det]

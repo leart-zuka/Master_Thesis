@@ -38,9 +38,8 @@ if __name__ == "__main__":
                 - folder: str (but will need to be constructed from multiple variables in order to keep it ✨variable✨)
                 - file_names: List[str]
     """
-    file_list = "16_02_26_Resonant_Reflection_Atom_1_H_1"
+    file_list = "16_02_26_Resonant_Reflection_Atom_1_V_1"
 
-    # cunt = handler.analzer.post_selection(file_list, ".h5")
     ParamDic: NormalModeSpectroscopyT = {
         "trigger_delay": 3.15e-6,
         "cooling_duration": 400e-6,

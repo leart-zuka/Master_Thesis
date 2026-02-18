@@ -321,7 +321,7 @@ class Analyzer:
         cooling_duration = parameters["cooling_duration"]
         optical_pumping_duration = parameters["optical_pumping_duration"]
         pulse_delay = parameters["pulse_delay"]
-        pulse_duration = parameters["pulse_duration"]
+        pulse_duration = parameters["pulse_duration_SD"]
         sequence_duration = parameters["sequence_duration"]
         frequency_span = parameters["frequency_span"]
         points_per_scan = parameters["points_per_scan"]
@@ -543,56 +543,37 @@ class Analyzer:
             )
             plt.show(block=True)
 
-        # fast_sequence_experimental_run_length = (
-        #     data_arr[self.sync_fast][-1] - data_arr[self.sync_fast][-2]
-        # )
-        #
-        # for i in track(range(len(data_arr[self.sync_fast2][:-1]))):
-        #     fast_sequence_duration = (
-        #         data_arr[self.sync_fast2][i + 1] - data_arr[self.sync_fast2][i]
-        #     )
-        #     print(fast_sequence_duration)
-        #     print(fast_sequence_experimental_run_length)
-        #     if fast_sequence_duration > fast_sequence_experimental_run_length * 1.1:
-        #         print(f"Incomplete scan with time: {fast_sequence_duration}")
-        #         continue
-        #
-        #     trial_start_idx = np.searchsorted(
-        #         data_arr[self.sync_fast], data_arr[self.sync_fast2][i]
-        #     )
-        #     next_trial_idx = np.searchsorted(
-        #         data_arr[self.sync_fast], data_arr[self.sync_fast2][i]
-        #     )
-        print(data_arr[self.kc_h])
-        print(
-            [
-                optical_pumping_gate[1] + test_delay,
-                optical_pumping_gate[1] + test_delay + pulse_length,
-            ]
-        )
+        counts_ch_4 = []
+        counts_ch_7 = []
 
-        for i in track(range(len(data_arr[self.sync_fast2][:-1]))):
-            spectrum_start_idx = np.searchsorted(
-                data_arr[self.sync_fast], data_arr[self.sync_fast2][i]
+        # sync fast   is qutau trigger   (aka new trial)
+        # sync fast 2 is qutau trigger 3 (aka new experiment)
+
+        for i in track(range(len(data_arr[self.sync_fast][:-1]))):
+            t0 = data_arr[self.sync_fast][i]
+
+            start = t0 + write_gate[0]
+            end = t0 + write_gate[1]
+
+            start_4, end_4 = np.searchsorted(
+                data_arr[self.kc_h],
+                [start, end],
             )
-            for trial in range(100):
-                spectrum_end_idx = spectrum_start_idx + trial
-                indices_ch_4 = np.searchsorted(
-                    data_arr[self.kc_h],
-                    [
-                        optical_pumping_gate[1] + test_delay,
-                        optical_pumping_gate[1] + test_delay + pulse_length,
-                    ],
-                )
-                indices_ch_7 = np.searchsorted(
-                    data_arr[self.kc_v],
-                    [
-                        optical_pumping_gate[1] + test_delay,
-                        optical_pumping_gate[1] + test_delay + pulse_length,
-                    ],
-                )
-            print(indices_ch_4)
-            print(indices_ch_7)
+
+            start_7, end_7 = np.searchsorted(
+                data_arr[self.kc_v],
+                [start, end],
+            )
+
+            counts_ch_4.append(end_4 - start_4)
+            counts_ch_7.append(end_7 - start_7)
+
+        sum = np.mean(counts_ch_4) + np.mean(counts_ch_7)
+        ch_4 = np.mean(counts_ch_4)
+        ch_7 = np.mean(counts_ch_7)
+
+        print(f"Channel 4: {ch_4}, percentage: {ch_4 / sum}")
+        print(f"Channel 7: {ch_7}, percentage: {ch_7 / sum}")
 
     def data_good_atoms(
         self, atom_dict, base, file_name, file_type
