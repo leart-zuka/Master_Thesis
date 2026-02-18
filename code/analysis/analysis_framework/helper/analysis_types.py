@@ -6,7 +6,7 @@ class NormalModeSpectroscopyT(TypedDict):
     cooling_duration: float
     optical_pumping_duration: float
     pulse_delay: float
-    pulse_duration: float
+    pulse_duration_SD: float
     sequence_duration: float
     frequency_span: int
     points_per_scan: int

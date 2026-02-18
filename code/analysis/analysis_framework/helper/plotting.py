@@ -8,7 +8,7 @@ def channels_histo(
     detectors: List[int] = [2, 3, 4, 7],
     gates=[0],
     binNum: int = 10000,
-    trigger: int = 5,
+    trigger: int = 5,  # new experimental run
     maxTrigDiff=100e-3,
     fsdelay=[0, 0, 0, 0],
     filename="",
@@ -18,11 +18,12 @@ def channels_histo(
     # detectors: list of detector strings (e.g. detectors=['lcH','lcV','kcPi','kcV'])
     # gates: list of time gates we want to plot
     # binNum: number of bins
-    # trigger: channel used as a trigger
+    # trigger: channel used as a trigger, here channel 5, aka QuTau Trigger 3 (new experimental run)
     # maxTrigDiff: maximum time difference between triggers
 
     syncFast = data_arr[trigger]
-    histoDic = {i: [] for i in detectors}  # dictionary where histograms will be stored
+    # dictionary where histograms will be stored
+    histoDic = {i: [] for i in detectors}
 
     diffFS = np.diff(syncFast)
     # print(diffFS)

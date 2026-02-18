@@ -19,10 +19,9 @@ if __name__ == "__main__":
     handler = AnalysisHandler(
         log_dir=log_dir,
         base_data_dir=base_data_dir,
-        year=2025,
-        month=9,
-        day_topic="24 - KC Normal Mode Spectroscopy 2-1",
-        # day_topic="10 - KC Spectroscopy",
+        year=2026,
+        month=2,
+        day_topic="16 - Controlled Reflection Resonant Light all Bases",
     )
 
     """
@@ -39,7 +38,7 @@ if __name__ == "__main__":
                 - folder: str (but will need to be constructed from multiple variables in order to keep it ✨variable✨)
                 - file_names: List[str]
     """
-    file_list = "24_09_25_KC_Spectroscopy_2_1_pi_75_375_MHz_100_points_3"
+    file_list = "16_02_26_Resonant_Reflection_Atom_1_H_1"
 
     # cunt = handler.analzer.post_selection(file_list, ".h5")
     ParamDic: NormalModeSpectroscopyT = {
@@ -47,13 +46,13 @@ if __name__ == "__main__":
         "cooling_duration": 400e-6,
         "optical_pumping_duration": 200e-6,
         "pulse_delay": 33.5e-6,
-        "pulse_duration": 7e-6,
+        "pulse_duration_SD": 7e-6,
         "sequence_duration": 0.7e-3,
+        "test_delay": 31.5e-6,
+        "pulse_length": 1.2e-6,
         "frequency_span": 250,  # in MHz
         "points_per_scan": 200,  # including up and down ramp
         "trials_per_point": 40,
         "frequency_center": 200,
     }
-    cunt = handler.analyzer.normal_mode_spectroscopy(
-        file_list, ParamDic, None, ".h5", False, False
-    )
+    cunt = handler.analyzer.cnot_gate_analysis(file_list, ParamDic, None, ".h5")

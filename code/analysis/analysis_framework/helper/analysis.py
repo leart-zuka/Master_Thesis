@@ -306,7 +306,9 @@ class Analyzer:
             self.post_selection(file_name, base, file_type)
 
         print(
-            f"Analyzing Normal Mode Spectroscopy of file [green]{file_post_selected}[/green]"
+            f"Analyzing Normal Mode Spectroscopy of file [green]{
+                file_post_selected
+            }[/green]"
         )
 
         with open(file_post_selected, "rb") as file:
@@ -370,12 +372,6 @@ class Analyzer:
 
         print(":waffle: Looping over [purple]Fast Sequence Triggers[/purple] now")
 
-        print(data_arr[self.sync_fast2])
-        print(len(data_arr[self.sync_fast2]))
-        print(data_arr[self.sync_fast])
-        print(len(data_arr[self.sync_fast]))
-        exit()
-
         binary_up, binary_down = get_binary_up_and_down(
             points_per_scan,
             trials_per_point,
@@ -397,7 +393,8 @@ class Analyzer:
 
         if fit_function:
             p0 = [
-                -27,  # A (normalization, negative guess here to match scaling of data)
+                # A (normalization, negative guess here to match scaling of data)
+                -27,
                 0.187,  # f_res (MHz offset of resonance)
                 30,  # g (coupling strength, MHz)
                 58,  # kappa (total cavity decay rate, MHz)
@@ -479,7 +476,6 @@ class Analyzer:
         file_type: str = ".h5",
         plot_histogramm: bool = False,
     ):
-
         if self.data_dir is None:
             raise Exception("please define a data directory first")
 
@@ -503,7 +499,9 @@ class Analyzer:
         cooling_duration = parameters["cooling_duration"]
         optical_pumping_duration = parameters["optical_pumping_duration"]
         pulse_delay = parameters["pulse_delay"]
-        pulse_duration = parameters["pulse_duration"]
+        test_delay = parameters["test_delay"]
+        pulse_length = parameters["pulse_length"]
+        pulse_duration_SD = parameters["pulse_duration_SD"]
         sequence_duration = parameters["sequence_duration"]
 
         binsize = 20 * 1e-9
@@ -514,8 +512,10 @@ class Analyzer:
             trigger_delay + cooling_duration + optical_pumping_duration,
         ]
         write_gate = [
+            optical_pumping_gate[1] + test_delay,
+            optical_pumping_gate[1] + test_delay + pulse_length,
             optical_pumping_gate[1] + pulse_delay,
-            optical_pumping_gate[1] + pulse_delay + pulse_duration,
+            optical_pumping_gate[1] + pulse_delay + pulse_duration_SD,
         ]
 
         # plotting
@@ -543,24 +543,56 @@ class Analyzer:
             )
             plt.show(block=True)
 
-        fast_sequence_experimental_run_length = (
-            data_arr[self.sync_fast][-1] - data_arr[self.sync_fast][-2]
+        # fast_sequence_experimental_run_length = (
+        #     data_arr[self.sync_fast][-1] - data_arr[self.sync_fast][-2]
+        # )
+        #
+        # for i in track(range(len(data_arr[self.sync_fast2][:-1]))):
+        #     fast_sequence_duration = (
+        #         data_arr[self.sync_fast2][i + 1] - data_arr[self.sync_fast2][i]
+        #     )
+        #     print(fast_sequence_duration)
+        #     print(fast_sequence_experimental_run_length)
+        #     if fast_sequence_duration > fast_sequence_experimental_run_length * 1.1:
+        #         print(f"Incomplete scan with time: {fast_sequence_duration}")
+        #         continue
+        #
+        #     trial_start_idx = np.searchsorted(
+        #         data_arr[self.sync_fast], data_arr[self.sync_fast2][i]
+        #     )
+        #     next_trial_idx = np.searchsorted(
+        #         data_arr[self.sync_fast], data_arr[self.sync_fast2][i]
+        #     )
+        print(data_arr[self.kc_h])
+        print(
+            [
+                optical_pumping_gate[1] + test_delay,
+                optical_pumping_gate[1] + test_delay + pulse_length,
+            ]
         )
 
         for i in track(range(len(data_arr[self.sync_fast2][:-1]))):
-            fast_sequence_duration = (
-                data_arr[self.sync_fast2][i + 1] - data_arr[self.sync_fast2][i]
-            )
-            if fast_sequence_duration > fast_sequence_experimental_run_length * 1.1:
-                print(f"Incomplete scan with time: {fast_sequence_duration}")
-                continue
-
-            trial_start_idx = np.searchsorted(
+            spectrum_start_idx = np.searchsorted(
                 data_arr[self.sync_fast], data_arr[self.sync_fast2][i]
             )
-            next_trial_idx = np.searchsorted(
-                data_arr[self.sync_fast], data_arr[self.sync_fast2][i]
-            )
+            for trial in range(100):
+                spectrum_end_idx = spectrum_start_idx + trial
+                indices_ch_4 = np.searchsorted(
+                    data_arr[self.kc_h],
+                    [
+                        optical_pumping_gate[1] + test_delay,
+                        optical_pumping_gate[1] + test_delay + pulse_length,
+                    ],
+                )
+                indices_ch_7 = np.searchsorted(
+                    data_arr[self.kc_v],
+                    [
+                        optical_pumping_gate[1] + test_delay,
+                        optical_pumping_gate[1] + test_delay + pulse_length,
+                    ],
+                )
+            print(indices_ch_4)
+            print(indices_ch_7)
 
     def data_good_atoms(
         self, atom_dict, base, file_name, file_type

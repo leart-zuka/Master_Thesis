@@ -29,7 +29,9 @@ def get_data_from_main_h5_file(
                 )
     except FileNotFoundError:
         print(
-            f"Wasn't able to find file with path: [yellow]{file_path}{file_type}[/yellow]"
+            f"Wasn't able to find file with path: [yellow]{file_path}{
+                file_type
+            }[/yellow]"
         )
         exit()
 
@@ -149,7 +151,7 @@ def get_binary_up_and_down(
     scan_duration: float,
     kc_h_data: np.ndarray,
     kc_v_data: np.ndarray,
-    fast_triggers: np.ndarray,  #  new experiment run
+    fast_triggers: np.ndarray,  # new experiment run
     fast_triggers_2: np.ndarray,  # new trial within experiment
     write_gate: List[float],
 ):
