@@ -1,18 +1,13 @@
 from helper.handler import AnalysisHandler
-from helper.analysis_types import NormalModeSpectroscopyT
-from time import time
+from helper.analysis_params import (
+    ParamDictNMS,
+    ParamDictReflection,
+    ParamDictReflection_atom_0,
+    ParamDictReflection_atom_1,
+)
+from helper.printing import pretty_print_gate
 
 if __name__ == "__main__":
-    """
-        This script will be the groundwork for setting up an analysis framework for my master thesis data, so I don't
-        have to constantly use some very janky and hard to read code that leaves me wondering what's even going on
-
-        Rules:
-            - Globalization: Make the script be able to analyze files that sit in a different folder so I don't have to copy the same analysis file to different folders thus increasing confusion on why one script was working for one measurement date and not the other.
-            - Centralization: There are different types of analyses which need to be performed (linearization of the trap, microwave spectroscopy, rabi flopping, ...) and it would be best to create a framework where all these different types are centralized in one script
-            - Variability and Reproduction: Be able to change certain measurement parameters on the fly and log them in a specific way in order to be able to reanalyze files from past measurements. Sidenote: make sure that all logs are associated with the data when the MEASUREMENT was taken, not when the analysis was performed
-    """
-
     log_dir = "./"  # unix file type convention as windows can deal with it, but not the other way around
     base_data_dir = "/home/lz/Documents/uni/master/master_thesis/code/data"
     # base_data_dir = "/mnt/lab_results/Results"
@@ -28,7 +23,7 @@ if __name__ == "__main__":
         Globalization:
             There are three things that need to be taken into concideration:
                 - The filetype (always gonna be h5, but make it a variable anyways for when we change it)
-                - The folder in which our measurements sit in 
+                - The folder in which our measurements sit in
                 - The file names of our measurement files (not just singular name, for since we may have multiple files to analyze)
 
             Doesn't make sense to have multiple folders similar to multiple file names, as we usually only analyze stuff from one day, and for when we want to analyze something from a different day in order to compare it, we care about specific measurements anyways
@@ -38,20 +33,93 @@ if __name__ == "__main__":
                 - folder: str (but will need to be constructed from multiple variables in order to keep it ✨variable✨)
                 - file_names: List[str]
     """
-    file_list = "16_02_26_Resonant_Reflection_Atom_1_V_1"
+    file_list_coupled = [
+        "16_02_26_Resonant_Reflection_Atom_1_H_1",
+        "16_02_26_Resonant_Reflection_Atom_1_V_1",
+        "16_02_26_Resonant_Reflection_Atom_1_A_1",
+        "16_02_26_Resonant_Reflection_Atom_1_D_1",
+        "16_02_26_Resonant_Reflection_Atom_1_R_1",
+        "16_02_26_Resonant_Reflection_Atom_1_L_4",
+    ]
+    file_list_uncoupled = [
+        "16_02_26_Resonant_Reflection_Atom_0_H_1",
+        "16_02_26_Resonant_Reflection_Atom_0_V_1",
+        "16_02_26_Resonant_Reflection_Atom_0_A_1",
+        "16_02_26_Resonant_Reflection_Atom_0_D_1",
+        "16_02_26_Resonant_Reflection_Atom_0_R_1",
+        "16_02_26_Resonant_Reflection_Atom_0_L_1",
+    ]
 
-    ParamDic: NormalModeSpectroscopyT = {
-        "trigger_delay": 3.15e-6,
-        "cooling_duration": 400e-6,
-        "optical_pumping_duration": 200e-6,
-        "pulse_delay": 33.5e-6,
-        "pulse_duration_SD": 7e-6,
-        "sequence_duration": 0.7e-3,
-        "test_delay": 31.5e-6,
-        "pulse_length": 1.2e-6,
-        "frequency_span": 250,  # in MHz
-        "points_per_scan": 200,  # including up and down ramp
-        "trials_per_point": 40,
-        "frequency_center": 200,
-    }
-    cunt = handler.analyzer.cnot_gate_analysis(file_list, ParamDic, None, ".h5")
+    cphase_file_list = [
+        "16_02_26_Resonant_Reflection_Atom_0_H_1",
+        "16_02_26_Resonant_Reflection_Atom_0_V_1",
+        "16_02_26_Resonant_Reflection_Atom_1_H_1",
+        "16_02_26_Resonant_Reflection_Atom_1_V_1",
+    ]
+
+    cnot_rl_file_list = [
+        "16_02_26_Resonant_Reflection_Atom_0_L_3",
+        "16_02_26_Resonant_Reflection_Atom_0_R_1",
+        "16_02_26_Resonant_Reflection_Atom_1_L_4",
+        "16_02_26_Resonant_Reflection_Atom_1_R_1",
+    ]
+
+    cnot_ad_file_list = [
+        "16_02_26_Resonant_Reflection_Atom_0_A_1",
+        "16_02_26_Resonant_Reflection_Atom_0_D_1",
+        "16_02_26_Resonant_Reflection_Atom_1_A_1",
+        "16_02_26_Resonant_Reflection_Atom_1_D_1",
+    ]
+
+    # cunt = handler.reflection_analysis(
+    #     files=file_list_uncoupled,
+    #     parameters=ParamDictReflection,
+    #     # plot_histogram=True,
+    # )
+
+    cphase = handler.gate_anlaysis(
+        filename_hal_atom_0=cphase_file_list[0],
+        filename_vdr_atom_0=cphase_file_list[1],
+        filename_hal_atom_1=cphase_file_list[2],
+        filename_vdr_atom_1=cphase_file_list[3],
+        parameters_atom_0=ParamDictReflection_atom_0,
+        parameters_atom_1=ParamDictReflection_atom_1,
+        # plot_histogram=True,
+    )
+    pretty_print_gate(
+        cphase,
+        title="CPHASE Gate (H/V basis)",
+        fidelity_indices=[(0, 0), (1, 1), (2, 2), (3, 3)],
+    )
+
+    cnot = handler.gate_anlaysis(
+        filename_hal_atom_0=cnot_rl_file_list[0],
+        filename_vdr_atom_0=cnot_rl_file_list[1],
+        filename_hal_atom_1=cnot_rl_file_list[2],
+        filename_vdr_atom_1=cnot_rl_file_list[3],
+        parameters_atom_0=ParamDictReflection_atom_0,
+        parameters_atom_1=ParamDictReflection_atom_1,
+        # plot_histogram=True,
+    )
+
+    pretty_print_gate(
+        cnot,
+        title="CNOT Gate (R/L basis)",
+        fidelity_indices=[(0, 0), (1, 1), (2, 3), (3, 2)],
+    )
+
+    cnot = handler.gate_anlaysis(
+        filename_hal_atom_0=cnot_ad_file_list[0],
+        filename_vdr_atom_0=cnot_ad_file_list[1],
+        filename_hal_atom_1=cnot_ad_file_list[2],
+        filename_vdr_atom_1=cnot_ad_file_list[3],
+        parameters_atom_0=ParamDictReflection_atom_0,
+        parameters_atom_1=ParamDictReflection_atom_1,
+        # plot_histogram=True,
+    )
+
+    pretty_print_gate(
+        cnot,
+        title="CNOT Gate (A/D basis)",
+        fidelity_indices=[(0, 0), (1, 1), (2, 3), (3, 2)],
+    )

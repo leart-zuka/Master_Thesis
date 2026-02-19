@@ -1,5 +1,12 @@
 import os
 from helper.analysis import Analyzer
+from helper.analysis_types import ReflectionGateT
+from helper.analysis_params import (
+    ParamDictReflection,
+    ParamDictReflection_atom_0,
+    ParamDictReflection_atom_1,
+)
+import numpy as np
 from typing import List
 from rich import print
 
@@ -61,3 +68,139 @@ class AnalysisHandler:
                 file, self.data_dir, file_type, mean_kc_counts, no
             )
             self.analyzer.get_trap_times(goodAtomsDic, atomInHisto, atomOutHisto)
+
+    def reflection_analysis(
+        self,
+        files: str | List[str],
+        file_type: str = ".h5",
+        parameters: ReflectionGateT = ParamDictReflection,
+        plot_histogram: bool = False,
+    ):
+        if type(files) is str:
+            files = [files]
+
+        for file in files:
+            print("-----------------------------------------")
+            print(
+                f":waffle: Analyzing Reflection in file [green]{file}[/green] right now"
+            )
+
+            sum, ch_4, ch_7 = self.analyzer.reflection_analysis(
+                file_name=file,
+                parameters=parameters,
+                plot_histogram=plot_histogram,
+            )
+
+            if ("_H_") in file:
+                print(
+                    f"Overlap with ideal H: {ch_4 / sum:.4f} ({
+                        (ch_4 / sum) * 100:.2f}%)"
+                )
+            if ("_V_") in file:
+                print(
+                    f"Overlap with ideal H: {ch_7 / sum:.4f} ({
+                        (ch_7 / sum) * 100:.2f}%)"
+                )
+
+            if ("_A_") in file:
+                if ("Atom_0") in file:
+                    print(
+                        f"Overlap with ideal A (uncoupled): {ch_7 / sum:.4f} ({
+                            (ch_7 / sum) * 100:.2f}%)"
+                    )
+                else:
+                    print(
+                        f"Overlap with ideal A (coupled): {ch_4 / sum:.4f} ({
+                            (ch_4 / sum) * 100:.2f}%)"
+                    )
+
+            if ("_D_") in file:
+                if ("Atom_0") in file:
+                    print(
+                        f"Overlap with ideal D (uncoupled): {ch_4 / sum:.4f} ({
+                            (ch_4 / sum) * 100:.2f}%)"
+                    )
+                else:
+                    print(
+                        f"Overlap with ideal D (coupled): {ch_7 / sum:.4f} ({
+                            (ch_7 / sum) * 100:.2f}%)"
+                    )
+
+            if ("_R_") in file:
+                if ("Atom_0") in file:
+                    print(
+                        f"Overlap with ideal R (uncoupled): {ch_4 / sum:.4f} ({
+                            (ch_4 / sum) * 100:.2f}%)"
+                    )
+                else:
+                    print(
+                        f"Overlap with ideal R (coupled): {ch_7 / sum:.4f} ({
+                            (ch_7 / sum) * 100:.2f}%)"
+                    )
+
+            if ("_L_") in file:
+                if ("Atom_0") in file:
+                    print(
+                        f"Overlap with ideal L (uncoupled): {ch_7 / sum:.4f} ({
+                            (ch_7 / sum) * 100:.2f}%)"
+                    )
+                else:
+                    print(
+                        f"Overlap with ideal L (coupled): {ch_4 / sum:.4f} ({
+                            (ch_4 / sum) * 100:.2f}%)"
+                    )
+
+    def gate_anlaysis(
+        self,
+        filename_hal_atom_0: str,
+        filename_vdr_atom_0: str,
+        filename_hal_atom_1: str,
+        filename_vdr_atom_1: str,
+        file_type: str = ".h5",
+        parameters_atom_0: ReflectionGateT = ParamDictReflection_atom_0,
+        parameters_atom_1: ReflectionGateT = ParamDictReflection_atom_1,
+        plot_histogram: bool = False,
+    ):
+
+        gate = np.zeros((4, 4))
+
+        sum_hal_atom_0, ch_4_hal_atom_0, ch_7_hal_atom_0 = (
+            self.analyzer.reflection_analysis(
+                file_name=filename_hal_atom_0,
+                parameters=parameters_atom_0,
+                plot_histogram=plot_histogram,
+            )
+        )
+        sum_hal_atom_1, ch_4_hal_atom_1, ch_7_hal_atom_1 = (
+            self.analyzer.reflection_analysis(
+                file_name=filename_hal_atom_1,
+                parameters=parameters_atom_1,
+                plot_histogram=plot_histogram,
+            )
+        )
+        sum_vdr_atom_0, ch_4_vdr_atom_0, ch_7_vdr_atom_0 = (
+            self.analyzer.reflection_analysis(
+                file_name=filename_vdr_atom_0,
+                parameters=parameters_atom_0,
+                plot_histogram=plot_histogram,
+            )
+        )
+        sum_vdr_atom_1, ch_4_vdr_atom_1, ch_7_vdr_atom_1 = (
+            self.analyzer.reflection_analysis(
+                file_name=filename_vdr_atom_1,
+                parameters=parameters_atom_1,
+                plot_histogram=plot_histogram,
+            )
+        )
+
+        gate[0][0] = ch_4_hal_atom_1 / sum_hal_atom_1
+        gate[1][0] = ch_7_hal_atom_1 / sum_hal_atom_1
+        gate[0][1] = ch_4_vdr_atom_1 / sum_vdr_atom_1
+        gate[1][1] = ch_7_vdr_atom_1 / sum_vdr_atom_1
+
+        gate[2][2] = ch_4_hal_atom_0 / sum_hal_atom_0
+        gate[3][2] = ch_7_hal_atom_0 / sum_hal_atom_0
+        gate[2][3] = ch_4_vdr_atom_0 / sum_vdr_atom_0
+        gate[3][3] = ch_7_vdr_atom_0 / sum_vdr_atom_0
+
+        return gate

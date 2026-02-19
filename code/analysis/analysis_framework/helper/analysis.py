@@ -19,7 +19,7 @@ from helper.numba_functions import (
     group_data_array,
 )
 from helper.plotting import channels_histo
-from helper.analysis_types import NormalModeSpectroscopyT
+from helper.analysis_types import NormalModeSpectroscopyT, ReflectionGateT
 
 
 class Analyzer:
@@ -320,7 +320,7 @@ class Analyzer:
         trigger_delay = parameters["trigger_delay"]
         cooling_duration = parameters["cooling_duration"]
         optical_pumping_duration = parameters["optical_pumping_duration"]
-        pulse_delay = parameters["pulse_delay"]
+        pulse_delay = parameters["pulse_delay_SD"]
         pulse_duration = parameters["pulse_duration_SD"]
         sequence_duration = parameters["sequence_duration"]
         frequency_span = parameters["frequency_span"]
@@ -468,13 +468,13 @@ class Analyzer:
         )
         plt.show()
 
-    def cnot_gate_analysis(
+    def reflection_analysis(
         self,
         file_name: str,
-        parameters,
+        parameters: ReflectionGateT,
         path: str | Path | None = None,
         file_type: str = ".h5",
-        plot_histogramm: bool = False,
+        plot_histogram: bool = False,
     ):
         if self.data_dir is None:
             raise Exception("please define a data directory first")
@@ -492,15 +492,14 @@ class Analyzer:
 
         with open(file_post_selected, "rb") as file:
             atom_dict = pickle.load(file)
-
         data_arr = self.data_good_atoms(atom_dict, base, file_name, file_type)
 
         trigger_delay = parameters["trigger_delay"]
         cooling_duration = parameters["cooling_duration"]
         optical_pumping_duration = parameters["optical_pumping_duration"]
         pulse_delay = parameters["pulse_delay"]
-        test_delay = parameters["test_delay"]
-        pulse_length = parameters["pulse_length"]
+        pulse_duration = parameters["pulse_duration"]
+        pulse_delay_SD = parameters["pulse_delay_SD"]
         pulse_duration_SD = parameters["pulse_duration_SD"]
         sequence_duration = parameters["sequence_duration"]
 
@@ -512,14 +511,16 @@ class Analyzer:
             trigger_delay + cooling_duration + optical_pumping_duration,
         ]
         write_gate = [
-            optical_pumping_gate[1] + test_delay,
-            optical_pumping_gate[1] + test_delay + pulse_length,
-            optical_pumping_gate[1] + pulse_delay,
-            optical_pumping_gate[1] + pulse_delay + pulse_duration_SD,
+            optical_pumping_gate[1] + pulse_delay,  # Start of photon pulse
+            optical_pumping_gate[1]
+            + pulse_delay
+            + pulse_duration,  # End of photon pulse
+            optical_pumping_gate[1] + pulse_delay_SD,  # Start of SD
+            optical_pumping_gate[1] + pulse_delay_SD + pulse_duration_SD,  # End of SD
         ]
 
         # plotting
-        if plot_histogramm:
+        if plot_histogram:
             binNum = int(sequence_duration / binsize)
             detectors = [self.kc_h, self.kc_v, self.lc_h, self.lc_v, self.sd_trig]
             colors = ["violet", "violet", "tab:blue", "tab:blue", "orange"]
@@ -572,8 +573,9 @@ class Analyzer:
         ch_4 = np.mean(counts_ch_4)
         ch_7 = np.mean(counts_ch_7)
 
-        print(f"Channel 4: {ch_4}, percentage: {ch_4 / sum}")
-        print(f"Channel 7: {ch_7}, percentage: {ch_7 / sum}")
+        self.data_arr = None
+
+        return sum, ch_4, ch_7
 
     def data_good_atoms(
         self, atom_dict, base, file_name, file_type
