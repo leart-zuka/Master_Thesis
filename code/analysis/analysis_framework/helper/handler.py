@@ -74,6 +74,7 @@ class AnalysisHandler:
         files: str | List[str],
         file_type: str = ".h5",
         parameters: ReflectionGateT = ParamDictReflection,
+        post_select_sd: bool = False,
         plot_histogram: bool = False,
     ):
         if type(files) is str:
@@ -88,6 +89,7 @@ class AnalysisHandler:
             sum, ch_4, ch_7 = self.analyzer.reflection_analysis(
                 file_name=file,
                 parameters=parameters,
+                post_select_sd=post_select_sd,
                 plot_histogram=plot_histogram,
             )
 
@@ -159,6 +161,7 @@ class AnalysisHandler:
         file_type: str = ".h5",
         parameters_atom_0: ReflectionGateT = ParamDictReflection_atom_0,
         parameters_atom_1: ReflectionGateT = ParamDictReflection_atom_1,
+        post_select_sd: bool = False,
         plot_histogram: bool = False,
     ):
 
@@ -168,6 +171,7 @@ class AnalysisHandler:
             self.analyzer.reflection_analysis(
                 file_name=filename_hal_atom_0,
                 parameters=parameters_atom_0,
+                post_select_sd=post_select_sd,
                 plot_histogram=plot_histogram,
             )
         )
@@ -175,6 +179,7 @@ class AnalysisHandler:
             self.analyzer.reflection_analysis(
                 file_name=filename_hal_atom_1,
                 parameters=parameters_atom_1,
+                post_select_sd=post_select_sd,
                 plot_histogram=plot_histogram,
             )
         )
@@ -182,6 +187,7 @@ class AnalysisHandler:
             self.analyzer.reflection_analysis(
                 file_name=filename_vdr_atom_0,
                 parameters=parameters_atom_0,
+                post_select_sd=post_select_sd,
                 plot_histogram=plot_histogram,
             )
         )
@@ -189,6 +195,7 @@ class AnalysisHandler:
             self.analyzer.reflection_analysis(
                 file_name=filename_vdr_atom_1,
                 parameters=parameters_atom_1,
+                post_select_sd=post_select_sd,
                 plot_histogram=plot_histogram,
             )
         )

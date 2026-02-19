@@ -7,13 +7,24 @@ import numpy as np
 console = Console()
 
 
-def pretty_print_gate(matrix, title, fidelity_indices):
+def pretty_print_gate(
+    matrix,
+    title,
+    fidelity_indices,
+    atom_basis,
+    photon_basis,
+):
     """
-    matrix: 4x4 numpy array
-    fidelity_indices: list of (i, j) tuples used for fidelity calculation
+    matrix: 4x4 array
+    fidelity_indices: list of (i, j) tuples
+    atom_basis: ["|0⟩", "|1⟩"] (or custom)
+    photon_basis: ["H", "V"] (or ["R", "L"], etc.)
     """
 
     matrix = np.array(matrix)
+
+    # Construct tensor-product basis labels
+    joint_basis = [f"{a} ⊗ {p}" for a in atom_basis for p in photon_basis]
 
     # ---- Create Table ----
     table = Table(
@@ -23,20 +34,18 @@ def pretty_print_gate(matrix, title, fidelity_indices):
         header_style="bold magenta",
     )
 
-    basis = ["00", "01", "10", "11"]
-
     table.add_column("⟨out| in⟩", justify="center", style="bold")
-    for b in basis:
-        table.add_column(b, justify="right")
+
+    for label in joint_basis:
+        table.add_column(label, justify="right")
 
     # ---- Fill Table ----
-    for i, row_label in enumerate(basis):
+    for i, row_label in enumerate(joint_basis):
         row = [row_label]
 
         for j in range(4):
             value = matrix[i, j]
 
-            # Highlight fidelity-relevant entries
             if (i, j) in fidelity_indices:
                 row.append(f"[bold green]{value: .4f}[/bold green]")
             else:

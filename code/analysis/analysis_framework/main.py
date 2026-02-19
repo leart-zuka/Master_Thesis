@@ -84,12 +84,15 @@ if __name__ == "__main__":
         filename_vdr_atom_1=cphase_file_list[3],
         parameters_atom_0=ParamDictReflection_atom_0,
         parameters_atom_1=ParamDictReflection_atom_1,
+        post_select_sd=True,
         # plot_histogram=True,
     )
     pretty_print_gate(
         cphase,
         title="CPHASE Gate (H/V basis)",
         fidelity_indices=[(0, 0), (1, 1), (2, 2), (3, 3)],
+        atom_basis=["|0⟩", "|1⟩"],
+        photon_basis=["π", "V"],
     )
 
     cnot = handler.gate_anlaysis(
@@ -99,6 +102,7 @@ if __name__ == "__main__":
         filename_vdr_atom_1=cnot_rl_file_list[3],
         parameters_atom_0=ParamDictReflection_atom_0,
         parameters_atom_1=ParamDictReflection_atom_1,
+        post_select_sd=True,
         # plot_histogram=True,
     )
 
@@ -106,6 +110,8 @@ if __name__ == "__main__":
         cnot,
         title="CNOT Gate (R/L basis)",
         fidelity_indices=[(0, 0), (1, 1), (2, 3), (3, 2)],
+        atom_basis=["|0⟩", "|1⟩"],
+        photon_basis=["R", "L"],
     )
 
     cnot = handler.gate_anlaysis(
@@ -115,6 +121,7 @@ if __name__ == "__main__":
         filename_vdr_atom_1=cnot_ad_file_list[3],
         parameters_atom_0=ParamDictReflection_atom_0,
         parameters_atom_1=ParamDictReflection_atom_1,
+        post_select_sd=True,
         # plot_histogram=True,
     )
 
@@ -122,4 +129,6 @@ if __name__ == "__main__":
         cnot,
         title="CNOT Gate (A/D basis)",
         fidelity_indices=[(0, 0), (1, 1), (2, 3), (3, 2)],
+        atom_basis=["|0⟩", "|1⟩"],
+        photon_basis=["A", "D"],
     )

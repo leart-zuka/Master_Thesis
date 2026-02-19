@@ -474,6 +474,7 @@ class Analyzer:
         parameters: ReflectionGateT,
         path: str | Path | None = None,
         file_type: str = ".h5",
+        post_select_sd: bool = False,
         plot_histogram: bool = False,
     ):
         if self.data_dir is None:
@@ -555,19 +556,30 @@ class Analyzer:
 
             start = t0 + write_gate[0]
             end = t0 + write_gate[1]
+            start_sd = t0 + write_gate[2]
+            end_sd = t0 + write_gate[3]
 
-            start_4, end_4 = np.searchsorted(
+            start_4, end_4, start_4_sd, end_4_sd = np.searchsorted(
                 data_arr[self.kc_h],
-                [start, end],
+                [start, end, start_sd, end_sd],
             )
 
-            start_7, end_7 = np.searchsorted(
+            start_7, end_7, start_7_sd, end_7_sd = np.searchsorted(
                 data_arr[self.kc_v],
-                [start, end],
+                [start, end, start_sd, end_sd],
             )
-
-            counts_ch_4.append(end_4 - start_4)
-            counts_ch_7.append(end_7 - start_7)
+            if post_select_sd:
+                if "Atom_0" in file_name:
+                    if (end_4_sd - start_4_sd + end_7_sd - start_7_sd) == 0:
+                        counts_ch_4.append(end_4 - start_4)
+                        counts_ch_7.append(end_7 - start_7)
+                elif "Atom_1" in file_name:
+                    if (end_4_sd - start_4_sd + end_7_sd - start_7_sd) != 0:
+                        counts_ch_4.append(end_4 - start_4)
+                        counts_ch_7.append(end_7 - start_7)
+            else:
+                counts_ch_4.append(end_4 - start_4)
+                counts_ch_7.append(end_7 - start_7)
 
         sum = np.mean(counts_ch_4) + np.mean(counts_ch_7)
         ch_4 = np.mean(counts_ch_4)
