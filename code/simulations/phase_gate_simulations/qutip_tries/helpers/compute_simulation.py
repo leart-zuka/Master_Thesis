@@ -5,6 +5,7 @@ from helpers.generic_cavity_operators import (
     AtomSystem,
     DriveParams,
 )
+from helpers.plotting import plot_drive_pi_and_v
 import numpy as np
 import qutip as qt
 
@@ -339,6 +340,17 @@ def run_sim_plus_analysis_in_cphase_basis(
         Kappa_oc=cavity.Kappa_oc,
     )
 
+    # Plotting
+
+    plot_drive_pi_and_v(
+        tlist=tlist,
+        result_0_pi=out_0_pi,
+        result_1_pi=out_1_pi,
+        result_0_v=out_0_v,
+        result_1_v=out_1_v,
+    )
+
+    # Printing
     ampl_in = sum(np.nan_to_num(np.abs(field_in)) ** 2) * (tlist[1] - tlist[0])
     ampl_0_pi = sum(np.nan_to_num(np.abs(field_out_0_in_pi_out_pi)) ** 2) * (
         tlist[1] - tlist[0]
@@ -403,7 +415,7 @@ def run_sim_plus_analysis_in_cphase_basis(
     table.add_row(
         "Population at end",
         f"{out_0_pi.e_data['P(0)'][-1] * 100:.7f}%",
-        f"{out_0_pi.e_data['P(0)'][-1] * 100:.7f}%",
+        f"{out_0_v.e_data['P(0)'][-1] * 100:.7f}%",
         f"{out_1_pi.e_data['P(1)'][-1] * 100:.7f}%",
         f"{out_1_v.e_data['P(1)'][-1] * 100:.7f}%",
     )
@@ -443,8 +455,6 @@ def run_sim_plus_analysis_in_cnot_basis(
     args: Dict[str, float],
     psi_0: qt.Qobj,
     psi_1: qt.Qobj,
-    eta: float = 0.74205,
-    r_dark: float = 1e-7,
 ):
     drive_plus = DriveParams(
         Mu_fc=Mu_fc,

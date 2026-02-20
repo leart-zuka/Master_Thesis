@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Tuple, TypedDict, Dict
+from typing import Literal, Tuple, TypedDict, Dict
 from scipy.special import factorial
 
 CNOT_IDEAL = np.array(
@@ -102,6 +102,22 @@ def compute_signal_fidelity(measured_matrix: np.ndarray):
 
     F_sig = 1 / 4 * np.sum(F_sig_cols)
     return F_sig
+
+
+def compute_fidelity_from_prob_matrix(
+    measured_matrix: np.ndarray, basis: Literal["cphase", "cnot"]
+):
+    if basis == "cphase":
+        F = np.trace(measured_matrix) / 4
+    else:
+        F = (
+            measured_matrix[0][0]
+            + measured_matrix[1][1]
+            + measured_matrix[2][3]
+            + measured_matrix[3][2]
+        ) / 4
+
+    return F
 
 
 def mix_with_noise(G_signal, n_bar, eta=1.0, p_dark=1e-4):

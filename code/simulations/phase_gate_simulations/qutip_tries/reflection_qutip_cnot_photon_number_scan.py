@@ -17,6 +17,7 @@ from helpers.compute_simulation import (
 
 from helpers.compute_reflection_parameters import (
     compute_signal_fidelity,
+    compute_fidelity_from_prob_matrix,
     mix_with_noise,
     convert_photon_numbers_to_amps,
 )
@@ -34,7 +35,7 @@ atom = AtomSystem(
 )
 
 cavity = CavitySystem(
-    photon_dim=4,
+    photon_dim=3,
     atom_dim=4,
     Delta_c_pi=2 * np.pi * 0,
     Delta_c_v=2 * np.pi * 0.5,
@@ -55,7 +56,7 @@ psi_1 = states.psi_atom_1()
 c_ops = dissipation.collapse_operators()
 e_ops = observables.expectation_ops()
 
-photon_numbers = np.logspace(-5, 2, 50)
+photon_numbers = np.logspace(-2, 2, 10)
 fidelities = np.zeros_like(photon_numbers)
 fidelities_analytical = np.zeros_like(photon_numbers)
 fidelities_pure_sim = np.zeros_like(photon_numbers)
@@ -85,7 +86,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     cavity = CavitySystem(
-        photon_dim=4,
+        photon_dim=3,
         atom_dim=4,
         Delta_c_pi=2 * np.pi * 0,
         Delta_c_v=2 * np.pi * 0.5,
@@ -94,7 +95,7 @@ if __name__ == "__main__":
         v_transmission=args.v_polarization_transmission,
     )
 
-    F_1 = 0.9013184596970039
+    F_1 = 0.9493856157314424
 
     post_select_atom = False
 
@@ -128,7 +129,7 @@ if __name__ == "__main__":
 
         print(CNOT)
         print(p_atom)
-        print(compute_signal_fidelity(CNOT))
+        print(compute_fidelity_from_prob_matrix(CNOT, basis="cnot"))
 
         atomic_state[i] = p_atom
 
@@ -136,28 +137,30 @@ if __name__ == "__main__":
         if post_select_atom:
             fidelities_pure_sim[i] = compute_signal_fidelity(CNOT)
         else:
-            Fidelity_plus_noise = compute_signal_fidelity(
-                mix_with_noise(CNOT, eta=eta, n_bar=n_bar, p_dark=p_dark)
+            Fidelity_plus_noise = compute_fidelity_from_prob_matrix(
+                mix_with_noise(CNOT, eta=eta, n_bar=n_bar, p_dark=p_dark), basis="cnot"
             )
-            fidelities_pure_sim[i] = Fidelity_plus_noise * p_atom + (1 - p_atom) * 0.25
+            fidelities_pure_sim[i] = Fidelity_plus_noise * p_atom + (1 - p_atom) * 0.5
 
         # Analytical
         P_sig = (eta * n_bar) / (eta * n_bar + p_dark)
-        Fidelity_low_plus_high_photon_analytical = 0.25 + (
-            (P_sig * F_1 + (1 - P_sig) * 0.25) - 0.25
+        Fidelity_low_plus_high_photon_analytical = 0.5 + (
+            (P_sig * F_1 + (1 - P_sig) * 0.5) - 0.5
         ) * np.exp(-(1 - eta) * n_bar)
         fidelities_analytical[i] = (
-            Fidelity_low_plus_high_photon_analytical * p_atom + (1 - p_atom) * 0.25
+            Fidelity_low_plus_high_photon_analytical * p_atom + (1 - p_atom) * 0.5
         )
 
         # Sim + Analytical
         CNOT_w_noise = mix_with_noise(CNOT, eta=eta, n_bar=n_bar, p_dark=p_dark)
-        Fidelity_low_photon = compute_signal_fidelity(CNOT_w_noise)
-        Fidelity_low_plus_high_photon_plus_sim = 0.25 + (
-            Fidelity_low_photon - 0.25
+        Fidelity_low_photon = compute_fidelity_from_prob_matrix(
+            CNOT_w_noise, basis="cnot"
+        )
+        Fidelity_low_plus_high_photon_plus_sim = 0.5 + (
+            Fidelity_low_photon - 0.5
         ) * np.exp(-(1 - eta) * n_bar)
         fidelities[i] = (
-            Fidelity_low_plus_high_photon_plus_sim * p_atom + (1 - p_atom) * 0.25
+            Fidelity_low_plus_high_photon_plus_sim * p_atom + (1 - p_atom) * 0.5
         )
 
     photon_numbers_fig = plt.figure()
@@ -182,7 +185,6 @@ if __name__ == "__main__":
         fontsize=10,
         bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.8),
     )
-
     photon_numbers_fig.savefig("./plots/photon_numbers.svg")
 
     atomic_scattering = plt.figure()
@@ -196,20 +198,54 @@ if __name__ == "__main__":
     plt.xscale("log")
     plt.ylabel("P(|1>)")
     plt.title("Atomic Scattering vs. Photon Numbers")
-
     atomic_scattering.savefig("./plots/atomic_scattering.svg")
 
-    comparisson = plt.figure()
-    plt.plot(photon_numbers, fidelities, label="Sim + Analytical")
-    plt.plot(
-        photon_numbers, fidelities_analytical, label=f"Analytical with F_1 = {F_1}"
-    )
-    plt.plot(photon_numbers, fidelities_pure_sim, label="Sim")
-    plt.xscale("log")
-    plt.xlabel("Mean Photon Numbers")
-    plt.ylabel("Fidelity")
-    plt.legend()
-    plt.title("Comparisson between different ways of calculating my fidelity")
-    comparisson.savefig("./plots/comparisson.svg")
+    # --- Configuration ---
+    # With photon_dim=4, the simulation begins to lose accuracy at n_bar ~ 1
+    # and is completely invalid by n_bar ~ 5.
+    trust_threshold = 2.0
 
+    # --- Plotting Comparison ---
+    comparisson = plt.figure(figsize=(10, 6))
+
+    # Plot the lines
+    plt.plot(photon_numbers, fidelities, label="Sim + Analytical", lw=2)
+    plt.plot(
+        photon_numbers,
+        fidelities_analytical,
+        label=f"Analytical ($F_1$ = {F_1:.3f})",
+        linestyle="--",
+    )
+    plt.plot(photon_numbers, fidelities_pure_sim, label="Sim (Master Eq)", alpha=0.7)
+
+    if max(photon_numbers) > trust_threshold:
+        # Add the "Trust Mask"
+        plt.axvspan(
+            trust_threshold,
+            photon_numbers[-1],
+            color="gray",
+            alpha=0.2,
+            label="Unreliable Region",
+        )
+        plt.axvline(trust_threshold, color="red", linestyle=":", alpha=0.6)
+
+        # Annotation for the threshold
+        plt.text(
+            trust_threshold * 1.1,
+            0.35,
+            "Hilbert Space\nTruncation Limit",
+            color="red",
+            fontsize=9,
+            fontweight="bold",
+        )
+
+    # Formatting
+    plt.xscale("log")
+    plt.xlabel("Mean Photon Numbers ($\overline{n}$)")
+    plt.ylabel("Fidelity")
+    plt.legend(loc="lower left")
+    plt.title("Comparison: Logic Failure vs. System Saturation")
+    plt.grid(True, which="both", ls="-", alpha=0.1)
+
+    comparisson.savefig("./plots/comparisson_masked.svg")
     plt.show()

@@ -167,6 +167,52 @@ def plot_photon_number_and_population(
     plt.show()
 
 
+def plot_drive_pi_and_v(
+    tlist: np.ndarray,
+    result_0_pi: qt.Result,
+    result_1_pi: qt.Result,
+    result_0_v: qt.Result,
+    result_1_v: qt.Result,
+) -> None:
+
+    fig = plt.figure(figsize=(12, 8))
+    gs = fig.add_gridspec(2, 2, hspace=0.35, wspace=0.3)
+
+    ax1 = fig.add_subplot(gs[0, 0])
+    ax1.set_title(r"Drive: $\pi$  (atom $|0\rangle$)")
+    ax1.plot(tlist, result_0_pi.e_data["n_cav_pi"], label=r"$n_{\pi}$")
+    ax1.plot(tlist, result_0_pi.e_data["n_cav_v"], label=r"$n_V$")
+    ax1.set_xlabel("Time")
+    ax1.set_ylabel("Photon number")
+    ax1.legend()
+
+    ax2 = fig.add_subplot(gs[0, 1])
+    ax2.set_title(r"Drive: $\pi$  (atom $|1\rangle$)")
+    ax2.plot(tlist, result_1_pi.e_data["n_cav_pi"], label=r"$n_{\pi}$")
+    ax2.plot(tlist, result_1_pi.e_data["n_cav_v"], label=r"$n_V$")
+    ax2.set_xlabel("Time")
+    ax2.set_ylabel("Photon number")
+    ax2.legend()
+
+    ax3 = fig.add_subplot(gs[1, 0])
+    ax3.set_title(r"Drive: $V$  (atom $|0\rangle$)")
+    ax3.plot(tlist, result_0_v.e_data["n_cav_pi"], label=r"$n_{\pi}$")
+    ax3.plot(tlist, result_0_v.e_data["n_cav_v"], label=r"$n_V$")
+    ax3.set_xlabel("Time")
+    ax3.set_ylabel("Photon number")
+    ax3.legend()
+
+    ax4 = fig.add_subplot(gs[1, 1])
+    ax4.set_title(r"Drive: $V$  (atom $|1\rangle$)")
+    ax4.plot(tlist, result_1_v.e_data["n_cav_pi"], label=r"$n_{\pi}$")
+    ax4.plot(tlist, result_1_v.e_data["n_cav_v"], label=r"$n_V$")
+    ax4.set_xlabel("Time")
+    ax4.set_ylabel("Photon number")
+    ax4.legend()
+
+    plt.show()
+
+
 def styled_3d_bar(
     ax,
     mat,
