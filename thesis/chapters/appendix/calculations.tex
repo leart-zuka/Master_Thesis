@@ -1,4 +1,37 @@
 \chapter{Analytical Derivations}
+
+\section{Driving Hamiltonian}
+
+Since we're mainly going to be working with the \textit{mesolve} function in QuTip to simulate the dynamics of the atom-photon gate it's imperative to know what each and every part does. Next to the Jaynes-Cummings-Hamiltonian the most important part is the one explaining the \textit{photon that gets reflected from the cavity}, most notably the part before it gets reflected aka the \textit{driving Hamiltonian} $H_{d}$. For this we're going to just write down once, the dynamics of a coherent driving field which will be the foundation of my photon that shall or shall not enter the cavity.
+\newline
+
+The photon is going to come from a laser, that is going to be described as a classical oscillating electric field. That light field has an amplitude $E_0$ and a frequency $\omega_d$:
+$$
+	E(t) = E_0 \cos(\omega_d t)
+$$
+Using the euler formula we can rewrite this to:
+$$
+	E(t) = \frac{E_0}{2} (e^{i\omega_d t} + e^{-i\omega_d t})
+$$
+
+The light field operator $\hat{E}$ interacts with the light in our cavity (which get described by our creation and annihilation operators) linearly:
+$$
+	\hat{E} \propto (a + a^\dag)
+$$
+
+When now describing the \textit{driving Hamiltonian} what we're doing is just overlaping the light field operator with the oscillating electric field:
+\begin{align*}
+	H_{drive} & \propto E(t) \cdot (a+a^{\dag})                         \\
+	H_{drive} & = (e^{i\omega_d t} + e^{-i\omega_d t})\cdot(a+a^{\dag})
+\end{align*}
+
+From this we get four terms where two cancel out as they aren't energy conserving rendering us with the final expression for our driving Hamiltonian:
+\begin{empheq}[box=\mymath]{equation*}
+	H_{drive} = a^\dag e^{-i\omega_d t} + a e^{+i\omega_d t}
+\end{empheq}
+
+Where the first term adds a photon to our cavity and the other removes one. Sometimes you'll see a minus instead of a plus between the two terms, this is just due to different conventions of the light field, where people chose a $\sin$ to describe the oscillating part instead of a $\cos$, but the physics remain the same.
+
 \section{Analytical derivation for case of atom in $\ket{0}$ and photon is in $\ket{h}$}
 
 Our Hamiltonian is as follows:

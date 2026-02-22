@@ -1,12 +1,45 @@
 \chapter{Theory}
-
+What follows is going to be the introduction and explanation of specific concepts required to understand the key points of this thesis.
 \section{Cavity Quantum Electrodynamics}
+At the heart of an atom-photon gate lies the interaction between the two components, which in the context of this thesis is achieved by placing an atom in a high-finesse Fabry-Perot cavity.
+The resulting dynamics then fall in the domain of Cavity Quantum Electrodynamics (CQED).
+Placing the atom between two highly-reflective mirrors of an optical cavity increases the amount of times a photon that is inside of a cavity bounces back and forth.
+This effectively increases the absorption cross section by the number of round-trips the photon takes, allowing for a strong light-matter interaction.
+
+The theoretical model which explains this interaction in a fully quantum mechanical picture is called the \textit{Jaynes-Cummings Model} \cite{JaynesCummings1963} and was named after Edwin Jaynes and Fred Cummings who developed it in 1963.
 \subsection{Jaynes-Cummings Model}
+
+\begin{itemize}
+	\item Basic setup is atom with 3 levels $\ket{u}$, $\ket{c}$, $\ket{e}$ and cavity with single mode that is resonant to $\ket{c} \leftrightarrow \ket{e}$, with detuning between resonant transition and cavity, include picture from \cite{RempeReiserer2015} and cite ofc
+	\item Write down hamiltonian that includes first the basic structure and then explain rotating wave approximation (possibly show derivation in appendix)
+	\item Show that the solutions of the eigenstates have this splitting term leading to the jaynes cummings ladder where at zero detuning (aka resonance)
+	      levels are seperated by 2g
+\end{itemize}
+
 \subsection{Dissipation and Decay Channels}
+
+Now we can include some losses here and there which are important to take into account as they reduce fidelity
+
+Will prolly scrap this section and rather talk about the cavities and their birefringence
+
+Should prolly just include these two subsubsections in the one before to save space and just include extra stuff that I'm concidering like mode matching, extra dump state, and whatnot
+
 \subsubsection{Atomic Decay Channels}
 \subsubsection{Photonic Decay Channels}
 \section{Reflection from a Cavity-Atom System}
-\subsection{Input-Output Formalism}
-\subsection{Atom-State-Dependent Reflection}
+
+\begin{itemize}
+	\item Different cases for reflection and thus transmission when driving with weak coherent pulse, based on state of the atom and detunings and stuff like that
+	\item system was introduced by gardiner and collet \cite{GardinerColletIO1985} show equation and then say how you can solve for analytical solution for photonic field reflection $r(\omega)$ and then show the equation for the coupled and uncoupled case and maybe already show theoretical plots that compare the two both in reflectivity and phase shift.
+\end{itemize}
+
 \section{Conditional Reflection}
+
+\begin{itemize}
+	\item Go off what Kimble and Duan were saying in \cite{DuanKimble2004} and how you get a phase shift which can also be seen in the plot when plotting the phase shift across different detunings and explain where it's coming from
+	\item Say that this can be used to build a controlled phase flip gate when photon is in eigenbasis of the cavity with the atom being the controlling part and the photon being the target part
+\end{itemize}
 \subsection{Reflection in CNOT basis}
+\begin{itemize}
+	\item Show that by turning the basis and instead of being in the polarization eigenbasis of the cavity, one can build a CNOT gate which is much more interesting for quantum computation by just sending a superposition of the two eigenbases of the cavity.
+\end{itemize}
