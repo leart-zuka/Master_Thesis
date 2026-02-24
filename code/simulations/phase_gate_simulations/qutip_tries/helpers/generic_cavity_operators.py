@@ -133,6 +133,10 @@ class Observables:
     cavity: CavitySystem
 
     def expectation_ops(self) -> Dict[str, qt.Qobj]:
+
+        a_plus_op = (self.cavity.a_v + self.cavity.a_pi) / np.sqrt(2)
+        a_minus_op = (self.cavity.a_v - self.cavity.a_pi) / np.sqrt(2)
+
         return {
             "P(0)": self.ops.P0,
             "P(1)": self.ops.P1,
@@ -141,6 +145,10 @@ class Observables:
             "n_cav_v": self.cavity.a_v.dag() * self.cavity.a_v,
             "a_pi": self.cavity.a_pi,
             "a_v": self.cavity.a_v,
+            "a_plus": a_plus_op,
+            "a_minus": a_minus_op,
+            "n_plus": a_plus_op.dag() * a_plus_op,
+            "n_minus": a_minus_op.dag() * a_minus_op,
         }
 
 
