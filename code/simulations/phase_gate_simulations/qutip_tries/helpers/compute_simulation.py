@@ -12,6 +12,7 @@ import qutip as qt
 from rich.console import Console
 from rich.table import Table
 from rich import box
+import matplotlib.pyplot as plt
 
 
 def simulate(
@@ -189,7 +190,7 @@ def compute_output_field(
     Mu_fr: float,
     Mu_fc: float,
     Kappa_oc: float,
-    cavity_mode: Literal["a_pi", "a_v"],
+    cavity_mode: Literal["a_pi", "a_v", "a_plus", "a_minus"],
 ) -> np.ndarray:
     alpha_in = input_field
     alpha_ref = Mu_fr * alpha_in
@@ -530,6 +531,11 @@ def run_sim_plus_analysis_in_cnot_basis(
         )
         return out_0_plus, out_0_minus, out_1_plus, out_1_minus, random_cnot
     f_ideal = field_in / np.sqrt(photon_norm)
+    alpha_in_pi = field_in / np.sqrt(2)
+    alpha_in_v = (field_in / np.sqrt(2)) * np.sqrt(cavity.v_transmission)
+
+    input_field_plus = (alpha_in_v + alpha_in_pi) / np.sqrt(2)
+    input_field_minus = (alpha_in_v - alpha_in_pi) / np.sqrt(2)
 
     out_0_in_plus_out_pi = compute_output_field(
         input_field=field_in / np.sqrt(2),
@@ -557,6 +563,32 @@ def run_sim_plus_analysis_in_cnot_basis(
 
     P_0_in_plus_out_plus = np.abs(A_0_in_plus_out_plus) ** 2
     P_0_in_plus_out_minus = np.abs(A_0_in_plus_out_minus) ** 2
+
+    # 2. Project the input into the MINUS basis
+    # This is what the minus-mode mirror actually "sees" reflecting off it
+
+    # 3. Compute the output field for the minus mode directly
+    # (Using the 1j * Mu_fc phase factor if required by your Hamiltonian)
+    out_minus = compute_output_field(
+        input_field=input_field_minus,
+        results=out_0_plus,
+        cavity_mode="a_minus",
+        Mu_fc=drive_plus.Mu_fc,  # Ensure phase matches Hamiltonian
+        Mu_fr=drive_plus.Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
+    )
+
+    # 4. Perform the overlap integral exactly ONCE
+    c_out_minus = np.sum(np.conj(f_ideal) * out_minus) * dt
+
+    # 5. Square the absolute value to get the photon number
+    P_operator_method_minus = np.abs(c_out_minus) ** 2
+
+    print("----------------------------------------")
+    print(f"Manual (Summing pi/V after): {P_0_in_plus_out_minus:.7f}")
+    print(f"Operator (Using a_minus):    {P_operator_method_minus:.7f}")
+    print("----------------------------------------")
+    exit()
 
     P0_0_plus = out_0_plus.e_data["P(0)"][-1]
     P0_1_plus = out_0_plus.e_data["P(1)"][-1]
