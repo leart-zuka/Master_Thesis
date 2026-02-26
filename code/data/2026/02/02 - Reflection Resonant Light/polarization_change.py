@@ -6,7 +6,7 @@ import pandas as pd
 
 def plot_average_poincare_point(
     folder,
-    mode: Literal["_reflection", "_transmission", ""],
+    mode: Literal["_reflection", "_transmission", "", "_start"],
     version: str,
     comparisson,
     s1_col=" Normalized s 1 ",
@@ -117,7 +117,7 @@ def plot_average_poincare_point(
         S3_h_compare,
         color="dodgerblue",
         s=80,
-        label=f"H after {mode}",
+        label=f"H {mode}",
     )
     ax.scatter(
         S1_v_compare,
@@ -125,7 +125,7 @@ def plot_average_poincare_point(
         S3_v_compare,
         color="firebrick",
         s=80,
-        label=f"V after {mode}",
+        label=f"V {mode}",
     )
     ax.scatter(
         S1_d_compare,
@@ -133,7 +133,7 @@ def plot_average_poincare_point(
         S3_d_compare,
         color="purple",
         s=80,
-        label=f"D after {mode}",
+        label=f"D {mode}",
     )
     ax.scatter(
         S1_a_compare,
@@ -141,7 +141,7 @@ def plot_average_poincare_point(
         S3_a_compare,
         color="indigo",
         s=80,
-        label=f"A after {mode}",
+        label=f"A {mode}",
     )
     ax.scatter(
         S1_r_compare,
@@ -149,7 +149,7 @@ def plot_average_poincare_point(
         S3_r_compare,
         color="orange",
         s=80,
-        label=f"R after {mode}",
+        label=f"R {mode}",
     )
     ax.scatter(
         S1_l_compare,
@@ -157,7 +157,7 @@ def plot_average_poincare_point(
         S3_l_compare,
         color="goldenrod",
         s=80,
-        label=f"L after {mode}",
+        label=f"L {mode}",
     )
     # ---- Formatting ----
     ax.set_xlim([-1, 1])
@@ -174,10 +174,13 @@ def plot_average_poincare_point(
         plt.show()
 
 
+# plot_average_poincare_point(
+#     "data",
+#     "_reflection",
+#     "_1",
+#     "Reflection_Resonant_Light",
+#     show_plot=True,
+# )
 plot_average_poincare_point(
-    "data",
-    "_reflection",
-    "_1",
-    "Reflection_Resonant_Light",
-    show_plot=True,
+    "data", "_start", "", "State Initialization", show_plot=True
 )
