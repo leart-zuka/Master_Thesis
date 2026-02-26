@@ -56,10 +56,11 @@ psi_1 = states.psi_atom_1()
 c_ops = dissipation.collapse_operators()
 e_ops = observables.expectation_ops()
 
-photon_numbers = np.logspace(-2, 2, 10)
+photon_numbers = np.logspace(-5, 2, 10)
 fidelities = np.zeros_like(photon_numbers)
 fidelities_analytical = np.zeros_like(photon_numbers)
 fidelities_pure_sim = np.zeros_like(photon_numbers)
+other_fidelities = np.zeros_like(photon_numbers)
 atomic_state = np.zeros_like(photon_numbers)
 args_ref = {
     "amp": 1.0,
@@ -110,28 +111,43 @@ if __name__ == "__main__":
             "sigma": 100.0,
         }
 
-        out_0_plus, out_0_minus, out_1_plus, out_1_minus, CNOT, p_atom = (
-            run_sim_plus_analysis_in_cnot_basis(
-                tlist=tlist,
-                cavity=cavity,
-                atom=atom,
-                Mu_fc=0.873,
-                Mu_fr=0.978,
-                e_obs=e_ops,
-                c_obs=c_ops,
-                input_shape=input_shape,
-                args=args,
-                system=system,
-                psi_0=psi_0,
-                psi_1=psi_1,
-            )
+        (
+            out_0_plus,
+            out_0_minus,
+            out_1_plus,
+            out_1_minus,
+            CNOT,
+            p_atom,
+            CNOT_coherent_to_fock,
+        ) = run_sim_plus_analysis_in_cnot_basis(
+            tlist=tlist,
+            cavity=cavity,
+            atom=atom,
+            Mu_fc=0.873,
+            Mu_fr=0.978,
+            e_obs=e_ops,
+            c_obs=c_ops,
+            input_shape=input_shape,
+            args=args,
+            system=system,
+            psi_0=psi_0,
+            psi_1=psi_1,
         )
 
         print(CNOT)
+        print(CNOT_coherent_to_fock)
         print(p_atom)
         print(compute_fidelity_from_prob_matrix(CNOT, basis="cnot"))
 
         atomic_state[i] = p_atom
+        other_fidelities[i] = (
+            compute_fidelity_from_prob_matrix(
+                CNOT_coherent_to_fock,
+                basis="cnot",
+            )
+            * p_atom
+            + (1 - p_atom) * 0.5
+        )
 
         # Pure Sim
         if post_select_atom:
@@ -185,7 +201,7 @@ if __name__ == "__main__":
         fontsize=10,
         bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.8),
     )
-    photon_numbers_fig.savefig("./plots/photon_numbers.svg")
+    # photon_numbers_fig.savefig("./plots/photon_numbers.svg")
 
     atomic_scattering = plt.figure()
     plt.plot(
@@ -198,7 +214,7 @@ if __name__ == "__main__":
     plt.xscale("log")
     plt.ylabel("P(|1>)")
     plt.title("Atomic Scattering vs. Photon Numbers")
-    atomic_scattering.savefig("./plots/atomic_scattering.svg")
+    # atomic_scattering.savefig("./plots/atomic_scattering.svg")
 
     # --- Configuration ---
     # With photon_dim=4, the simulation begins to lose accuracy at n_bar ~ 1
@@ -217,28 +233,29 @@ if __name__ == "__main__":
         linestyle="--",
     )
     plt.plot(photon_numbers, fidelities_pure_sim, label="Sim (Master Eq)", alpha=0.7)
+    plt.plot(photon_numbers, other_fidelities, label="Coh->Fock")
 
-    if max(photon_numbers) > trust_threshold:
-        # Add the "Trust Mask"
-        plt.axvspan(
-            trust_threshold,
-            photon_numbers[-1],
-            color="gray",
-            alpha=0.2,
-            label="Unreliable Region",
-        )
-        plt.axvline(trust_threshold, color="red", linestyle=":", alpha=0.6)
-
-        # Annotation for the threshold
-        plt.text(
-            trust_threshold * 1.1,
-            0.35,
-            "Hilbert Space\nTruncation Limit",
-            color="red",
-            fontsize=9,
-            fontweight="bold",
-        )
-
+    # if max(photon_numbers) > trust_threshold:
+    #     # Add the "Trust Mask"
+    #     plt.axvspan(
+    #         trust_threshold,
+    #         photon_numbers[-1],
+    #         color="gray",
+    #         alpha=0.2,
+    #         label="Unreliable Region",
+    #     )
+    #     plt.axvline(trust_threshold, color="red", linestyle=":", alpha=0.6)
+    #
+    #     # Annotation for the threshold
+    #     plt.text(
+    #         trust_threshold * 1.1,
+    #         0.35,
+    #         "Hilbert Space\nTruncation Limit",
+    #         color="red",
+    #         fontsize=9,
+    #         fontweight="bold",
+    #     )
+    #
     # Formatting
     plt.xscale("log")
     plt.xlabel("Mean Photon Numbers ($\overline{n}$)")
@@ -247,5 +264,5 @@ if __name__ == "__main__":
     plt.title("Comparison: Logic Failure vs. System Saturation")
     plt.grid(True, which="both", ls="-", alpha=0.1)
 
-    comparisson.savefig("./plots/comparisson_masked.svg")
+    # comparisson.savefig("./plots/comparisson_masked.svg")
     plt.show()

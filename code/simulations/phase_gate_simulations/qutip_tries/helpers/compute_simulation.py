@@ -12,6 +12,7 @@ import qutip as qt
 from rich.console import Console
 from rich.table import Table
 from rich import box
+from rich import print
 import matplotlib.pyplot as plt
 
 
@@ -564,31 +565,77 @@ def run_sim_plus_analysis_in_cnot_basis(
     P_0_in_plus_out_plus = np.abs(A_0_in_plus_out_plus) ** 2
     P_0_in_plus_out_minus = np.abs(A_0_in_plus_out_minus) ** 2
 
-    # 2. Project the input into the MINUS basis
-    # This is what the minus-mode mirror actually "sees" reflecting off it
-
-    # 3. Compute the output field for the minus mode directly
-    # (Using the 1j * Mu_fc phase factor if required by your Hamiltonian)
+    out_plus = compute_output_field(
+        input_field=input_field_plus,
+        results=out_0_plus,
+        cavity_mode="a_plus",
+        Mu_fc=drive_plus.Mu_fc,
+        Mu_fr=drive_plus.Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
+    )
     out_minus = compute_output_field(
         input_field=input_field_minus,
         results=out_0_plus,
         cavity_mode="a_minus",
-        Mu_fc=drive_plus.Mu_fc,  # Ensure phase matches Hamiltonian
+        Mu_fc=drive_plus.Mu_fc,
         Mu_fr=drive_plus.Mu_fr,
         Kappa_oc=cavity.Kappa_oc,
     )
 
-    # 4. Perform the overlap integral exactly ONCE
-    c_out_minus = np.sum(np.conj(f_ideal) * out_minus) * dt
+    c_out_plus = np.sum(np.abs(out_plus) ** 2) * dt
+    c_out_minus = np.sum(np.abs(out_minus) ** 2) * dt
+    # P_operator_0_in_plus_out_plus = qt.coherent(10, np.abs(c_out_plus) ** 2)
+    # P_operator_0_in_plus_out_minus = qt.coherent(10, np.abs(c_out_minus) ** 2)
+    # P_operator_0_in_plus_out_plus = c_out_plus * np.exp(-c_out_plus)
+    # P_operator_0_in_plus_out_minus = c_out_minus * np.exp(-c_out_minus)
+    p_dark = 1e-4
+    eta = 0.9 * 0.85 * 0.97
 
-    # 5. Square the absolute value to get the photon number
-    P_operator_method_minus = np.abs(c_out_minus) ** 2
+    prob_0_plus = np.exp(-c_out_plus)
+    prob_1_plus = c_out_plus * np.exp(-c_out_plus)
+    prob_2_plus = max(0.0, 1 - prob_0_plus - prob_1_plus)
 
-    print("----------------------------------------")
-    print(f"Manual (Summing pi/V after): {P_0_in_plus_out_minus:.7f}")
-    print(f"Operator (Using a_minus):    {P_operator_method_minus:.7f}")
-    print("----------------------------------------")
-    exit()
+    click_from_0_plus = prob_0_plus * p_dark
+    click_from_1_plus = prob_1_plus * eta
+    total_1_photon_detected_plus = (eta * c_out_plus) * np.exp(-eta * c_out_plus)
+    click_from_2_plus = max(0.0, total_1_photon_detected_plus - click_from_1_plus)
+    click_plus = click_from_0_plus + click_from_1_plus + click_from_2_plus
+
+    prob_0_minus = np.exp(-c_out_minus)
+    prob_1_minus = c_out_minus * np.exp(-c_out_minus)
+    prob_2_minus = max(0.0, 1 - prob_0_minus - prob_1_minus)
+
+    click_from_0_minus = prob_0_minus * p_dark
+    click_from_1_minus = prob_1_minus * eta
+    total_1_photon_detected_minus = (eta * c_out_minus) * np.exp(-eta * c_out_minus)
+    click_from_2_minus = max(0.0, total_1_photon_detected_minus - click_from_1_minus)
+    click_minus = click_from_0_minus + click_from_1_minus + click_from_2_minus
+
+    P_only_plus = click_plus * (1 - click_minus)
+    P_only_minus = click_minus * (1 - click_plus)
+    P_both = click_plus * click_minus
+    P_valid_click = P_only_plus + P_only_minus + P_both
+
+    P_pure_plus = click_from_1_plus * (1 - click_minus)
+    P_pure_minus = click_from_1_minus * (1 - click_plus)
+    P_total_pure = P_pure_plus + P_pure_minus
+
+    P_signal = P_total_pure / P_valid_click
+    P_noise = 1.0 - P_signal
+
+    dist_plus = P_pure_plus / P_total_pure
+    dist_minus = P_pure_minus / P_total_pure
+
+    P_operator_0_in_plus_out_plus = (P_signal * dist_plus) + (P_noise * 0.5)
+    P_operator_0_in_plus_out_minus = (P_signal * dist_minus) + (P_noise * 0.5)
+
+    # P_operator_0_in_plus_out_plus = (click_from_1_plus / click_plus) + (
+    #     1 - click_from_1_plus / click_plus
+    # ) * 0.5
+    # P_operator_0_in_plus_out_minus = (click_from_1_minus / click_minus) + (
+    #     1 - click_from_1_minus / click_minus
+    # ) * 0.5
+    #
 
     P0_0_plus = out_0_plus.e_data["P(0)"][-1]
     P0_1_plus = out_0_plus.e_data["P(1)"][-1]
@@ -633,6 +680,84 @@ def run_sim_plus_analysis_in_cnot_basis(
     overlap_1_plus_0_minus = P0_1_minus * P_0_in_minus_out_plus
     overlap_1_minus_0_minus = P0_1_minus * P_0_in_minus_out_minus
 
+    alpha_in_pi_for_minus = -field_in / np.sqrt(2)
+    alpha_in_v_for_minus = (field_in / np.sqrt(2)) * np.sqrt(cavity.v_transmission)
+
+    input_field_plus_for_minus_drive = (
+        alpha_in_v_for_minus + alpha_in_pi_for_minus
+    ) / np.sqrt(2)
+    input_field_minus_for_minus_drive = (
+        alpha_in_v_for_minus - alpha_in_pi_for_minus
+    ) / np.sqrt(2)
+
+    out_plus = compute_output_field(
+        input_field=input_field_plus_for_minus_drive,
+        results=out_0_minus,
+        cavity_mode="a_plus",
+        Mu_fc=drive_minus.Mu_fc,
+        Mu_fr=drive_minus.Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
+    )
+
+    out_minus = compute_output_field(
+        input_field=input_field_minus_for_minus_drive,
+        results=out_0_minus,
+        cavity_mode="a_minus",
+        Mu_fc=drive_minus.Mu_fc,
+        Mu_fr=drive_minus.Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
+    )
+
+    # c_out_plus = np.sum(np.conj(f_ideal) * out_plus) * dt
+    # P_operator_0_in_minus_out_plus = qt.coherent(10, np.abs(c_out_plus) ** 2)
+    # c_out_minus = np.sum(np.conj(f_ideal) * out_minus) * dt
+    # P_operator_0_in_minus_out_minus = qt.coherent(10, np.abs(c_out_minus) ** 2)
+    #
+    c_out_plus = np.sum(np.abs(out_plus) ** 2) * dt
+    c_out_minus = np.sum(np.abs(out_minus) ** 2) * dt
+    # P_operator_0_in_plus_out_plus = qt.coherent(10, np.abs(c_out_plus) ** 2)
+    # P_operator_0_in_plus_out_minus = qt.coherent(10, np.abs(c_out_minus) ** 2)
+    # P_operator_0_in_minus_out_plus = c_out_plus * np.exp(-c_out_plus)
+    # P_operator_0_in_minus_out_minus = c_out_minus * np.exp(-c_out_minus)
+
+    prob_0_plus = np.exp(-c_out_plus)
+    prob_1_plus = c_out_plus * np.exp(-c_out_plus)
+    prob_2_plus = max(0.0, 1 - prob_0_plus - prob_1_plus)
+
+    click_from_0_plus = prob_0_plus * p_dark
+    click_from_1_plus = prob_1_plus * eta
+    total_1_photon_detected_plus = (eta * c_out_plus) * np.exp(-eta * c_out_plus)
+    click_from_2_plus = max(0.0, total_1_photon_detected_plus - click_from_1_plus)
+    click_plus = click_from_0_plus + click_from_1_plus + click_from_2_plus
+
+    prob_0_minus = np.exp(-c_out_minus)
+    prob_1_minus = c_out_minus * np.exp(-c_out_minus)
+    prob_2_minus = max(0.0, 1 - prob_0_minus - prob_1_minus)
+
+    click_from_0_minus = prob_0_minus * p_dark
+    click_from_1_minus = prob_1_minus * eta
+    total_1_photon_detected_minus = (eta * c_out_minus) * np.exp(-eta * c_out_minus)
+    click_from_2_minus = max(0.0, total_1_photon_detected_minus - click_from_1_minus)
+    click_minus = click_from_0_minus + click_from_1_minus + click_from_2_minus
+
+    P_only_plus = click_plus * (1 - click_minus)
+    P_only_minus = click_minus * (1 - click_plus)
+    P_both = click_plus * click_minus
+    P_valid_click = P_only_plus + P_only_minus + P_both
+
+    P_pure_plus = click_from_1_plus * (1 - click_minus)
+    P_pure_minus = click_from_1_minus * (1 - click_plus)
+    P_total_pure = P_pure_plus + P_pure_minus
+
+    P_signal = P_total_pure / P_valid_click
+    P_noise = 1.0 - P_signal
+
+    dist_plus = P_pure_plus / P_total_pure
+    dist_minus = P_pure_minus / P_total_pure
+
+    P_operator_0_in_minus_out_plus = (P_signal * dist_plus) + (P_noise * 0.5)
+    P_operator_0_in_minus_out_minus = (P_signal * dist_minus) + (P_noise * 0.5)
+
     out_1_in_plus_out_pi = compute_output_field(
         input_field=field_in / np.sqrt(2),
         results=out_1_plus,
@@ -667,6 +792,73 @@ def run_sim_plus_analysis_in_cnot_basis(
     overlap_0_minus_1_plus = P1_0_plus * P_1_in_plus_out_minus
     overlap_1_plus_1_plus = P1_1_plus * P_1_in_plus_out_plus
     overlap_1_minus_1_plus = P1_1_plus * P_1_in_plus_out_minus
+
+    out_plus = compute_output_field(
+        input_field=input_field_plus,
+        results=out_1_plus,
+        cavity_mode="a_plus",
+        Mu_fc=drive_plus.Mu_fc,
+        Mu_fr=drive_plus.Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
+    )
+    out_minus = compute_output_field(
+        input_field=input_field_minus,
+        results=out_1_plus,
+        cavity_mode="a_minus",
+        Mu_fc=drive_plus.Mu_fc,
+        Mu_fr=drive_plus.Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
+    )
+
+    c_out_plus = np.sum(np.conj(f_ideal) * out_plus) * dt
+    P_operator_1_in_plus_out_plus = qt.coherent(10, np.abs(c_out_plus) ** 2)
+    c_out_minus = np.sum(np.conj(f_ideal) * out_minus) * dt
+    P_operator_1_in_plus_out_minus = qt.coherent(10, np.abs(c_out_minus) ** 2)
+
+    c_out_plus = np.sum(np.abs(out_plus) ** 2) * dt
+    c_out_minus = np.sum(np.abs(out_minus) ** 2) * dt
+    # P_operator_0_in_plus_out_plus = qt.coherent(10, np.abs(c_out_plus) ** 2)
+    # P_operator_0_in_plus_out_minus = qt.coherent(10, np.abs(c_out_minus) ** 2)
+    # P_operator_1_in_plus_out_plus = c_out_plus * np.exp(-c_out_plus)
+    # P_operator_1_in_plus_out_minus = c_out_minus * np.exp(-c_out_minus)
+
+    prob_0_plus = np.exp(-c_out_plus)
+    prob_1_plus = c_out_plus * np.exp(-c_out_plus)
+    prob_2_plus = max(0.0, 1 - prob_0_plus - prob_1_plus)
+
+    click_from_0_plus = prob_0_plus * p_dark
+    click_from_1_plus = prob_1_plus * eta
+    total_1_photon_detected_plus = (eta * c_out_plus) * np.exp(-eta * c_out_plus)
+    click_from_2_plus = max(0.0, total_1_photon_detected_plus - click_from_1_plus)
+    click_plus = click_from_0_plus + click_from_1_plus + click_from_2_plus
+
+    prob_0_minus = np.exp(-c_out_minus)
+    prob_1_minus = c_out_minus * np.exp(-c_out_minus)
+    prob_2_minus = max(0.0, 1 - prob_0_minus - prob_1_minus)
+
+    click_from_0_minus = prob_0_minus * p_dark
+    click_from_1_minus = prob_1_minus * eta
+    total_1_photon_detected_minus = (eta * c_out_minus) * np.exp(-eta * c_out_minus)
+    click_from_2_minus = max(0.0, total_1_photon_detected_minus - click_from_1_minus)
+    click_minus = click_from_0_minus + click_from_1_minus + click_from_2_minus
+
+    P_only_plus = click_plus * (1 - click_minus)
+    P_only_minus = click_minus * (1 - click_plus)
+    P_both = click_plus * click_minus
+    P_valid_click = P_only_plus + P_only_minus + P_both
+
+    P_pure_plus = click_from_1_plus * (1 - click_minus)
+    P_pure_minus = click_from_1_minus * (1 - click_plus)
+    P_total_pure = P_pure_plus + P_pure_minus
+
+    P_signal = P_total_pure / P_valid_click
+    P_noise = 1.0 - P_signal
+
+    dist_plus = P_pure_plus / P_total_pure
+    dist_minus = P_pure_minus / P_total_pure
+
+    P_operator_1_in_plus_out_plus = (P_signal * dist_plus) + (P_noise * 0.5)
+    P_operator_1_in_plus_out_minus = (P_signal * dist_minus) + (P_noise * 0.5)
 
     out_1_in_minus_out_pi = compute_output_field(
         input_field=-field_in / np.sqrt(2),
@@ -703,6 +895,84 @@ def run_sim_plus_analysis_in_cnot_basis(
     overlap_1_plus_1_minus = P1_1_minus * P_1_in_minus_out_plus
     overlap_1_minus_1_minus = P1_1_minus * P_1_in_minus_out_minus
 
+    alpha_in_pi_for_minus = -field_in / np.sqrt(2)
+    alpha_in_v_for_minus = (field_in / np.sqrt(2)) * np.sqrt(cavity.v_transmission)
+
+    input_field_plus_for_minus_drive = (
+        alpha_in_v_for_minus + alpha_in_pi_for_minus
+    ) / np.sqrt(2)
+    input_field_minus_for_minus_drive = (
+        alpha_in_v_for_minus - alpha_in_pi_for_minus
+    ) / np.sqrt(2)
+
+    out_plus = compute_output_field(
+        input_field=input_field_plus_for_minus_drive,
+        results=out_1_minus,
+        cavity_mode="a_plus",
+        Mu_fc=drive_minus.Mu_fc,
+        Mu_fr=drive_minus.Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
+    )
+
+    out_minus = compute_output_field(
+        input_field=input_field_minus_for_minus_drive,
+        results=out_1_minus,
+        cavity_mode="a_minus",
+        Mu_fc=drive_minus.Mu_fc,
+        Mu_fr=drive_minus.Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
+    )
+
+    c_out_plus = np.sum(np.conj(f_ideal) * out_plus) * dt
+    P_operator_1_in_minus_out_plus = qt.coherent(10, np.abs(c_out_plus) ** 2)
+    c_out_minus = np.sum(np.conj(f_ideal) * out_minus) * dt
+    P_operator_1_in_minus_out_minus = qt.coherent(10, np.abs(c_out_minus) ** 2)
+
+    c_out_plus = np.sum(np.abs(out_plus) ** 2) * dt
+    c_out_minus = np.sum(np.abs(out_minus) ** 2) * dt
+    # P_operator_0_in_plus_out_plus = qt.coherent(10, np.abs(c_out_plus) ** 2)
+    # P_operator_0_in_plus_out_minus = qt.coherent(10, np.abs(c_out_minus) ** 2)
+    # P_operator_1_in_minus_out_plus = c_out_plus * np.exp(-c_out_plus)
+    # P_operator_1_in_minus_out_minus = c_out_minus * np.exp(-c_out_minus)
+
+    prob_0_plus = np.exp(-c_out_plus)
+    prob_1_plus = c_out_plus * np.exp(-c_out_plus)
+    prob_2_plus = max(0.0, 1 - prob_0_plus - prob_1_plus)
+
+    click_from_0_plus = prob_0_plus * p_dark
+    click_from_1_plus = prob_1_plus * eta
+    total_1_photon_detected_plus = (eta * c_out_plus) * np.exp(-eta * c_out_plus)
+    click_from_2_plus = max(0.0, total_1_photon_detected_plus - click_from_1_plus)
+    click_plus = click_from_0_plus + click_from_1_plus + click_from_2_plus
+
+    prob_0_minus = np.exp(-c_out_minus)
+    prob_1_minus = c_out_minus * np.exp(-c_out_minus)
+    prob_2_minus = max(0.0, 1 - prob_0_minus - prob_1_minus)
+
+    click_from_0_minus = prob_0_minus * p_dark
+    click_from_1_minus = prob_1_minus * eta
+    total_1_photon_detected_minus = (eta * c_out_minus) * np.exp(-eta * c_out_minus)
+    click_from_2_minus = max(0.0, total_1_photon_detected_minus - click_from_1_minus)
+    click_minus = click_from_0_minus + click_from_1_minus + click_from_2_minus
+
+    P_only_plus = click_plus * (1 - click_minus)
+    P_only_minus = click_minus * (1 - click_plus)
+    P_both = click_plus * click_minus
+    P_valid_click = P_only_plus + P_only_minus + P_both
+
+    P_pure_plus = click_from_1_plus * (1 - click_minus)
+    P_pure_minus = click_from_1_minus * (1 - click_plus)
+    P_total_pure = P_pure_plus + P_pure_minus
+
+    P_signal = P_total_pure / P_valid_click
+    P_noise = 1.0 - P_signal
+
+    dist_plus = P_pure_plus / P_total_pure
+    dist_minus = P_pure_minus / P_total_pure
+
+    P_operator_1_in_minus_out_plus = (P_signal * dist_plus) + (P_noise * 0.5)
+    P_operator_1_in_minus_out_minus = (P_signal * dist_minus) + (P_noise * 0.5)
+
     CNOT = np.array(
         [
             [
@@ -731,12 +1001,83 @@ def run_sim_plus_analysis_in_cnot_basis(
             ],
         ]
     )
+    #
+    # CNOT_coherent_to_fock = np.array(
+    #     [
+    #         [
+    #             np.abs(P_operator_1_in_plus_out_plus[1][0]) ** 2,
+    #             np.abs(P_operator_1_in_minus_out_plus[1][0]) ** 2,
+    #             0,
+    #             0,
+    #         ],
+    #         [
+    #             np.abs(P_operator_1_in_plus_out_minus[1][0]) ** 2,
+    #             np.abs(P_operator_1_in_minus_out_minus[1][0]) ** 2,
+    #             0,
+    #             0,
+    #         ],
+    #         [
+    #             0,
+    #             0,
+    #             np.abs(P_operator_0_in_plus_out_plus[1][0]) ** 2,
+    #             np.abs(P_operator_0_in_minus_out_plus[1][0]) ** 2,
+    #         ],
+    #         [
+    #             0,
+    #             0,
+    #             np.abs(P_operator_0_in_plus_out_minus[1][0]) ** 2,
+    #             np.abs(P_operator_0_in_minus_out_minus[1][0]) ** 2,
+    #         ],
+    #     ]
+    # )
+
+    CNOT_coherent_to_fock = np.array(
+        [
+            [
+                P_operator_1_in_plus_out_plus,
+                P_operator_1_in_minus_out_plus,
+                0,
+                0,
+            ],
+            [
+                P_operator_1_in_plus_out_minus,
+                P_operator_1_in_minus_out_minus,
+                0,
+                0,
+            ],
+            [
+                0,
+                0,
+                P_operator_0_in_plus_out_plus,
+                P_operator_0_in_minus_out_plus,
+            ],
+            [
+                0,
+                0,
+                P_operator_0_in_plus_out_minus,
+                P_operator_0_in_minus_out_minus,
+            ],
+        ]
+    )
 
     for j in range(4):
         col_sum = np.sum(CNOT[:, j])
         if col_sum > 0:
             CNOT[:, j] /= col_sum
 
+    for j in range(4):
+        col_sum = np.sum(CNOT_coherent_to_fock[:, j])
+        if col_sum > 0:
+            CNOT_coherent_to_fock[:, j] /= col_sum
+
     p_atom = (P0_0_plus + P0_0_minus + P1_1_minus + P1_1_plus) / 4
 
-    return (out_0_plus, out_0_minus, out_1_plus, out_1_minus, CNOT, p_atom)
+    return (
+        out_0_plus,
+        out_0_minus,
+        out_1_plus,
+        out_1_minus,
+        CNOT,
+        p_atom,
+        CNOT_coherent_to_fock,
+    )
