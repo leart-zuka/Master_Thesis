@@ -107,3 +107,78 @@ def channels_histo(
     plt.tight_layout()
 
     return f
+
+
+def plot_gate_3d(
+    matrix,
+    title,
+    file_name,
+    fidelity_indices,
+    atom_basis,
+    photon_basis,
+    save_fig: bool = False,
+):
+    matrix = np.array(matrix)
+
+    joint_basis = [f"{a} ⊗ {p}" for a in atom_basis for p in photon_basis]
+
+    fidelity = sum(matrix[i, j] for i, j in fidelity_indices) / 4
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection="3d")
+
+    _x = np.arange(4)
+    _y = np.arange(4)
+    _xx, _yy = np.meshgrid(_x, _y)
+    x, y = _xx.ravel(), _yy.ravel()
+
+    width = depth = 0.6
+
+    # ---- Ideal bars (faded, height = 1 at fidelity indices) ----
+    ideal_heights = np.zeros(16)
+    for i, j in fidelity_indices:
+        ideal_heights[i * 4 + j] = 1.0
+
+    ax.bar3d(
+        x,
+        y,
+        np.zeros_like(ideal_heights),
+        width,
+        depth,
+        ideal_heights,
+        alpha=0.15,  # very transparent (reference)
+        edgecolor="black",
+        linewidth=0.5,
+    )
+
+    # ---- Experimental bars (more opaque) ----
+    ax.bar3d(
+        x,
+        y,
+        np.zeros_like(matrix.ravel()),
+        width,
+        depth,
+        matrix.ravel(),
+        alpha=0.85,  # more opaque
+        edgecolor="black",
+        linewidth=0.8,
+    )
+
+    ax.set_xticks(np.arange(4) + width / 2)
+    ax.set_yticks(np.arange(4) + depth / 2)
+
+    ax.set_xticklabels(joint_basis, rotation=45, ha="right")
+    ax.set_yticklabels(joint_basis)
+
+    # ax.set_xlabel("Input")
+    # ax.set_ylabel("Output")
+    ax.set_zlabel("Probability")
+
+    ax.set_zlim(0, 1.05)
+
+    ax.set_title(f"{title}\nF = {fidelity:.2f}")
+
+    plt.tight_layout()
+    if save_fig:
+        plt.savefig(f"./{file_name}.svg")
+    plt.show()

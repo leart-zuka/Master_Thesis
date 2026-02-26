@@ -6,6 +6,7 @@ from helper.analysis_params import (
     ParamDictReflection_atom_1,
 )
 from helper.printing import pretty_print_gate
+from helper.plotting import plot_gate_3d
 
 if __name__ == "__main__":
     log_dir = "./"  # unix file type convention as windows can deal with it, but not the other way around
@@ -87,12 +88,14 @@ if __name__ == "__main__":
         post_select_sd=True,
         # plot_histogram=True,
     )
-    pretty_print_gate(
+    plot_gate_3d(
         cphase,
         title="CPHASE Gate (H/V basis)",
+        file_name="Cnot_HV",
         fidelity_indices=[(0, 0), (1, 1), (2, 2), (3, 3)],
         atom_basis=["|0⟩", "|1⟩"],
         photon_basis=["π", "V"],
+        save_fig=True,
     )
 
     cnot = handler.gate_anlaysis(
@@ -106,12 +109,14 @@ if __name__ == "__main__":
         # plot_histogram=True,
     )
 
-    pretty_print_gate(
+    plot_gate_3d(
         cnot,
         title="CNOT Gate (R/L basis)",
+        file_name="Cnot_RL",
         fidelity_indices=[(0, 0), (1, 1), (2, 3), (3, 2)],
         atom_basis=["|0⟩", "|1⟩"],
         photon_basis=["R", "L"],
+        save_fig=True,
     )
 
     cnot = handler.gate_anlaysis(
@@ -125,9 +130,10 @@ if __name__ == "__main__":
         # plot_histogram=True,
     )
 
-    pretty_print_gate(
+    plot_gate_3d(
         cnot,
         title="CNOT Gate (A/D basis)",
+        file_name="Cnot_AD",
         fidelity_indices=[(0, 0), (1, 1), (2, 3), (3, 2)],
         atom_basis=["|0⟩", "|1⟩"],
         photon_basis=["A", "D"],
