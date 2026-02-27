@@ -176,7 +176,18 @@ def plot_gate_3d(
 
     ax.set_zlim(0, 1.05)
 
-    ax.set_title(f"{title}\nF = {fidelity:.2f}")
+    ax.set_title(
+        f"{title}\n$F = {fidelity:.2f}$",
+        fontsize=32,
+        pad=25,  # Adds space so the box doesn't overlap the plot
+        bbox=dict(
+            facecolor="#e8f4f8",  # Light highlight color
+            edgecolor="dodgerblue",  # Border color
+            boxstyle="round,pad=0.4",  # Rounded corners with padding
+            linewidth=2,  # Thicker border for visibility
+            alpha=0.9,  # Slight transparency
+        ),
+    )
 
     plt.tight_layout()
     if save_fig:
