@@ -90,7 +90,7 @@ if __name__ == "__main__":
     )
     plot_gate_3d(
         cphase,
-        title="CPHASE Gate (H/V basis)",
+        title=r"CPHASE Gate ($\pi$/V basis)",
         file_name="Cnot_HV",
         fidelity_indices=[(0, 0), (1, 1), (2, 2), (3, 3)],
         atom_basis=["|0⟩", "|1⟩"],
