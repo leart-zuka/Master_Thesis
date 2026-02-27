@@ -39,7 +39,7 @@ blocks = [
         "#a8d5e2",
     ),
     (
-        "Detection",
+        "State Detection",
         f"{real_durations['SD']} $\mu$s",
         start_sd,
         visual_durations["SD"],
