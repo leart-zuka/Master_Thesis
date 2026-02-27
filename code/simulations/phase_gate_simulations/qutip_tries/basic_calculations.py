@@ -93,14 +93,9 @@ for transmission in transmissions:
 x = transmissions
 y = np.array(fidelities)
 
-attenuations = [0.7773, 0.7778, 0.7744, 0.7731]
-attenuations_additions = [
-    attenuations[0],
-    attenuations[0] * attenuations[1],
-    attenuations[0] * attenuations[1] * attenuations[2],
-    attenuations[0] * attenuations[1] * attenuations[2] * attenuations[3],
-]
+attenuations = [0.7738, 0.7736, 0.7754, 0.7746, 0.7735, 0.7716, 0.7740, 0.7753]
 
+attenuations_additions = np.cumprod(attenuations).tolist()
 # Find max index
 idx = np.argmax(y)
 x_max = x[idx]
@@ -117,7 +112,7 @@ plt.scatter(x_max, y_max, s=80, color="red", zorder=5)
 
 # Annotate with arrow + values
 plt.annotate(
-    f"T = {x_max:.3f}\nF_proc = {y_max:.3f}",
+    f"T = {x_max:.3f}\n" + r"$F_{proc}$ = " + f"{y_max:.3f}",
     xy=(x_max, y_max),
     xytext=(x_max - 0.3 * (max(y) - min(x)), y_max - 0.08 * (max(y) - min(y))),
     arrowprops=dict(arrowstyle="->", lw=1.5),
@@ -125,14 +120,14 @@ plt.annotate(
     bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.8),
 )
 #
-for xn in attenuations_additions:
+for i, xn in enumerate(attenuations_additions):
     yn = float(np.interp(xn, x, y))
 
     plt.axvline(x=xn, color="red", linestyle="--", linewidth=1)
     plt.scatter([xn], [yn], color="red", s=40)
-
+    #
     plt.annotate(
-        f"({xn:.3f}, {yn:.3f})",
+        f"{i + 1} BWs",
         xy=(xn, yn),
         xytext=(xn + 0.005, yn + 0.01),
         fontsize=9,
