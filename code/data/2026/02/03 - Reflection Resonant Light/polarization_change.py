@@ -97,6 +97,7 @@ def plot_average_poincare_point(
         "R": (0, 0, 1),
         "L": (0, 0, -1),
     }
+    mode = mode.strip("_")
 
     for label, (x0, y0, z0) in points.items():
         # ax.scatter(x0, y0, z0, color=colors[label], s=40)
@@ -111,14 +112,16 @@ def plot_average_poincare_point(
         )
 
     # ---- Comparison (AFTER) ----
+    # H - Horizontal
     ax.scatter(
         S1_h_compare,
         S2_h_compare,
         S3_h_compare,
         color="dodgerblue",
         s=80,
-        label=f"H after {mode}",
+        label=f"H after {mode.strip('_')}",
     )
+    # V - Vertical
     ax.scatter(
         S1_v_compare,
         S2_v_compare,
@@ -127,35 +130,39 @@ def plot_average_poincare_point(
         s=80,
         label=f"V after {mode}",
     )
+    # D - Diagonal
     ax.scatter(
         S1_d_compare,
         S2_d_compare,
         S3_d_compare,
-        color="purple",
+        color="darkorchid",
         s=80,
         label=f"D after {mode}",
     )
+    # A - Anti-diagonal
     ax.scatter(
         S1_a_compare,
         S2_a_compare,
         S3_a_compare,
-        color="indigo",
+        color="forestgreen",
         s=80,
         label=f"A after {mode}",
     )
+    # R - Right Circular
     ax.scatter(
         S1_r_compare,
         S2_r_compare,
         S3_r_compare,
-        color="orange",
+        color="darkorange",
         s=80,
         label=f"R after {mode}",
     )
+    # L - Left Circular
     ax.scatter(
         S1_l_compare,
         S2_l_compare,
         S3_l_compare,
-        color="goldenrod",
+        color="deeppink",
         s=80,
         label=f"L after {mode}",
     )
@@ -169,7 +176,7 @@ def plot_average_poincare_point(
     # plt.tight_layout()
     plt.title(comparisson)
     legend = ax.legend(loc="upper right", bbox_to_anchor=(1.05, 1), frameon=False)
-    plt.savefig(f"{comparisson}.png", bbox_inches="tight", pad_inches=0.2)
+    plt.savefig(f"{comparisson}.svg", bbox_inches="tight", pad_inches=0.2)
     if show_plot:
         plt.show()
 
