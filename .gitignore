@@ -18,5 +18,8 @@ ComponentLibrary_files/
 *.run.xml
 *.synctex.gz
 *.toc
-calibration/
+data/*/calibration/*.h5
+data/*/calibration/*.xlxs
+data/*/calibration/*.pdf
+data/*/calibration/*.png
 goodAtomSelectorFiles/
