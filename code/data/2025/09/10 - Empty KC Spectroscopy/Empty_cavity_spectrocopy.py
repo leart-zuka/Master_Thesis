@@ -324,8 +324,8 @@ data_cavityR["Freq"] = data_cavityR["Freq"]  # + 0.0022
 data_cavityT["Ampl"] = data_cavityT["Ampl"] - np.mean(data_cavityT["Ampl"][0:1000])
 
 
-plt.plot(data_cavityR["Freq"], data_cavityR["Ampl"])
-plt.plot(data_cavityT["Freq"], data_cavityT["Ampl"])
+plt.plot(data_cavityR["Freq"], data_cavityR["Ampl"], rasterized=True)
+plt.plot(data_cavityT["Freq"], data_cavityT["Ampl"], rasterized=True)
 plt.show()
 # %% DATA FITTING
 list_linewidth = []
@@ -349,7 +349,7 @@ if splitting_flag == True:
     # Set fit interval symetrically around the resonance to be fit
     i = 0
     for freq in list_cavityTmax[0:50]:
-        print(freq)
+        # print(freq)
         # Set fit interval symetrically around the resonance to be fit
 
         ModeSplit = 0.001  # 00005/0008/00011
@@ -370,7 +370,7 @@ if splitting_flag == True:
         )  # *1000
         list_conversion1.append(conversion)
         # conversion = ModeSplit/2
-        print(conversion)
+        # print(conversion)
 
         linewidth = fit_emptyCavityT.best_values["k3"] * 2 / conversion * 600
         list_linewidth.append(linewidth)
@@ -387,22 +387,31 @@ if splitting_flag == True:
                 fitMin,
                 ModeSplit,
             )
-            ax2.plot((dfFitR["Freq"] - fitCR) / conversion * 600, dfFitR["Ampl"])
+            if np.mod(i, 5) == 0:
+                ax2.plot(
+                    (dfFitR["Freq"] - fitCR) / conversion * 600,
+                    dfFitR["Ampl"],
+                    rasterized=True,
+                )
+
             modCavR = lmfit.Model(reflection_cavity)
-            ax2.plot(
-                (dfFitR["Freq"] - fitCR) / conversion * 600,
-                modCavR.eval(
-                    freq=(dfFitR["Freq"] - fitCR) / conversion * 600,
-                    params=fit_emptyCavityR.params,
-                ),
-                color="r",
-                zorder=2,
-            )
+            if np.mod(i, 5) == 0:
+                ax2.plot(
+                    (dfFitR["Freq"] - fitCR) / conversion * 600,
+                    modCavR.eval(
+                        freq=(dfFitR["Freq"] - fitCR) / conversion * 600,
+                        params=fit_emptyCavityR.params,
+                        rasterized=True,
+                    ),
+                    color="r",
+                    zorder=2,
+                )
             list_MM_fc.append(fit_emptyCavityR.best_values["MM_fc"])
             list_MM_fc_phi.append(fit_emptyCavityR.best_values["phi_fc"])
             list_MM_fr.append(fit_emptyCavityR.best_values["MM_rf"])
 
-        ax1.plot((dfFit["Freq"] - fitC) / conversion * 600, dfFit["Ampl"])
+        if np.mod(i, 5) == 0:
+            ax1.plot((dfFit["Freq"] - fitC) / conversion * 600, dfFit["Ampl"])
         modCavT = lmfit.Model(transmission_cavity_mod)
 
         ax1.plot(
