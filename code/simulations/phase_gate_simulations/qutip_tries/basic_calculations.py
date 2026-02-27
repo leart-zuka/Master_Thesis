@@ -111,51 +111,62 @@ idx = np.argmax(y)
 x_max = x[idx]
 y_max = y[idx]
 
-# Plot
-# Plot
-plt.figure(figsize=(7, 5))  # Increased height slightly to accommodate title + labels
-plt.plot(x, y)
+plt.figure(figsize=(7, 5))
+plt.plot(x, y, linewidth=2)
 plt.xlabel("Total Transmission for V polarized light")
 plt.ylabel(r"$F_{process}$")
 
 # Highlight max slope point
-plt.scatter(x_max, y_max, s=80, color="red", zorder=5, marker="*")
+plt.scatter(x_max, y_max, s=120, color="red", zorder=5, marker="*", label="Optimal")
 
 # Annotate with arrow + values
-# Improved xytext logic to prevent clipping on the left
+# Use 'offset points' for xytext to make it relative and stable
 plt.annotate(
     f"T = {x_max:.3f}\n" + r"$F_{proc}$ = " + f"{y_max:.3f}",
     xy=(x_max, y_max),
-    xytext=(x_max - 0.15, y_max - 0.1),
-    arrowprops=dict(arrowstyle="->", lw=1.5, color="black"),
+    xytext=(-80, -50),
+    textcoords="offset points",
+    arrowprops=dict(
+        arrowstyle="->", connectionstyle="arc3,rad=.2", lw=1.5, color="black"
+    ),
     fontsize=10,
-    bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.8, ec="gray"),
+    fontweight="bold",
+    bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.9, ec="gray"),
 )
 
 for i, xn in enumerate(attenuations_additions):
     yn = float(np.interp(xn, x, y))
-    plt.axvline(x=xn, color="coral", linestyle="--", linewidth=1, alpha=0.7)
-    plt.scatter([xn], [yn], color="coral", s=40, zorder=4, alpha=0.7)
+    plt.axvline(x=xn, color="coral", linestyle="--", linewidth=1, alpha=0.5)
+    plt.scatter([xn], [yn], color="coral", s=40, zorder=4, alpha=0.8)
+
+    # --- STAGGERING LOGIC ---
+    # Alternate labels above and below the point to prevent overlapping at high BW counts
+    direction = 1 if i % 2 == 0 else -1
+    if i == 7:
+        direction = 1
+    y_offset = 12 * direction  # pixels
 
     plt.annotate(
         f"{i + 1} BWs",
         xy=(xn, yn),
-        xytext=(5, 5),  # 5pt offset from the point
+        xytext=(5, y_offset),
         textcoords="offset points",
         fontsize=9,
         fontweight="bold",
+        va="bottom" if direction > 0 else "top",
     )
 
 # --- THE FIXES ---
-plt.title("Process Fidelity vs V-Polarized Transmission", pad=20)
+plt.title("Process Fidelity vs V-Polarized Transmission", pad=25, fontsize=12)
 plt.grid(True, alpha=0.3)
 
-# 1. Add internal margins so labels near the edges aren't cut off
-plt.margins(x=0.1, y=0.15)
+# 1. Add internal margins: 0.15 on Y ensures the staggered labels fit inside the frame
+plt.margins(x=0.1, y=0.2)
 
-# 2. Use constrained_layout or one tight_layout call
+# 2. Use a tighter Y limit if needed to focus on the high-fidelity region
+plt.ylim(bottom=min(y) * 0.95)
+
+# 3. Final layout and save
 plt.tight_layout()
-
-# 3. Use bbox_inches="tight" during save to capture everything
-plt.savefig("./plots/attenuation_fidelity.svg", bbox_inches="tight")
+plt.savefig("./plots/attenuation_fidelity.svg", bbox_inches="tight", transparent=True)
 plt.show()
