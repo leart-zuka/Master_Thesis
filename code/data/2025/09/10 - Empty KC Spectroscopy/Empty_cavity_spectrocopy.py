@@ -414,12 +414,13 @@ if splitting_flag == True:
             ax1.plot((dfFit["Freq"] - fitC) / conversion * 600, dfFit["Ampl"])
         modCavT = lmfit.Model(transmission_cavity_mod)
 
-        ax1.plot(
-            (dfFit["Freq"] - fitC) / conversion * 600,
-            modCavT.eval(freq=dfFit["Freq"], params=fit_emptyCavityT.params),
-            color="r",
-            zorder=2,
-        )
+        if np.mod(i, 5) == 0:
+            ax1.plot(
+                (dfFit["Freq"] - fitC) / conversion * 600,
+                modCavT.eval(freq=dfFit["Freq"], params=fit_emptyCavityT.params),
+                color="r",
+                zorder=2,
+            )
 
         # plt.plot((dfFitR['Freq']-fitC)/conversion*500,
         #         reflection_cavity((dfFitR['Freq']-fitC)/conversion*500,0,0.99,0.93,68/2,58/2,0.05,0))
@@ -508,4 +509,5 @@ print(
     f"Phase shift for |0>: {np.arctan2(0, (Kappa * Gamma_5P32_5S**2 * (Kappa - 2 * Kappa_oc)))}"
 )
 plt.savefig("Normal_mode_spectroscopy.svg")
+plt.savefig("empty_mode_spectroscopy.pdf", dpi=300)
 plt.show()
