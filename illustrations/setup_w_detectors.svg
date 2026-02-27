@@ -27,9 +27,9 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="true"
-     inkscape:zoom="5.3164909"
-     inkscape:cx="324.36809"
-     inkscape:cy="372.89634"
+     inkscape:zoom="2.6582455"
+     inkscape:cx="311.10746"
+     inkscape:cy="243.95791"
      inkscape:window-width="1876"
      inkscape:window-height="1194"
      inkscape:window-x="0"
@@ -76,8 +76,8 @@
          id="stop56" /></linearGradient><rect
        x="328.81891"
        y="279.68503"
-       width="41.574804"
-       height="7.5590549"
+       width="60.582341"
+       height="8.2573389"
        id="rect14" /><marker
        style="overflow:visible"
        id="marker2"
@@ -1948,7 +1948,7 @@
            style="font-size:6.66667px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect32);display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.623622;stroke-dasharray:none;stroke-opacity:1"><tspan
              x="200.31445"
              y="418.03459"
-             id="tspan2">PBS
+             id="tspan1">PBS
 </tspan></text><path
            style="fill:#000000;fill-opacity:0;stroke:#ff10d3;stroke-width:0.165;stroke-dasharray:none;stroke-opacity:1"
            d="m 53.498416,135.9285 v 12"
@@ -1959,7 +1959,7 @@
            style="font-size:6.66667px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect14);display:inline;fill:#000000;fill-opacity:1;stroke:#ffa710;stroke-width:0.623622;stroke-opacity:0"><tspan
              x="328.81836"
              y="285.75138"
-             id="tspan3">Cavity</tspan></text><path
+             id="tspan2">Birefringent Cavity</tspan></text><path
            style="fill:url(#linearGradient56);stroke:#0028ff;stroke-width:0.165;stroke-opacity:1;fill-opacity:0;marker-end:url(#marker58)"
            d="M 87.093693,118.98398 102.49841,135.9285 H 53.498415"
            id="path1" /><g
