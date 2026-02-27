@@ -169,5 +169,5 @@ plt.ylim([0.5, 1])
 
 # 3. Final layout and save
 plt.tight_layout()
-plt.savefig("./plots/attenuation_fidelity.svg", bbox_inches="tight", transparent=True)
+plt.savefig("./plots/attenuation_fidelity.svg", bbox_inches="tight")
 # plt.show()
