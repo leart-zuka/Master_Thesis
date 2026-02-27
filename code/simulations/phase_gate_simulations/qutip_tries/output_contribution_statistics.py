@@ -1,9 +1,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-p_dark = 1e-4
-eta = 0.8
-n_bar = np.linspace(0, 10, 10000)
+p_dark = 1e-5
+dark_rate = 10
+pulse_length = 1e-6
+n_dark = pulse_length * dark_rate
+eta = 0.9 * 0.85 * 0.97
+# eta = 0.5
+n_bar = np.logspace(-7, 2, 10000)
 
 click_prob = np.zeros_like(n_bar)
 
@@ -17,15 +21,25 @@ for i, n in enumerate(n_bar):
     click_from_0 = prob_0_plus * p_dark
 
     # Case 1: 1 photon. Clicks based on detector efficiency.
-    click_from_1 = prob_1_plus * eta
+    click_from_1 = prob_1_plus * eta * (1 - p_dark)
 
     # Case 2+: Multiple photons. Clicks if at least one photon is detected.
     click_from_2 = 1 - np.exp(-eta * n) - click_from_1
 
     # 3. Total probability of the detector clicking
     click_plus = click_from_0 + click_from_1 + click_from_2
+
     click_prob[i] = (click_from_1 / click_plus) + (1 - click_from_1 / click_plus) * 0.5
+    click_prob[i] = (n * np.exp(-n) * np.exp(-p_dark)) / (
+        n * np.exp(-n) * np.exp(-p_dark) + np.exp(-n) * p_dark * np.exp(-p_dark)
+    )
+    click_prob[i] = (eta * n * np.exp(-n) * np.exp(-n_dark)) / (
+        eta * n * np.exp(-eta * n) * np.exp(-n_dark)
+        + np.exp(-eta * n) * n_dark * np.exp(-n_dark)
+    )
+    # click_prob[i] = click_plus
 
 
 plt.plot(n_bar, click_prob)
+plt.xscale("log")
 plt.show()
