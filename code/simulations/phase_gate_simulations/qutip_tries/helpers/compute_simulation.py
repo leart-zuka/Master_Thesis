@@ -179,7 +179,9 @@ def simulate(
         c_ops,
         e_ops,
         drive.args,
-        options=qt.Options(store_states=True, progress_bar="enhanced"),
+        options=qt.Options(
+            store_states=True, progress_bar="enhanced", normalize_output=False
+        ),
     )
 
     return result
@@ -597,8 +599,7 @@ def run_sim_plus_analysis_in_cnot_basis(
 
     click_from_0_plus = prob_0_plus * p_dark
     click_from_1_plus = prob_1_plus * eta
-    total_1_photon_detected_plus = (eta * c_out_plus) * np.exp(-eta * c_out_plus)
-    click_from_2_plus = max(0.0, total_1_photon_detected_plus - click_from_1_plus)
+    click_from_2_plus = max(0.0, 1 - np.exp(-eta * c_out_plus) - click_from_1_plus)
     click_plus = click_from_0_plus + click_from_1_plus + click_from_2_plus
 
     prob_0_minus = np.exp(-c_out_minus)
@@ -607,8 +608,7 @@ def run_sim_plus_analysis_in_cnot_basis(
 
     click_from_0_minus = prob_0_minus * p_dark
     click_from_1_minus = prob_1_minus * eta
-    total_1_photon_detected_minus = (eta * c_out_minus) * np.exp(-eta * c_out_minus)
-    click_from_2_minus = max(0.0, total_1_photon_detected_minus - click_from_1_minus)
+    click_from_2_minus = max(0.0, 1 - np.exp(-eta * c_out_minus) - click_from_1_minus)
     click_minus = click_from_0_minus + click_from_1_minus + click_from_2_minus
 
     P_only_plus = click_plus * (1 - click_minus)
@@ -726,8 +726,7 @@ def run_sim_plus_analysis_in_cnot_basis(
 
     click_from_0_plus = prob_0_plus * p_dark
     click_from_1_plus = prob_1_plus * eta
-    total_1_photon_detected_plus = (eta * c_out_plus) * np.exp(-eta * c_out_plus)
-    click_from_2_plus = max(0.0, total_1_photon_detected_plus - click_from_1_plus)
+    click_from_2_plus = max(0.0, 1 - np.exp(-eta * c_out_plus) - click_from_1_plus)
     click_plus = click_from_0_plus + click_from_1_plus + click_from_2_plus
 
     prob_0_minus = np.exp(-c_out_minus)
@@ -736,8 +735,7 @@ def run_sim_plus_analysis_in_cnot_basis(
 
     click_from_0_minus = prob_0_minus * p_dark
     click_from_1_minus = prob_1_minus * eta
-    total_1_photon_detected_minus = (eta * c_out_minus) * np.exp(-eta * c_out_minus)
-    click_from_2_minus = max(0.0, total_1_photon_detected_minus - click_from_1_minus)
+    click_from_2_minus = max(0.0, 1 - np.exp(-eta * c_out_minus) - click_from_1_minus)
     click_minus = click_from_0_minus + click_from_1_minus + click_from_2_minus
 
     P_only_plus = click_plus * (1 - click_minus)
@@ -828,8 +826,7 @@ def run_sim_plus_analysis_in_cnot_basis(
 
     click_from_0_plus = prob_0_plus * p_dark
     click_from_1_plus = prob_1_plus * eta
-    total_1_photon_detected_plus = (eta * c_out_plus) * np.exp(-eta * c_out_plus)
-    click_from_2_plus = max(0.0, total_1_photon_detected_plus - click_from_1_plus)
+    click_from_2_plus = max(0.0, 1 - np.exp(-eta * c_out_plus) - click_from_1_plus)
     click_plus = click_from_0_plus + click_from_1_plus + click_from_2_plus
 
     prob_0_minus = np.exp(-c_out_minus)
@@ -838,8 +835,7 @@ def run_sim_plus_analysis_in_cnot_basis(
 
     click_from_0_minus = prob_0_minus * p_dark
     click_from_1_minus = prob_1_minus * eta
-    total_1_photon_detected_minus = (eta * c_out_minus) * np.exp(-eta * c_out_minus)
-    click_from_2_minus = max(0.0, total_1_photon_detected_minus - click_from_1_minus)
+    click_from_2_minus = max(0.0, 1 - np.exp(-eta * c_out_minus) - click_from_1_minus)
     click_minus = click_from_0_minus + click_from_1_minus + click_from_2_minus
 
     P_only_plus = click_plus * (1 - click_minus)
@@ -941,8 +937,7 @@ def run_sim_plus_analysis_in_cnot_basis(
 
     click_from_0_plus = prob_0_plus * p_dark
     click_from_1_plus = prob_1_plus * eta
-    total_1_photon_detected_plus = (eta * c_out_plus) * np.exp(-eta * c_out_plus)
-    click_from_2_plus = max(0.0, total_1_photon_detected_plus - click_from_1_plus)
+    click_from_2_plus = max(0.0, 1 - np.exp(-eta * c_out_plus) - click_from_1_plus)
     click_plus = click_from_0_plus + click_from_1_plus + click_from_2_plus
 
     prob_0_minus = np.exp(-c_out_minus)
@@ -951,8 +946,7 @@ def run_sim_plus_analysis_in_cnot_basis(
 
     click_from_0_minus = prob_0_minus * p_dark
     click_from_1_minus = prob_1_minus * eta
-    total_1_photon_detected_minus = (eta * c_out_minus) * np.exp(-eta * c_out_minus)
-    click_from_2_minus = max(0.0, total_1_photon_detected_minus - click_from_1_minus)
+    click_from_2_minus = max(0.0, 1 - np.exp(-eta * c_out_minus) - click_from_1_minus)
     click_minus = click_from_0_minus + click_from_1_minus + click_from_2_minus
 
     P_only_plus = click_plus * (1 - click_minus)
@@ -1001,35 +995,6 @@ def run_sim_plus_analysis_in_cnot_basis(
             ],
         ]
     )
-    #
-    # CNOT_coherent_to_fock = np.array(
-    #     [
-    #         [
-    #             np.abs(P_operator_1_in_plus_out_plus[1][0]) ** 2,
-    #             np.abs(P_operator_1_in_minus_out_plus[1][0]) ** 2,
-    #             0,
-    #             0,
-    #         ],
-    #         [
-    #             np.abs(P_operator_1_in_plus_out_minus[1][0]) ** 2,
-    #             np.abs(P_operator_1_in_minus_out_minus[1][0]) ** 2,
-    #             0,
-    #             0,
-    #         ],
-    #         [
-    #             0,
-    #             0,
-    #             np.abs(P_operator_0_in_plus_out_plus[1][0]) ** 2,
-    #             np.abs(P_operator_0_in_minus_out_plus[1][0]) ** 2,
-    #         ],
-    #         [
-    #             0,
-    #             0,
-    #             np.abs(P_operator_0_in_plus_out_minus[1][0]) ** 2,
-    #             np.abs(P_operator_0_in_minus_out_minus[1][0]) ** 2,
-    #         ],
-    #     ]
-    # )
 
     CNOT_coherent_to_fock = np.array(
         [

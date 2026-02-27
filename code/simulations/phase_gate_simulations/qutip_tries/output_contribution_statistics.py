@@ -20,7 +20,7 @@ for i, n in enumerate(n_bar):
     click_from_1 = prob_1_plus * eta
 
     # Case 2+: Multiple photons. Clicks if at least one photon is detected.
-    click_from_2 = n * eta * np.exp(-n * eta) - click_from_1
+    click_from_2 = 1 - np.exp(-eta * n) - click_from_1
 
     # 3. Total probability of the detector clicking
     click_plus = click_from_0 + click_from_1 + click_from_2
