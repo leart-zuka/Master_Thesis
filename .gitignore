@@ -19,7 +19,8 @@ ComponentLibrary_files/
 *.synctex.gz
 *.toc
 data/*/calibration/*.h5
-data/*/calibration/*.xlxs
+data/*/calibration/*.xlsx
+data/*.pkl
 data/*/calibration/*.pdf
 data/*/calibration/*.png
 goodAtomSelectorFiles/
