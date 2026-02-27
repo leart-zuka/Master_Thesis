@@ -25,7 +25,7 @@ blocks = [
         "#c7e9c0",
     ),
     (
-        "MW $\pi$ Pulse",
+        "MW $\pi$ Pulse" + "\n" + r"$|0\rangle \leftrightarrow |1\rangle$",
         f"{real_durations['MW']} $\mu$s",
         start_mw,
         visual_durations["MW"],
