@@ -342,7 +342,7 @@ if splitting_flag == True:
     list_cavityRmin = get_min_cavityR(50, data_cavityR)
     plt.rcParams.update({"font.size": 14})
     spec_fig = plt.figure(figsize=[12, 8])
-    spec_fig.suptitle("KC empty cavity spectroscopy")
+    spec_fig.suptitle("Empty Cavity Spectroscopy")
     ax1 = spec_fig.add_subplot(2, 1, 1)
     ax2 = spec_fig.add_subplot(2, 1, 2)
     print(list_cavityTmax)
@@ -447,7 +447,7 @@ print("Linewidth = %.2f(%.2f) MHz" % (mean_linewidth, std_of_mean_linewidth))
 # print(np.std(list_linewidth))
 ax1.set_title(
     # "KC transmission with EOM sidebands @ 300 MHz\n"
-    "KC transmission \n"
+    "Transmission through Cavity \n"
     + r"Linewidth FWHM; $2\kappa$= %.2f(%.f) MHz"
     % (mean_linewidth, std_of_mean_linewidth * 100)
 )
@@ -477,7 +477,7 @@ print(
 # print(std_of_mean_linewidth)
 # print(np.std(list_linewidth))
 ax2.set_title(
-    "KC reflection \n"
+    "Reflection \n"
     + r"Mode matching fiber-cavity; $\mu_{fc}$ = %.3f(%.f)"
     % (mean_MM_fc, std_of_mean_MM_fc * 1000)
     + "\n"

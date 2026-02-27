@@ -908,8 +908,8 @@ class AtomAnalysis:
         phfig = plt.figure(figsize=[12, 8])
         phfig.suptitle(
             # filename + "\n Memory Spectroscopy with KC @ +500MHz detuning"
-            "Normal Mode Spectroscopy with KC\n"
-            + r"g: %.1f MHz $\pm$ %.1f MHz" % (popt[1], pcov[1])
+            # "Normal Mode Spectroscopy with KC\n"
+            r"g: %.1f MHz $\pm$ %.1f MHz" % (popt[1], pcov[1])
         )
         ax = phfig.add_subplot(1, 1, 1)
         ax.errorbar(
