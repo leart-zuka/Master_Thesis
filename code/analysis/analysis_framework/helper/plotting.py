@@ -178,18 +178,21 @@ def plot_gate_3d(
 
     ax.set_title(
         f"{title}\n$F = {fidelity:.2f}$",
-        fontsize=32,
-        pad=25,  # Adds space so the box doesn't overlap the plot
+        fontsize=25,
+        # 'pad' only moves it relative to the axes; 'y' moves it relative to the figure
+        y=1.15,
         bbox=dict(
-            facecolor="#e8f4f8",  # Light highlight color
-            edgecolor="dodgerblue",  # Border color
-            boxstyle="round,pad=0.4",  # Rounded corners with padding
-            linewidth=2,  # Thicker border for visibility
-            alpha=0.9,  # Slight transparency
+            facecolor="#e8f4f8",
+            edgecolor="dodgerblue",
+            boxstyle="round,pad=0.4",
+            linewidth=2,
+            alpha=0.9,
         ),
     )
 
-    plt.tight_layout()
+    # Manual adjustment to shrink the 3D 'cube' area to make room
+    plt.subplots_adjust(top=0.75, bottom=0.1)
+
     if save_fig:
-        plt.savefig(f"./{file_name}.svg")
-    plt.show()
+        # Use a high DPI and pad_inches to ensure the box is captured
+        plt.savefig(f"./{file_name}.svg", bbox_inches="tight", pad_inches=0.3)
