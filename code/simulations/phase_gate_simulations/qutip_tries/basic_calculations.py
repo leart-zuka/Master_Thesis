@@ -111,7 +111,7 @@ idx = np.argmax(y)
 x_max = x[idx]
 y_max = y[idx]
 
-plt.figure(figsize=(7, 5))
+plt.figure(figsize=(12, 8))
 plt.plot(x, y, linewidth=2)
 plt.xlabel("Total Transmission for V polarized light")
 plt.ylabel(r"$F_{process}$")
@@ -165,8 +165,9 @@ plt.margins(x=0.1, y=0.2)
 
 # 2. Use a tighter Y limit if needed to focus on the high-fidelity region
 plt.ylim(bottom=min(y) * 0.95)
+plt.ylim([0.5, 1])
 
 # 3. Final layout and save
 plt.tight_layout()
 plt.savefig("./plots/attenuation_fidelity.svg", bbox_inches="tight", transparent=True)
-plt.show()
+# plt.show()
