@@ -952,7 +952,7 @@ class AtomAnalysis:
         ax.legend(fontsize=20)
 
         plt.tight_layout(rect=[0, 0.03, 1, 0.9])
-        plt.show()
+        # plt.show()
         phfig.savefig(f"{path}/{filename}_reflection_spectrum.svg")
 
 
