@@ -6,7 +6,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-02-27T19:22:30.429912</dc:date>
+    <dc:date>2026-03-02T16:03:53.326030</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -40,7 +40,7 @@ z
    <g id="line2d_1">
     <path d="M 10.8 113.665455 
 L 709.2 113.665455 
-" clip-path="url(#pd6741d8ab5)" style="fill: none; stroke: #000000; stroke-width: 1.5; stroke-linecap: square"/>
+" clip-path="url(#p97b68c10cd)" style="fill: none; stroke: #000000; stroke-width: 1.5; stroke-linecap: square"/>
    </g>
    <g id="matplotlib.axis_1">
     <g id="text_1">
@@ -143,7 +143,7 @@ L 252.158824 113.665455
 L 252.158824 49.374545 
 L 21.070588 49.374545 
 z
-" clip-path="url(#pd6741d8ab5)" style="fill: #c7e9c0; stroke: #000000; stroke-width: 1.5; stroke-linejoin: miter"/>
+" clip-path="url(#p97b68c10cd)" style="fill: #c7e9c0; stroke: #000000; stroke-width: 1.5; stroke-linejoin: miter"/>
    </g>
    <g id="patch_4">
     <path d="M 272.7 113.665455 
@@ -151,7 +151,7 @@ L 452.435294 113.665455
 L 452.435294 49.374545 
 L 272.7 49.374545 
 z
-" clip-path="url(#pd6741d8ab5)" style="fill: #d3d3d3; stroke: #000000; stroke-width: 1.5; stroke-linejoin: miter"/>
+" clip-path="url(#p97b68c10cd)" style="fill: #d3d3d3; stroke: #000000; stroke-width: 1.5; stroke-linejoin: miter"/>
    </g>
    <g id="patch_5">
     <path d="M 472.976471 113.665455 
@@ -159,7 +159,7 @@ L 550.005882 113.665455
 L 550.005882 49.374545 
 L 472.976471 49.374545 
 z
-" clip-path="url(#pd6741d8ab5)" style="fill: #a8d5e2; stroke: #000000; stroke-width: 1.5; stroke-linejoin: miter"/>
+" clip-path="url(#p97b68c10cd)" style="fill: #a8d5e2; stroke: #000000; stroke-width: 1.5; stroke-linejoin: miter"/>
    </g>
    <g id="patch_6">
     <path d="M 570.547059 113.665455 
@@ -167,7 +167,7 @@ L 683.523529 113.665455
 L 683.523529 49.374545 
 L 570.547059 49.374545 
 z
-" clip-path="url(#pd6741d8ab5)" style="fill: #f9dcc4; stroke: #000000; stroke-width: 1.5; stroke-linejoin: miter"/>
+" clip-path="url(#p97b68c10cd)" style="fill: #f9dcc4; stroke: #000000; stroke-width: 1.5; stroke-linejoin: miter"/>
    </g>
    <g id="patch_7">
     <path d="M 10.8 152.24 
@@ -176,7 +176,7 @@ L 709.2 152.24
    </g>
    <g id="text_2">
     <!-- OP + Cooling -->
-    <g transform="translate(103.591034 78.919281) scale(0.09 -0.09)">
+    <g transform="translate(92.583143 78.052375) scale(0.12 -0.12)">
      <defs>
       <path id="DejaVuSans-Bold-4f" d="M 2719 3878 
 Q 2169 3878 1866 3472 
@@ -356,7 +356,7 @@ z
      <use xlink:href="#DejaVuSans-Bold-67" transform="translate(662.255859 0)"/>
     </g>
     <!-- (600 $\mu$s) -->
-    <g transform="translate(115.959706 89.069312) scale(0.09 -0.09)">
+    <g transform="translate(109.074706 91.58575) scale(0.12 -0.12)">
      <defs>
       <path id="DejaVuSans-Bold-28" d="M 2413 -844 
 L 1484 -844 
@@ -511,7 +511,7 @@ z
    </g>
    <g id="text_3">
     <!-- MW $\pi$ Pulse -->
-    <g transform="translate(333.497647 73.716437) scale(0.09 -0.09)">
+    <g transform="translate(323.807647 71.11525) scale(0.12 -0.12)">
      <defs>
       <path id="DejaVuSans-Bold-4d" d="M 588 4666 
 L 2119 4666 
@@ -604,7 +604,7 @@ z
      <use xlink:href="#DejaVuSans-Bold-65" transform="translate(577.929688 0.015625)"/>
     </g>
     <!-- $|0\rangle \leftrightarrow |1\rangle$ -->
-    <g transform="translate(344.747647 83.904156) scale(0.09 -0.09)">
+    <g transform="translate(338.807647 84.698875) scale(0.12 -0.12)">
      <defs>
       <path id="DejaVuSans-7c" d="M 1344 4891 
 L 1344 -1509 
@@ -686,7 +686,7 @@ z
      <use xlink:href="#DejaVuSans-27e9" transform="translate(356.396484 0.578125)"/>
     </g>
     <!-- (30 $\mu$s) -->
-    <g transform="translate(345.062647 94.272156) scale(0.09 -0.09)">
+    <g transform="translate(339.227647 98.522875) scale(0.12 -0.12)">
      <defs>
       <path id="DejaVuSans-Bold-33" d="M 2981 2516 
 Q 3453 2394 3698 2092 
@@ -732,7 +732,7 @@ z
    </g>
    <g id="text_4">
     <!-- Photon -->
-    <g transform="translate(493.451801 78.954437) scale(0.09 -0.09)">
+    <g transform="translate(487.438676 78.09925) scale(0.12 -0.12)">
      <defs>
       <path id="DejaVuSans-Bold-68" d="M 4056 2131 
 L 4056 0 
@@ -786,7 +786,7 @@ z
      <use xlink:href="#DejaVuSans-Bold-6e" transform="translate(329.6875 0)"/>
     </g>
     <!-- (1 $\mu$s) -->
-    <g transform="translate(497.136176 89.034156) scale(0.09 -0.09)">
+    <g transform="translate(492.351176 91.538875) scale(0.12 -0.12)">
      <defs>
       <path id="DejaVuSans-Bold-31" d="M 750 831 
 L 1813 831 
@@ -813,7 +813,7 @@ z
    </g>
    <g id="text_5">
     <!-- State Detection -->
-    <g transform="translate(587.189903 78.954437) scale(0.09 -0.09)">
+    <g transform="translate(573.908107 78.09925) scale(0.12 -0.12)">
      <defs>
       <path id="DejaVuSans-Bold-53" d="M 3834 4519 
 L 3834 3531 
@@ -941,7 +941,7 @@ z
      <use xlink:href="#DejaVuSans-Bold-6e" transform="translate(814.257812 0)"/>
     </g>
     <!-- (7 $\mu$s) -->
-    <g transform="translate(612.680294 89.034156) scale(0.09 -0.09)">
+    <g transform="translate(607.895294 91.538875) scale(0.12 -0.12)">
      <defs>
       <path id="DejaVuSans-Bold-37" d="M 428 4666 
 L 3944 4666 
@@ -965,7 +965,7 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="pd6741d8ab5">
+  <clipPath id="p97b68c10cd">
    <rect x="10.8" y="10.8" width="698.4" height="141.44"/>
   </clipPath>
  </defs>

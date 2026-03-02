@@ -67,7 +67,7 @@ for label, time_val, start, v_dur, color in blocks:
         f"{label}\n({time_val})",
         ha="center",
         va="center",
-        fontsize=9,
+        fontsize=12,
         fontweight="bold",
     )
 
