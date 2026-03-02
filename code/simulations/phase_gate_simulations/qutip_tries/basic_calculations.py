@@ -145,16 +145,26 @@ for i, xn in enumerate(attenuations_additions):
     if i == 7:
         direction = 1
     y_offset = 12 * direction  # pixels
-
-    plt.annotate(
-        f"{i + 1} BWs",
-        xy=(xn, yn),
-        xytext=(5, y_offset),
-        textcoords="offset points",
-        fontsize=9,
-        fontweight="bold",
-        va="bottom" if direction > 0 else "top",
-    )
+    if i == 7:
+        plt.annotate(
+            f"{i + 1} BWs",
+            xy=(xn, yn),
+            xytext=(-10, y_offset),
+            textcoords="offset points",
+            fontsize=14,
+            fontweight="bold",
+            va="bottom" if direction > 0 else "top",
+        )
+    else:
+        plt.annotate(
+            f"{i + 1} BWs",
+            xy=(xn, yn),
+            xytext=(5, y_offset),
+            textcoords="offset points",
+            fontsize=14,
+            fontweight="bold",
+            va="bottom" if direction > 0 else "top",
+        )
 
 # --- THE FIXES ---
 # plt.title("Process Fidelity vs V-Polarized Transmission", pad=25, fontsize=12)
