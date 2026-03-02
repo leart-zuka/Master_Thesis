@@ -2406,8 +2406,8 @@ if __name__ == "__main__":
             color=analysis.colour["blueDark"],
             capsize=3,
         )
-        ax1.set_xlabel("Microwave pulse duration ($\mathrm{\mu}$s)")
-        ax1.set_ylabel(r"$\mathrm{P}\left(\left|F=2\right\rangle\right)$")
+        ax1.set_xlabel("Microwave pulse duration ($\mathrm{\mu}$s)", fontsize=20)
+        ax1.set_ylabel(r"$\mathrm{P}\left(\left|F=2\right\rangle\right)$", fontsize=20)
         ax1.tick_params(labelsize=20, direction="inout")
         # ax1.grid()
         ax1.set_ylim([0, 1])
