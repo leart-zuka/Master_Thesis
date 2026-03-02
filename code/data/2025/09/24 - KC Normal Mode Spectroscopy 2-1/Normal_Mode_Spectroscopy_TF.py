@@ -943,16 +943,17 @@ class AtomAnalysis:
         #     linewidth=3,
         #     linestyle="-.",
         # )
-        ax.set_ylabel("Reflection (a.u.)")
-        ax.legend()
-        ax.set_xlabel(r"Detuning $\Delta$ (MHz)")
-        plt.tight_layout()
+        ax.set_ylabel("Reflection (a.u.)", fontsize=28, labelpad=15)
+        ax.set_xlabel(r"Detuning $\Delta$ (MHz)", fontsize=28, labelpad=15)
+
+        ax.tick_params(axis="both", which="major", labelsize=24, width=2, length=10)
+
+        # Increase legend size to match
+        ax.legend(fontsize=20)
+
+        plt.tight_layout(rect=[0, 0.03, 1, 0.9])
         plt.show()
         phfig.savefig(f"{path}/{filename}_reflection_spectrum.svg")
-        # with open("data_from_fit.csv", "w") as file:
-        #     file.write("x,y\n")
-        #     for i in range(len(freq_NMS)):
-        #         file.write(f"{freq_NMS[i]},{R_coupled(freq_NMS[i], *popt)}\n")
 
 
 if __name__ == "__main__":
