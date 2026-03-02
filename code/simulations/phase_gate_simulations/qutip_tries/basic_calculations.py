@@ -113,8 +113,8 @@ y_max = y[idx]
 
 plt.figure(figsize=(12, 8))
 plt.plot(x, y, linewidth=2)
-plt.xlabel("Total Transmission for V polarized light")
-plt.ylabel(r"$F_{process}$")
+plt.xlabel("Total Transmission for V polarized light", fontsize=24)
+plt.ylabel(r"$F_{process}$", fontsize=24)
 
 # Highlight max slope point
 plt.scatter(x_max, y_max, s=120, color="red", zorder=5, marker="*", label="Optimal")
@@ -157,8 +157,8 @@ for i, xn in enumerate(attenuations_additions):
     )
 
 # --- THE FIXES ---
-plt.title("Process Fidelity vs V-Polarized Transmission", pad=25, fontsize=12)
-plt.grid(True, alpha=0.3)
+# plt.title("Process Fidelity vs V-Polarized Transmission", pad=25, fontsize=12)
+# plt.grid(True, alpha=0.3)
 
 # 1. Add internal margins: 0.15 on Y ensures the staggered labels fit inside the frame
 plt.margins(x=0.1, y=0.2)
