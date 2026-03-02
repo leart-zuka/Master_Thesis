@@ -2385,11 +2385,10 @@ if __name__ == "__main__":
         print(report[index + len("[[Variables]]") :])
         print()
         fig1.suptitle(
-            # filename
-            # + report[index + len("[[Variables]]") :]
-            r"Pi MW pulse on $|F=1,m_F=0\rangle \leftrightarrow |F=2,m_F=0\rangle$ Transition"
-            + "\n"
-            + "Length = %.1f us" % (pipulse * 1e3)
+            r"Hyperfine Clock $\pi$-Pulse ($\tau = %.1f\ \mu\mathrm{s}$)"
+            % (pipulse * 1e3),
+            fontsize=20,
+            # va="bottom",
         )
         ax1 = fig1.add_subplot(1, 1, 1)
         ax1.plot(
@@ -2413,9 +2412,10 @@ if __name__ == "__main__":
         # ax1.grid()
         ax1.set_ylim([0, 1])
         ax1.set_xlim([0, 233])
+        fig1.tight_layout()
 
         fig1.savefig(path + "\\" + fig1.get_label() + ".pdf")
         fig1.savefig(path + "\\" + fig1.get_label() + ".png")
         fig1.savefig(path + "/" + "rabi_flop.svg")
 
-        plt.show(block=True)
+        # plt.show(block=True)
