@@ -115,6 +115,7 @@ plt.figure(figsize=(12, 8))
 plt.plot(x, y, linewidth=2)
 plt.xlabel("Total Transmission for V polarized light", fontsize=24)
 plt.ylabel(r"$F_{process}$", fontsize=24)
+plt.tick_params(axis="both", which="major", labelsize=20, length=10, width=2)
 
 # Highlight max slope point
 plt.scatter(x_max, y_max, s=120, color="red", zorder=5, marker="*", label="Optimal")
