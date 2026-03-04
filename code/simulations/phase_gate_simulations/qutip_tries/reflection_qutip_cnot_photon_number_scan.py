@@ -35,7 +35,7 @@ atom = AtomSystem(
 )
 
 cavity = CavitySystem(
-    photon_dim=4,
+    photon_dim=3,
     atom_dim=4,
     Delta_c_pi=2 * np.pi * 0,
     Delta_c_v=2 * np.pi * 0.5,
@@ -56,7 +56,7 @@ psi_1 = states.psi_atom_1()
 c_ops = dissipation.collapse_operators()
 e_ops = observables.expectation_ops()
 
-photon_numbers = np.logspace(-5, 2, 50)
+photon_numbers = np.logspace(-5, 2, 20)
 fidelities = np.zeros_like(photon_numbers)
 fidelities_analytical = np.zeros_like(photon_numbers)
 fidelities_pure_sim = np.zeros_like(photon_numbers)
@@ -87,7 +87,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     cavity = CavitySystem(
-        photon_dim=4,
+        photon_dim=3,
         atom_dim=4,
         Delta_c_pi=2 * np.pi * 0,
         Delta_c_v=2 * np.pi * 0.5,
@@ -191,7 +191,7 @@ if __name__ == "__main__":
     x_max = photon_numbers[idx]
     y_max = other_fidelities[idx]
     plt.annotate(
-        f"T = {x_max:.3f}\nF_signal = {y_max:.3f}",
+        r"$\overline{n} = $" + f"{x_max:.3f}\nF = {y_max:.3f}",
         xy=(x_max, y_max),
         xytext=(
             x_max,
@@ -201,7 +201,7 @@ if __name__ == "__main__":
         fontsize=10,
         bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.8),
     )
-    photon_numbers_fig.savefig("./plots/photon_numbers.svg")
+    # photon_numbers_fig.savefig("./plots/photon_numbers.svg")
 
     atomic_scattering = plt.figure()
     plt.plot(
@@ -214,7 +214,7 @@ if __name__ == "__main__":
     plt.xscale("log")
     plt.ylabel("P(|1>)")
     plt.title("Atomic Scattering vs. Photon Numbers")
-    atomic_scattering.savefig("./plots/atomic_scattering.svg")
+    # atomic_scattering.savefig("./plots/atomic_scattering.svg")
 
     # --- Configuration ---
     # With photon_dim=4, the simulation begins to lose accuracy at n_bar ~ 1
@@ -264,5 +264,5 @@ if __name__ == "__main__":
     plt.title("Comparison: Logic Failure vs. System Saturation")
     plt.grid(True, which="both", ls="-", alpha=0.1)
 
-    comparisson.savefig("./plots/comparisson_masked.svg")
+    # comparisson.savefig("./plots/comparisson_masked.svg")
     plt.show()
