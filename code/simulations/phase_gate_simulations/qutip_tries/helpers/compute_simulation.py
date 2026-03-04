@@ -584,58 +584,21 @@ def run_sim_plus_analysis_in_cnot_basis(
         Kappa_oc=cavity.Kappa_oc,
     )
 
-    c_out_plus = np.sum(np.abs(out_plus) ** 2) * dt
-    c_out_minus = np.sum(np.abs(out_minus) ** 2) * dt
-    # P_operator_0_in_plus_out_plus = qt.coherent(10, np.abs(c_out_plus) ** 2)
-    # P_operator_0_in_plus_out_minus = qt.coherent(10, np.abs(c_out_minus) ** 2)
-    # P_operator_0_in_plus_out_plus = c_out_plus * np.exp(-c_out_plus)
-    # P_operator_0_in_plus_out_minus = c_out_minus * np.exp(-c_out_minus)
-    p_dark = 1e-4
+    p_dc = 1e-4
     eta = 0.9 * 0.85 * 0.97
 
-    prob_0_plus = np.exp(-c_out_plus)
-    prob_1_plus = c_out_plus * np.exp(-c_out_plus)
-    prob_2_plus = max(0.0, 1 - prob_0_plus - prob_1_plus)
+    n_out_plus = np.sum(np.abs(out_plus) ** 2) * dt
+    n_out_minus = np.sum(np.abs(out_minus) ** 2) * dt
 
-    click_from_0_plus = prob_0_plus * p_dark
-    click_from_1_plus = prob_1_plus * eta
-    click_from_2_plus = max(0.0, 1 - np.exp(-eta * c_out_plus) - click_from_1_plus)
-    click_plus = click_from_0_plus + click_from_1_plus + click_from_2_plus
+    l_plus = n_out_plus * eta
+    l_minus = n_out_minus * eta
 
-    prob_0_minus = np.exp(-c_out_minus)
-    prob_1_minus = c_out_minus * np.exp(-c_out_minus)
-    prob_2_minus = max(0.0, 1 - prob_0_minus - prob_1_minus)
+    P_SNR = (l_plus + l_minus) / (l_plus + l_minus + 2 * p_dc)
+    R_plus = n_out_plus / (n_out_plus + n_out_minus)
+    R_minus = n_out_minus / (n_out_plus + n_out_minus)
 
-    click_from_0_minus = prob_0_minus * p_dark
-    click_from_1_minus = prob_1_minus * eta
-    click_from_2_minus = max(0.0, 1 - np.exp(-eta * c_out_minus) - click_from_1_minus)
-    click_minus = click_from_0_minus + click_from_1_minus + click_from_2_minus
-
-    P_only_plus = click_plus * (1 - click_minus)
-    P_only_minus = click_minus * (1 - click_plus)
-    P_both = click_plus * click_minus
-    P_valid_click = P_only_plus + P_only_minus + P_both
-
-    P_pure_plus = click_from_1_plus * (1 - click_minus)
-    P_pure_minus = click_from_1_minus * (1 - click_plus)
-    P_total_pure = P_pure_plus + P_pure_minus
-
-    P_signal = P_total_pure / P_valid_click
-    P_noise = 1.0 - P_signal
-
-    dist_plus = P_pure_plus / P_total_pure
-    dist_minus = P_pure_minus / P_total_pure
-
-    P_operator_0_in_plus_out_plus = (P_signal * dist_plus) + (P_noise * 0.5)
-    P_operator_0_in_plus_out_minus = (P_signal * dist_minus) + (P_noise * 0.5)
-
-    # P_operator_0_in_plus_out_plus = (click_from_1_plus / click_plus) + (
-    #     1 - click_from_1_plus / click_plus
-    # ) * 0.5
-    # P_operator_0_in_plus_out_minus = (click_from_1_minus / click_minus) + (
-    #     1 - click_from_1_minus / click_minus
-    # ) * 0.5
-    #
+    P_operator_0_in_plus_out_plus = (P_SNR * R_plus) + ((1 - P_SNR) * 0.5)
+    P_operator_0_in_plus_out_minus = (P_SNR * R_minus) + ((1 - P_SNR) * 0.5)
 
     P0_0_plus = out_0_plus.e_data["P(0)"][-1]
     P0_1_plus = out_0_plus.e_data["P(1)"][-1]
@@ -708,53 +671,18 @@ def run_sim_plus_analysis_in_cnot_basis(
         Kappa_oc=cavity.Kappa_oc,
     )
 
-    # c_out_plus = np.sum(np.conj(f_ideal) * out_plus) * dt
-    # P_operator_0_in_minus_out_plus = qt.coherent(10, np.abs(c_out_plus) ** 2)
-    # c_out_minus = np.sum(np.conj(f_ideal) * out_minus) * dt
-    # P_operator_0_in_minus_out_minus = qt.coherent(10, np.abs(c_out_minus) ** 2)
-    #
-    c_out_plus = np.sum(np.abs(out_plus) ** 2) * dt
-    c_out_minus = np.sum(np.abs(out_minus) ** 2) * dt
-    # P_operator_0_in_plus_out_plus = qt.coherent(10, np.abs(c_out_plus) ** 2)
-    # P_operator_0_in_plus_out_minus = qt.coherent(10, np.abs(c_out_minus) ** 2)
-    # P_operator_0_in_minus_out_plus = c_out_plus * np.exp(-c_out_plus)
-    # P_operator_0_in_minus_out_minus = c_out_minus * np.exp(-c_out_minus)
+    n_out_plus = np.sum(np.abs(out_plus) ** 2) * dt
+    n_out_minus = np.sum(np.abs(out_minus) ** 2) * dt
 
-    prob_0_plus = np.exp(-c_out_plus)
-    prob_1_plus = c_out_plus * np.exp(-c_out_plus)
-    prob_2_plus = max(0.0, 1 - prob_0_plus - prob_1_plus)
+    l_plus = n_out_plus * eta
+    l_minus = n_out_minus * eta
 
-    click_from_0_plus = prob_0_plus * p_dark
-    click_from_1_plus = prob_1_plus * eta
-    click_from_2_plus = max(0.0, 1 - np.exp(-eta * c_out_plus) - click_from_1_plus)
-    click_plus = click_from_0_plus + click_from_1_plus + click_from_2_plus
+    P_SNR = (l_plus + l_minus) / (l_plus + l_minus + 2 * p_dc)
+    R_plus = n_out_plus / (n_out_plus + n_out_minus)
+    R_minus = n_out_minus / (n_out_plus + n_out_minus)
 
-    prob_0_minus = np.exp(-c_out_minus)
-    prob_1_minus = c_out_minus * np.exp(-c_out_minus)
-    prob_2_minus = max(0.0, 1 - prob_0_minus - prob_1_minus)
-
-    click_from_0_minus = prob_0_minus * p_dark
-    click_from_1_minus = prob_1_minus * eta
-    click_from_2_minus = max(0.0, 1 - np.exp(-eta * c_out_minus) - click_from_1_minus)
-    click_minus = click_from_0_minus + click_from_1_minus + click_from_2_minus
-
-    P_only_plus = click_plus * (1 - click_minus)
-    P_only_minus = click_minus * (1 - click_plus)
-    P_both = click_plus * click_minus
-    P_valid_click = P_only_plus + P_only_minus + P_both
-
-    P_pure_plus = click_from_1_plus * (1 - click_minus)
-    P_pure_minus = click_from_1_minus * (1 - click_plus)
-    P_total_pure = P_pure_plus + P_pure_minus
-
-    P_signal = P_total_pure / P_valid_click
-    P_noise = 1.0 - P_signal
-
-    dist_plus = P_pure_plus / P_total_pure
-    dist_minus = P_pure_minus / P_total_pure
-
-    P_operator_0_in_minus_out_plus = (P_signal * dist_plus) + (P_noise * 0.5)
-    P_operator_0_in_minus_out_minus = (P_signal * dist_minus) + (P_noise * 0.5)
+    P_operator_0_in_minus_out_plus = (P_SNR * R_plus) + ((1 - P_SNR) * 0.5)
+    P_operator_0_in_minus_out_minus = (P_SNR * R_minus) + ((1 - P_SNR) * 0.5)
 
     out_1_in_plus_out_pi = compute_output_field(
         input_field=field_in / np.sqrt(2),
@@ -808,53 +736,18 @@ def run_sim_plus_analysis_in_cnot_basis(
         Kappa_oc=cavity.Kappa_oc,
     )
 
-    c_out_plus = np.sum(np.conj(f_ideal) * out_plus) * dt
-    P_operator_1_in_plus_out_plus = qt.coherent(10, np.abs(c_out_plus) ** 2)
-    c_out_minus = np.sum(np.conj(f_ideal) * out_minus) * dt
-    P_operator_1_in_plus_out_minus = qt.coherent(10, np.abs(c_out_minus) ** 2)
+    n_out_plus = np.sum(np.abs(out_plus) ** 2) * dt
+    n_out_minus = np.sum(np.abs(out_minus) ** 2) * dt
 
-    c_out_plus = np.sum(np.abs(out_plus) ** 2) * dt
-    c_out_minus = np.sum(np.abs(out_minus) ** 2) * dt
-    # P_operator_0_in_plus_out_plus = qt.coherent(10, np.abs(c_out_plus) ** 2)
-    # P_operator_0_in_plus_out_minus = qt.coherent(10, np.abs(c_out_minus) ** 2)
-    # P_operator_1_in_plus_out_plus = c_out_plus * np.exp(-c_out_plus)
-    # P_operator_1_in_plus_out_minus = c_out_minus * np.exp(-c_out_minus)
+    l_plus = n_out_plus * eta
+    l_minus = n_out_minus * eta
 
-    prob_0_plus = np.exp(-c_out_plus)
-    prob_1_plus = c_out_plus * np.exp(-c_out_plus)
-    prob_2_plus = max(0.0, 1 - prob_0_plus - prob_1_plus)
+    P_SNR = (l_plus + l_minus) / (l_plus + l_minus + 2 * p_dc)
+    R_plus = n_out_plus / (n_out_plus + n_out_minus)
+    R_minus = n_out_minus / (n_out_plus + n_out_minus)
 
-    click_from_0_plus = prob_0_plus * p_dark
-    click_from_1_plus = prob_1_plus * eta
-    click_from_2_plus = max(0.0, 1 - np.exp(-eta * c_out_plus) - click_from_1_plus)
-    click_plus = click_from_0_plus + click_from_1_plus + click_from_2_plus
-
-    prob_0_minus = np.exp(-c_out_minus)
-    prob_1_minus = c_out_minus * np.exp(-c_out_minus)
-    prob_2_minus = max(0.0, 1 - prob_0_minus - prob_1_minus)
-
-    click_from_0_minus = prob_0_minus * p_dark
-    click_from_1_minus = prob_1_minus * eta
-    click_from_2_minus = max(0.0, 1 - np.exp(-eta * c_out_minus) - click_from_1_minus)
-    click_minus = click_from_0_minus + click_from_1_minus + click_from_2_minus
-
-    P_only_plus = click_plus * (1 - click_minus)
-    P_only_minus = click_minus * (1 - click_plus)
-    P_both = click_plus * click_minus
-    P_valid_click = P_only_plus + P_only_minus + P_both
-
-    P_pure_plus = click_from_1_plus * (1 - click_minus)
-    P_pure_minus = click_from_1_minus * (1 - click_plus)
-    P_total_pure = P_pure_plus + P_pure_minus
-
-    P_signal = P_total_pure / P_valid_click
-    P_noise = 1.0 - P_signal
-
-    dist_plus = P_pure_plus / P_total_pure
-    dist_minus = P_pure_minus / P_total_pure
-
-    P_operator_1_in_plus_out_plus = (P_signal * dist_plus) + (P_noise * 0.5)
-    P_operator_1_in_plus_out_minus = (P_signal * dist_minus) + (P_noise * 0.5)
+    P_operator_1_in_plus_out_plus = (P_SNR * R_plus) + ((1 - P_SNR) * 0.5)
+    P_operator_1_in_plus_out_minus = (P_SNR * R_minus) + ((1 - P_SNR) * 0.5)
 
     out_1_in_minus_out_pi = compute_output_field(
         input_field=-field_in / np.sqrt(2),
@@ -919,53 +812,18 @@ def run_sim_plus_analysis_in_cnot_basis(
         Kappa_oc=cavity.Kappa_oc,
     )
 
-    c_out_plus = np.sum(np.conj(f_ideal) * out_plus) * dt
-    P_operator_1_in_minus_out_plus = qt.coherent(10, np.abs(c_out_plus) ** 2)
-    c_out_minus = np.sum(np.conj(f_ideal) * out_minus) * dt
-    P_operator_1_in_minus_out_minus = qt.coherent(10, np.abs(c_out_minus) ** 2)
+    n_out_plus = np.sum(np.abs(out_plus) ** 2) * dt
+    n_out_minus = np.sum(np.abs(out_minus) ** 2) * dt
 
-    c_out_plus = np.sum(np.abs(out_plus) ** 2) * dt
-    c_out_minus = np.sum(np.abs(out_minus) ** 2) * dt
-    # P_operator_0_in_plus_out_plus = qt.coherent(10, np.abs(c_out_plus) ** 2)
-    # P_operator_0_in_plus_out_minus = qt.coherent(10, np.abs(c_out_minus) ** 2)
-    # P_operator_1_in_minus_out_plus = c_out_plus * np.exp(-c_out_plus)
-    # P_operator_1_in_minus_out_minus = c_out_minus * np.exp(-c_out_minus)
+    l_plus = n_out_plus * eta
+    l_minus = n_out_minus * eta
 
-    prob_0_plus = np.exp(-c_out_plus)
-    prob_1_plus = c_out_plus * np.exp(-c_out_plus)
-    prob_2_plus = max(0.0, 1 - prob_0_plus - prob_1_plus)
+    P_SNR = (l_plus + l_minus) / (l_plus + l_minus + 2 * p_dc)
+    R_plus = n_out_plus / (n_out_plus + n_out_minus)
+    R_minus = n_out_minus / (n_out_plus + n_out_minus)
 
-    click_from_0_plus = prob_0_plus * p_dark
-    click_from_1_plus = prob_1_plus * eta
-    click_from_2_plus = max(0.0, 1 - np.exp(-eta * c_out_plus) - click_from_1_plus)
-    click_plus = click_from_0_plus + click_from_1_plus + click_from_2_plus
-
-    prob_0_minus = np.exp(-c_out_minus)
-    prob_1_minus = c_out_minus * np.exp(-c_out_minus)
-    prob_2_minus = max(0.0, 1 - prob_0_minus - prob_1_minus)
-
-    click_from_0_minus = prob_0_minus * p_dark
-    click_from_1_minus = prob_1_minus * eta
-    click_from_2_minus = max(0.0, 1 - np.exp(-eta * c_out_minus) - click_from_1_minus)
-    click_minus = click_from_0_minus + click_from_1_minus + click_from_2_minus
-
-    P_only_plus = click_plus * (1 - click_minus)
-    P_only_minus = click_minus * (1 - click_plus)
-    P_both = click_plus * click_minus
-    P_valid_click = P_only_plus + P_only_minus + P_both
-
-    P_pure_plus = click_from_1_plus * (1 - click_minus)
-    P_pure_minus = click_from_1_minus * (1 - click_plus)
-    P_total_pure = P_pure_plus + P_pure_minus
-
-    P_signal = P_total_pure / P_valid_click
-    P_noise = 1.0 - P_signal
-
-    dist_plus = P_pure_plus / P_total_pure
-    dist_minus = P_pure_minus / P_total_pure
-
-    P_operator_1_in_minus_out_plus = (P_signal * dist_plus) + (P_noise * 0.5)
-    P_operator_1_in_minus_out_minus = (P_signal * dist_minus) + (P_noise * 0.5)
+    P_operator_1_in_minus_out_plus = (P_SNR * R_plus) + ((1 - P_SNR) * 0.5)
+    P_operator_1_in_minus_out_minus = (P_SNR * R_minus) + ((1 - P_SNR) * 0.5)
 
     CNOT = np.array(
         [
