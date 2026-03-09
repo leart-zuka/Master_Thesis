@@ -1,0 +1,34 @@
+\section{Reflection from a Cavity-Atom System}
+
+For us it's important that the information we send in via the photon, won't get lost and will get reflected, thus ensuring that our atom-photon gate is suitable for quantum information processing. Therefor when the light enters our cavity, one must ensure by using proper system parameters that the light has maximum transmission through the first cavity mirror (called outcoupling (OC) mirror) relative to the opposing highly reflective (HR) mirror. The highly reflective mirror on the other hand must have maximum reflection so that the information stored in the photon doesn't get lost after subsequent bounces inside the cavity while it's trying to exit via the outcoupling mirror. The total losses can thus be divided into the following parts:
+
+\begin{equation}
+    \kappa = \kappa_{oc} + \kappa_{HR} + \kappa_{paras}
+\end{equation}
+
+The escape probability of our photon is defined by the outcoupling ratio $\frac{\kappa_{oc}}{\kappa}$. This quantity was measured and is $\sim 80\%$.
+
+Another quantity is the optical mode matching between the reflected light at the first cavity and the incoming light ($\mu_{fr}$) aswell as the optical modes of the incoming light and the optical mode inside of the cavity ($\mu_{fc}$).
+
+
+\subsection{Input-Output Theory}
+
+
+Our photon that is going to be reflected off of our cavity system can be viewed as an input field. This then can be linked to an output field via input-output formalism.
+When driving the system only from one side, as it is the case here, the relation between input and output becomes:\cite{GardinerColletIO1985}
+
+\begin{equation}
+    a_{out}(t) = \mu_{fr}a_{in}(t) + \mu_{fc}\sqrt{\kappa_{oc}}\langle a\rangle(t)
+    \label{eq:io_theory}
+\end{equation}
+
+Here \eqref{eq:io_theory} was adjusted to also consider the mode matching parameters. Solving Langevin equations for neglidgable atomic excitation and photonic wave envelopes which vary only on a time scale longer than $\kappa$, one can write down the analytical representation of the reflection amplitude\cite{HuEtAl2008,TieckeEtAl2014,DominikNThesis2021}:
+
+\begin{equation}
+    r(\omega) = \mu_{fr} - \mu_{fc}^2 \frac{2\kappa_{oc}(i\Delta_a + \gamma)}{(i\Delta_c+\kappa)(i\Delta_a+\gamma) + g^2}
+    \label{eq:analytical_reflection}
+\end{equation}
+
+The reflection amplitude in \eqref{eq:analytical_reflection} depends on the detuning $\Delta_{c,a} = \omega - \omega_{c,a}$ between the driving laser frequency and the cavity resonance frequency $\omega_c$ or atomic transition frequency $\omega_a$.
+
+\notetome{Include reflection spectrum for different detunings and also phase across different detunings}
