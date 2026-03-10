@@ -1,14 +1,35 @@
 \chapter{Experimental Setup}
 
-This chapter will go through the experimental setup that was used to construct the atom-photon gate, and the reasoning behind some components that were chosen due to achieve the highest fidelity.
+The system uses a single $^{87}\text{Rb}$ coupled to a birefringent Fabry-Perot cavity inside of an ultra-high vacuum (UHV) chamber. The smaller optical beam path used for the realization of the atom-photon gate, is part of a much larger setup which uses two Fabry-Perot cavities in an X formation, thus giving it the name \textit{CavityX}. For the atom-photon gate, parts of the setup like the magneto optical trap, the 850nm red-detuned trap laser, and the microwave antennas integrated into the UHV chamber, are crucial. Other components, most notably the second cavity, is not within the scope of this thesis, but will be discussed in the outlook.
 
-\section{Overview of the beam path}
+\section{CavityX setup}
 
-\section{Birefringent Cavity}
-\subsection{Cavity Geometry and Birefringence}
-\subsection{Cavity Spectroscopy}
+\subsection{Cavity system}
+
+\notetome{Write stuff about how they were built, the shape of the KC, and then show plots regarding the birefringence and stuff}
+
+\subsection{Trapping of a singular atom}
+
+\notetome{Talk about the MOT how it creates an atomic cloud, and after shutting off the MOT all of the atoms in the cloud then fall down due to gravity, and a single atom gets trapped by the trap laser, we know it's one due to fluorescence counts, and then we can precisely move the atom via galvo scanner}
+
+\section{Atomic-state preparation}
+
+\notetome{Talk about zeeman pumping for 2-2' and then the second zeeman pumper for 1-1', and also the microwave antennas used to drive the transitions of the D2 groud-state manifold}
+
+\section{Laser-beam preparation}
+
+\notetome{Talk about the AOM track (maybe just include an image (still need to fucking create it)) and the actual beam path (connect the two via fiber)}
+
+\begin{figure}[h]
+    \centering
+    \includesvg[inkscapelatex=false]{Figures/setup/setup_w_detectors.svg}
+\end{figure}
+
 
 \section{Polarization Management and Loss Compensation}
+
+\notetome{Talk about how we used dichroic mirrors before but polarization dependent losses fucked me over so I had to switch to pellicle. Then also argue why we use brewster plates, because atom-cavity system has polarization dependent losses and we need to "fix" them}
+
 \subsection{Brewster Plate Array}
 \subsubsection{Custom Brewster Plate Mount}
 \subsubsection{Calibration of Brewster Plates}
