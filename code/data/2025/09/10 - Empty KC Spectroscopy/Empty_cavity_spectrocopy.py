@@ -342,7 +342,7 @@ if splitting_flag == True:
     list_cavityRmin = get_min_cavityR(50, data_cavityR)
     plt.rcParams.update({"font.size": 14})
     spec_fig = plt.figure(figsize=[12, 8])
-    spec_fig.suptitle("Empty Cavity Spectroscopy")
+    # spec_fig.suptitle("Empty Cavity Spectroscopy")
     ax1 = spec_fig.add_subplot(2, 1, 1)
     ax2 = spec_fig.add_subplot(2, 1, 2)
     print(list_cavityTmax)
@@ -425,9 +425,9 @@ if splitting_flag == True:
         # plt.plot((dfFitR['Freq']-fitC)/conversion*500,
         #         reflection_cavity((dfFitR['Freq']-fitC)/conversion*500,0,0.99,0.93,68/2,58/2,0.05,0))
 
-        ax1.set_ylabel("Intensity (a.u.)")
-        ax2.set_xlabel("Frequency (MHz)")
-        ax2.set_ylabel("Intensity (a.u.)")
+        ax1.set_ylabel("Intensity (a.u.)", fontsize=20)
+        ax2.set_xlabel("Frequency (MHz)", fontsize=20)
+        ax2.set_ylabel("Intensity (a.u.)", fontsize=20)
 
         i = i + 1
     splitting_flag = False
@@ -459,7 +459,8 @@ ax1.set_title(
     # "KC transmission with EOM sidebands @ 300 MHz\n"
     "Transmission through Cavity \n"
     + r"Linewidth FWHM; $2\kappa$= %.2f(%.f) MHz"
-    % (mean_linewidth, std_of_mean_linewidth * 100)
+    % (mean_linewidth, std_of_mean_linewidth * 100),
+    fontsize=20,
 )
 
 # print(list_linewidth)
@@ -492,7 +493,8 @@ ax2.set_title(
     % (mean_MM_fc, std_of_mean_MM_fc * 1000)
     + "\n"
     + r"Mode matching fiber-reflected light; $\mu_{fr}$ = %.3f(%.f)"
-    % (mean_MM_fr, std_of_mean_MM_fr * 1000)
+    % (mean_MM_fr, std_of_mean_MM_fr * 1000),
+    fontsize=20,
 )
 ax2.set_ylim(0, 1.1)
 plt.tight_layout()
@@ -509,5 +511,5 @@ print(
     f"Phase shift for |0>: {np.arctan2(0, (Kappa * Gamma_5P32_5S**2 * (Kappa - 2 * Kappa_oc)))}"
 )
 plt.savefig("Normal_mode_spectroscopy.svg")
-plt.savefig("empty_mode_spectroscopy.pdf", dpi=300)
+plt.savefig("empty_mode_spectroscopy.png", dpi=300)
 plt.show()
