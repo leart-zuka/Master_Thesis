@@ -4,6 +4,7 @@ from helpers.printing import display_fidelity
 from helpers.plotting import plot_cphase_and_cnot
 from helpers.compute_reflection_parameters import (
     compute_process_fidelity,
+    compute_fidelity_from_prob_matrix,
     params_type,
 )
 import matplotlib.pyplot as plt
@@ -85,7 +86,9 @@ for transmission in transmissions:
         save_fig=False,
     )
 
-    process_fidelity = compute_process_fidelity(gate_matrices["normalized_cnot"])
+    process_fidelity = compute_fidelity_from_prob_matrix(
+        gate_matrices["normalized_cnot"], basis="cnot"
+    )
     process_fidelity_err = compute_process_fidelity(gate_matrices["normalized_cnot"])
     fidelities.append(process_fidelity)
 
@@ -181,4 +184,4 @@ plt.ylim([0.5, 1])
 # 3. Final layout and save
 plt.tight_layout()
 plt.savefig("./plots/attenuation_fidelity.svg", bbox_inches="tight")
-# plt.show()
+plt.show()
