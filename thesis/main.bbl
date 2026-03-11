@@ -548,6 +548,37 @@
       \verb https://mediatum.ub.tum.de/1601857
       \endverb
     \endentry
+    \entry{GianvitoC2026}{thesis}{}{}
+      \name{author}{1}{}{%
+        {{hash=e7caae181382d3c929159b8205dd3731}{%
+           family={Chiarella},
+           familyi={C\bibinitperiod},
+           given={Gianvito},
+           giveni={G\bibinitperiod}}}%
+      }
+      \list{institution}{1}{%
+        {Technische Universität München}%
+      }
+      \list{language}{1}{%
+        {en}%
+      }
+      \strng{namehash}{e7caae181382d3c929159b8205dd3731}
+      \strng{fullhash}{e7caae181382d3c929159b8205dd3731}
+      \strng{fullhashraw}{e7caae181382d3c929159b8205dd3731}
+      \strng{bibnamehash}{e7caae181382d3c929159b8205dd3731}
+      \strng{authorbibnamehash}{e7caae181382d3c929159b8205dd3731}
+      \strng{authornamehash}{e7caae181382d3c929159b8205dd3731}
+      \strng{authorfullhash}{e7caae181382d3c929159b8205dd3731}
+      \strng{authorfullhashraw}{e7caae181382d3c929159b8205dd3731}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Quantum-Network-ready Source of Heralded Atom-Photon Entanglement}
+      \field{year}{2026}
+      \field{pages}{107}
+      \range{pages}{1}
+    \endentry
     \entry{WallsMilburn2008}{book}{}{}
       \name{author}{2}{}{%
         {{hash=a416f93c6ef972517e2b484cdd1d9913}{%
