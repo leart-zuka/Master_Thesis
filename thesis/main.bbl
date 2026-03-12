@@ -579,6 +579,69 @@
       \field{pages}{107}
       \range{pages}{1}
     \endentry
+    \entry{AtomicPhysicsJFoot2004}{book}{}{}
+      \name{author}{1}{}{%
+        {{hash=af294c7a976ab05e62b737bd2eb260c8}{%
+           family={Foot},
+           familyi={F\bibinitperiod},
+           given={C\bibnamedelima J},
+           giveni={C\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Oxford University Press}%
+      }
+      \strng{namehash}{af294c7a976ab05e62b737bd2eb260c8}
+      \strng{fullhash}{af294c7a976ab05e62b737bd2eb260c8}
+      \strng{fullhashraw}{af294c7a976ab05e62b737bd2eb260c8}
+      \strng{bibnamehash}{af294c7a976ab05e62b737bd2eb260c8}
+      \strng{authorbibnamehash}{af294c7a976ab05e62b737bd2eb260c8}
+      \strng{authornamehash}{af294c7a976ab05e62b737bd2eb260c8}
+      \strng{authorfullhash}{af294c7a976ab05e62b737bd2eb260c8}
+      \strng{authorfullhashraw}{af294c7a976ab05e62b737bd2eb260c8}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{isbn}{9780198506959}
+      \field{month}{11}
+      \field{title}{Atomic Physics}
+      \field{year}{2004}
+      \verb{doi}
+      \verb 10.1093/oso/9780198506959.001.0001
+      \endverb
+      \verb{urlraw}
+      \verb https://doi.org/10.1093/oso/9780198506959.001.0001
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.1093/oso/9780198506959.001.0001
+      \endverb
+    \endentry
+    \entry{SteckRb87}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=cd77a48f4316b3bd45ca5c381e90e4b1}{%
+           family={Steck},
+           familyi={S\bibinitperiod},
+           given={Daniel},
+           giveni={D\bibinitperiod}}}%
+      }
+      \strng{namehash}{cd77a48f4316b3bd45ca5c381e90e4b1}
+      \strng{fullhash}{cd77a48f4316b3bd45ca5c381e90e4b1}
+      \strng{fullhashraw}{cd77a48f4316b3bd45ca5c381e90e4b1}
+      \strng{bibnamehash}{cd77a48f4316b3bd45ca5c381e90e4b1}
+      \strng{authorbibnamehash}{cd77a48f4316b3bd45ca5c381e90e4b1}
+      \strng{authornamehash}{cd77a48f4316b3bd45ca5c381e90e4b1}
+      \strng{authorfullhash}{cd77a48f4316b3bd45ca5c381e90e4b1}
+      \strng{authorfullhashraw}{cd77a48f4316b3bd45ca5c381e90e4b1}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{month}{5}
+      \field{title}{Rubidium 87 D Line Data}
+      \field{year}{2024}
+      \field{pages}{32}
+      \range{pages}{1}
+    \endentry
     \entry{WallsMilburn2008}{book}{}{}
       \name{author}{2}{}{%
         {{hash=a416f93c6ef972517e2b484cdd1d9913}{%

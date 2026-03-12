@@ -2,27 +2,92 @@
 
 The system uses a single $^{87}\text{Rb}$ coupled to a birefringent Fabry-Perot cavity inside of an ultra-high vacuum (UHV) chamber. The smaller optical beam path used for the realization of the atom-photon gate, is part of a much larger setup which uses two Fabry-Perot cavities in an X formation, thus giving it the name \textit{CavityX}. For the atom-photon gate, parts of the setup like the magneto optical trap, the 850nm red-detuned trap laser, and the microwave antennas integrated into the UHV chamber, are crucial. Other components, most notably the second cavity, is not within the scope of this thesis, but will be discussed in the outlook.
 
-\section{CavityX setup}
+\section{Cavity system}
 
-\subsection{Cavity system}
-
-At the heart of the CavityX system are the two crossed fiber cavities which are named the "short" cavity (SC) and the "long" cavity (LC), which are distinguishable by their lengths ($79\mu m$ vs. $161\mu m$) as the name suggests, and also by the fact that the short cavity is birefringent. Each cavity fiber is held in place by an in-house built holder shown in figure \ref{fig:cavities-setup}.
+At the heart of the CavityX system are the two crossed fiber cavities which are named the "short" cavity (SC) and the "long" cavity (LC), which are distinguishable by their lengths ($79\mu m$ vs. $161\mu m$) as the name suggests, and also by the fact that the short cavity is birefringent. Each cavity fiber is held in place by an in-house built holder shown in figure \ref{fig:cavities-setup}.\\
 
 \begin{figure}
-    \centering
-    \includegraphics[width=\linewidth]{Figures/setup/cavities-setup.pdf}
-    \caption{Experimental setup showing the short and long fiber cavities.\cite{GianvitoC2026} \notetome{look at gianvito's thesis and write down what he did there, also ask him if it's cool to use the figure}}
-    \label{fig:cavities-setup}
+	\centering
+	\includegraphics[width=\linewidth]{Figures/setup/cavities-setup.pdf}
+	\caption{Experimental setup showing the short and long fiber cavities.\cite{GianvitoC2026} \notetome{look at gianvito's thesis and write down what he did there, also ask him if it's cool to use the figure}}
+	\label{fig:cavities-setup}
 \end{figure}
 
-The cavity fibers are fabricated using a $\text{CO}_2$ laser machining technique by the one of the previous PhD students \textit{Manuel Brekenfeld} in \cite{ManuelBThesis2023}.
+The incoming light is coupled in and out via the single-mode (SM) mode fiber for either of the cavities. In order to ensure that most of the coupled light exits through the SM fiber, different mirrors coatings are used for the fiber surfaces. The multi-mode (MM) fiber surfaces are coated with a highly reflected dielectric coating, while the opposing SM fiber, has a dielectric coating with a lower reflectivity (10ppm transmission vs. 340 ppm transmission). This leads to most of the coupled-in light to then exit the cavity through which it entered the system.\cite{GianvitoC2026} \\
+
+The cavity fibers are fabricated using a $\text{CO}_2$ laser machining technique by the one of the previous PhD students \textit{Manuel Brekenfeld} in \cite{ManuelBThesis2023}.Changing the beam profile of the $\text{CO}_2$ laser allows for the fabiration of either spherical or elliptical surfaces likeit's the case for the short cavity.\\
+
+\notetome{Show transmission plot for both the LC and KC (plots are in gianvito's thesis)}
+
+The cavity parameters for the short cavity can be taken from the thesis of the current PhD student \textit{Gianvito Chiarella} in \cite{GianvitoC2026}, except for the mode matching, coupling strength and the linewidth, as these were measuered for a different transition than the one used in this thesis.
 
 
-\notetome{Write stuff about how they were built, the shape of the KC, and then show plots regarding the birefringence and stuff}
+\section{Trapping of a singular atom}
 
-\subsection{Trapping of a singular atom}
+\subsection{Magneto-optical trap}
 
-\notetome{Talk about the MOT how it creates an atomic cloud, and after shutting off the MOT all of the atoms in the cloud then fall down due to gravity, and a single atom gets trapped by the trap laser, we know it's one due to fluorescence counts, and then we can precisely move the atom via galvo scanner}
+In order to realize an atom-photon quantum gate, one is required to have an atom trapped inside of the cavity with which the photon can then interact with. Therefor one needs to properly position the atom and keep it trapped at the position where it most efficiently couples to the cavity to ensure the most efficient gate operation.  \\
+
+The starting point for this is the trapping of an atomic cloud via a magneto-optical trap (MOT). Once the atomic cloud is trapped, one turns off the MOT, causing the atoms to fall down due to the gravitational force, from which singel atoms can then be loaded into the cavitie's center. The concepts of a MOT are explained in \cite{AtomicPhysicsJFoot2004}.
+
+In order to trap atomic clouds via a MOT, one needs to generate in this case a Rubidium vapor inside of the UHV chamber. This is done via light-induced atom desorption (LIAD), in which atoms are dispensed from a Rubidium dispencer that is placed inside of the vacuum chamber. The light-source is a UV diode \textit{ILH-XQ01-S410} with an emitting wavelength of 410nm, which is pulsed for the length of the time needed to load the MOT. \\
+
+The MOT loading procedure can be divided into 2 sections:
+
+First comes the loading phase in which the MOT coils, the MOT beams (a cooling laser and a rempumper laser), and the UV light are switched on simaltaneously. This then creates the atomic cloud and cools it down to a temperature close to the $^{87}\text{Rb}$ $D_2\text{-line}$ Doppler temperature of 146 $\mu\text{K}$. \cite{SteckRb87}
+
+Lastly an optical molasses is applied, which aims at bringing the atom to a temperature much below the Doppler limit. Here the detuning of the MOT beams is increased, whereas the optical power is decreased.
+
+At the end of the MOT cycle, the MOT coils, beams and the UV light are switched off.
+
+\begin{table}[ht]
+	\centering
+	\caption{Parameters used for the MOT loading phase.}
+	\label{tab:mot_parameters}
+	\begin{tabular}{@{}lr@{}}
+		\toprule
+		MOT coil current                                                                 & \SI{23.5}{A}                    \\
+		UV diode current                                                                 & \SI{140}{mA}                    \\
+		MOT beams' diameter                                                              & \SI{12}{mm}                     \\ \midrule
+		\multicolumn{2}{c}{\textbf{Loading phase}}                                                                         \\ \midrule
+		Duration                                                                         & \SI{1.4}{s}                     \\
+		Cooling laser detuning from $5S_{1/2}, F = 2 \leftrightarrow 5P_{3/2}, F' = 3$   & \notetome{check detuning again} \\
+		Repumping laser detuning from $5S_{1/2}, F = 1 \leftrightarrow 5P_{3/2}, F' = 2$ & \SI{0}{MHz}                     \\
+		Cooling laser power                                                              & \SI{20}{mW}                     \\
+		Repumping laser power                                                            & \SI{250}{\mu\watt}              \\ \midrule
+		\multicolumn{2}{c}{\textbf{Molasses phase}}                                                                        \\ \midrule
+		Duration                                                                         & \SI{1}{ms}                      \\
+		Cooling laser detuning from $5S_{1/2}, F = 2 \leftrightarrow 5P_{3/2}, F' = 3$   & \SI{-31}{MHz}                   \\
+		Repumping laser detuning from $5S_{1/2}, F = 1 \leftrightarrow 5P_{3/2}, F' = 2$ & \SI{-20}{MHz}                   \\
+		Cooling laser ramp-down power                                                    & \SI{1.7}{mW}                    \\
+		Repumping laser power                                                            & \SI{250}{\mu\watt}              \\ \bottomrule
+		\addlinespace[1ex]
+		\multicolumn{2}{p{0.9\textwidth}}{\small Parameters used for the MOT loading phase. The UV diode and the MOT coils are permanently on the whole time. The cooling and repumping laser power is measured behind a polarizing beam splitter, which separates the horizontal MOT beam from the top-diagonal ones.}
+	\end{tabular}
+\end{table}
+
+\subsection{Trapping and positioning of singular atom}
+
+At the end of the MOT loading phase, the ultra-cold atomic cloud then sits approximately 10mm above the cavity plane. Turning off the MOT, causes the atoms to fall down towards the cavity due to gravity, until they reach the cavitie's crossing point, where at that time laser beams for cooling and trapping the atom are turned on.
+
+The cooling and repumping laser are shone diagonally onto the crossing point in a counter-propagating configuration. Using orthogonal polarizations in a lin$\perp$lin for the counter-propapagating lasers, the atoms are cooled to sub-Doppler temperatures via Sisyphus-cooling.
+
+Once the atom is at the center of the cavity, 2 lasers are responsible for keeping it trapped there:
+
+The first one is the intracavity laser of the short cavity which has a frequency of 772 nm, and is blue-detuned from the $\text{D}_2\text{-line}$. The laser self-interferes in the cavity, forming a standing wave, thus confining the atom at the node i.e. interference minima. Stabilizing the cavity length is achieved by first locking the intracavity laser using the PDH-lock technique and then locking the laser frequency to an optical frequency comb, which serves as a stable frequency reference. For the atom-photon gate the frequency of the laser was chosen so that the cavity is resonant to the $\text{D}_2\text{-line}$ at 780nm, which is also known.\\
+
+The second laser is the 852nm vertical trap laser, that's shone in from the top of the cavities' crossing point. The laser is linearly polarized along the long cavity axis, and focussed to a diameter of about $20\mu m$. Afterwards it is then transmitted through the chamber and collimated to a mode diameter of 1cm. Lastly it gets transmitted through a dichroic element, a set of retardation waveplates, a piece of silica glass mounted to a galvanometer scanner (galvo), to then get retroreflected in a cat-eye configuration. Due to the laser being far detuned from the $\text{D}_2-$ and $\text{D}_1\text{-line}$ of the atom, it forms a trapping standing wave, where the atoms are confined in the antinodes- i.e. interference maxima.\\
+
+In order to achieve maximum cavity coupling, the galvo is scanning the amplitude, thus rotating the silica glass modifies the beam's refraction angle, effectively changing in the optical beam path length, which then moves the antinodes either up or down with respect to the vertical axes of the trap laser. While this is happening, the fluorescence counts coming from the atom during the cooling phase, are collected via the short cavity and detected with superconducting nanowire single-photon detectors (SNSPDs). Live-monitoring the fluorescence counts detected via the SNSPDs which analyzed in real-time with an FPGA that also scans the amplitude of the galvo, one can determine the height and thus the maximum coupling position of the atom by looking at the fluorescence counts. In order to ensure that only a single atom was trapped instead of a two badly coupled one's, the FPGA sequence is as follows:
+\begin{enumerate}
+	\item The FPGA starts scanning the voltage of the galvo while monitoring the amount of fluorescence counts detected in a 25ms window coming from the atom.
+	\item If the fluorescence counts go above a certain threshold (noise-threshold), this means that an atom that's weakly coupled to the cavity is emmitting fluorescence counts into the cavity.
+	\item The FPGA then continues increasing the voltage, keeping track of the voltage (i.e. position) at which the maximum fluorescence counts were reached, while also adding the amount of clicks in a span of 25ms at each galvo step into a single 32-bit register. This effectively represents an integral over the fluorescence counts vs. galvo amplitude curve.
+	\item Once the fluorescence counts drop below the (noise-threshold), meaning that the atom has been move out of the cavity center, the integral of the fluorescence counts is evaluated. If the integral is within a certain range, the FPGA will set the voltage at which maximum fluorescence counts were detected. If the integral is out of range (too low: atom was badly coupled anyways; too high: multiple atoms were in one node), the galvo keeps scanning until it either finds a new atom, or reaches the maximum amplitude, causing the MOT and single-atom positioning loop to start again.
+\end{enumerate}
+
+A different atom-positioning algorithm was employed in the past (e.g. the one used in \textit{Gianvito Chiarella's} thesis \cite{GianvitoC2026}), where the FPGA only scanned up to the point where the maximum fluorescence counts were reached. This past algorithm had the possibility of loading two atoms which were badly coupled to the cavity since there was no way of distinguishing this case from the one of a properly coupled atom. By completing the scan over the entire fluorescence-counts-curve, one is able to properly ensure single atoms are being trapped.
+\notetome{Mention something like the g2 or some metric that shows how this algorithm performs and also how it improved over the last algorithm}
 
 \section{Atomic-state preparation}
 
@@ -33,8 +98,8 @@ The cavity fibers are fabricated using a $\text{CO}_2$ laser machining technique
 \notetome{Talk about the AOM track (maybe just include an image (still need to fucking create it)) and the actual beam path (connect the two via fiber)}
 
 \begin{figure}[h]
-    \centering
-    \includesvg[inkscapelatex=false]{Figures/setup/setup_w_detectors.svg}
+	\centering
+	\includesvg[inkscapelatex=false]{Figures/setup/setup_w_detectors.svg}
 \end{figure}
 
 
