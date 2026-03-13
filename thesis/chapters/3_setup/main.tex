@@ -17,6 +17,11 @@ The incoming light is coupled in and out via the single-mode (SM) mode fiber for
 
 The cavity fibers are fabricated using a $\text{CO}_2$ laser machining technique by the one of the previous PhD students \textit{Manuel Brekenfeld} in \cite{ManuelBThesis2023}.Changing the beam profile of the $\text{CO}_2$ laser allows for the fabiration of either spherical or elliptical surfaces likeit's the case for the short cavity.\\
 
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{Figures/setup/TransmissionProfiles_FiberSurfaces.pdf}
+\end{figure}
+
 \notetome{Show transmission plot for both the LC and KC (plots are in gianvito's thesis)}
 
 The cavity parameters for the short cavity can be taken from the thesis of the current PhD student \textit{Gianvito Chiarella} in \cite{GianvitoC2026}, except for the mode matching, coupling strength and the linewidth, as these were measuered for a different transition than the one used in this thesis.
@@ -87,25 +92,55 @@ In order to achieve maximum cavity coupling, the galvo is scanning the amplitude
 \end{enumerate}
 
 A different atom-positioning algorithm was employed in the past (e.g. the one used in \textit{Gianvito Chiarella's} thesis \cite{GianvitoC2026}), where the FPGA only scanned up to the point where the maximum fluorescence counts were reached. This past algorithm had the possibility of loading two atoms which were badly coupled to the cavity since there was no way of distinguishing this case from the one of a properly coupled atom. By completing the scan over the entire fluorescence-counts-curve, one is able to properly ensure single atoms are being trapped.
-\notetome{Mention something like the g2 or some metric that shows how this algorithm performs and also how it improved over the last algorithm}
+\notetome{Mention something like the g2 or some metric that shows how this algorithm performs and also how it improved over the last algorithm, also do same measurement as gianvito in his thesis to showcase the loading algorithm cuz coool}
 
 \section{Atomic-state preparation}
 
-\notetome{Talk about zeeman pumping for 2-2' and then the second zeeman pumper for 1-1', and also the microwave antennas used to drive the transitions of the D2 groud-state manifold}
+For the atom-photon gate, the single atoms must be prepared in the two ground $m_F=0$ ground states of the $\text{D}_2\text{-line}$, those being $5 S_{1/2}, F=1, m_F = 0$ for the uncoupled state, and $5 S_{1/2}, F=2, m_F = 0$ for the coupled state.
+
+The first step in achieving this is to optically pump (OP) the atom into the desired state. This is done repeatedly exciting the atom from a level one wants to depopulate it from to an excited state, from which it will then decay into various ground states, determined by the dipole matrix element of the respective transition. In order to then populate the desired state, one uses a frequency for the pump laser, where all ground states one wants to depopoulate are coupled to the excited state, except for the desired one, gradually populating it over time. 
+
+In this work, one first pumps the atom into the $F=1, m_F = 0$ state. This is done by deploying two laser beams, one which is resonant to the $2\rightarrow2'$ transition of the $\text{D}_2\text{-line}$ of $^{87}Rb$, which will lead to the depopulation of the $F=2$ manifold and population of the $F=1$ manifold. In order to then populate only the $F=1, m_F=0$ state, one deploys another beam, resonant to the $1\rightarrow1'$ transition of the $\text{D}_2\text{-line}$. Furthermore the beam must be $\pi\text{-polarized}$, as in order to only populate the $F=1,m_F=0$ state, one needs to uses the fact that the $F=1,m_F=0 \rightarrow F'=1,m_F=0$ transition is v forbidden.\cite{SteckRb87}
+
+\notetome{Include figure showing the actual protocol}
+
+Using this technique one is able to populate the $F=1,m_F=0$ level with a probability of $\geq97\%$.\cite{GianvitoC2026}\\
+
+For the atom-photon gate, one also needs to be able to prepare the $5 S_{1/2}, F=2, m_F = 0$ for the coupled state. This is achieved by first preparing the atom in the already prepared $F=1, m_F=0$ -state and using a set of microwave antennas integrated into the UHV chamber, to drive the transition via microwave pulses.
+
+Finding the transition frequency is done by performing a microwave spectroscopy measurement, the atom is pumped into the $F=1, m_F=0$ via the previously discussed technique. By scanning the frequency of the microwave pulse while keeping the phase fixed, one can measure the population of the F=2 cavity-enhanced fluorescence state detection (SD) for 7.5 $\mu$s.
+
+The resulting MW spectrum shown in \ref{fig: mw spectroscopy} then shows 3 peaks, which correspond to the $F=1, m_F=0 \leftrightarrow F=2,m_F=0$ and $F=1,m_F=0\leftrightarrow F=2,m_F=\pm1$ transitions. From this one can infer that the optical pumping into the $F=1,m_F=0$ is done with an efficiency of $97(1)\%$.\cite{GianvitoC2026}
+
+\notetome{show plot regarding the transition from $F=1 m_F=0$ to the other states}
+
+Once the frequency for the $F=1,m_F=0 \leftrightarrow F=2,m_F=0$ transition is known, one can coherently manipulate the atomic population in the ground state. By tuning the MW on resonance, one can drive Rabi oscillations \cite{OpticalResonanceAndTwoLevelAtoms} betwee two ground states, where the population evolution in the Zeeman state of $F=2$ can be modeled as:\cite{RabiOscillationModel}
+
+\begin{equation}
+    P_2=P_1\cdot\frac{1}{2}(1-\cos{2\pi\Omega t}\cdot e^{-\chi t})
+    \label{eq:rabi_oscillation_model}
+\end{equation}
+
+where $P_1$ is the initial population after optical pumping in the state $F=1,m_F=0$, $\Omega$ is the before determined Rabi frequency, and $\chi$ is the damping rate. The result is a combination of a sinusoidal term which describes the coherent state transfer between our two levels, and an exponential factor representing the dissipative mechanism which damps the oscillations.
+
+By scanning the length of the $\pi$ pulse at a constant MW frequency, one can determine the ideal time it takes for a state to coherently transfer from $F=1,m_F=0$ to $F=2,m_F=0$. Figure \ref{fig: rabi flop} shows the resulting Rabi oscillations for an atom prepared in $F=1,m_F=0$ and transfered to the $F=2,m_F=0$ state. Fitting equation \eqref{eq:rabi_oscillation_model}, \notetome{write down fit params}
 
 \section{Laser-beam preparation}
 
-\notetome{Talk about the AOM track (maybe just include an image (still need to fucking create it)) and the actual beam path (connect the two via fiber)}
+For the atom-photon gate, weak coherent pulses are used in order to simulate the effect of single photons getting reflected from the cavity. It's therefore imperative to precisely control the power going into the cavity, and also the frequency which the light possesses. For that specific task the following setup was constructed:
 
 \begin{figure}[h]
 	\centering
-	\includesvg[inkscapelatex=false]{Figures/setup/setup_w_detectors.svg}
+	\includesvg[inkscapelatex=false, width=\linewidth]{Figures/setup/setup_w_detectors.svg}
+    \label{fig: optical_path}
 \end{figure}
 
+Figure \ref{fig: optical_path} showcases a double-pass AOM track which allows to offset the frequency of the incoming light by two times the freuqency at which the crystal inside of the AOM is oscillating. The light going into the AOM is blue detuned to the unshifted $\text{D}_2\text{-line}$ by \notetome{include actual offset}. Part of the laserlight (not shown here), can then be superimposed either with a stable reference frequency source like an optical freuqency comb from the company \textit{MenloSystems GmbH} when the laser frequency doesn't need to be tuned, or with another laser, for when the frequency of the laser needs to be scanned, e.g. for performing a normal-mode spectroscopy to determine the coupling strength $g$. Regardless of what the other source may be, one can then measure the optical beat signal via conventional photo detectors, and use the beat signal frequency as a feedback for the current of the laser one wants to stabilize the frequency of. The beampath also features two stages connected via polarization maintaining fibers (PM), at which ND filters can be flipped into the path in order to reduce the power giving rise to the weak coherent pulses needed for the gate.\\
 
-\section{Polarization Management and Loss Compensation}
+After the AOM track, the light is then coupled into a PM fiber, where it then leads to the so-called \textit{atom table}, at which the atoms are trapped, positioned, and prepared via the aforementioned methods.
+At the beginning of the track two automatically controlled waveplates allow for the setting of an arbitrary polarization which then gets sent through a set of brewster plates. The reasoning behind he usage of the brewster plates will be explained later. Afterwards a set of compensation waveplates ensures that the H and V polarized light going into the system, are mapped to the $\pi$ and $V$ mode of the eigenmodes of the cavity. The light then gets reflected off a pellical, which transmits most of the incoming light and reflects a small portion of our light ($\approx 1\%$), onto a mirror which then gets reflected off of a mirror, into the fiber cavity coupler.\\
 
-\notetome{Talk about how we used dichroic mirrors before but polarization dependent losses fucked me over so I had to switch to pellicle. Then also argue why we use brewster plates, because atom-cavity system has polarization dependent losses and we need to "fix" them}
+The reflected light coming from the cavity then gets reflected off of the previously mentioned mirror, transmitted through the pellical at minimal losses, and coupled into the detection setup. Here, one can set an arbitrary polarization measurement basis via another set of automatically controlled waveplates. It is thus possible to map the reflected light in two modes which then get detected via two SNSPDs.
 
 \subsection{Brewster Plate Array}
 \subsubsection{Custom Brewster Plate Mount}
