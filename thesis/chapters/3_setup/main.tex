@@ -138,11 +138,28 @@ For the atom-photon gate, weak coherent pulses are used in order to simulate the
 Figure \ref{fig: optical_path} showcases a double-pass AOM track which allows to offset the frequency of the incoming light by two times the freuqency at which the crystal inside of the AOM is oscillating. The light going into the AOM is blue detuned to the unshifted $\text{D}_2\text{-line}$ by \notetome{include actual offset}. Part of the laserlight (not shown here), can then be superimposed either with a stable reference frequency source like an optical freuqency comb from the company \textit{MenloSystems GmbH} when the laser frequency doesn't need to be tuned, or with another laser, for when the frequency of the laser needs to be scanned, e.g. for performing a normal-mode spectroscopy to determine the coupling strength $g$. Regardless of what the other source may be, one can then measure the optical beat signal via conventional photo detectors, and use the beat signal frequency as a feedback for the current of the laser one wants to stabilize the frequency of. The beampath also features two stages connected via polarization maintaining fibers (PM), at which ND filters can be flipped into the path in order to reduce the power giving rise to the weak coherent pulses needed for the gate.\\
 
 After the AOM track, the light is then coupled into a PM fiber, where it then leads to the so-called \textit{atom table}, at which the atoms are trapped, positioned, and prepared via the aforementioned methods.
-At the beginning of the track two automatically controlled waveplates allow for the setting of an arbitrary polarization which then gets sent through a set of brewster plates. The reasoning behind he usage of the brewster plates will be explained later. Afterwards a set of compensation waveplates ensures that the H and V polarized light going into the system, are mapped to the $\pi$ and $V$ mode of the eigenmodes of the cavity. The light then gets reflected off a pellical, which transmits most of the incoming light and reflects a small portion of our light ($\approx 1\%$), onto a mirror which then gets reflected off of a mirror, into the fiber cavity coupler.\\
+At the beginning of the track two automatically controlled waveplates allow for the setting of an arbitrary polarization which then gets sent through a set of brewster windows. The reasoning behind he usage of the brewster plates will be explained later. Afterwards a set of compensation waveplates ensures that the H and V polarized light going into the system, are mapped to the $\pi$ and $V$ mode of the eigenmodes of the cavity. The light then gets reflected off a pellical, which transmits most of the incoming light and reflects a small portion of our light ($\approx 1\%$), onto a mirror which then gets reflected off of a mirror, into the fiber cavity coupler.\\
 
 The reflected light coming from the cavity then gets reflected off of the previously mentioned mirror, transmitted through the pellical at minimal losses, and coupled into the detection setup. Here, one can set an arbitrary polarization measurement basis via another set of automatically controlled waveplates. It is thus possible to map the reflected light in two modes which then get detected via two SNSPDs.
 
-\subsection{Brewster Plate Array}
+\subsection{Brewster window Array}
+
+Brewster windows are a piece of uncoated UV fused silica, when placed at the so called brewster angle, that the p-polarized portion of the incomming light gets transmitted without any losses, while the s-polarized portion of the light gets partially reflected.
+
+Using the system parameters and calculating the reflection amplitude via \eqref{eq:analytical_reflection} it was apparent that the reflection from the atom-cavity system, introduces extra polarization dependent losses in the $\pi$ mode as opposed to the $V$ mode. Although the effect on the reflection in the CPF basis wouldn't be of any concern, it would lead to a reduced fidelity when measuring in the CNOT basis, as there the two polarization modes would need to have the same amplitude in reflection in order to show the expected flip from one state to the other. 
+
+In order to combat this and keep keep the fidelity high, an array of brewster plates were installed on a custom machined mount, which place the brewster plates at the brewster angle relative to the incoming light, so that the V polarized portion of the incoming light gets attenuated prior to interacting with the atom-cavity system. This ensures that in reflection, both polarization modes have the same reflection amplitude, allowing for the observation of the flip on the photonic qubit. 
+
+The brewster angle can be simply calculated via:\cite{ThorlabsBW}
+
+\begin{align}
+    \tan{\theta_B} &= n_t/n_i\\
+    n_t^2 -1 = \frac{0.6961663 \lambda^2}{\lambda^2 - 0.0684043^2} &+ \frac{0.4079426 \lambda^2}{\lambda^2 - 0.1162414^2} + \frac{0.8974794\lambda^2}{\lambda^2 - 9.896161^2} 
+    \label{eq: brewster window stuff}
+\end{align}
+
+In \eqref{eq: brewster window stuff} $n_t$ is the optical density of the brewster window, and $n_i$ would be the optical density from which the incoming light is coming from (here: air $n_i \sim 1.004$)
+
 \subsubsection{Custom Brewster Plate Mount}
-\subsubsection{Calibration of Brewster Plates}
+\subsubsection{Characterization of brewster windows}
 \subsection{Pellicle Beamsplitter}

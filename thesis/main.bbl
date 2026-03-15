@@ -642,6 +642,112 @@
       \field{pages}{32}
       \range{pages}{1}
     \endentry
+    \entry{OpticalResonanceAndTwoLevelAtoms}{book}{}{}
+      \name{author}{2}{}{%
+        {{hash=31bdf1bd4d619f4738a741ad52891f89}{%
+           family={Allen},
+           familyi={A\bibinitperiod},
+           given={L.},
+           giveni={L\bibinitperiod}}}%
+        {{hash=b9a761c5bbee9e7f660a7de2fbc090c0}{%
+           family={Eberly},
+           familyi={E\bibinitperiod},
+           given={J.H.},
+           giveni={J\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Courier Corporation}%
+      }
+      \strng{namehash}{9cc6c53bb73fdc5184c54180fbdbcaa2}
+      \strng{fullhash}{9cc6c53bb73fdc5184c54180fbdbcaa2}
+      \strng{fullhashraw}{9cc6c53bb73fdc5184c54180fbdbcaa2}
+      \strng{bibnamehash}{9cc6c53bb73fdc5184c54180fbdbcaa2}
+      \strng{authorbibnamehash}{9cc6c53bb73fdc5184c54180fbdbcaa2}
+      \strng{authornamehash}{9cc6c53bb73fdc5184c54180fbdbcaa2}
+      \strng{authorfullhash}{9cc6c53bb73fdc5184c54180fbdbcaa2}
+      \strng{authorfullhashraw}{9cc6c53bb73fdc5184c54180fbdbcaa2}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{isbn}{9780486136172}
+      \field{series}{Dover Books on Physics}
+      \field{title}{Optical Resonance and Two-Level Atoms}
+      \field{year}{2012}
+      \verb{urlraw}
+      \verb https://books.google.de/books?id=36DDAgAAQBAJ
+      \endverb
+      \verb{url}
+      \verb https://books.google.de/books?id=36DDAgAAQBAJ
+      \endverb
+    \endentry
+    \entry{RabiOscillationModel}{article}{}{}
+      \name{author}{4}{}{%
+        {{hash=d8b876b1f1629ef4232e44658493b7fd}{%
+           family={Kosugi},
+           familyi={K\bibinitperiod},
+           given={Norihito},
+           giveni={N\bibinitperiod}}}%
+        {{hash=5ac222f8811c33c01fcaa05e073b6af5}{%
+           family={Matsuo},
+           familyi={M\bibinitperiod},
+           given={Shigemasa},
+           giveni={S\bibinitperiod}}}%
+        {{hash=a9e63a844d18192aeaa4d6cc27c8c707}{%
+           family={Konno},
+           familyi={K\bibinitperiod},
+           given={Kohkichi},
+           giveni={K\bibinitperiod}}}%
+        {{hash=2db163fb0e48409bfb437fd4e324e19b}{%
+           family={Hatakenaka},
+           familyi={H\bibinitperiod},
+           given={Noriyuki},
+           giveni={N\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {American Physical Society}%
+      }
+      \strng{namehash}{7c3cf1ebbe6159e5750a16a9a3f784b2}
+      \strng{fullhash}{12c27dcde3b690fe6af1a72be48635e7}
+      \strng{fullhashraw}{12c27dcde3b690fe6af1a72be48635e7}
+      \strng{bibnamehash}{7c3cf1ebbe6159e5750a16a9a3f784b2}
+      \strng{authorbibnamehash}{7c3cf1ebbe6159e5750a16a9a3f784b2}
+      \strng{authornamehash}{7c3cf1ebbe6159e5750a16a9a3f784b2}
+      \strng{authorfullhash}{12c27dcde3b690fe6af1a72be48635e7}
+      \strng{authorfullhashraw}{12c27dcde3b690fe6af1a72be48635e7}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issue}{17}
+      \field{journaltitle}{Phys. Rev. B}
+      \field{month}{11}
+      \field{title}{Theory of damped Rabi oscillations}
+      \field{volume}{72}
+      \field{year}{2005}
+      \field{pages}{172509}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.1103/PhysRevB.72.172509
+      \endverb
+      \verb{urlraw}
+      \verb https://link.aps.org/doi/10.1103/PhysRevB.72.172509
+      \endverb
+      \verb{url}
+      \verb https://link.aps.org/doi/10.1103/PhysRevB.72.172509
+      \endverb
+    \endentry
+    \entry{ThorlabsBW}{misc}{}{}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{journaltitle}{Thorlabs}
+      \verb{urlraw}
+      \verb https://www.thorlabs.com/brewster-windows
+      \endverb
+      \verb{url}
+      \verb https://www.thorlabs.com/brewster-windows
+      \endverb
+    \endentry
     \entry{WallsMilburn2008}{book}{}{}
       \name{author}{2}{}{%
         {{hash=a416f93c6ef972517e2b484cdd1d9913}{%
