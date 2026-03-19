@@ -34,13 +34,20 @@ def calculate_detection_probabilities(
     # Signal-to-noise ratio component
     P_SNR = (l_plus + l_minus) / (l_plus + l_minus + 2 * p_dc)
 
+    P_SNR_p = (l_plus * np.exp(-(n_out_plus + p_dc))) / (1 - np.exp(-(l_plus + p_dc)))
+    P_SNR_m = (l_minus * np.exp(-(n_out_minus + p_dc))) / (
+        1 - np.exp(-(l_minus + p_dc))
+    )
+
     R_plus = n_out_plus / (n_out_plus + n_out_minus)
     R_minus = n_out_minus / (n_out_plus + n_out_minus)
 
     # Calculate final operator probabilities
     if not test:
-        P_out_plus = (P_SNR * R_plus) + ((1 - P_SNR) * 0.5)
-        P_out_minus = (P_SNR * R_minus) + ((1 - P_SNR) * 0.5)
+        P_out_plus = (P_SNR_p * R_plus) + ((1 - P_SNR_p) * 0.5)
+        P_out_minus = (P_SNR_m * R_minus) + ((1 - P_SNR_m) * 0.5)
+        print(P_out_plus)
+        print(P_out_minus)
     else:
         P_out_plus_wo_multi = (P_SNR * R_plus) + ((1 - P_SNR) * 0.5)
         P_out_plus = 0.5 + (P_out_plus_wo_multi - 0.5) * np.exp(-(1 - eta) * n_tot)

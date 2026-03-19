@@ -139,10 +139,16 @@ if __name__ == "__main__":
             test=False,
         )
 
-        print(CNOT)
+        # print(CNOT)
+        print("Prob without multiphoton-penalty")
         print(CNOT_coherent_to_fock)
-        print(p_atom)
-        print(compute_fidelity_from_prob_matrix(CNOT, basis="cnot"))
+        print(compute_fidelity_from_prob_matrix(CNOT_coherent_to_fock, basis="cnot"))
+        print("Prob with multiphoton-penalty")
+        print(CNOT_coherent_to_fock_test)
+        print(
+            compute_fidelity_from_prob_matrix(CNOT_coherent_to_fock_test, basis="cnot")
+        )
+        # print(p_atom)
 
         atomic_state[i] = p_atom
         other_fidelities[i] = (

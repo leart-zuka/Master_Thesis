@@ -2,12 +2,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 p_dark = 1e-5
-dark_rate = 10
+# dark_rate = 1000
 pulse_length = 1e-6
 n_dark = pulse_length * dark_rate
 eta = 0.9 * 0.85 * 0.97
 # eta = 0.5
-n_bar = np.logspace(-7, 2, 10000)
+n_bar = np.logspace(-3, 0.2, 10000)
 
 click_prob = np.zeros_like(n_bar)
 
@@ -37,7 +37,9 @@ for i, n in enumerate(n_bar):
         eta * n * np.exp(-eta * n) * np.exp(-n_dark)
         + np.exp(-eta * n) * n_dark * np.exp(-n_dark)
     )
-    # click_prob[i] = click_plus
+    l = eta * n
+    click_prob[i] = l * np.exp(-(n + n_dark)) / (1 - np.exp(-(l + n_dark)))
+    # click_prob[i] = l * np.exp(-(l + n_dark)) / ((l + n_dark) * np.exp(-(l + n_dark)))
 
 
 plt.plot(n_bar, click_prob)
