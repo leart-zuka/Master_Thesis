@@ -20,7 +20,14 @@ def normalizations(input_matrix: np.ndarray):
 
 
 def calculate_detection_probabilities(
-    out_plus, out_minus, dt, p_dc=1e-4, eta=0.74205, test: bool = False
+    out_plus,
+    out_minus,
+    dt,
+    p_dc=1e-4,
+    eta=0.74205,
+    pulse_length: float = 1e-6,
+    detector_dead_time: float = 20e-9,
+    test: bool = False,
 ):
 
     n_out_plus = np.sum(np.abs(out_plus) ** 2) * dt
@@ -31,6 +38,9 @@ def calculate_detection_probabilities(
     l_plus = n_out_plus * eta
     l_minus = n_out_minus * eta
 
+    gamma_p = l_plus + p_dc
+    gamma_m = l_minus + p_dc
+
     # Signal-to-noise ratio component
     P_SNR = (l_plus + l_minus) / (l_plus + l_minus + 2 * p_dc)
 
@@ -39,6 +49,22 @@ def calculate_detection_probabilities(
         1 - np.exp(-(l_minus + p_dc))
     )
 
+    prob_distinction = (
+        2 * pulse_length * detector_dead_time - pulse_length**2
+    ) / pulse_length**2
+
+    P_click_p = (
+        gamma_p * np.exp(-gamma_p)
+        + (gamma_p) ** 2 / 2 * np.exp(-gamma_p) * prob_distinction
+    )
+    P_click_m = (
+        gamma_m * np.exp(-gamma_m)
+        + (gamma_m) ** 2 / 2 * np.exp(-gamma_m) * prob_distinction
+    )
+
+    P_SNR_p = l_plus * np.exp(-gamma_p) / P_click_p
+    P_SNR_m = l_minus * np.exp(-gamma_m) / P_click_m
+
     R_plus = n_out_plus / (n_out_plus + n_out_minus)
     R_minus = n_out_minus / (n_out_plus + n_out_minus)
 
@@ -46,12 +72,8 @@ def calculate_detection_probabilities(
     if not test:
         P_out_plus = (P_SNR_p * R_plus) + ((1 - P_SNR_p) * 0.5)
         P_out_minus = (P_SNR_m * R_minus) + ((1 - P_SNR_m) * 0.5)
-        print(P_out_plus)
-        print(P_out_minus)
     else:
-        P_out_plus_wo_multi = (P_SNR * R_plus) + ((1 - P_SNR) * 0.5)
-        P_out_plus = 0.5 + (P_out_plus_wo_multi - 0.5) * np.exp(-(1 - eta) * n_tot)
-        P_out_minus_wo_multi = (P_SNR * R_minus) + ((1 - P_SNR) * 0.5)
-        P_out_minus = 0.5 + (P_out_minus_wo_multi - 0.5) * np.exp(-(1 - eta) * n_tot)
+        P_out_plus = (P_SNR_p * R_plus) + ((1 - P_SNR_p) * 0.5)
+        P_out_minus = (P_SNR_p * R_minus) + ((1 - P_SNR_m) * 0.5)
 
     return P_out_plus, P_out_minus
