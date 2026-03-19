@@ -6,6 +6,7 @@ from helpers.generic_cavity_operators import (
     DriveParams,
 )
 from helpers.plotting import plot_drive_pi_and_v
+from helpers.generic_computations import calculate_detection_probabilities
 import numpy as np
 import qutip as qt
 
@@ -459,6 +460,7 @@ def run_sim_plus_analysis_in_cnot_basis(
     args: Dict[str, float],
     psi_0: qt.Qobj,
     psi_1: qt.Qobj,
+    test: bool = False,
 ):
     drive_plus = DriveParams(
         Mu_fc=Mu_fc,
@@ -532,7 +534,16 @@ def run_sim_plus_analysis_in_cnot_basis(
                 [0, 0, 0.5, 0.5],
             ]
         )
-        return out_0_plus, out_0_minus, out_1_plus, out_1_minus, random_cnot
+        return (
+            out_0_plus,
+            out_0_minus,
+            out_1_plus,
+            out_1_minus,
+            random_cnot,
+            0.5,
+            random_cnot,
+            random_cnot,
+        )
     f_ideal = field_in / np.sqrt(photon_norm)
     alpha_in_pi = field_in / np.sqrt(2)
     alpha_in_v = (field_in / np.sqrt(2)) * np.sqrt(cavity.v_transmission)
@@ -587,18 +598,16 @@ def run_sim_plus_analysis_in_cnot_basis(
     p_dc = 1e-4
     eta = 0.9 * 0.85 * 0.97
 
-    n_out_plus = np.sum(np.abs(out_plus) ** 2) * dt
-    n_out_minus = np.sum(np.abs(out_minus) ** 2) * dt
-
-    l_plus = n_out_plus * eta
-    l_minus = n_out_minus * eta
-
-    P_SNR = (l_plus + l_minus) / (l_plus + l_minus + 2 * p_dc)
-    R_plus = n_out_plus / (n_out_plus + n_out_minus)
-    R_minus = n_out_minus / (n_out_plus + n_out_minus)
-
-    P_operator_0_in_plus_out_plus = (P_SNR * R_plus) + ((1 - P_SNR) * 0.5)
-    P_operator_0_in_plus_out_minus = (P_SNR * R_minus) + ((1 - P_SNR) * 0.5)
+    P_operator_0_in_plus_out_plus, P_operator_0_in_plus_out_minus = (
+        calculate_detection_probabilities(
+            out_plus, out_minus, dt, p_dc=p_dc, eta=eta, test=test
+        )
+    )
+    P_operator_0_in_plus_out_plus_test, P_operator_0_in_plus_out_minus_test = (
+        calculate_detection_probabilities(
+            out_plus, out_minus, dt, p_dc=p_dc, eta=eta, test=not test
+        )
+    )
 
     P0_0_plus = out_0_plus.e_data["P(0)"][-1]
     P0_1_plus = out_0_plus.e_data["P(1)"][-1]
@@ -671,18 +680,16 @@ def run_sim_plus_analysis_in_cnot_basis(
         Kappa_oc=cavity.Kappa_oc,
     )
 
-    n_out_plus = np.sum(np.abs(out_plus) ** 2) * dt
-    n_out_minus = np.sum(np.abs(out_minus) ** 2) * dt
-
-    l_plus = n_out_plus * eta
-    l_minus = n_out_minus * eta
-
-    P_SNR = (l_plus + l_minus) / (l_plus + l_minus + 2 * p_dc)
-    R_plus = n_out_plus / (n_out_plus + n_out_minus)
-    R_minus = n_out_minus / (n_out_plus + n_out_minus)
-
-    P_operator_0_in_minus_out_plus = (P_SNR * R_plus) + ((1 - P_SNR) * 0.5)
-    P_operator_0_in_minus_out_minus = (P_SNR * R_minus) + ((1 - P_SNR) * 0.5)
+    P_operator_0_in_minus_out_plus, P_operator_0_in_minus_out_minus = (
+        calculate_detection_probabilities(
+            out_plus, out_minus, dt, p_dc=p_dc, eta=eta, test=test
+        )
+    )
+    P_operator_0_in_minus_out_plus_test, P_operator_0_in_minus_out_minus_test = (
+        calculate_detection_probabilities(
+            out_plus, out_minus, dt, p_dc=p_dc, eta=eta, test=not test
+        )
+    )
 
     out_1_in_plus_out_pi = compute_output_field(
         input_field=field_in / np.sqrt(2),
@@ -736,19 +743,17 @@ def run_sim_plus_analysis_in_cnot_basis(
         Kappa_oc=cavity.Kappa_oc,
     )
 
-    n_out_plus = np.sum(np.abs(out_plus) ** 2) * dt
-    n_out_minus = np.sum(np.abs(out_minus) ** 2) * dt
+    P_operator_1_in_plus_out_plus, P_operator_1_in_plus_out_minus = (
+        calculate_detection_probabilities(
+            out_plus, out_minus, dt, p_dc=p_dc, eta=eta, test=test
+        )
+    )
 
-    l_plus = n_out_plus * eta
-    l_minus = n_out_minus * eta
-
-    P_SNR = (l_plus + l_minus) / (l_plus + l_minus + 2 * p_dc)
-    R_plus = n_out_plus / (n_out_plus + n_out_minus)
-    R_minus = n_out_minus / (n_out_plus + n_out_minus)
-
-    P_operator_1_in_plus_out_plus = (P_SNR * R_plus) + ((1 - P_SNR) * 0.5)
-    P_operator_1_in_plus_out_minus = (P_SNR * R_minus) + ((1 - P_SNR) * 0.5)
-
+    P_operator_1_in_plus_out_plus_test, P_operator_1_in_plus_out_minus_test = (
+        calculate_detection_probabilities(
+            out_plus, out_minus, dt, p_dc=p_dc, eta=eta, test=not test
+        )
+    )
     out_1_in_minus_out_pi = compute_output_field(
         input_field=-field_in / np.sqrt(2),
         results=out_1_minus,
@@ -812,18 +817,17 @@ def run_sim_plus_analysis_in_cnot_basis(
         Kappa_oc=cavity.Kappa_oc,
     )
 
-    n_out_plus = np.sum(np.abs(out_plus) ** 2) * dt
-    n_out_minus = np.sum(np.abs(out_minus) ** 2) * dt
+    P_operator_1_in_minus_out_plus, P_operator_1_in_minus_out_minus = (
+        calculate_detection_probabilities(
+            out_plus, out_minus, dt, p_dc=p_dc, eta=eta, test=test
+        )
+    )
 
-    l_plus = n_out_plus * eta
-    l_minus = n_out_minus * eta
-
-    P_SNR = (l_plus + l_minus) / (l_plus + l_minus + 2 * p_dc)
-    R_plus = n_out_plus / (n_out_plus + n_out_minus)
-    R_minus = n_out_minus / (n_out_plus + n_out_minus)
-
-    P_operator_1_in_minus_out_plus = (P_SNR * R_plus) + ((1 - P_SNR) * 0.5)
-    P_operator_1_in_minus_out_minus = (P_SNR * R_minus) + ((1 - P_SNR) * 0.5)
+    P_operator_1_in_minus_out_plus_test, P_operator_1_in_minus_out_minus_test = (
+        calculate_detection_probabilities(
+            out_plus, out_minus, dt, p_dc=p_dc, eta=eta, test=not test
+        )
+    )
 
     CNOT = np.array(
         [
@@ -883,6 +887,35 @@ def run_sim_plus_analysis_in_cnot_basis(
         ]
     )
 
+    CNOT_coherent_to_fock_test = np.array(
+        [
+            [
+                P_operator_1_in_plus_out_plus_test,
+                P_operator_1_in_minus_out_plus_test,
+                0,
+                0,
+            ],
+            [
+                P_operator_1_in_plus_out_minus_test,
+                P_operator_1_in_minus_out_minus_test,
+                0,
+                0,
+            ],
+            [
+                0,
+                0,
+                P_operator_0_in_plus_out_plus_test,
+                P_operator_0_in_minus_out_plus_test,
+            ],
+            [
+                0,
+                0,
+                P_operator_0_in_plus_out_minus_test,
+                P_operator_0_in_minus_out_minus_test,
+            ],
+        ]
+    )
+
     for j in range(4):
         col_sum = np.sum(CNOT[:, j])
         if col_sum > 0:
@@ -892,6 +925,11 @@ def run_sim_plus_analysis_in_cnot_basis(
         col_sum = np.sum(CNOT_coherent_to_fock[:, j])
         if col_sum > 0:
             CNOT_coherent_to_fock[:, j] /= col_sum
+
+    for j in range(4):
+        col_sum = np.sum(CNOT_coherent_to_fock_test[:, j])
+        if col_sum > 0:
+            CNOT_coherent_to_fock_test[:, j] /= col_sum
 
     p_atom = (P0_0_plus + P0_0_minus + P1_1_minus + P1_1_plus) / 4
 
@@ -903,4 +941,5 @@ def run_sim_plus_analysis_in_cnot_basis(
         CNOT,
         p_atom,
         CNOT_coherent_to_fock,
+        CNOT_coherent_to_fock_test,
     )

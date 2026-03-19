@@ -56,11 +56,14 @@ psi_1 = states.psi_atom_1()
 c_ops = dissipation.collapse_operators()
 e_ops = observables.expectation_ops()
 
-photon_numbers = np.logspace(-5, 2, 20)
+photon_numbers = np.logspace(-5, 2, 10)
+photon_numbers = np.linspace(0, 1, 20)
+photon_numbers = np.concatenate([[0], np.logspace(-3, 0, 19)])
 fidelities = np.zeros_like(photon_numbers)
 fidelities_analytical = np.zeros_like(photon_numbers)
 fidelities_pure_sim = np.zeros_like(photon_numbers)
 other_fidelities = np.zeros_like(photon_numbers)
+other_fidelities_test = np.zeros_like(photon_numbers)
 atomic_state = np.zeros_like(photon_numbers)
 args_ref = {
     "amp": 1.0,
@@ -119,6 +122,7 @@ if __name__ == "__main__":
             CNOT,
             p_atom,
             CNOT_coherent_to_fock,
+            CNOT_coherent_to_fock_test,
         ) = run_sim_plus_analysis_in_cnot_basis(
             tlist=tlist,
             cavity=cavity,
@@ -132,6 +136,7 @@ if __name__ == "__main__":
             system=system,
             psi_0=psi_0,
             psi_1=psi_1,
+            test=False,
         )
 
         print(CNOT)
@@ -143,6 +148,14 @@ if __name__ == "__main__":
         other_fidelities[i] = (
             compute_fidelity_from_prob_matrix(
                 CNOT_coherent_to_fock,
+                basis="cnot",
+            )
+            * p_atom
+            + (1 - p_atom) * 0.5
+        )
+        other_fidelities_test[i] = (
+            compute_fidelity_from_prob_matrix(
+                CNOT_coherent_to_fock_test,
                 basis="cnot",
             )
             * p_atom
@@ -179,29 +192,33 @@ if __name__ == "__main__":
             Fidelity_low_plus_high_photon_plus_sim * p_atom + (1 - p_atom) * 0.5
         )
 
+    x = [0.1, 0.2, 0.4, 0.8]
+    y = [0.81, 0.83, 0.79, 0.74]
     photon_numbers_fig = plt.figure()
-    plt.plot(photon_numbers, other_fidelities, label=r"$F_{signal}$")
+    plt.plot(photon_numbers, other_fidelities, label=r"$F_{sim}$")
+    plt.plot(photon_numbers, other_fidelities_test, label=r"$F_{sim}$ (test)")
+    plt.scatter(x, y, label="Experimental")
     plt.legend()
-    plt.xlabel("Mean Photon numbers")
-    plt.xscale("log")
-    plt.ylabel("Signal Fidelity")
-    plt.title("Signal Fidelity vs. different photon numbers")
-
-    idx = np.argmax(other_fidelities)
-    x_max = photon_numbers[idx]
-    y_max = other_fidelities[idx]
-    plt.annotate(
-        r"$\overline{n} = $" + f"{x_max:.3f}\nF = {y_max:.3f}",
-        xy=(x_max, y_max),
-        xytext=(
-            x_max,
-            y_max,
-        ),
-        arrowprops=dict(arrowstyle="->", lw=1.5),
-        fontsize=10,
-        bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.8),
-    )
-    # photon_numbers_fig.savefig("./plots/photon_numbers.svg")
+    plt.xlabel(r"Mean Photon numbers $\bar{n}$")
+    # plt.xscale("log")
+    plt.ylabel("Fidelity")
+    plt.title(r"Fidelity vs. mean photon numbers $\bar{n}$")
+    #
+    # idx = np.argmax(other_fidelities)
+    # x_max = photon_numbers[idx]
+    # y_max = other_fidelities[idx]
+    # plt.annotate(
+    #     r"$\overline{n} = $" + f"{x_max:.3f}\nF = {y_max:.3f}",
+    #     xy=(x_max, y_max),
+    #     xytext=(
+    #         x_max,
+    #         y_max,
+    #     ),
+    #     arrowprops=dict(arrowstyle="->", lw=1.5),
+    #     fontsize=10,
+    #     bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.8),
+    # )
+    photon_numbers_fig.savefig("./plots/photon_numbers_no_annotation.svg")
 
     atomic_scattering = plt.figure()
     plt.plot(
@@ -234,6 +251,7 @@ if __name__ == "__main__":
     )
     plt.plot(photon_numbers, fidelities_pure_sim, label="Sim (Master Eq)", alpha=0.7)
     plt.plot(photon_numbers, other_fidelities, label="Coh->Fock")
+    plt.plot(photon_numbers, other_fidelities_test, label="Coh->Fock (test)")
 
     # if max(photon_numbers) > trust_threshold:
     #     # Add the "Trust Mask"
@@ -264,5 +282,5 @@ if __name__ == "__main__":
     plt.title("Comparison: Logic Failure vs. System Saturation")
     plt.grid(True, which="both", ls="-", alpha=0.1)
 
-    # comparisson.savefig("./plots/comparisson_masked.svg")
+    comparisson.savefig("./plots/comparisson_masked.svg")
     plt.show()
