@@ -10,6 +10,9 @@ from helpers.generic_computations import (
     calculate_detection_probabilities,
     calculate_detection_probabilities_other,
 )
+
+from helpers.input_shapes import to_plus_minus_basis
+
 import numpy as np
 import qutip as qt
 
@@ -224,6 +227,34 @@ def compute_output_field_quantum(
         np.abs(Mu_fc) ** 2 * Kappa_oc * (n_cav - np.abs(a_cav) ** 2)
     )
     return n_out_quantum
+
+
+def get_truth_table_column(input_fields, results, Mu_fc, Mu_fr, cavity, dt, r_dc, eta):
+    n_q_plus = compute_output_field_quantum(
+        input_field=input_fields[0],
+        results=results,
+        Mu_fc=Mu_fc,
+        Mu_fr=Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
+        cavity_mode="a_plus",
+        cavity_mode_n="n_plus",
+    )
+    n_q_minus = compute_output_field_quantum(
+        input_field=input_fields[1],
+        results=results,
+        Mu_fc=Mu_fc,
+        Mu_fr=Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
+        cavity_mode="a_minus",
+        cavity_mode_n="n_minus",
+    )
+    return calculate_detection_probabilities_other(
+        n_q_plus,
+        n_q_minus,
+        dt,
+        r_dc=r_dc,
+        eta=eta,
+    )
 
 
 def run_sim_plus_analysis_in_cphase_basis(
@@ -483,6 +514,8 @@ def run_sim_plus_analysis_in_cnot_basis(
     args: Dict[str, float],
     psi_0: qt.Qobj,
     psi_1: qt.Qobj,
+    eta: float,
+    r_dc: float,
 ):
     drive_plus = DriveParams(
         Mu_fc=Mu_fc,
@@ -561,397 +594,41 @@ def run_sim_plus_analysis_in_cnot_basis(
             out_0_minus,
             out_1_plus,
             out_1_minus,
-            random_cnot,
             0.5,
             random_cnot,
         )
-    f_ideal = field_in / np.sqrt(photon_norm)
+
     alpha_in_pi = field_in / np.sqrt(2)
     alpha_in_v = (field_in / np.sqrt(2)) * np.sqrt(cavity.v_transmission)
 
-    input_field_plus = (alpha_in_v + alpha_in_pi) / np.sqrt(2)
-    input_field_minus = (alpha_in_v - alpha_in_pi) / np.sqrt(2)
-
-    out_0_in_plus_out_pi = compute_output_field(
-        input_field=field_in / np.sqrt(2),
-        results=out_0_plus,
-        cavity_mode="a_pi",
-        Mu_fc=drive_plus.Mu_fc,
-        Mu_fr=drive_plus.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-    )
-
-    out_0_in_plus_out_v = compute_output_field(
-        input_field=field_in * np.sqrt(cavity.v_transmission) / np.sqrt(2),
-        results=out_0_plus,
-        cavity_mode="a_v",
-        Mu_fc=drive_plus.Mu_fc,
-        Mu_fr=drive_plus.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-    )
-
-    c_0_in_plus_out_pi = np.sum(np.conj(f_ideal) * out_0_in_plus_out_pi) * dt
-    c_0_in_plus_out_v = np.sum(np.conj(f_ideal) * out_0_in_plus_out_v) * dt
-
-    A_0_in_plus_out_plus = (c_0_in_plus_out_v + c_0_in_plus_out_pi) / np.sqrt(2)
-    A_0_in_plus_out_minus = (c_0_in_plus_out_v - c_0_in_plus_out_pi) / np.sqrt(2)
-
-    P_0_in_plus_out_plus = np.abs(A_0_in_plus_out_plus) ** 2
-    P_0_in_plus_out_minus = np.abs(A_0_in_plus_out_minus) ** 2
-
-    out_plus = compute_output_field(
-        input_field=input_field_plus,
-        results=out_0_plus,
-        cavity_mode="a_plus",
-        Mu_fc=drive_plus.Mu_fc,
-        Mu_fr=drive_plus.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-    )
-    n_out_quantum_plus = compute_output_field_quantum(
-        input_field=input_field_plus,
-        results=out_0_plus,
-        Mu_fc=drive_plus.Mu_fc,
-        Mu_fr=drive_plus.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-        cavity_mode="a_plus",
-        cavity_mode_n="n_plus",
-    )
-    out_minus = compute_output_field(
-        input_field=input_field_minus,
-        results=out_0_plus,
-        cavity_mode="a_minus",
-        Mu_fc=drive_plus.Mu_fc,
-        Mu_fr=drive_plus.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-    )
-    n_out_quantum_minus = compute_output_field_quantum(
-        input_field=input_field_minus,
-        results=out_0_plus,
-        Mu_fc=drive_plus.Mu_fc,
-        Mu_fr=drive_plus.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-        cavity_mode="a_minus",
-        cavity_mode_n="n_minus",
-    )
-
-    p_dc = 1e-4
-    eta = 0.9 * 0.85 * 0.97
+    input_plus_drive = to_plus_minus_basis(alpha_in_pi, alpha_in_v)
+    input_minus_drive = to_plus_minus_basis(-alpha_in_pi, alpha_in_v)
 
     P_operator_0_in_plus_out_plus, P_operator_0_in_plus_out_minus = (
-        calculate_detection_probabilities_other(
-            n_out_quantum_plus,
-            n_out_quantum_minus,
-            dt,
-            r_dc=p_dc,
-            eta=eta,
+        get_truth_table_column(
+            input_plus_drive, out_0_plus, Mu_fc, Mu_fr, cavity, dt, r_dc, eta
         )
-    )
-
-    P0_0_plus = out_0_plus.e_data["P(0)"][-1]
-    P0_1_plus = out_0_plus.e_data["P(1)"][-1]
-
-    overlap_0_plus_0_plus = P0_0_plus * P_0_in_plus_out_plus
-    overlap_0_minus_0_plus = P0_0_plus * P_0_in_plus_out_minus
-    overlap_1_plus_0_plus = P0_1_plus * P_0_in_plus_out_plus
-    overlap_1_minus_0_plus = P0_1_plus * P_0_in_plus_out_minus
-
-    out_0_in_minus_out_pi = compute_output_field(
-        input_field=-field_in / np.sqrt(2),
-        results=out_0_minus,
-        cavity_mode="a_pi",
-        Mu_fc=drive_minus.Mu_fc,
-        Mu_fr=drive_minus.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-    )
-
-    out_0_in_minus_out_v = compute_output_field(
-        input_field=field_in * np.sqrt(cavity.v_transmission) / np.sqrt(2),
-        results=out_0_minus,
-        cavity_mode="a_v",
-        Mu_fc=drive_minus.Mu_fc,
-        Mu_fr=drive_minus.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-    )
-
-    c_0_in_minus_out_pi = np.sum(np.conj(f_ideal) * out_0_in_minus_out_pi) * dt
-    c_0_in_minus_out_v = np.sum(np.conj(f_ideal) * out_0_in_minus_out_v) * dt
-
-    A_0_in_minus_out_plus = (c_0_in_minus_out_v + c_0_in_minus_out_pi) / np.sqrt(2)
-    A_0_in_minus_out_minus = (c_0_in_minus_out_v - c_0_in_minus_out_pi) / np.sqrt(2)
-
-    P_0_in_minus_out_plus = np.abs(A_0_in_minus_out_plus) ** 2
-    P_0_in_minus_out_minus = np.abs(A_0_in_minus_out_minus) ** 2
-
-    P0_0_minus = out_0_minus.e_data["P(0)"][-1]
-    P0_1_minus = out_0_minus.e_data["P(1)"][-1]
-
-    overlap_0_plus_0_minus = P0_0_minus * P_0_in_minus_out_plus
-    overlap_0_minus_0_minus = P0_0_minus * P_0_in_minus_out_minus
-    overlap_1_plus_0_minus = P0_1_minus * P_0_in_minus_out_plus
-    overlap_1_minus_0_minus = P0_1_minus * P_0_in_minus_out_minus
-
-    alpha_in_pi_for_minus = -field_in / np.sqrt(2)
-    alpha_in_v_for_minus = (field_in / np.sqrt(2)) * np.sqrt(cavity.v_transmission)
-
-    input_field_plus_for_minus_drive = (
-        alpha_in_v_for_minus + alpha_in_pi_for_minus
-    ) / np.sqrt(2)
-    input_field_minus_for_minus_drive = (
-        alpha_in_v_for_minus - alpha_in_pi_for_minus
-    ) / np.sqrt(2)
-
-    out_plus = compute_output_field(
-        input_field=input_field_plus_for_minus_drive,
-        results=out_0_minus,
-        cavity_mode="a_plus",
-        Mu_fc=drive_minus.Mu_fc,
-        Mu_fr=drive_minus.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-    )
-    n_out_quantum_plus = compute_output_field_quantum(
-        input_field=input_field_plus_for_minus_drive,
-        results=out_0_minus,
-        Mu_fc=drive_plus.Mu_fc,
-        Mu_fr=drive_plus.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-        cavity_mode="a_plus",
-        cavity_mode_n="n_plus",
-    )
-
-    out_minus = compute_output_field(
-        input_field=input_field_minus_for_minus_drive,
-        results=out_0_minus,
-        cavity_mode="a_minus",
-        Mu_fc=drive_minus.Mu_fc,
-        Mu_fr=drive_minus.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-    )
-    n_out_quantum_minus = compute_output_field_quantum(
-        input_field=input_field_minus_for_minus_drive,
-        results=out_0_minus,
-        Mu_fc=drive_plus.Mu_fc,
-        Mu_fr=drive_plus.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-        cavity_mode="a_minus",
-        cavity_mode_n="n_minus",
     )
 
     P_operator_0_in_minus_out_plus, P_operator_0_in_minus_out_minus = (
-        calculate_detection_probabilities_other(
-            n_out_quantum_plus,
-            n_out_quantum_minus,
-            dt,
-            r_dc=p_dc,
-            eta=eta,
+        get_truth_table_column(
+            input_minus_drive, out_0_minus, Mu_fc, Mu_fr, cavity, dt, r_dc, eta
         )
-    )
-
-    out_1_in_plus_out_pi = compute_output_field(
-        input_field=field_in / np.sqrt(2),
-        results=out_1_plus,
-        cavity_mode="a_pi",
-        Mu_fc=drive_plus.Mu_fc,
-        Mu_fr=drive_plus.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-    )
-
-    out_1_in_plus_out_v = compute_output_field(
-        input_field=field_in * np.sqrt(cavity.v_transmission) / np.sqrt(2),
-        results=out_1_plus,
-        cavity_mode="a_v",
-        Mu_fc=drive_plus.Mu_fc,
-        Mu_fr=drive_plus.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-    )
-
-    c_1_in_plus_out_pi = np.sum(np.conj(f_ideal) * out_1_in_plus_out_pi) * dt
-    c_1_in_plus_out_v = np.sum(np.conj(f_ideal) * out_1_in_plus_out_v) * dt
-
-    A_1_in_plus_out_plus = (c_1_in_plus_out_v + c_1_in_plus_out_pi) / np.sqrt(2)
-    A_1_in_plus_out_minus = (c_1_in_plus_out_v - c_1_in_plus_out_pi) / np.sqrt(2)
-
-    P_1_in_plus_out_plus = np.abs(A_1_in_plus_out_plus) ** 2
-    P_1_in_plus_out_minus = np.abs(A_1_in_plus_out_minus) ** 2
-
-    P1_0_plus = out_1_plus.e_data["P(0)"][-1]
-    P1_1_plus = out_1_plus.e_data["P(1)"][-1]
-
-    overlap_0_plus_1_plus = P1_0_plus * P_1_in_plus_out_plus
-    overlap_0_minus_1_plus = P1_0_plus * P_1_in_plus_out_minus
-    overlap_1_plus_1_plus = P1_1_plus * P_1_in_plus_out_plus
-    overlap_1_minus_1_plus = P1_1_plus * P_1_in_plus_out_minus
-
-    out_plus = compute_output_field(
-        input_field=input_field_plus,
-        results=out_1_plus,
-        cavity_mode="a_plus",
-        Mu_fc=drive_plus.Mu_fc,
-        Mu_fr=drive_plus.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-    )
-
-    n_out_quantum_plus = compute_output_field_quantum(
-        input_field=input_field_plus,
-        results=out_1_plus,
-        Mu_fc=drive_plus.Mu_fc,
-        Mu_fr=drive_plus.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-        cavity_mode="a_plus",
-        cavity_mode_n="n_plus",
-    )
-
-    out_minus = compute_output_field(
-        input_field=input_field_minus,
-        results=out_1_plus,
-        cavity_mode="a_minus",
-        Mu_fc=drive_plus.Mu_fc,
-        Mu_fr=drive_plus.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-    )
-
-    n_out_quantum_minus = compute_output_field_quantum(
-        input_field=input_field_minus,
-        results=out_1_plus,
-        Mu_fc=drive_plus.Mu_fc,
-        Mu_fr=drive_plus.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-        cavity_mode="a_minus",
-        cavity_mode_n="n_minus",
     )
 
     P_operator_1_in_plus_out_plus, P_operator_1_in_plus_out_minus = (
-        calculate_detection_probabilities_other(
-            n_out_quantum_plus,
-            n_out_quantum_minus,
-            dt,
-            r_dc=p_dc,
-            eta=eta,
+        get_truth_table_column(
+            input_plus_drive, out_1_plus, Mu_fc, Mu_fr, cavity, dt, r_dc, eta
         )
     )
 
-    out_1_in_minus_out_pi = compute_output_field(
-        input_field=-field_in / np.sqrt(2),
-        results=out_1_minus,
-        cavity_mode="a_pi",
-        Mu_fc=drive_minus.Mu_fc,
-        Mu_fr=drive_minus.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-    )
-
-    out_1_in_minus_out_v = compute_output_field(
-        input_field=field_in * np.sqrt(cavity.v_transmission) / np.sqrt(2),
-        results=out_1_minus,
-        cavity_mode="a_v",
-        Mu_fc=drive_minus.Mu_fc,
-        Mu_fr=drive_minus.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-    )
-
-    c_1_in_minus_out_pi = np.sum(np.conj(f_ideal) * out_1_in_minus_out_pi) * dt
-    c_1_in_minus_out_v = np.sum(np.conj(f_ideal) * out_1_in_minus_out_v) * dt
-
-    A_1_in_minus_out_plus = (c_1_in_minus_out_v + c_1_in_minus_out_pi) / np.sqrt(2)
-    A_1_in_minus_out_minus = (c_1_in_minus_out_v - c_1_in_minus_out_pi) / np.sqrt(2)
-
-    P_1_in_minus_out_plus = np.abs(A_1_in_minus_out_plus) ** 2
-    P_1_in_minus_out_minus = np.abs(A_1_in_minus_out_minus) ** 2
-
-    P1_0_minus = out_1_minus.e_data["P(0)"][-1]
-    P1_1_minus = out_1_minus.e_data["P(1)"][-1]
-
-    overlap_0_plus_1_minus = P1_0_minus * P_1_in_minus_out_plus
-    overlap_0_minus_1_minus = P1_0_minus * P_1_in_minus_out_minus
-    overlap_1_plus_1_minus = P1_1_minus * P_1_in_minus_out_plus
-    overlap_1_minus_1_minus = P1_1_minus * P_1_in_minus_out_minus
-
-    alpha_in_pi_for_minus = -field_in / np.sqrt(2)
-    alpha_in_v_for_minus = (field_in / np.sqrt(2)) * np.sqrt(cavity.v_transmission)
-
-    input_field_plus_for_minus_drive = (
-        alpha_in_v_for_minus + alpha_in_pi_for_minus
-    ) / np.sqrt(2)
-    input_field_minus_for_minus_drive = (
-        alpha_in_v_for_minus - alpha_in_pi_for_minus
-    ) / np.sqrt(2)
-
-    out_plus = compute_output_field(
-        input_field=input_field_plus_for_minus_drive,
-        results=out_1_minus,
-        cavity_mode="a_plus",
-        Mu_fc=drive_minus.Mu_fc,
-        Mu_fr=drive_minus.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-    )
-
-    n_out_quantum_plus = compute_output_field_quantum(
-        input_field=input_field_plus_for_minus_drive,
-        results=out_1_minus,
-        Mu_fc=drive_plus.Mu_fc,
-        Mu_fr=drive_plus.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-        cavity_mode="a_plus",
-        cavity_mode_n="n_plus",
-    )
-
-    out_minus = compute_output_field(
-        input_field=input_field_minus_for_minus_drive,
-        results=out_1_minus,
-        cavity_mode="a_minus",
-        Mu_fc=drive_minus.Mu_fc,
-        Mu_fr=drive_minus.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-    )
-
-    n_out_quantum_minus = compute_output_field_quantum(
-        input_field=input_field_minus_for_minus_drive,
-        results=out_1_minus,
-        Mu_fc=drive_plus.Mu_fc,
-        Mu_fr=drive_plus.Mu_fr,
-        Kappa_oc=cavity.Kappa_oc,
-        cavity_mode="a_minus",
-        cavity_mode_n="n_minus",
-    )
-
     P_operator_1_in_minus_out_plus, P_operator_1_in_minus_out_minus = (
-        calculate_detection_probabilities_other(
-            n_out_quantum_plus,
-            n_out_quantum_minus,
-            dt,
-            r_dc=p_dc,
-            eta=eta,
+        get_truth_table_column(
+            input_minus_drive, out_1_minus, Mu_fc, Mu_fr, cavity, dt, r_dc, eta
         )
     )
 
     CNOT = np.array(
-        [
-            [
-                overlap_1_plus_1_plus,
-                overlap_1_plus_1_minus,
-                overlap_1_plus_0_plus,
-                overlap_1_plus_0_minus,
-            ],
-            [
-                overlap_1_minus_1_plus,
-                overlap_1_minus_1_minus,
-                overlap_1_minus_0_plus,
-                overlap_1_minus_0_minus,
-            ],
-            [
-                overlap_0_plus_1_plus,
-                overlap_0_plus_1_minus,
-                overlap_0_plus_0_plus,
-                overlap_0_plus_0_minus,
-            ],
-            [
-                overlap_0_minus_1_plus,
-                overlap_0_minus_1_minus,
-                overlap_0_minus_0_plus,
-                overlap_0_minus_0_minus,
-            ],
-        ]
-    )
-
-    CNOT_coherent_to_fock = np.array(
         [
             [
                 P_operator_1_in_plus_out_plus,
@@ -985,10 +662,10 @@ def run_sim_plus_analysis_in_cnot_basis(
         if col_sum > 0:
             CNOT[:, j] /= col_sum
 
-    for j in range(4):
-        col_sum = np.sum(CNOT_coherent_to_fock[:, j])
-        if col_sum > 0:
-            CNOT_coherent_to_fock[:, j] /= col_sum
+    P0_0_plus = out_0_plus.e_data["P(0)"][-1]
+    P0_0_minus = out_0_minus.e_data["P(0)"][-1]
+    P1_1_plus = out_1_plus.e_data["P(1)"][-1]
+    P1_1_minus = out_1_minus.e_data["P(1)"][-1]
 
     p_atom = (P0_0_plus + P0_0_minus + P1_1_minus + P1_1_plus) / 4
 
@@ -997,7 +674,6 @@ def run_sim_plus_analysis_in_cnot_basis(
         out_0_minus,
         out_1_plus,
         out_1_minus,
-        CNOT,
         p_atom,
-        CNOT_coherent_to_fock,
+        CNOT,
     )

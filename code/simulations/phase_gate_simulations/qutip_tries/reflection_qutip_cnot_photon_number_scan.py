@@ -56,7 +56,7 @@ psi_1 = states.psi_atom_1()
 c_ops = dissipation.collapse_operators()
 e_ops = observables.expectation_ops()
 
-photon_numbers = np.logspace(-4, 2, 10)
+photon_numbers = np.logspace(-1, 2, 10)
 # photon_numbers = np.linspace(2, 1, 20)
 # photon_numbers = np.logspace(2, 6, 20)
 # photon_numbers = np.concatenate([[0], np.logspace(-3, 0, 19)])
@@ -78,7 +78,7 @@ args_ref = {
 amps = convert_photon_numbers_to_amps(tlist, args_ref, photon_numbers, input_shape)
 
 eta = 0.9 * 0.85 * 0.97
-p_dark = 1e-4
+r_dark = 1e-4
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Scan of Photon Numbers")
@@ -120,9 +120,8 @@ if __name__ == "__main__":
             out_0_minus,
             out_1_plus,
             out_1_minus,
-            CNOT,
             p_atom,
-            CNOT_coherent_to_fock,
+            CNOT,
         ) = run_sim_plus_analysis_in_cnot_basis(
             tlist=tlist,
             cavity=cavity,
@@ -136,35 +135,35 @@ if __name__ == "__main__":
             system=system,
             psi_0=psi_0,
             psi_1=psi_1,
+            eta=eta,
+            r_dc=r_dark,
         )
 
-        # print(CNOT)
-        print("Prob without multiphoton-penalty")
-        print(CNOT_coherent_to_fock)
-        print(compute_fidelity_from_prob_matrix(CNOT_coherent_to_fock, basis="cnot"))
-        # print(p_atom)
+        print(CNOT)
+        print(compute_fidelity_from_prob_matrix(CNOT, basis="cnot"))
+        print(p_atom)
 
         atomic_state[i] = p_atom
-        other_fidelities[i] = (
-            compute_fidelity_from_prob_matrix(
-                CNOT_coherent_to_fock,
-                basis="cnot",
-            )
-            * p_atom
-            + (1 - p_atom) * 0.5
-        )
+        # other_fidelities[i] = (
+        #     compute_fidelity_from_prob_matrix(
+        #         CNOT_coherent_to_fock,
+        #         basis="cnot",
+        #     )
+        #     * p_atom
+        #     + (1 - p_atom) * 0.5
+        # )
 
         # Pure Sim
         if post_select_atom:
             fidelities_pure_sim[i] = compute_signal_fidelity(CNOT)
         else:
             Fidelity_plus_noise = compute_fidelity_from_prob_matrix(
-                mix_with_noise(CNOT, eta=eta, n_bar=n_bar, p_dark=p_dark), basis="cnot"
+                mix_with_noise(CNOT, eta=eta, n_bar=n_bar, p_dark=r_dark), basis="cnot"
             )
             fidelities_pure_sim[i] = Fidelity_plus_noise * p_atom + (1 - p_atom) * 0.5
 
         # Analytical
-        P_sig = (eta * n_bar) / (eta * n_bar + p_dark)
+        P_sig = (eta * n_bar) / (eta * n_bar + r_dark)
         Fidelity_low_plus_high_photon_analytical = 0.5 + (
             (P_sig * F_1 + (1 - P_sig) * 0.5) - 0.5
         ) * np.exp(-(1 - eta) * n_bar)
@@ -173,7 +172,7 @@ if __name__ == "__main__":
         )
 
         # Sim + Analytical
-        CNOT_w_noise = mix_with_noise(CNOT, eta=eta, n_bar=n_bar, p_dark=p_dark)
+        CNOT_w_noise = mix_with_noise(CNOT, eta=eta, n_bar=n_bar, p_dark=r_dark)
         Fidelity_low_photon = compute_fidelity_from_prob_matrix(
             CNOT_w_noise, basis="cnot"
         )

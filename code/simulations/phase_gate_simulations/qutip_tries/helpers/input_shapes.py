@@ -33,6 +33,10 @@ def normalized_input_shape(
     return y_norm
 
 
+def to_plus_minus_basis(alpha_pi, alpha_v):
+    return (alpha_v + alpha_pi) / np.sqrt(2), (alpha_v - alpha_pi) / np.sqrt(2)
+
+
 if __name__ == "__main__":
     tlist = np.linspace(0, 10000, 1000)
     args = {"amp": 1, "t0": 10000, "tau": 70.0, "tau_start": 91.0, "sigma": 1.0}
