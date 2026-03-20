@@ -1,4 +1,4 @@
-from typing import Callable, Dict, Tuple, List, Any, Literal
+from typing import Dict, Tuple, List, Literal
 from helpers.generic_cavity_operators import (
     CavitySystem,
     SystemOperators,
@@ -8,7 +8,6 @@ from helpers.generic_cavity_operators import (
 from helpers.plotting import plot_drive_pi_and_v
 from helpers.generic_computations import (
     calculate_detection_probabilities,
-    calculate_detection_probabilities_other,
 )
 
 from helpers.input_shapes import to_plus_minus_basis
@@ -248,7 +247,7 @@ def get_truth_table_column(input_fields, results, Mu_fc, Mu_fr, cavity, dt, r_dc
         cavity_mode="a_minus",
         cavity_mode_n="n_minus",
     )
-    return calculate_detection_probabilities_other(
+    return calculate_detection_probabilities(
         n_q_plus,
         n_q_minus,
         dt,
@@ -577,9 +576,9 @@ def run_sim_plus_analysis_in_cnot_basis(
 
     # Output field part
     dt = tlist[1] - tlist[0]
-
     field_in: np.ndarray = input_shape(tlist, args)
     photon_norm = np.sum(np.abs(field_in) ** 2) * dt
+
     if photon_norm < 1e-12:
         random_cnot = np.array(
             [
