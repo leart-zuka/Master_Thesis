@@ -60,7 +60,7 @@ gate_matrices = plot_cphase_and_cnot(
     "2-1' Transition",
     params_dir,
     params_err_dir,
-    # attenuate_light,
+    attenuate_light,
     special_attenuation=0.24,
     save_fig=True,
 )

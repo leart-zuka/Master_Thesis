@@ -56,9 +56,10 @@ psi_1 = states.psi_atom_1()
 c_ops = dissipation.collapse_operators()
 e_ops = observables.expectation_ops()
 
-photon_numbers = np.logspace(-5, 2, 10)
-photon_numbers = np.linspace(0, 1, 20)
-photon_numbers = np.concatenate([[0], np.logspace(-3, 0, 19)])
+photon_numbers = np.logspace(-4, 2, 10)
+# photon_numbers = np.linspace(2, 1, 20)
+# photon_numbers = np.logspace(2, 6, 20)
+# photon_numbers = np.concatenate([[0], np.logspace(-3, 0, 19)])
 fidelities = np.zeros_like(photon_numbers)
 fidelities_analytical = np.zeros_like(photon_numbers)
 fidelities_pure_sim = np.zeros_like(photon_numbers)
@@ -122,7 +123,6 @@ if __name__ == "__main__":
             CNOT,
             p_atom,
             CNOT_coherent_to_fock,
-            CNOT_coherent_to_fock_test,
         ) = run_sim_plus_analysis_in_cnot_basis(
             tlist=tlist,
             cavity=cavity,
@@ -136,32 +136,18 @@ if __name__ == "__main__":
             system=system,
             psi_0=psi_0,
             psi_1=psi_1,
-            test=False,
         )
 
         # print(CNOT)
         print("Prob without multiphoton-penalty")
         print(CNOT_coherent_to_fock)
         print(compute_fidelity_from_prob_matrix(CNOT_coherent_to_fock, basis="cnot"))
-        print("Prob with multiphoton-penalty")
-        print(CNOT_coherent_to_fock_test)
-        print(
-            compute_fidelity_from_prob_matrix(CNOT_coherent_to_fock_test, basis="cnot")
-        )
         # print(p_atom)
 
         atomic_state[i] = p_atom
         other_fidelities[i] = (
             compute_fidelity_from_prob_matrix(
                 CNOT_coherent_to_fock,
-                basis="cnot",
-            )
-            * p_atom
-            + (1 - p_atom) * 0.5
-        )
-        other_fidelities_test[i] = (
-            compute_fidelity_from_prob_matrix(
-                CNOT_coherent_to_fock_test,
                 basis="cnot",
             )
             * p_atom
@@ -198,12 +184,8 @@ if __name__ == "__main__":
             Fidelity_low_plus_high_photon_plus_sim * p_atom + (1 - p_atom) * 0.5
         )
 
-    x = [0.1, 0.2, 0.4, 0.8]
-    y = [0.81, 0.83, 0.79, 0.74]
     photon_numbers_fig = plt.figure()
     plt.plot(photon_numbers, other_fidelities, label=r"$F_{sim}$")
-    plt.plot(photon_numbers, other_fidelities_test, label=r"$F_{sim}$ (test)")
-    plt.scatter(x, y, label="Experimental")
     plt.legend()
     plt.xlabel(r"Mean Photon numbers $\bar{n}$")
     # plt.xscale("log")
@@ -257,8 +239,6 @@ if __name__ == "__main__":
     )
     plt.plot(photon_numbers, fidelities_pure_sim, label="Sim (Master Eq)", alpha=0.7)
     plt.plot(photon_numbers, other_fidelities, label="Coh->Fock")
-    plt.plot(photon_numbers, other_fidelities_test, label="Coh->Fock (test)")
-
     # if max(photon_numbers) > trust_threshold:
     #     # Add the "Trust Mask"
     #     plt.axvspan(

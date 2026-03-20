@@ -2,14 +2,18 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 p_dark = 1e-5
-# dark_rate = 1000
+dark_rate = 100
+# dark_rate = 0
 pulse_length = 1e-6
 n_dark = pulse_length * dark_rate
 eta = 0.9 * 0.85 * 0.97
+eta = 1
 # eta = 0.5
-n_bar = np.logspace(-3, 0.2, 10000)
+n_bar = np.logspace(-5, 1, 10000)
+# n_bar = np.linspace(0, 1, 10000)
 
 click_prob = np.zeros_like(n_bar)
+click_prob_2 = np.zeros_like(n_bar)
 
 for i, n in enumerate(n_bar):
     prob_0_plus = np.exp(-n)
@@ -38,10 +42,38 @@ for i, n in enumerate(n_bar):
         + np.exp(-eta * n) * n_dark * np.exp(-n_dark)
     )
     l = eta * n
-    click_prob[i] = l * np.exp(-(n + n_dark)) / (1 - np.exp(-(l + n_dark)))
+    gamma = l + n_dark
+    # click_prob[i] = l * np.exp(-n) * np.exp(-n_dark)
+    # click_prob[i] = 1 - np.exp(-n_dark) - n_dark * np.exp(-n_dark)
+    # click_prob[i] = l * np.exp(-(n + n_dark)) / (1 - np.exp(-(l + n_dark)))
+    tau = 20
+    T = 1000
+    click_prob[i] = (
+        l
+        * np.exp(-(gamma))
+        / (
+            gamma * np.exp(gamma)
+            + gamma**2 / 2 * np.exp(-gamma) * ((2 * T * tau - tau**2) / T**2)
+        )
+    )
+    # l = eta * n
+    # gamma = l + n_dark
+    tau = 20
+    T = 100
+    click_prob_2[i] = (
+        l
+        * np.exp(-(gamma))
+        / (
+            gamma * np.exp(gamma)
+            + gamma**2 / 2 * np.exp(-gamma) * ((2 * T * tau - tau**2) / T**2)
+        )
+    )
+
     # click_prob[i] = l * np.exp(-(l + n_dark)) / ((l + n_dark) * np.exp(-(l + n_dark)))
 
 
-plt.plot(n_bar, click_prob)
+plt.plot(n_bar, click_prob, label="T=1000, tau=20")
+plt.plot(n_bar, click_prob_2, label="T=1000, tau=200")
 plt.xscale("log")
+plt.legend()
 plt.show()

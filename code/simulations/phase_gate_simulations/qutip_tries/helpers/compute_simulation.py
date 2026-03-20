@@ -6,7 +6,10 @@ from helpers.generic_cavity_operators import (
     DriveParams,
 )
 from helpers.plotting import plot_drive_pi_and_v
-from helpers.generic_computations import calculate_detection_probabilities
+from helpers.generic_computations import (
+    calculate_detection_probabilities,
+    calculate_detection_probabilities_other,
+)
 import numpy as np
 import qutip as qt
 
@@ -201,6 +204,26 @@ def compute_output_field(
     a_cav = np.array(results.e_data[cavity_mode])
     alpha_out = alpha_ref + Mu_fc * np.sqrt(Kappa_oc) * a_cav
     return alpha_out
+
+
+def compute_output_field_quantum(
+    input_field: np.ndarray,
+    results: qt.Result,
+    Mu_fr: float,
+    Mu_fc: float,
+    Kappa_oc: float,
+    cavity_mode: Literal["a_pi", "a_v", "a_plus", "a_minus"],
+    cavity_mode_n: Literal["n_pi", "n_v", "n_plus", "n_minus"],
+) -> np.ndarray:
+    alpha_in = input_field
+    alpha_ref = Mu_fr * alpha_in
+    a_cav = np.array(results.e_data[cavity_mode])
+    n_cav = np.array(results.e_data[cavity_mode_n])
+    alpha_out = alpha_ref + Mu_fc * np.sqrt(Kappa_oc) * a_cav
+    n_out_quantum = np.abs(alpha_out) ** 2 + (
+        np.abs(Mu_fc) ** 2 * Kappa_oc * (n_cav - np.abs(a_cav) ** 2)
+    )
+    return n_out_quantum
 
 
 def run_sim_plus_analysis_in_cphase_basis(
@@ -460,7 +483,6 @@ def run_sim_plus_analysis_in_cnot_basis(
     args: Dict[str, float],
     psi_0: qt.Qobj,
     psi_1: qt.Qobj,
-    test: bool = False,
 ):
     drive_plus = DriveParams(
         Mu_fc=Mu_fc,
@@ -542,7 +564,6 @@ def run_sim_plus_analysis_in_cnot_basis(
             random_cnot,
             0.5,
             random_cnot,
-            random_cnot,
         )
     f_ideal = field_in / np.sqrt(photon_norm)
     alpha_in_pi = field_in / np.sqrt(2)
@@ -586,6 +607,15 @@ def run_sim_plus_analysis_in_cnot_basis(
         Mu_fr=drive_plus.Mu_fr,
         Kappa_oc=cavity.Kappa_oc,
     )
+    n_out_quantum_plus = compute_output_field_quantum(
+        input_field=input_field_plus,
+        results=out_0_plus,
+        Mu_fc=drive_plus.Mu_fc,
+        Mu_fr=drive_plus.Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
+        cavity_mode="a_plus",
+        cavity_mode_n="n_plus",
+    )
     out_minus = compute_output_field(
         input_field=input_field_minus,
         results=out_0_plus,
@@ -594,18 +624,26 @@ def run_sim_plus_analysis_in_cnot_basis(
         Mu_fr=drive_plus.Mu_fr,
         Kappa_oc=cavity.Kappa_oc,
     )
+    n_out_quantum_minus = compute_output_field_quantum(
+        input_field=input_field_minus,
+        results=out_0_plus,
+        Mu_fc=drive_plus.Mu_fc,
+        Mu_fr=drive_plus.Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
+        cavity_mode="a_minus",
+        cavity_mode_n="n_minus",
+    )
 
     p_dc = 1e-4
     eta = 0.9 * 0.85 * 0.97
 
     P_operator_0_in_plus_out_plus, P_operator_0_in_plus_out_minus = (
-        calculate_detection_probabilities(
-            out_plus, out_minus, dt, p_dc=p_dc, eta=eta, test=test
-        )
-    )
-    P_operator_0_in_plus_out_plus_test, P_operator_0_in_plus_out_minus_test = (
-        calculate_detection_probabilities(
-            out_plus, out_minus, dt, p_dc=p_dc, eta=eta, test=not test
+        calculate_detection_probabilities_other(
+            n_out_quantum_plus,
+            n_out_quantum_minus,
+            dt,
+            r_dc=p_dc,
+            eta=eta,
         )
     )
 
@@ -670,6 +708,15 @@ def run_sim_plus_analysis_in_cnot_basis(
         Mu_fr=drive_minus.Mu_fr,
         Kappa_oc=cavity.Kappa_oc,
     )
+    n_out_quantum_plus = compute_output_field_quantum(
+        input_field=input_field_plus_for_minus_drive,
+        results=out_0_minus,
+        Mu_fc=drive_plus.Mu_fc,
+        Mu_fr=drive_plus.Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
+        cavity_mode="a_plus",
+        cavity_mode_n="n_plus",
+    )
 
     out_minus = compute_output_field(
         input_field=input_field_minus_for_minus_drive,
@@ -679,15 +726,23 @@ def run_sim_plus_analysis_in_cnot_basis(
         Mu_fr=drive_minus.Mu_fr,
         Kappa_oc=cavity.Kappa_oc,
     )
+    n_out_quantum_minus = compute_output_field_quantum(
+        input_field=input_field_minus_for_minus_drive,
+        results=out_0_minus,
+        Mu_fc=drive_plus.Mu_fc,
+        Mu_fr=drive_plus.Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
+        cavity_mode="a_minus",
+        cavity_mode_n="n_minus",
+    )
 
     P_operator_0_in_minus_out_plus, P_operator_0_in_minus_out_minus = (
-        calculate_detection_probabilities(
-            out_plus, out_minus, dt, p_dc=p_dc, eta=eta, test=test
-        )
-    )
-    P_operator_0_in_minus_out_plus_test, P_operator_0_in_minus_out_minus_test = (
-        calculate_detection_probabilities(
-            out_plus, out_minus, dt, p_dc=p_dc, eta=eta, test=not test
+        calculate_detection_probabilities_other(
+            n_out_quantum_plus,
+            n_out_quantum_minus,
+            dt,
+            r_dc=p_dc,
+            eta=eta,
         )
     )
 
@@ -734,6 +789,17 @@ def run_sim_plus_analysis_in_cnot_basis(
         Mu_fr=drive_plus.Mu_fr,
         Kappa_oc=cavity.Kappa_oc,
     )
+
+    n_out_quantum_plus = compute_output_field_quantum(
+        input_field=input_field_plus,
+        results=out_1_plus,
+        Mu_fc=drive_plus.Mu_fc,
+        Mu_fr=drive_plus.Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
+        cavity_mode="a_plus",
+        cavity_mode_n="n_plus",
+    )
+
     out_minus = compute_output_field(
         input_field=input_field_minus,
         results=out_1_plus,
@@ -743,17 +809,26 @@ def run_sim_plus_analysis_in_cnot_basis(
         Kappa_oc=cavity.Kappa_oc,
     )
 
+    n_out_quantum_minus = compute_output_field_quantum(
+        input_field=input_field_minus,
+        results=out_1_plus,
+        Mu_fc=drive_plus.Mu_fc,
+        Mu_fr=drive_plus.Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
+        cavity_mode="a_minus",
+        cavity_mode_n="n_minus",
+    )
+
     P_operator_1_in_plus_out_plus, P_operator_1_in_plus_out_minus = (
-        calculate_detection_probabilities(
-            out_plus, out_minus, dt, p_dc=p_dc, eta=eta, test=test
+        calculate_detection_probabilities_other(
+            n_out_quantum_plus,
+            n_out_quantum_minus,
+            dt,
+            r_dc=p_dc,
+            eta=eta,
         )
     )
 
-    P_operator_1_in_plus_out_plus_test, P_operator_1_in_plus_out_minus_test = (
-        calculate_detection_probabilities(
-            out_plus, out_minus, dt, p_dc=p_dc, eta=eta, test=not test
-        )
-    )
     out_1_in_minus_out_pi = compute_output_field(
         input_field=-field_in / np.sqrt(2),
         results=out_1_minus,
@@ -808,6 +883,16 @@ def run_sim_plus_analysis_in_cnot_basis(
         Kappa_oc=cavity.Kappa_oc,
     )
 
+    n_out_quantum_plus = compute_output_field_quantum(
+        input_field=input_field_plus_for_minus_drive,
+        results=out_1_minus,
+        Mu_fc=drive_plus.Mu_fc,
+        Mu_fr=drive_plus.Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
+        cavity_mode="a_plus",
+        cavity_mode_n="n_plus",
+    )
+
     out_minus = compute_output_field(
         input_field=input_field_minus_for_minus_drive,
         results=out_1_minus,
@@ -817,15 +902,23 @@ def run_sim_plus_analysis_in_cnot_basis(
         Kappa_oc=cavity.Kappa_oc,
     )
 
-    P_operator_1_in_minus_out_plus, P_operator_1_in_minus_out_minus = (
-        calculate_detection_probabilities(
-            out_plus, out_minus, dt, p_dc=p_dc, eta=eta, test=test
-        )
+    n_out_quantum_minus = compute_output_field_quantum(
+        input_field=input_field_minus_for_minus_drive,
+        results=out_1_minus,
+        Mu_fc=drive_plus.Mu_fc,
+        Mu_fr=drive_plus.Mu_fr,
+        Kappa_oc=cavity.Kappa_oc,
+        cavity_mode="a_minus",
+        cavity_mode_n="n_minus",
     )
 
-    P_operator_1_in_minus_out_plus_test, P_operator_1_in_minus_out_minus_test = (
-        calculate_detection_probabilities(
-            out_plus, out_minus, dt, p_dc=p_dc, eta=eta, test=not test
+    P_operator_1_in_minus_out_plus, P_operator_1_in_minus_out_minus = (
+        calculate_detection_probabilities_other(
+            n_out_quantum_plus,
+            n_out_quantum_minus,
+            dt,
+            r_dc=p_dc,
+            eta=eta,
         )
     )
 
@@ -887,35 +980,6 @@ def run_sim_plus_analysis_in_cnot_basis(
         ]
     )
 
-    CNOT_coherent_to_fock_test = np.array(
-        [
-            [
-                P_operator_1_in_plus_out_plus_test,
-                P_operator_1_in_minus_out_plus_test,
-                0,
-                0,
-            ],
-            [
-                P_operator_1_in_plus_out_minus_test,
-                P_operator_1_in_minus_out_minus_test,
-                0,
-                0,
-            ],
-            [
-                0,
-                0,
-                P_operator_0_in_plus_out_plus_test,
-                P_operator_0_in_minus_out_plus_test,
-            ],
-            [
-                0,
-                0,
-                P_operator_0_in_plus_out_minus_test,
-                P_operator_0_in_minus_out_minus_test,
-            ],
-        ]
-    )
-
     for j in range(4):
         col_sum = np.sum(CNOT[:, j])
         if col_sum > 0:
@@ -925,11 +989,6 @@ def run_sim_plus_analysis_in_cnot_basis(
         col_sum = np.sum(CNOT_coherent_to_fock[:, j])
         if col_sum > 0:
             CNOT_coherent_to_fock[:, j] /= col_sum
-
-    for j in range(4):
-        col_sum = np.sum(CNOT_coherent_to_fock_test[:, j])
-        if col_sum > 0:
-            CNOT_coherent_to_fock_test[:, j] /= col_sum
 
     p_atom = (P0_0_plus + P0_0_minus + P1_1_minus + P1_1_plus) / 4
 
@@ -941,5 +1000,4 @@ def run_sim_plus_analysis_in_cnot_basis(
         CNOT,
         p_atom,
         CNOT_coherent_to_fock,
-        CNOT_coherent_to_fock_test,
     )
