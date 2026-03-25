@@ -100,9 +100,12 @@ For the atom-photon gate, the single atoms must be prepared in the two ground $m
 
 The first step in achieving this is to optically pump (OP) the atom into the desired state. This is done repeatedly exciting the atom from a level one wants to depopulate it from to an excited state, from which it will then decay into various ground states, determined by the dipole matrix element of the respective transition. In order to then populate the desired state, one uses a frequency for the pump laser, where all ground states one wants to depopoulate are coupled to the excited state, except for the desired one, gradually populating it over time.
 
-In this work, one first pumps the atom into the $F=1, m_F = 0$ state. This is done by deploying two laser beams, one which is resonant to the $2\rightarrow2'$ transition of the $\text{D}_2\text{-line}$ of $^{87}Rb$, which will lead to the depopulation of the $F=2$ manifold and population of the $F=1$ manifold. In order to then populate only the $F=1, m_F=0$ state, one deploys another beam, resonant to the $1\rightarrow1'$ transition of the $\text{D}_2\text{-line}$. Furthermore the beam must be $\pi\text{-polarized}$, as in order to only populate the $F=1,m_F=0$ state, one needs to uses the fact that the $F=1,m_F=0 \rightarrow F'=1,m_F=0$ transition is v forbidden.\cite{SteckRb87}
+In this work, one first pumps the atom into the $F=1, m_F = 0$ state. This is done by deploying two laser beams, one which is resonant to the $2\rightarrow2'$ transition of the $\text{D}_2\text{-line}$ of $^{87}Rb$, which will lead to the depopulation of the $F=2$ manifold and population of the $F=1$ manifold. In order to then populate only the $F=1, m_F=0$ state, one deploys another beam, resonant to the $1\rightarrow1'$ transition of the $\text{D}_2\text{-line}$. Furthermore the beam must be $\pi\text{-polarized}$, as in order to only populate the $F=1,m_F=0$ state, one needs to uses the fact that the $F=1,m_F=0 \rightarrow F'=1,m_F=0$ transition is forbidden.\cite{SteckRb87}
 
-\notetome{Include figure showing the actual protocol}
+\begin{figure}[H]
+	\centering
+	\includesvg{Figures/3_setup/zeeman_pump.svg}
+\end{figure}
 
 Using this technique one is able to populate the $F=1,m_F=0$ level with a probability of $\geq97\%$.\cite{GianvitoC2026}\\
 
@@ -112,7 +115,7 @@ Finding the transition frequency is done by performing a microwave spectroscopy 
 
 The resulting MW spectrum shown in \ref{fig: mw spectroscopy} then shows 3 peaks, which correspond to the $F=1, m_F=0 \leftrightarrow F=2,m_F=0$ and $F=1,m_F=0\leftrightarrow F=2,m_F=\pm1$ transitions. From this one can infer that the optical pumping into the $F=1,m_F=0$ is done with an efficiency of $97(1)\%$.\cite{GianvitoC2026}
 
-\notetome{show plot regarding the transition from $F=1 m_F=0$ to the other states}
+\notetome{show MW spectroscopy regarding the transition from $F=1 m_F=0$ to the other states}
 
 Once the frequency for the $F=1,m_F=0 \leftrightarrow F=2,m_F=0$ transition is known, one can coherently manipulate the atomic population in the ground state. By tuning the MW on resonance, one can drive Rabi oscillations \cite{OpticalResonanceAndTwoLevelAtoms} betwee two ground states, where the population evolution in the Zeeman state of $F=2$ can be modeled as:\cite{RabiOscillationModel}
 
