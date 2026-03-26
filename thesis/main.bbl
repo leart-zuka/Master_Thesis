@@ -2459,45 +2459,6 @@
       \strng{authornamehash}{cc9f717b0ab3876e759aa6ecae1f4fc6}
       \strng{authorfullhash}{cc9f717b0ab3876e759aa6ecae1f4fc6}
       \strng{authorfullhashraw}{cc9f717b0ab3876e759aa6ecae1f4fc6}
-      \field{extraname}{1}
-      \field{sortinit}{2}
-      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{Proceedings of the IEEE}
-      \field{number}{1}
-      \field{title}{Comparison of quantum and semiclassical radiation theories with application to the beam maser}
-      \field{volume}{51}
-      \field{year}{1963}
-      \field{pages}{89\bibrangedash 109}
-      \range{pages}{21}
-      \verb{doi}
-      \verb 10.1109/PROC.1963.1664
-      \endverb
-      \keyw{Quantum mechanics;Masers;Frequency;Electromagnetic radiation;Stability;Noise level;Electromagnetic fields;Tellurium;Energy exchange;Coherence}
-    \endentry
-    \entry{JC1963}{article}{}{}
-      \name{author}{2}{}{%
-        {{hash=750189cbf905cceea863a5e1aed9afaf}{%
-           family={Jaynes},
-           familyi={J\bibinitperiod},
-           given={E.T.},
-           giveni={E\bibinitperiod}}}%
-        {{hash=656c9ef427ca2931e16ff0bc07279924}{%
-           family={Cummings},
-           familyi={C\bibinitperiod},
-           given={F.W.},
-           giveni={F\bibinitperiod}}}%
-      }
-      \strng{namehash}{cc9f717b0ab3876e759aa6ecae1f4fc6}
-      \strng{fullhash}{cc9f717b0ab3876e759aa6ecae1f4fc6}
-      \strng{fullhashraw}{cc9f717b0ab3876e759aa6ecae1f4fc6}
-      \strng{bibnamehash}{cc9f717b0ab3876e759aa6ecae1f4fc6}
-      \strng{authorbibnamehash}{cc9f717b0ab3876e759aa6ecae1f4fc6}
-      \strng{authornamehash}{cc9f717b0ab3876e759aa6ecae1f4fc6}
-      \strng{authorfullhash}{cc9f717b0ab3876e759aa6ecae1f4fc6}
-      \strng{authorfullhashraw}{cc9f717b0ab3876e759aa6ecae1f4fc6}
-      \field{extraname}{2}
       \field{sortinit}{2}
       \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
       \field{labelnamesource}{author}

@@ -1,21 +1,27 @@
 \chapter{Theory}
-What follows is going to be the introduction and explanation of specific concepts required to understand the key points of this thesis.
+This chapter introduces the theoretical framework needed to understand the key points of this thesis. First a general introduction into cavity quantum electrodynamics will be given, alongside the intricacies in the setup that will modify the general theory. Afterwards the reflection from an atom-cavity system will be explored, and finally how it can be used to construct an atom photon gate.
 
 \section{Cavity Quantum Electrodynamics}
 
-The field of \textit{Cavity Quantum Electrodynamics} explains the interaction between a resonator (in this case a Fabry-Perot cavity), and a piece of matter with which the light inside the resonator interacts with (here: a $^{87}\text{Rb}$ atom). By placing the atom between two highly-reflective mirrors forming the optical cavity, one increases the amount of times a photon that is inside a cavity bounces back and forth between the two mirrors. Increasing the amount of bounces thus effectively increases the cross-section by the number of round-trips the photon takes, allowing for a strong light-matter interaction.\cite{RempeReiserer2015}
+The field of \textit{Cavity Quantum Electrodynamics} explains the interaction between a resonator (in this case a Fabry-Perot cavity), and a piece of matter with which the light inside the resonator interacts (here: a $^{87}\text{Rb}$ atom). By placing the atom between two highly-reflective mirrors forming the optical cavity, one increases the number of times a photon that is inside a cavity bounces back and forth between the two mirrors, enhancing the interaction cross-section compared to free space. The strength of this enhancement is captured by the single-atom cooperativity $C=g^2/(2\kappa\gamma)$, which must satisfy $C>1$ for deterministic light-matter interaction.\cite{RempeReiserer2015}
 
-The theoretical model which explains this interaction in a fully quantum mechanical picture is called the \textit{Jaynes-Cummings Model} \cite{JaynesCummings1963} and was named after Edwin Jaynes and Fred Cummings who developed it in 1963. For a first look into this model, we'll be considering a three-level-emitter (i.e. our atom), which is interacting with a single cavity optical mode.
+The theoretical model which explains this interaction in a fully quantum mechanical picture is called the \textit{Jaynes-Cummings Model} \cite{JaynesCummings1963} and was named after Edwin Jaynes and Fred Cummings who developed it in 1963. To introduce this model, we consider a three-level emitter (i.e. the atom), which is interacting with a single cavity optical mode.
 
-The \textit{Jaynes-Cummings} (JC) Model, takes many different quantities into consideration when explaining the interaction and its strength between light and matter.
+The \textit{Jaynes-Cummings} (JC) Model describes the coherent exchange of energy between a quantized cavity field and a two-level transition of the atom. The cavity supports a single optical mode at frequency $\omega_c$.
+The atom, which is also located in the cavity, supports a transition frequency close to $\omega_c$, from a coupled state $\ket{c}$ to an excited state $\ket{e}$ at a frequency $\omega_a$. This transition is treated in the dipole approximation.
+In order to then complete the three-level-emitter picture, we include an uncoupled state $\ket{u}$ with which the photon does not interact due to this state not being resonantly coupled to the cavity light mode. This uncoupled state $\ket{u}$ is what enables the conditional atom-photon gate operation.
 
-The photon located in the cavity (which supports only a single optical mode), has a frequency of $\omega_c$.
-Our atom, which is also located in the cavity, supports a transition frequency close to $\omega_c$, from a coupled state $\ket{c}$ and an excited state $\ket{e}$ at a frequency $\omega_a$, which is described in the dipole approximation.
-In order to then complete our three-level-emitter picture, we include an uncoupled state $\ket{u}$ with which the photon does not interact due to this state not being coupled to the cavity light mode.
+\begin{figure}[htbp]
+	\centering
+	\includesvg[width=0.8\linewidth]{Figures/2_theory/jc_setup.svg}
+	\caption{\notetome{include citation to rempe reiserer paper}}
+\end{figure}
 
-Lastly, any real atom-cavity system, additionally suffers from losses, those mainly being the spontaneous decay of the atomic excitation at a rate of $2\gamma$, and the damping of the light inside our cavity through the absorption or out-coupling by one of the cavity mirrors at a combined rate of $\kappa$.
 
-The full Hamiltonian which describes interaction between the atom and the cavity thus reads \cite{JC1963}
+Lastly, any real atom-cavity system, additionally suffers from losses, primarily the spontaneous decay of the atomic excitation at a rate of $2\gamma$ and the cavity field decay at a rate $\kappa$.
+
+The full Hamiltonian which describes interaction between the atom and the cavity thus reads: \cite{JaynesCummings1963}
+
 \begin{equation}
 	\mathcal{H_{JC}} = \underbrace{\hbar\omega_{c} \hat{a}^\dag\hat{a}}_{\widehat{=}\text{cavity field}} + \underbrace{\hbar\omega_a \hat{\sigma}_{ce}^\dag\hat{\sigma}_{ce}}_{\widehat{=}\text{atom}} + \underbrace{\hbar g(\hat{a}\hat{\sigma}_{ce}^\dag + \hat{a}^\dag\hat{\sigma}_{ce})}_{\widehat{=}\text{light-atom interaction}}
 	\label{eq:jc_hamiltonian_simple}
@@ -23,52 +29,63 @@ The full Hamiltonian which describes interaction between the atom and the cavity
 
 The three terms in \eqref{eq:jc_hamiltonian_simple} describe the energy of the cavity field, the energy of a bare atom, and the coherent coupling between the two governed by a coupling strength $g$.
 
-The operators $a^\dag$ and $a$ are the creation and annihilation operators of the cavity light modes , whereas $\hat{\sigma}_{ce}=\ket{c}\bra{e}$ and $\hat{\sigma}_{ce}^{\dag}=\ket{e}\bra{c}$ are the atomic raising and lowering operators, respectively.
+The operators $\hat{a}^\dag$ and $\hat{a}$ are the creation and annihilation operators of the cavity light modes, whereas $\hat{\sigma}_{ce}^{\dag}=\ket{e}\bra{c}$ and $\hat{\sigma}_{ce}=\ket{c}\bra{e}$ are the atomic raising and lowering operators, respectively.
 
 The form of \eqref{eq:jc_hamiltonian_simple} assumes the so called \textit{Rotating-Wave Approximation} in which fast oscillating terms at optical frequencies can be neglected.
 
 Solving for the eigenenergies of the system one is left with:
 
-\begin{equation}
-	E_\pm (n) = n\hbar\omega_c + \frac{1}{2}\hbar\omega_a \pm \hbar\sqrt{ng^2 + \frac{1}{4}\Delta_{ac}^2}, \quad n\in \mathbb{N}_0
+\begin{align}
+	E_0       & = 0                                                                                                                         \\
+	E_\pm (n) & = n\hbar\omega_c + \hbar\frac{\Delta_{ac}}{2} \pm \frac{\hbar}{2}\sqrt{\Omega_{n}^2 + \Delta_{ac}^2}, \quad n\in \mathbb{N}
 	\label{eq:jc_hamiltonian_eigenenergies}
-\end{equation}
+\end{align}
 
+In \eqref{eq:jc_hamiltonian_eigenenergies}, n is the number of excitation quanta in the system, with $\Omega_n=2g\sqrt{n}$ being the corresponding n-quanta Rabi frequency. The term $\Delta_{ac}$ describes the detuning of the cavity resonance frequency from the atomic transition.
 The main take-away from \eqref{eq:jc_hamiltonian_eigenenergies} is that on resonance ($\omega_a = \omega_c$), the eigenenergies of the system are split by $2\hbar g\sqrt{n}$, giving rise to the so-called \textit{Vacuum Rabi Splitting}.
 
-
-\begin{figure}
-	\includegraphics[width=0.7\linewidth]{Figures/2_theory/jc_setup.png}
+\begin{figure}[h]
 	\centering
+	\includesvg[width=0.8\linewidth]{Figures/2_theory/energy_splitting_jc.svg}
+	\caption{\notetome{include citation to rempe reiserer paper}}
 \end{figure}
+
 
 \subsection{Birefringent Cavity}
 
-Equation \eqref{eq:jc_hamiltonian_simple} only covers the case for having a single cavity light-mode. The present example however features a birefringent cavity, which is achieved by physically changing the geometric shape of the cavity mirror during production of the fiber ends.\cite{ManuelBThesis2023} This forces a change in the optical path lengths between different polarizations, leading to a frequency splitting $\Delta\nu$ proportional to the ellipticity $\epsilon$ of the mirror surfaces:\cite{UphoffFreqSplit2015}
+Equation \eqref{eq:jc_hamiltonian_simple} only covers the case for having a single cavity light-mode. The setup used in this thesis, however, features a birefringent cavity. The birefringence is created by physically changing the geometric shape of the cavity mirror during production of the fiber ends.\cite{ManuelBThesis2023} This forces a change in the optical path lengths between different polarizations, leading to a frequency splitting $\Delta\nu$ proportional to the ellipticity $\epsilon$ of the mirror surfaces:\cite{UphoffFreqSplit2015}
 
 \begin{equation}
 	\Delta\nu = \frac{\nu_{FSR}}{2\pi k}\frac{\epsilon^2}{R_2}.
 	\label{eq:freq_split}
 \end{equation}
 
-The property $\nu_{FSR}$ in \eqref{eq:freq_split} describes the free spectral range, and $k=\frac{2\pi}{\lambda}$ the photon wavenumber.
+The property $\nu_{FSR}$ in \eqref{eq:freq_split} describes the free spectral range, $k=\frac{2\pi}{\lambda}$ the photon wavenumber, and $R_2$ the radius of curvature of the cavity mirror.
 
-This means that we need to consider a system with 2 different light modes for our JC Hamiltonian, which in our case are going to be the $\pi$ and the $V$ modes, whereas we're going to be coupled to the $\pi$ mode, and the $V$ mode will be detuned by $\sim\text{500 MHz}$. This extra consideration can be included in the Hamiltonian as such:
+This means that we need to consider a system with two different light modes for the JC Hamiltonian, which in this case are the $\pi$ and the $V$ modes. However only the $\pi$ mode is resonantly coupled to the $\ket{c}\leftrightarrow\ket{e}$ transition, whereas the V mode is detuned by $\Delta_{\text{biref}}=2\pi\cdot500\text{MHz}$. In the context of this thesis $\Delta_{\text{biref}} \gg \kappa,g,\gamma$. This effectively makes the V-mode uncoupled, and can be neglected in the analytical treatment. It is, however, still included in the Hamiltonian for use in numerical simulations where both modes are driven explicitly. This leads to the extended Hamiltonian:
 
 \begin{equation}
-	H_{JC} = \hbar\omega_{c,\pi}\hat{a}_\pi^\dag\hat{a}_\pi + \hbar(\omega_{c,\pi}+0.5)\hat{a}_V^\dag\hat{a}_V + \hbar\omega_{a} \hat{\sigma}_{ce}^\dag\hat{\sigma}_{ce} + \hbar g(\hat{a}_\pi\hat{\sigma}_{ce}^\dag + \hat{a}_\pi^\dag\hat{\sigma}_{ce} + \hat{a}_V\hat{\sigma}_{ce}^\dag + \hat{a}_V^\dag\hat{\sigma}_{ce})
+	H_{JC} = \hbar\omega_{c,\pi}\hat{a}_\pi^\dag\hat{a}_\pi + \hbar(\omega_{c,\pi}+\Delta_{\text{biref}})\hat{a}_V^\dag\hat{a}_V + \hbar\omega_{a} \hat{\sigma}_{ce}^\dag\hat{\sigma}_{ce} + \hbar g(\hat{a}_\pi\hat{\sigma}_{ce}^\dag + \hat{a}_\pi^\dag\hat{\sigma}_{ce} + \hat{a}_V\hat{\sigma}_{ce}^\dag + \hat{a}_V^\dag\hat{\sigma}_{ce})
 	\label{eq:jc_hamiltonian_w_birefringence}
 \end{equation}
 
 \subsection{External Drive}
 
-At the heart of the atom-photon gate lies the reflection of the incoming photon off of the cavity system. In order to describe this in a quantum mechanical way, one needs to include a hamiltonian, namely a driving hamiltonian $H_{D,S}=i(\epsilon e^{-i\omega_d t} + \epsilon^{*}e^{i\omega_d t})(\hat{a} + \hat{a}^\dagger)$. This hamiltonian $H_{D,S}$ is defined in the Schrödinger picture, and has a complex drive amplitude $\epsilon$ and driving field frequency $\omega_d$. Adding this extra term to \eqref{eq:jc_hamiltonian_w_birefringence}, and changing into the rotating frame of the driving field, one gets the following Hamiltonian:
+At the heart of the atom-photon gate lies the reflection of the incoming photon off the cavity system. In order to describe this in a quantum mechanical way, one needs to include a driving term in the Hamiltonian with the form of $H_{D,S}=i\hbar(\epsilon e^{-i\omega_d t} + \epsilon^{*}e^{i\omega_d t})(\hat{a} + \hat{a}^\dagger)$. This Hamiltonian $H_{D,S}$ is defined in the Schrödinger picture, and has a complex drive amplitude $\epsilon$ and driving field frequency $\omega_d$. After applying the rotating wave approximation (RWA), which neglects the fast oscillating terms in $H_{D,S}$, and changing into the rotating wave frame to remove the explicit time dependence, one gets the following expression:
+
+\begin{equation}
+	H_D = \mathrm{i}\hbar\left(\hat{a}_{s}\epsilon^{*} + \hat{a}_{s}^{\dagger} \epsilon\right)
+	\label{eq:driving_hamiltonian}
+\end{equation}
+where $\hat{a}_s$ denotes the annihilation operator of the cavity mode matching the input photon polarization ($\text{s}=\pi\text{ or V}$).
+
+Adding \eqref{eq:driving_hamiltonian} to \eqref{eq:jc_hamiltonian_w_birefringence}, one gets the following full Hamiltonian:
 
 \begin{equation}
 	\begin{split}
-		H_{JC} = & \hbar\Delta_{c,\pi}\hat{a}_\pi^{\dagger}\hat{a}_\pi + \hbar\left(\Delta_{c,\pi}+0.5\right)\hat{a}_V^{\dagger}\hat{a}_V + \hbar\Delta_{a} \hat{\sigma}_{ce}^{\dagger}\hat{\sigma}_{ce}  \\
-		         & + \hbar g \left( \hat{a}_\pi\hat{\sigma}_{ce}^{\dagger} + \hat{a}_\pi^{\dagger}\hat{\sigma}_{ce} + \hat{a}_V\hat{\sigma}_{ce}^{\dagger} + \hat{a}_V^{\dagger}\hat{\sigma}_{ce} \right) \\
-		         & + \mathrm{i}\left(\hat{a}_{\pi,V}\epsilon^{*} + \hat{a}_{\pi,V}^{\dagger} \epsilon\right)
+		H_{JC} = & \hbar\Delta_{c,\pi}\hat{a}_\pi^{\dagger}\hat{a}_\pi + \hbar\left(\Delta_{c,\pi}+\Delta_{\text{biref}}\right)\hat{a}_V^{\dagger}\hat{a}_V + \hbar\Delta_{a} \hat{\sigma}_{ce}^{\dagger}\hat{\sigma}_{ce} \\
+		         & + \hbar g \left( \hat{a}_\pi\hat{\sigma}_{ce}^{\dagger} + \hat{a}_\pi^{\dagger}\hat{\sigma}_{ce} + \hat{a}_V\hat{\sigma}_{ce}^{\dagger} + \hat{a}_V^{\dagger}\hat{\sigma}_{ce} \right)                  \\
+		         & + \mathrm{i}\hbar\left(\hat{a}_{s}\epsilon^{*} + \hat{a}_{s}^{\dagger} \epsilon\right)
 	\end{split}
 	\label{eq:jc_hamiltonian_w_birefringence_w_drive}
 \end{equation}
@@ -77,17 +94,18 @@ This then gives a definition of the JC Hamiltonian with respect to an external d
 
 \section{Reflection from a Cavity-Atom System}
 
-For us it's important that the information we send in via the photon, won't get lost and will get reflected, thus ensuring that our atom-photon gate is suitable for quantum information processing. Therefor when the light enters our cavity, one must ensure by using proper system parameters that the light has maximum transmission through the first cavity mirror (called outcoupling (OC) mirror) relative to the opposing highly reflective (HR) mirror. The highly reflective mirror on the other hand must have maximum reflection so that the information stored in the photon doesn't get lost after subsequent bounces inside the cavity while it's trying to exit via the outcoupling mirror. The total losses can thus be divided into the following parts:
+For quantum information processing, it is essential that the photonic qubit is preserved upon reflection from the cavity. This requires that light entering through the first mirror — called the outcoupling (OC) mirror — also exits through the same mirror, rather than being lost through the opposing highly reflective (HR) mirror. The HR mirror on the other hand must have maximum reflection, making the cavity one sided, so the light exits predominantly through the OC mirror. The total losses can thus be divided into the following parts:
 
 \begin{equation}
 	\kappa = \kappa_{oc} + \kappa_{HR} + \kappa_{paras}
+	\label{eq:cavity_coupling}
 \end{equation}
 
-The escape probability of our photon is defined by the outcoupling ratio $\frac{\kappa_{oc}}{\kappa}$. This quantity was measured and is $\sim 80\%$.
+In \eqref{eq:cavity_coupling}, $\kappa_{oc}$ and $\kappa_{HR}$ describes the rate at which light couples into and out of the cavity through the OC and HR mirror respectively, whereas $\kappa_{paras}$ describes the rate of losses due to absorption at the mirror surfaces. In order for the light to enter and leave through the OC mirror, one needs to ensure that $\kappa_{oc}\gg \kappa_{HR},\kappa_{paras}$. The escape probability of the photon is then defined by the outcoupling ratio $\frac{\kappa_{oc}}{\kappa}$.\\
 
-Another quantity is the optical mode matching between the reflected light at the first cavity and the incoming light ($\mu_{fr}$) aswell as the optical modes of the incoming light and the optical mode inside of the cavity ($\mu_{fc}$).\\
+Another important quantity is the matching of the spatial modes of the light when coupling into the cavity. As the incoming light gets coupled into the cavity, a mismatch between the spatial modes in transmission and reflection can occur. This lowers the efficiency at which the light can couple to the cavity itself. The mode matching is then given by the overlap integral of the mode functions for the light one is investigating. In this case it is important to quantify the mode matching between the reflected light at the first cavity and the incoming light ($\mu_{fr}$) as well as the one for the incoming light and the optical mode inside of the cavity ($\mu_{fc}$).\\
 
-Our photon that is going to be reflected off of our cavity system can be viewed as an input field. This then can be linked to an output field via input-output formalism.
+The field incident on the cavity is treated as an input field. This then can be linked to an output field via input-output formalism.
 When driving the system only from one side, as it is the case here, the relation between input and output becomes:\cite{GardinerColletIO1985}
 
 \begin{equation}
@@ -95,31 +113,34 @@ When driving the system only from one side, as it is the case here, the relation
 	\label{eq:io_theory}
 \end{equation}
 
-Here \eqref{eq:io_theory} was adjusted to also consider the mode matching parameters. Solving Langevin equations for neglidgable atomic excitation and photonic wave envelopes which vary only on a time scale longer than $\kappa$, one can write down the analytical representation of the reflection amplitude\cite{HuEtAl2008,TieckeEtAl2014,DominikNThesis2021}:
+Here \eqref{eq:io_theory} was adjusted to also consider the mode matching parameters. Solving Langevin equations for weak coherent driving and photonic wave envelopes which vary only on a time scale longer than $\kappa$, one can write down the analytical representation of the reflection amplitude\cite{HuEtAl2008,TieckeEtAl2014,DominikNThesis2021}:
 
 \begin{equation}
-	r(\omega) = \mu_{fr} - \mu_{fc}^2 \frac{2\kappa_{oc}(i\Delta_a + \gamma)}{(i\Delta_c+\kappa)(i\Delta_a+\gamma) + g^2}
+	r(\omega) = \mu_{fr} - \mu_{fc}^2 \frac{2\kappa_{oc}(i\Delta_a + \gamma)}{(i\Delta_{c,\pi}+\kappa)(i\Delta_a+\gamma) + g^2}
 	\label{eq:analytical_reflection}
 \end{equation}
 
-The reflection amplitude in \eqref{eq:analytical_reflection} depends on the detuning $\Delta_{c,a} = \omega - \omega_{c,a}$ between the driving laser frequency and the cavity resonance frequency $\omega_c$ or atomic transition frequency $\omega_a$.
+The reflection amplitude in \eqref{eq:analytical_reflection} depends on the detuning $\Delta_{c,\pi} = \omega - \omega_{c,\pi}$ between the driving laser frequency and the cavity resonance frequency $\omega_{c,\pi}$ (for the $\pi$ mode) and on the detuning relative to the atomic transition frequency $\Delta_{a} = \omega-\omega_a$.\\
 
 \notetome{Include reflection spectrum for different detunings and also phase across different detunings}
 
 \section{Conditional Reflection}
 
-Looking at \eqref{eq:analytical_reflection} one can see that the behavior of the reflection amplitude at zero detuning ($\Delta_a=\Delta_c=0$) is:
+Looking at \eqref{eq:analytical_reflection} one can see that the behavior of the reflection amplitude at zero detuning ($\Delta_a=\Delta_{c,\pi}=0$) is:
 
 \begin{equation}
 	r(\Delta = 0) = \mu_{fr} - \mu_{fc}^2\frac{2\kappa_{oc}\gamma}{\kappa\gamma + g^2}
 	\label{eq:analytical_reflection_zero_detuning}
 \end{equation}
 
-In the event of an uncoupled atom-cavity system ($g=0$), which would be achieved by preparing the atom in the $\ket{u}$ state, the reflection coefficient $r$ is going to be smaller than 0, which would imply a relative phase shift of $\pi$ between the reflected and incoming light field. Placing the atom in the coupled state $\ket{c}$ however, the reflection coefficient $r$ is going to be bigger than 0 (at sufficiently high coopoerativity). Equipped with this knowledge, that there is a relative phase shift of the output field depending on in which state the atom is, allows the realisation of quantum atom-photon gate with the atom being the controlling qubit and the photon being the target qubit.\cite{DuanKimble2004}
+In the event of an uncoupled atom-cavity system (effectively $g=0$), which would be achieved by preparing the atom in the $\ket{u}$ state, the reflection coefficient $r<0$. This would imply a relative phase shift of $\pi$ between the reflected and incoming light field ($a_{out}(t) \approx -a_{in}(t)$). Preparing the atom in the coupled state $\ket{c}$ however, the Vacuum Rabi Splitting shifts the cavity resonances to $\omega_c\pm g$, so the cavity appears off-resonant for a photon at $\omega_c$. The photon is therefore reflected from the OC mirror without entering the cavity, acquiring no phase shift, which is mirrored by a reflection coefficient of $r>0$ ($a_{out}(t) \approx a_{in}(t)$). A $V$ polarized photon, being far detuned from the cavity resonance by $\Delta_{\text{biref}}$, is reflected without entering the cavity and acquires no phase shift, regardless of the atomic state.
+This state-dependent phase shift of the output field depending on the state of the atom, enables the realisation of a quantum atom-photon gate with the atom being the controlling qubit and the photon being the target qubit.\cite{DuanKimble2004}
 
 \subsection{Reflection in CPF basis}
 
-Changing the nomenclature to match that regularly used in quantum computing, the uncoupled state of the atom is going to be the $\ket{0}$ state, and the coupled one the $\ket{1}$ state. Our photon which as stated before, is going to be either $\pi\text{-polarized}$ or V-polarized, will thus be represented as the input states $\ket{\pi}$ and $\ket{V}$. For the case of our atom being in the $\ket{0}$ state and us sending in a photon which is resonant to the $\pi\text{-mode}$ of the cavity (here: $\ket{\pi}$), the output-field will receive a phase flip, an none for all the other cases either due to being far detuned from the cavity resonance (case of sending $\ket{V}$) and/or atom being in the coupled case $\ket{1}$ and the photon thus getting reflected off of the first cavity mirror:
+Adopting standard quantum computing notation, the uncoupled state of the atom is the $\ket{0}$ state, and the coupled one the $\ket{1}$ state. The photon, either $\pi\text{-polarized}$ or V-polarized, is represented as the input states $\ket{\pi}$ and $\ket{V}$. Furthermore, for all input states, the input drive is resonant with the $\pi$ mode of the birefringent cavity.
+
+For an input state $\ket{0,\pi}$, meaning the atom is prepared in the uncoupled state $\ket{0}$ and a $\pi$-polarized photon is sent in, the photon will be able to enter the cavity and (ideally) exit through the OC mirror, with a $\pi$ phase-shift. For the input state $\ket{1,\pi}$, the Vacuum Rabi splitting shifts the cavity resonance away from the photon frequency, causing it to be reflected without a phase shift. When sending a $\ket{V}$ photon, it will get reflected off of the OC mirror regardless, due to the birefringence of the cavity. This results in the following reflections:
 
 \begin{align*}
 	\ket{0,\pi} & \rightarrow-\ket{0,\pi} \\
@@ -128,7 +149,7 @@ Changing the nomenclature to match that regularly used in quantum computing, the
 	\ket{1,V}   & \rightarrow\ket{1,V}    \\
 \end{align*}
 
-From this we deduce that output from the atom-photon reflection gives us a CPF gate. This conditional phase shift allows the construction of a universal quantum gate that can be transformed into any two-qubit gate using rotations of the individual qubits, which in the case of the photon can be done via retardation waveplates.
+This output from the atom-photon reflection gives us a \textit{Controlled Phase Flip} (CPF) gate. This conditional phase shift allows the construction of a universal quantum gate that can be transformed into any two-qubit gate using rotations of the individual qubits, which in the case of the photon can be done via retardation waveplates.
 
 \subsection{Reflection in CNOT basis}
 
@@ -144,10 +165,8 @@ and keeping the atom either in the coupled ($\ket{1}$) or uncoupled case ($\ket{
 \begin{align*}
 	\ket{0,+} & \rightarrow \ket{0,-} \\
 	\ket{0,-} & \rightarrow \ket{0,+} \\
-	\ket{1,+} & \rightarrow \ket{1,-} \\
-	\ket{1,+} & \rightarrow \ket{1,-} \\
+	\ket{1,+} & \rightarrow \ket{1,+} \\
+	\ket{1,-} & \rightarrow \ket{1,-} \\
 \end{align*}
 
-This then tells us, that simply by using a superposition of our CPF basis, our CPF gate now represents an atom-photon controlled-NOT (CNOT) gate.
-
-\notetome{Maybe also include brewster plate stuff here, although not quite sure}
+In the new photonic basis $\left\{\ket{+},\ket{-}\right\}$, the CPF gate is equivalent to a controlled-NOT (CNOT) gate, with the atom as the controlling qubit and the photon polarization as the target qubit. The photon polarization is flipped ($\ket{+}\leftrightarrow\ket{-}$) when the atom is in $\ket{0}$, and left unchanged when the atom is in $\ket{1}$.
