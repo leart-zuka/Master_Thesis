@@ -32,7 +32,7 @@ def reflection_coefficient(
 
 
 # Compute over detuning range
-detunings = np.linspace(-2, 2, 500)
+detunings = np.linspace(-0.5, 0.5, 10000)
 reflectivities = np.zeros_like(detunings)
 phase_shifts = np.zeros_like(detunings)
 
@@ -43,8 +43,8 @@ for i, detuning in enumerate(detunings):
         mu_fc_phi=params_dir["mu_fc_phi"],
         kappa=params_dir["kappa"],
         kappa_oc=params_dir["kappa_oc"],
-        d_w_r=detuning,
-        d_w_a=detuning,
+        d_w_r=2 * np.pi * detuning,
+        d_w_a=2 * np.pi * detuning,
         gamma=params_dir["gamma"],
         # g=params_dir["g"],
         g=0,
