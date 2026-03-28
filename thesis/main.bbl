@@ -568,6 +568,46 @@
       \verb https://link.aps.org/doi/10.1103/PhysRevLett.134.053402
       \endverb
     \endentry
+    \entry{Benioff1980}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=4812aa87e8737abc646b2e39601ec05c}{%
+           family={Benioff},
+           familyi={B\bibinitperiod},
+           given={Paul},
+           giveni={P\bibinitperiod}}}%
+      }
+      \strng{namehash}{4812aa87e8737abc646b2e39601ec05c}
+      \strng{fullhash}{4812aa87e8737abc646b2e39601ec05c}
+      \strng{fullhashraw}{4812aa87e8737abc646b2e39601ec05c}
+      \strng{bibnamehash}{4812aa87e8737abc646b2e39601ec05c}
+      \strng{authorbibnamehash}{4812aa87e8737abc646b2e39601ec05c}
+      \strng{authornamehash}{4812aa87e8737abc646b2e39601ec05c}
+      \strng{authorfullhash}{4812aa87e8737abc646b2e39601ec05c}
+      \strng{authorfullhashraw}{4812aa87e8737abc646b2e39601ec05c}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{In this paper a microscopic quantum mechanical model of computers as represented by Turing machines is constructed. It is shown that for each numberN and Turing machineQ there exists a HamiltonianHNQ and a class of appropriate initial states such that if c is such an initial state, then$\psi$QN(t)=exp(−1HNQt)$ \psi$QN(0) correctly describes at timest3,t6,⋯,t3N model states that correspond to the completion of the first, second, ⋯, Nth computation step ofQ. The model parameters can be adjusted so that for an arbitrary time interval$\Delta$ aroundt3,t6,⋯,t3N, the ``machine'' part of$\psi$QN(t) is stationary.}
+      \field{issn}{1572-9613}
+      \field{journaltitle}{Journal of Statistical Physics}
+      \field{month}{5}
+      \field{number}{5}
+      \field{title}{The computer as a physical system: A microscopic quantum mechanical Hamiltonian model of computers as represented by Turing machines}
+      \field{volume}{22}
+      \field{year}{1980}
+      \field{pages}{563\bibrangedash 591}
+      \range{pages}{29}
+      \verb{doi}
+      \verb 10.1007/BF01011339
+      \endverb
+      \verb{urlraw}
+      \verb https://doi.org/10.1007/BF01011339
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.1007/BF01011339
+      \endverb
+    \endentry
     \entry{ShorrsAlgorithm}{article}{}{}
       \name{author}{1}{}{%
         {{hash=7082a9c99d5d51479d4cfba6bbac2d30}{%
@@ -2148,8 +2188,8 @@
       \strng{authornamehash}{7045f42d1fb08cb8155550ef4cb83f19}
       \strng{authorfullhash}{7045f42d1fb08cb8155550ef4cb83f19}
       \strng{authorfullhashraw}{7045f42d1fb08cb8155550ef4cb83f19}
-      \field{sortinit}{1}
-      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{issue}{12}
@@ -2186,8 +2226,8 @@
       \strng{authornamehash}{aea70dd628dc6535ce5213ef85f63855}
       \strng{authorfullhash}{aea70dd628dc6535ce5213ef85f63855}
       \strng{authorfullhashraw}{aea70dd628dc6535ce5213ef85f63855}
-      \field{sortinit}{1}
-      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{issn}{1476-4687}
@@ -2546,8 +2586,8 @@
       \strng{authornamehash}{f369432d96970d324a97c4e798e3efb4}
       \strng{authorfullhash}{1bfc5f75d07388e8144da13776fd63db}
       \strng{authorfullhashraw}{1bfc5f75d07388e8144da13776fd63db}
-      \field{sortinit}{2}
-      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{New Journal of Physics}
