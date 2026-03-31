@@ -1,5 +1,6 @@
 import argparse
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from helpers.input_shapes import input_shape
 
@@ -39,9 +40,10 @@ cavity = CavitySystem(
     atom_dim=4,
     Delta_c_pi=2 * np.pi * 0,
     Delta_c_v=2 * np.pi * 0.5,
-    G0_kc=2 * np.pi * 0.024,
+    G0_kc=2 * np.pi * 0.026,
     Kappa=2 * np.pi * 0.058,
-    v_transmission=0.263,
+    # v_transmission=0.263,
+    v_transmission=0.208,
 )
 
 system = SystemOperators(atom=atom, cavity=cavity)
@@ -56,10 +58,10 @@ psi_1 = states.psi_atom_1()
 c_ops = dissipation.collapse_operators()
 e_ops = observables.expectation_ops()
 
-photon_numbers = np.logspace(-1, 2, 10)
+# photon_numbers = np.logspace(-1, 2, 10)
 # photon_numbers = np.linspace(2, 1, 20)
 # photon_numbers = np.logspace(2, 6, 20)
-# photon_numbers = np.concatenate([[0], np.logspace(-3, 0, 19)])
+photon_numbers = np.concatenate([[0], np.logspace(-3, 0.3, 19)])
 fidelities = np.zeros_like(photon_numbers)
 fidelities_analytical = np.zeros_like(photon_numbers)
 fidelities_pure_sim = np.zeros_like(photon_numbers)
@@ -79,6 +81,7 @@ amps = convert_photon_numbers_to_amps(tlist, args_ref, photon_numbers, input_sha
 
 eta = 0.9 * 0.85 * 0.97
 r_dark = 1e-4
+r_dark = 3e-4
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Scan of Photon Numbers")
@@ -144,14 +147,14 @@ if __name__ == "__main__":
         print(p_atom)
 
         atomic_state[i] = p_atom
-        # other_fidelities[i] = (
-        #     compute_fidelity_from_prob_matrix(
-        #         CNOT_coherent_to_fock,
-        #         basis="cnot",
-        #     )
-        #     * p_atom
-        #     + (1 - p_atom) * 0.5
-        # )
+        other_fidelities[i] = (
+            compute_fidelity_from_prob_matrix(
+                CNOT,
+                basis="cnot",
+            )
+            * p_atom
+            + (1 - p_atom) * 0.5
+        )
 
         # Pure Sim
         if post_select_atom:
@@ -268,4 +271,9 @@ if __name__ == "__main__":
     plt.grid(True, which="both", ls="-", alpha=0.1)
 
     comparisson.savefig("./plots/comparisson_masked.svg")
+
+    comb_array = np.array([photon_numbers, other_fidelities])
+    # df = pd.DataFrame(comb_array.T, columns=["Photon Numbers", "Fidelities"])
+    # df.to_csv("./sim_data.csv")
+
     plt.show()
