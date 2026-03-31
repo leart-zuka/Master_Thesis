@@ -27,15 +27,15 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="true"
-     inkscape:zoom="2"
-     inkscape:cx="549.75"
-     inkscape:cy="374.75"
+     inkscape:zoom="0.70710678"
+     inkscape:cx="566.39253"
+     inkscape:cy="470.22601"
      inkscape:window-width="1876"
      inkscape:window-height="1194"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer5"><inkscape:grid
+     inkscape:current-layer="layer1"><inkscape:grid
        id="grid29"
        units="mm"
        originx="0"
@@ -1944,7 +1944,7 @@
            style="font-size:6.66667px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect32);display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.623622;stroke-dasharray:none;stroke-opacity:1"><tspan
              x="200.31445"
              y="418.03459"
-             id="tspan3">PBS
+             id="tspan1">PBS
 </tspan></text><path
            style="fill:#000000;fill-opacity:0;stroke:#ff10d3;stroke-width:0.158455;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker2)"
            d="m 50.588384,134.87352 v 11.06683"
@@ -1955,7 +1955,7 @@
            style="font-size:6.66667px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect14);display:inline;fill:#000000;fill-opacity:1;stroke:#ffa710;stroke-width:0.623622;stroke-opacity:0"><tspan
              x="328.81836"
              y="285.75138"
-             id="tspan4">Birefringent Cavity</tspan></text><g
+             id="tspan2">Birefringent Cavity</tspan></text><g
            style="overflow:visible"
            id="g58"
            transform="matrix(0,0.26458333,-0.26458333,0,53.687581,146.02421)"><g
@@ -2531,8 +2531,8 @@
        style="fill:none;stroke:#ff0000;stroke-width:0.148;stroke-opacity:1"
        d="M 190,115 V 82.999997"
        id="path64" /><path
-       style="fill:none;stroke:#ff0000;stroke-width:0.147998;stroke-opacity:1"
-       d="m 190.00008,75.999941 -0.6902,-13.996264"
+       style="fill:none;stroke:#ff0000;stroke-width:0.17815;stroke-opacity:1"
+       d="M 190.00008,75.999941 189,62.003677"
        id="path65" /><path
        style="fill:none;stroke:#0000ff;stroke-width:0.148;stroke-opacity:1"
        d="M 155.00028,87.749895 154.99975,71.49957"
@@ -2937,7 +2937,7 @@
 		</g></g><g
        style="display:inline;overflow:visible"
        id="g22"
-       transform="matrix(0.26458333,0,0,0.26458333,184.32522,75.970644)"
+       transform="matrix(0,-0.26458333,0.26458333,0,185.60951,85.341538)"
        inkscape:label="aom"><g
          id="Layer_1-43"
          i:layer="yes"
@@ -3019,7 +3019,7 @@
 				<polygon
    i:knockout="Off"
    fill="url(#XMLID_9_)"
-   points="5.765,7.773 5.765,10.123 34.612,10.123 36.971,10.123 36.971,7.773 34.612,7.773 "
+   points="36.971,10.123 36.971,7.773 34.612,7.773 5.765,7.773 5.765,10.123 34.612,10.123 "
    id="polygon10"
    style="fill:url(#XMLID_9_)" />
 				<linearGradient
@@ -3088,7 +3088,7 @@
 				<polygon
    i:knockout="Off"
    fill="url(#XMLID_10_)"
-   points="5.765,10.713 5.765,13.063 34.612,13.063 36.971,13.063 36.971,10.713 34.612,10.713 "
+   points="36.971,13.063 36.971,10.713 34.612,10.713 5.765,10.713 5.765,13.063 34.612,13.063 "
    id="polygon20"
    style="fill:url(#XMLID_10_)" />
 				<linearGradient
@@ -3157,7 +3157,7 @@
 				<polygon
    i:knockout="Off"
    fill="url(#XMLID_11_)"
-   points="5.765,13.653 5.765,16.004 34.612,16.004 36.971,16.004 36.971,13.653 34.612,13.653 "
+   points="36.971,16.004 36.971,13.653 34.612,13.653 5.765,13.653 5.765,16.004 34.612,16.004 "
    id="polygon30"
    style="fill:url(#XMLID_11_)" />
 				<linearGradient
@@ -3226,7 +3226,7 @@
 				<polygon
    i:knockout="Off"
    fill="url(#XMLID_12_)"
-   points="5.765,16.594 5.765,18.943 34.612,18.943 36.971,18.943 36.971,16.594 34.612,16.594 "
+   points="36.971,18.943 36.971,16.594 34.612,16.594 5.765,16.594 5.765,18.943 34.612,18.943 "
    id="polygon40"
    style="fill:url(#XMLID_12_)" />
 				<linearGradient
@@ -3295,7 +3295,7 @@
 				<polygon
    i:knockout="Off"
    fill="url(#XMLID_13_)"
-   points="5.765,19.533 5.765,21.883 34.612,21.883 36.971,21.883 36.971,19.533 34.612,19.533 "
+   points="36.971,21.883 36.971,19.533 34.612,19.533 5.765,19.533 5.765,21.883 34.612,21.883 "
    id="polygon50"
    style="fill:url(#XMLID_13_)" />
 				<linearGradient
@@ -3364,7 +3364,7 @@
 				<polygon
    i:knockout="Off"
    fill="url(#XMLID_14_)"
-   points="5.765,22.473 5.765,24.822 34.612,24.822 36.971,24.822 36.971,22.473 34.612,22.473 "
+   points="36.971,24.822 36.971,22.473 34.612,22.473 5.765,22.473 5.765,24.822 34.612,24.822 "
    id="polygon60"
    style="fill:url(#XMLID_14_)" />
 				<polygon
@@ -3372,7 +3372,7 @@
    fill="none"
    stroke="#000000"
    stroke-width="0.75"
-   points="5.827,7.523 5.827,24.594 34.641,24.594 37.004,24.594 37.004,7.523 34.641,7.523 "
+   points="37.004,24.594 37.004,7.523 34.641,7.523 5.827,7.523 5.827,24.594 34.641,24.594 "
    id="polygon61" />
 				<rect
    x="5.8439999"
@@ -3618,7 +3618,7 @@
 		</g></g><g
        style="overflow:visible"
        id="g24"
-       transform="matrix(0,-0.26458333,0.26458333,0,185.94363,62.290198)"
+       transform="matrix(-0.01171985,-0.26432363,0.26432363,-0.01171985,185.48527,62.636732)"
        inkscape:label="Mirr+Lense"><g
          id="Layer_1-59"
          i:layer="yes"
@@ -3686,7 +3686,7 @@
        i:layer="yes"
        i:dimmedPercent="50"
        i:rgbTrio="#4F008000FFFF"
-       transform="matrix(0,-0.26458333,0.26458333,0,186.69346,66.427268)"
+       transform="matrix(-0.0135834,-0.26423442,0.26423442,-0.0135834,186.29565,66.973987)"
        style="overflow:visible"
        inkscape:label="L/4">
 			<linearGradient
@@ -5053,4 +5053,30 @@
        d="m 155,66.865909 c 0.0887,-0.978213 -0.044,-1.975875 -0.38552,-2.896835 -0.40054,-1.080253 -1.08528,-2.04818 -1.94189,-2.818638 -0.85661,-0.770458 -1.88209,-1.345477 -2.97279,-1.716633 -2.54501,-0.866047 -5.37194,-0.605283 -7.91467,0.267433 -0.99754,0.342375 -1.9677,0.778226 -2.84698,1.360607 -1.33334,0.883121 -2.43185,2.086968 -3.34062,3.402957 -1.15731,1.675904 -2.02968,3.564362 -2.42062,5.563161 -0.3031,1.54971 -0.31388,3.15608 -0.0316,4.709718"
        id="path68"
        inkscape:path-effect="#path-effect68"
-       inkscape:original-d="m 155,66.865909 c -0.13882,-0.865912 -0.24671,-1.896835 -0.38552,-2.896835 -0.13882,-0.999998 -3.22423,-3.013205 -4.91468,-4.535271 -1.69045,-1.522063 -5.4106,0.257125 -7.91467,0.267433 -2.50407,0.01032 -1.84698,0.84885 -2.84698,1.360607 -0.99999,0.511757 -2.16503,2.203645 -3.34062,3.402957 -1.1756,1.199308 -1.59622,3.76247 -2.42062,5.563161 -0.8244,1.80069 -0.08,3.130489 -0.0316,4.709718" /></g></svg>
+       inkscape:original-d="m 155,66.865909 c -0.13882,-0.865912 -0.24671,-1.896835 -0.38552,-2.896835 -0.13882,-0.999998 -3.22423,-3.013205 -4.91468,-4.535271 -1.69045,-1.522063 -5.4106,0.257125 -7.91467,0.267433 -2.50407,0.01032 -1.84698,0.84885 -2.84698,1.360607 -0.99999,0.511757 -2.16503,2.203645 -3.34062,3.402957 -1.1756,1.199308 -1.59622,3.76247 -2.42062,5.563161 -0.8244,1.80069 -0.08,3.130489 -0.0316,4.709718" /><rect
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+       id="rect15"
+       width="5.1679964"
+       height="0.19302876"
+       x="183.832"
+       y="67.903481" /><rect
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+       id="rect15-3"
+       width="5.1676579"
+       height="0.19301398"
+       x="189.58995"
+       y="-68.096504"
+       transform="scale(1,-1)" /><path
+       style="fill:#000000;fill-opacity:1;stroke:#ff0101;stroke-width:0.3;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:0.6,0.3;stroke-opacity:0.43253967;paint-order:normal;stroke-dashoffset:0"
+       d="m 190,73.999997 v -5.88803"
+       id="path57" /><text
+       xml:space="preserve"
+       style="font-size:3.52777px;writing-mode:lr-tb;direction:ltr;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0;paint-order:normal"
+       x="194.20363"
+       y="81.22197"
+       id="text57"><tspan
+         sodipodi:role="line"
+         style="stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0"
+         x="194.20363"
+         y="81.22197"
+         id="tspan58">AOM</tspan></text></g></svg>
