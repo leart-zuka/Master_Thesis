@@ -182,5 +182,5 @@ def plot_average_poincare_point(
 #     show_plot=True,
 # )
 plot_average_poincare_point(
-    "data", "_start", "", "State Initialization", show_plot=True
+    "data", "_reflection_1", "", "State Initialization", show_plot=True
 )

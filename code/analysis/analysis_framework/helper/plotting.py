@@ -71,7 +71,7 @@ def channels_histo(
             label=detectors[i],
             color=colors[i],
         )
-        ax.legend(loc=6, fontsize=afs)
+        # ax.legend(loc=6, fontsize=afs)
         ax.set_ylabel("# clicks", fontsize=afs)
         ax1.set_ylabel("rate", fontsize=afs)
 
@@ -99,7 +99,8 @@ def channels_histo(
             )  # 2-2' pumping dark counts
 
         for i, gate in enumerate(gates):
-            ax.axvline(gate * 1e3, color=gateColors[i])
+            ax.axvline(gate * 1e3, color=gateColors[i], label=i)
+        ax.legend(loc=6, fontsize=afs)
     ax.set_xlabel("Time (ms)", fontsize=afs)
 
     f.suptitle(filename + " - Trace Histogram")

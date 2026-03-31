@@ -10,7 +10,8 @@ from rich.console import Console
 import matplotlib.pyplot as plt
 from pathlib import Path
 from scipy.optimize import curve_fit
-from helper.fitting import R_coupled
+from helper.fitting import R_coupled, R_coupled_reparam, R_coupled_star
+from helper.printing import pm
 from helper.numba_functions import (
     get_binary_up_and_down,
     get_data_from_main_h5_file,
@@ -84,7 +85,7 @@ class Analyzer:
         file_name: str,
         path: str | Path | None = None,
         file_type: str = ".h5",
-        mean_kc_counts: int = 2500,
+        mean_kc_counts: int = 1500,
         no=10,
     ):
         if self.data_dir is None:
@@ -95,7 +96,7 @@ class Analyzer:
 
         # ------ We get the data ------
         self.data_arr = get_data_from_main_h5_file(base, file_name, file_type)
-        wt_kc = 0.6 * mean_kc_counts  # witness threshold short cavity
+        wt_kc = 0.5 * mean_kc_counts  # witness threshold short cavity
         twot = 2 * mean_kc_counts  # two atom threshold
         atom_df = pd.DataFrame()
         data_photon_grouped = []
@@ -392,71 +393,128 @@ class Analyzer:
         )
 
         if fit_function:
-            p0 = [
-                # A (normalization, negative guess here to match scaling of data)
-                -27,
-                0.187,  # f_res (MHz offset of resonance)
-                30,  # g (coupling strength, MHz)
-                58,  # kappa (total cavity decay rate, MHz)
-                58 * 0.85,  # kappa_oc (outcoupling, ~85% of total kappa)
-                0.978,  # MM_rf (close to ideal)
-                0.873,  # MM_fc (80% coupling in)
-                3.0333,  # gamma (free space decay rate, MHz)
-                0.01,  # offset (background level)
-                0.0,  # a (slope term for detuning-dependent broadening)
-            ]
+            # p0 = [
+            #     0.187,  # f_res (MHz offset of resonance)
+            #     -27,  # A (normalization, negative guess here to match scaling of data)
+            #     30,  # g (coupling strength, MHz)
+            #     58,  # kappa (total cavity decay rate, MHz)
+            #     58 * 0.85,  # kappa_oc (outcoupling, ~85% of total kappa)
+            #     0.978,  # MM_rf (close to ideal)
+            #     0.873,  # MM_fc (80% coupling in)
+            #     0.01,  # offset (background level)
+            #     0.0,  # a (slope term for detuning-dependent broadening)
+            # ]
+            #
+            # bounds = (
+            #     [
+            #         -np.inf,
+            #         -np.inf,
+            #         10,
+            #         58,
+            #         49,
+            #         0.972,
+            #         0.871,
+            #         -np.inf,
+            #         -np.inf,
+            #     ],
+            #     [
+            #         np.inf,
+            #         np.inf,
+            #         50,
+            #         59,
+            #         50,
+            #         0.984,
+            #         0.875,
+            #         np.inf,
+            #         np.inf,
+            #     ],
+            # )
+            # popt, pcov = curve_fit(
+            #     R_coupled,
+            #     frequency_span,
+            #     binary_up_mean + np.flip(binary_down_mean),
+            #     p0,
+            #     bounds=bounds,
+            #     sigma=binary_up_err + np.flip(binary_down_err),
+            #     absolute_sigma=True,
+            #     maxfev=20000,
+            # )
+            # pcov = np.sqrt(np.diag(pcov))
+            #
+            # p0_r = [
+            #     0.187,  # f_res
+            #     -27,  # A
+            #     30,  # g
+            #     58,  # kappa
+            #     (58 * 0.85) * 0.873,  # K ~ kappa_oc*MM_fc
+            #     0.978,  # B ~ MM_rf
+            #     0.01,  # offset
+            #     0.0,  # a
+            # ]
+            #
+            # bounds_r = (
+            #     [-np.inf, -np.inf, 10, 58, 0, 0.95, -np.inf, -np.inf],
+            #     [np.inf, np.inf, 50, 59, 100, 1.00, np.inf, np.inf],
+            # )
+            #
+            # popt, pcov = curve_fit(
+            #     R_coupled_reparam,
+            #     frequency_span,
+            #     binary_up_mean + np.flip(binary_down_mean),
+            #     p0=p0_r,
+            #     bounds=bounds_r,
+            #     sigma=binary_up_err + np.flip(binary_down_err),
+            #     absolute_sigma=True,
+            #     maxfev=20000,
+            # )
+            #
+            # plt.plot(
+            #     frequency_span,
+            #     R_coupled_reparam(frequency_span, *popt),
+            #     label="Model fit",
+            #     color="red",
+            #     linewidth=3,
+            #     linestyle="-.",
+            # )
+            #
+            p0_r = [50, -27, 0.2, 0.2, 0.01]
 
-            bounds = (
-                [
-                    -np.inf,
-                    0.01,
-                    10,
-                    58,
-                    49,
-                    0.972,
-                    0.871,
-                    3.0318,
-                    -np.inf,
-                    -np.inf,
-                ],
-                [
-                    np.inf,
-                    0.3,
-                    50,
-                    59,
-                    50,
-                    0.984,
-                    0.875,
-                    3.0354,
-                    np.inf,
-                    np.inf,
-                ],
+            bounds_r = (
+                [10, -50, 0.0, -5.0, 0.0],
+                [100, 50, 10, 5, 1.0],
             )
+
             popt, pcov = curve_fit(
-                R_coupled,
+                R_coupled_star,
                 frequency_span,
                 binary_up_mean + np.flip(binary_down_mean),
-                p0,
-                bounds=bounds,
-                maxfev=10000,
+                p0=p0_r,
+                bounds=bounds_r,
+                sigma=binary_up_err + np.flip(binary_down_err),
+                absolute_sigma=True,
+                maxfev=20000,
             )
 
-            pcov = np.sqrt(np.diag(pcov))
             plt.plot(
                 frequency_span,
-                R_coupled(frequency_span, *popt),
+                R_coupled_star(frequency_span, *popt),
                 label="Model fit",
                 color="red",
                 linewidth=3,
                 linestyle="-.",
             )
-            plt.suptitle(
-                "\n $\\mathbf{g:\\ %.1f\\ MHz\\ \\pm\\ %.1f\\ MHz}$"
-                % (
-                    popt[2],
-                    pcov[2],
-                )
-            )
+
+            pcov = np.sqrt(np.diag(pcov))
+
+            lines = [
+                rf"$\mathbf{{g}}$: {pm(popt[0], pcov[0], '{:.2f}')} MHz",
+                rf"$\mathbf{{f_{{res}}}}$: {pm(popt[1], pcov[1], '{:.4f}')} MHz",
+                rf"$\mathbf{{A}}$: {pm(popt[2], pcov[2], '{:.4f}')}",
+                rf"$\mathbf{{offset}}$: {pm(popt[3], pcov[3], '{:.3g}')}",
+                rf"$\mathbf{{a}}$: {pm(popt[4], pcov[4], '{:.3g}')}",
+            ]
+
+            plt.suptitle("\n".join(lines))
 
         plt.errorbar(
             frequency_span,

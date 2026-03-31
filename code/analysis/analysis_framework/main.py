@@ -2,11 +2,10 @@ from helper.handler import AnalysisHandler
 from helper.analysis_params import (
     ParamDictNMS,
     ParamDictReflection,
-    ParamDictReflection_atom_0,
-    ParamDictReflection_atom_1,
 )
 from helper.printing import pretty_print_gate
 from helper.plotting import plot_gate_3d
+import numpy as np
 
 if __name__ == "__main__":
     log_dir = "./"  # unix file type convention as windows can deal with it, but not the other way around
@@ -16,8 +15,8 @@ if __name__ == "__main__":
         log_dir=log_dir,
         base_data_dir=base_data_dir,
         year=2026,
-        month=2,
-        day_topic="16 - Controlled Reflection Resonant Light all Bases",
+        month=3,
+        day_topic="17 - Resonant Reflection",
     )
 
     """
@@ -34,107 +33,33 @@ if __name__ == "__main__":
                 - folder: str (but will need to be constructed from multiple variables in order to keep it ✨variable✨)
                 - file_names: List[str]
     """
-    file_list_coupled = [
-        "16_02_26_Resonant_Reflection_Atom_1_H_1",
-        "16_02_26_Resonant_Reflection_Atom_1_V_1",
-        "16_02_26_Resonant_Reflection_Atom_1_A_1",
-        "16_02_26_Resonant_Reflection_Atom_1_D_1",
-        "16_02_26_Resonant_Reflection_Atom_1_R_1",
-        "16_02_26_Resonant_Reflection_Atom_1_L_4",
-    ]
-    file_list_uncoupled = [
-        "16_02_26_Resonant_Reflection_Atom_0_H_1",
-        "16_02_26_Resonant_Reflection_Atom_0_V_1",
-        "16_02_26_Resonant_Reflection_Atom_0_A_1",
-        "16_02_26_Resonant_Reflection_Atom_0_D_1",
-        "16_02_26_Resonant_Reflection_Atom_0_R_1",
-        "16_02_26_Resonant_Reflection_Atom_0_L_1",
-    ]
-
-    cphase_file_list = [
-        "16_02_26_Resonant_Reflection_Atom_0_H_1",
-        "16_02_26_Resonant_Reflection_Atom_0_V_1",
-        "16_02_26_Resonant_Reflection_Atom_1_H_1",
-        "16_02_26_Resonant_Reflection_Atom_1_V_1",
-    ]
-
-    cnot_rl_file_list = [
-        "16_02_26_Resonant_Reflection_Atom_0_L_3",
-        "16_02_26_Resonant_Reflection_Atom_0_R_1",
-        "16_02_26_Resonant_Reflection_Atom_1_L_4",
-        "16_02_26_Resonant_Reflection_Atom_1_R_1",
-    ]
-
-    cnot_ad_file_list = [
-        "16_02_26_Resonant_Reflection_Atom_0_A_1",
-        "16_02_26_Resonant_Reflection_Atom_0_D_1",
-        "16_02_26_Resonant_Reflection_Atom_1_A_1",
-        "16_02_26_Resonant_Reflection_Atom_1_D_1",
-    ]
-
-    # cunt = handler.reflection_analysis(
-    #     files=file_list_uncoupled,
-    #     parameters=ParamDictReflection,
-    #     # plot_histogram=True,
-    # )
-
-    cphase = handler.gate_anlaysis(
-        filename_hal_atom_0=cphase_file_list[0],
-        filename_vdr_atom_0=cphase_file_list[1],
-        filename_hal_atom_1=cphase_file_list[2],
-        filename_vdr_atom_1=cphase_file_list[3],
-        parameters_atom_0=ParamDictReflection_atom_0,
-        parameters_atom_1=ParamDictReflection_atom_1,
-        post_select_sd=True,
-        # plot_histogram=True,
-    )
-    plot_gate_3d(
-        cphase,
-        title=r"CPHASE Gate ($\pi$/V basis)",
-        file_name="Cnot_HV",
-        fidelity_indices=[(0, 0), (1, 1), (2, 2), (3, 3)],
-        atom_basis=["|0⟩", "|1⟩"],
-        photon_basis=["π", "V"],
-        save_fig=True,
+    file_list = ["17_03_26_NMS_Spectroscopy_25_300_100_points_1"]
+    handler.analyzer.normal_mode_spectroscopy(
+        file_list[0], ParamDictNMS, fit_function=True
     )
 
-    cnot = handler.gate_anlaysis(
-        filename_hal_atom_0=cnot_rl_file_list[0],
-        filename_vdr_atom_0=cnot_rl_file_list[1],
-        filename_hal_atom_1=cnot_rl_file_list[2],
-        filename_vdr_atom_1=cnot_rl_file_list[3],
-        parameters_atom_0=ParamDictReflection_atom_0,
-        parameters_atom_1=ParamDictReflection_atom_1,
-        post_select_sd=True,
-        # plot_histogram=True,
-    )
-
-    plot_gate_3d(
-        cnot,
-        title="CNOT Gate (R/L basis)",
-        file_name="Cnot_RL",
-        fidelity_indices=[(0, 0), (1, 1), (2, 3), (3, 2)],
-        atom_basis=["|0⟩", "|1⟩"],
-        photon_basis=["R", "L"],
-        save_fig=True,
-    )
-
-    cnot = handler.gate_anlaysis(
-        filename_hal_atom_0=cnot_ad_file_list[0],
-        filename_vdr_atom_0=cnot_ad_file_list[1],
-        filename_hal_atom_1=cnot_ad_file_list[2],
-        filename_vdr_atom_1=cnot_ad_file_list[3],
-        parameters_atom_0=ParamDictReflection_atom_0,
-        parameters_atom_1=ParamDictReflection_atom_1,
-        post_select_sd=True,
-        # plot_histogram=True,
-    )
-
-    plot_gate_3d(
-        cnot,
-        title="CNOT Gate (A/D basis)",
-        file_name="Cnot_AD",
-        fidelity_indices=[(0, 0), (1, 1), (2, 3), (3, 2)],
-        atom_basis=["|0⟩", "|1⟩"],
-        photon_basis=["A", "D"],
-    )
+    # cnot_gate = np.zeros((4, 4))
+    # file_list = [
+    #     # "16_03_26_AP_Gate_CNOT_AD_Basis_0_2_calibrated_w_physics_on_resonance_w_trap_on_and_off_1_8",
+    #     # "16_03_26_AP_Gate_CNOT_AD_Basis_0_2_calibrated_w_physics_on_resonance_w_trap_on_and_off_1_6",
+    #     # "16_03_26_AP_Gate_CNOT_AD_Basis_0_2_calibrated_w_physics_on_resonance_w_trap_on_and_off_1_7",
+    #     # "16_03_26_AP_Gate_CNOT_AD_Basis_0_2_calibrated_w_physics_on_resonance_w_trap_on_and_off_1_5",
+    #     "16_03_26_AP_Gate_CNOT_AD_Basis_0_2_calibrated_w_physics_on_resonance_w_trap_on_and_off_1_4",
+    #     "16_03_26_AP_Gate_CNOT_AD_Basis_0_2_calibrated_w_physics_on_resonance_w_trap_on_and_off_1_2",
+    #     "16_03_26_AP_Gate_CNOT_AD_Basis_0_2_calibrated_w_physics_on_resonance_w_trap_on_and_off_1_3",
+    #     "16_03_26_AP_Gate_CNOT_AD_Basis_0_2_calibrated_w_physics_on_resonance_w_trap_on_and_off_1_1",
+    # ]
+    # for i, file in enumerate(file_list):
+    #     sum, ch4, ch7 = handler.analyzer.reflection_analysis(
+    #         file, ParamDictReflection, plot_histogram=False
+    #     )
+    #     print(ch4, ch7, sum)
+    #     print(ch4 / sum)
+    #     print(ch7 / sum)
+    #     if i < 2:
+    #         cnot_gate[0][i] = ch7 / sum
+    #         cnot_gate[1][i] = ch4 / sum
+    #     else:
+    #         cnot_gate[2][i] = ch7 / sum
+    #         cnot_gate[3][i] = ch4 / sum
+    # print(cnot_gate)

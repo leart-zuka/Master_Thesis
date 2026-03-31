@@ -1,11 +1,7 @@
 import os
 from helper.analysis import Analyzer
 from helper.analysis_types import ReflectionGateT
-from helper.analysis_params import (
-    ParamDictReflection,
-    ParamDictReflection_atom_0,
-    ParamDictReflection_atom_1,
-)
+from helper.analysis_params import ParamDictReflection, ParamDictNMS
 import numpy as np
 from typing import List
 from rich import print
@@ -159,8 +155,7 @@ class AnalysisHandler:
         filename_hal_atom_1: str,
         filename_vdr_atom_1: str,
         file_type: str = ".h5",
-        parameters_atom_0: ReflectionGateT = ParamDictReflection_atom_0,
-        parameters_atom_1: ReflectionGateT = ParamDictReflection_atom_1,
+        parameters: ReflectionGateT = ParamDictReflection,
         post_select_sd: bool = False,
         plot_histogram: bool = False,
     ):
@@ -170,7 +165,7 @@ class AnalysisHandler:
         sum_hal_atom_0, ch_4_hal_atom_0, ch_7_hal_atom_0 = (
             self.analyzer.reflection_analysis(
                 file_name=filename_hal_atom_0,
-                parameters=parameters_atom_0,
+                parameters=parameters,
                 post_select_sd=post_select_sd,
                 plot_histogram=plot_histogram,
             )
@@ -178,7 +173,7 @@ class AnalysisHandler:
         sum_hal_atom_1, ch_4_hal_atom_1, ch_7_hal_atom_1 = (
             self.analyzer.reflection_analysis(
                 file_name=filename_hal_atom_1,
-                parameters=parameters_atom_1,
+                parameters=parameters,
                 post_select_sd=post_select_sd,
                 plot_histogram=plot_histogram,
             )
@@ -186,7 +181,7 @@ class AnalysisHandler:
         sum_vdr_atom_0, ch_4_vdr_atom_0, ch_7_vdr_atom_0 = (
             self.analyzer.reflection_analysis(
                 file_name=filename_vdr_atom_0,
-                parameters=parameters_atom_0,
+                parameters=parameters,
                 post_select_sd=post_select_sd,
                 plot_histogram=plot_histogram,
             )
@@ -194,7 +189,7 @@ class AnalysisHandler:
         sum_vdr_atom_1, ch_4_vdr_atom_1, ch_7_vdr_atom_1 = (
             self.analyzer.reflection_analysis(
                 file_name=filename_vdr_atom_1,
-                parameters=parameters_atom_1,
+                parameters=parameters,
                 post_select_sd=post_select_sd,
                 plot_histogram=plot_histogram,
             )

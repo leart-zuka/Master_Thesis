@@ -4,48 +4,23 @@ ParamDictNMS: NormalModeSpectroscopyT = {
     "trigger_delay": 3.15e-6,
     "cooling_duration": 400e-6,
     "optical_pumping_duration": 200e-6,
-    "pulse_delay_SD": 33.5e-6,
+    "pulse_delay_SD": 36.6e-6,
     "pulse_duration_SD": 7e-6,
     "sequence_duration": 0.7e-3,
-    "frequency_span": 250,  # in MHz
-    "points_per_scan": 200,  # including up and down ramp
+    "frequency_span": 275,  # in MHz
+    "points_per_scan": 400,  # including up and down ramp
     "trials_per_point": 40,
-    "frequency_center": 200,
+    "frequency_center": 163,
 }
+
 
 ParamDictReflection: ReflectionGateT = {
-    # "trigger_delay": 3.15e-6, # Coupled Case
-    "trigger_delay": 2.2e-6,  # Uncoupled Case
-    "cooling_duration": 400e-6,
-    "optical_pumping_duration": 200e-6,
-    # "pulse_delay": 31.5e-6,  # Coupled case
-    "pulse_delay": 0e-6,  # Uncoupled case
-    "pulse_duration": 1.2e-6,
-    # "pulse_delay_SD": 33.5e-6,  # Coupled Case
-    "pulse_delay_SD": 2.5e-6,  # unoupled Case
-    "pulse_duration_SD": 7e-6,
-    "sequence_duration": 0.7e-3,
-}
-
-ParamDictReflection_atom_0: ReflectionGateT = {
-    "trigger_delay": 2.2e-6,
-    "cooling_duration": 400e-6,
-    "optical_pumping_duration": 200e-6,
-    "pulse_delay": 0e-6,
-    "pulse_duration": 1.2e-6,
-    "pulse_delay_SD": 2.5e-6,
-    "pulse_duration_SD": 7e-6,
-    "sequence_duration": 0.7e-3,
-}
-
-
-ParamDictReflection_atom_1: ReflectionGateT = {
     "trigger_delay": 3.15e-6,
     "cooling_duration": 400e-6,
     "optical_pumping_duration": 200e-6,
-    "pulse_delay": 31.5e-6,
+    "pulse_delay": 38.5e-6,
     "pulse_duration": 1.2e-6,
-    "pulse_delay_SD": 33.5e-6,
+    "pulse_delay_SD": 2e-6,
     "pulse_duration_SD": 7e-6,
     "sequence_duration": 0.7e-3,
 }

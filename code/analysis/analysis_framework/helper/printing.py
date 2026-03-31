@@ -7,6 +7,11 @@ import numpy as np
 console = Console()
 
 
+def pm(val, err, fmt="{:.2f}"):
+    # returns "val ± err" with consistent formatting
+    return f"{fmt.format(val)} ± {fmt.format(err)}"
+
+
 def pretty_print_gate(
     matrix,
     title,
