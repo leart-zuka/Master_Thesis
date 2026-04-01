@@ -4,25 +4,40 @@ The system uses a single $^{87}\text{Rb}$ coupled to a birefringent Fabry-Perot 
 
 \section{Cavity system}
 
-At the heart of the CavityX system are the two crossed fiber cavities which are named the "short" cavity (SC) and the "long" cavity (LC), which differ in length ($\SI{79}{\mu\metre}$ vs. $\SI{161}{\mu\metre}$), and in the fact that the short cavity is birefringent. Each cavity fiber is held in place by an in-house built holder shown in figure \ref{fig:cavities-setup}.
+At the heart of the CavityX system are the two crossed fiber cavities which are named the "short" cavity (SC) and the "long" cavity (LC), which differ in length ($\SI{79}{\mu\metre}$ vs. $\SI{161}{\mu\metre}$), and in the fact that the short cavity is birefringent. Each cavity fiber is held in place by an in-house built holder shown in figure \ref{fig:cavities_setup}.
 
-\begin{figure}
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=\linewidth]{Figures/3_setup/cavities-setup.pdf}
-	\caption{Experimental setup showing the short and long fiber cavities.\cite{GianvitoC2026} \notetome{look at gianvito's thesis and write down what he did there, also ask him if it's cool to use the figure}}
-	\label{fig:cavities-setup}
+	\caption{ vertical top view of the construction holding the crossed fiber cavities in place.
+		The holder of each fiber consists of 4 elements, each of which is labeled in the picture: $\Circled{1}$ Base
+		element for mounting the fiber holder to downstream components; $\Circled{2}$ Shear piezo actuator for
+		active stabilization of the resonator length; $\Circled{3}$ Mount in which a V-groove is fabricated - where
+		the fiber is positioned and mechanically clamped; $\Circled{4}$ Lid to clamp the fiber within the V-groove
+		mount. A zoom of the center of the picture is shown in (b). The orange-colored cavity has a
+		length of 161 μm and it is composed of a single-mode fiber (LC-SM) with a low reflective mirror
+		coating and a multi-mode fiber (LC-MM) with a highly reflective mirror coating. The green-colored
+		cavity is 75.7 μm long and is composed of a single- (SC-SM) and multi- (SC-MM) mode fiber with
+		reflective coatings analogous to LC-SM and LC-MM, respectively. This photo has been colored in
+		post-production.\cite{GianvitoC2026}}
+	\label{fig:cavities_setup}
 \end{figure}
 
 The incoming light is coupled in and out via the single-mode (SM) fiber for either of the cavities. In order to ensure that most of the coupled light exits through the SM fiber, different mirror coatings are used for the fiber surfaces. The multi-mode (MM) fiber surfaces are coated with a highly reflected dielectric coating, while the opposing SM fiber has a dielectric coating with a lower reflectivity (\SI{10}{ppm} transmission vs. \SI{340}{ppm} transmission). This asymmetric design ensures the cavity is single-sided, causing most of the coupled-in light to then exit the cavity through the same fiber through which it entered the system.\cite{GianvitoC2026}
 
-The cavity fibers are fabricated using a $\text{CO}_2$ laser machining technique by Manuel Brekenfeld in \cite{ManuelBThesis2023}. Changing the beam profile of the $\text{CO}_2$ laser allows for the fabrication of either spherical or elliptical surfaces, as is the case for the short cavity.\\
+The cavity fibers are fabricated using a $\text{CO}_2$ laser machining technique by Manuel Brekenfeld in \cite{ManuelBThesis2023}. Changing the beam profile of the $\text{CO}_2$ laser allows for the fabrication of either spherical or elliptical surfaces, as is the case for the short cavity. This leads to a cavity mode splitting, i.e., cavity birefringence, as shown in figure \ref{fig:cavity_transmission_profiles} \\
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\linewidth]{Figures/3_setup/transmission_profiles_lc_and_kc.pdf}
+	\caption{Transmission spectra were recorded for both the long (a) and short (b) cavity. For
+		the long cavity, the probe field was polarized to match the cavity eigenmodes, revealing a small
+		residual polarization mode splitting. Contour images of the mirrors – for the MM and SM fibers –
+		are shown alongside the spectrum. In contrast, the short cavity exhibited a large polarization mode
+		splitting, a result of the strong ellipticity of its mirror surfaces. The error bars are smaller than the
+		data point markers.\cite{GianvitoC2026}}
+	\label{fig:cavity_transmission_profiles}
 \end{figure}
-
-\notetome{Show transmission plot for both the LC and KC (plots are in gianvito's thesis)}
 
 \begin{table}[ht]
 	\centering
@@ -132,11 +147,13 @@ For the atom-photon gate, the single atoms must be prepared in the two $m_F=0$ g
 
 The first step in achieving this is to optically pump (OP) the atom into the desired state. This is done by repeatedly exciting the atom from a level one wishes to depopulate to an excited state, from which it will then decay into various ground states, determined by the branching ratios of the respective transition. In order to then populate the desired state, one uses a frequency for the pump laser, where all ground states one wants to depopulate are coupled to the excited state, except for the desired one, gradually populating the target state over time.
 
-In this work, one first pumps the atom into the $F=1, m_F = 0$ state. This is done by using two laser beams, one that is resonant with the $F=2\rightarrow F'=2$ transition of the $\text{D}_2\text{-line}$ of $^{87}\text{Rb}$, which will lead to the depopulation of the $F=2$ manifold and population of the $F=1$ manifold. In order to then populate only the $F=1, m_F=0$ state, one applies another beam, resonant to the $F=1\rightarrow F'=1$ transition of the $\text{D}_2\text{-line}$. Furthermore the beam must be $\pi\text{-polarized}$, since the $F=1,m_F=0 \rightarrow F'=1,m_F=0$ transition is forbidden.\cite{SteckRb87}
+In this work, one first pumps the atom into the $F=1, m_F = 0$ state. This is done by using two laser beams, one that is resonant with the $F=2\rightarrow F'=2$ transition of the $\text{D}_2\text{-line}$ of $^{87}\text{Rb}$, which will lead to the depopulation of the $F=2$ manifold and population of the $F=1$ manifold. In order to then populate only the $F=1, m_F=0$ state, one applies another beam, resonant to the $F=1\rightarrow F'=1$ transition of the $\text{D}_2\text{-line}$. Furthermore the beam must be $\pi\text{-polarized}$, since the $F=1,m_F=0 \rightarrow F'=1,m_F=0$ transition is forbidden.\cite{SteckRb87}. The transition scheme can be seen in figure \ref{fig:transition_schema}.
 
-\begin{figure}[H]
+\begin{figure}[h]
 	\centering
 	\includesvg{Figures/3_setup/zeeman_pump.svg}
+	\caption{Schemes utilized for OP in $F=1$ (a), and $F=1, m_F=0$ (b).Each sketch shows the used lasers (straight arrows), the atomic decay (wavy arrows), and the targeted state (red lines).\cite{GianvitoC2026}}
+	\label{fig:transition_schema}
 \end{figure}
 
 Using this technique one is able to populate the $F=1,m_F=0$ level with a probability of $\geq 97\,\%$.\cite{GianvitoC2026}\\

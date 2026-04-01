@@ -2537,8 +2537,8 @@
       \strng{authornamehash}{a936a93770b1daadbad99072a77e3b5d}
       \strng{authorfullhash}{a936a93770b1daadbad99072a77e3b5d}
       \strng{authorfullhashraw}{a936a93770b1daadbad99072a77e3b5d}
-      \field{sortinit}{2}
-      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Ein photonischer Quantenspeicher mit einem Atom in gekreuzten optischen Faserresonatoren}
@@ -2869,8 +2869,8 @@
       \strng{authornamehash}{af294c7a976ab05e62b737bd2eb260c8}
       \strng{authorfullhash}{af294c7a976ab05e62b737bd2eb260c8}
       \strng{authorfullhashraw}{af294c7a976ab05e62b737bd2eb260c8}
-      \field{sortinit}{3}
-      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{isbn}{9780198506959}
@@ -2903,8 +2903,8 @@
       \strng{authornamehash}{cd77a48f4316b3bd45ca5c381e90e4b1}
       \strng{authorfullhash}{cd77a48f4316b3bd45ca5c381e90e4b1}
       \strng{authorfullhashraw}{cd77a48f4316b3bd45ca5c381e90e4b1}
-      \field{sortinit}{3}
-      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{month}{5}
@@ -2937,8 +2937,8 @@
       \strng{authornamehash}{9cc6c53bb73fdc5184c54180fbdbcaa2}
       \strng{authorfullhash}{9cc6c53bb73fdc5184c54180fbdbcaa2}
       \strng{authorfullhashraw}{9cc6c53bb73fdc5184c54180fbdbcaa2}
-      \field{sortinit}{4}
-      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{isbn}{9780486136172}
@@ -2986,8 +2986,8 @@
       \strng{authornamehash}{7c3cf1ebbe6159e5750a16a9a3f784b2}
       \strng{authorfullhash}{12c27dcde3b690fe6af1a72be48635e7}
       \strng{authorfullhashraw}{12c27dcde3b690fe6af1a72be48635e7}
-      \field{sortinit}{4}
-      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{issue}{17}
@@ -3009,8 +3009,8 @@
       \endverb
     \endentry
     \entry{ThorlabsBW}{misc}{}{}
-      \field{sortinit}{4}
-      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
       \field{journaltitle}{Thorlabs}
       \verb{urlraw}
       \verb https://www.thorlabs.com/brewster-windows
