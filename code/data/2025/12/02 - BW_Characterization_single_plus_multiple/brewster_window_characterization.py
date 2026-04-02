@@ -48,6 +48,10 @@ style_baseline = "-"
 style_bw = "--"
 style_mean = ":"
 
+transmission_h = []
+transmission_h_err = []
+transmission_v = []
+transmission_v_err = []
 
 for bw_name, (file_h, file_v) in files.items():
     df_h = pd.read_csv(f"./data/{file_h}", skiprows=to_be_skipped_rows, delimiter=";")
@@ -64,9 +68,15 @@ for bw_name, (file_h, file_v) in files.items():
     T_h = avg_h / avg_baseline
     dT_h = T_h * np.sqrt((err_h / avg_h) ** 2 + (err_baseline / avg_baseline) ** 2)
 
+    transmission_h.append(T_h)
+    transmission_h_err.append(dT_h)
+
     # --- Transmittance (V) ---
     T_v = avg_v / avg_baseline
     dT_v = T_v * np.sqrt((err_v / avg_v) ** 2 + (err_baseline / avg_baseline) ** 2)
+
+    transmission_v.append(T_v)
+    transmission_v_err.append(dT_v)
 
     console = Console()
 
@@ -145,6 +155,9 @@ for bw_name, (file_h, file_v) in files.items():
     ax.grid(True)
 
     ax_index += 1
+
+print(f"{np.mean(transmission_h)} +/- {np.mean(transmission_h_err)}")
+print(f"{np.mean(transmission_v)} +/- {np.mean(transmission_v_err)}")
 
 plt.tight_layout()
 plt.title("Characterization of single Brewster Windows")
