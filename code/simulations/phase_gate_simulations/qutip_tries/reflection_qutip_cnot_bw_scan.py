@@ -95,7 +95,7 @@ if __name__ == "__main__":
             atom_dim=4,
             Delta_c_pi=2 * np.pi * 0,
             Delta_c_v=2 * np.pi * 0.5,
-            G0_kc=2 * np.pi * 0.024,
+            G0_kc=2 * np.pi * 0.026,
             Kappa=2 * np.pi * 0.058,
             v_transmission=transmission_v,
         )

@@ -35,7 +35,7 @@ basis: Dict[
 
 # Values
 params_dir: params_type = {
-    "g": 2 * np.pi * 0.024,
+    "g": 2 * np.pi * 0.026,
     "kappa": 2 * np.pi * 0.058,
     "kappa_oc": 2 * np.pi * 0.058 * 0.85,
     "gamma": 2 * np.pi * 0.006065 / 2,
@@ -46,7 +46,7 @@ params_dir: params_type = {
 
 # Errors
 params_err_dir: params_type = {
-    "g": 2 * np.pi * 0.0007,
+    "g": 2 * np.pi * 0.0005,
     "kappa": 2 * np.pi * 0.00037 / 2,
     "kappa_oc": 2 * np.pi * 0.00037 / 2 * 0.85,
     "gamma": 2 * np.pi * 0.000018,
@@ -60,8 +60,9 @@ gate_matrices = plot_cphase_and_cnot(
     "2-1' Transition",
     params_dir,
     params_err_dir,
-    attenuate_light,
+    # attenuate_light,
     special_attenuation=0.24,
+    show_fig=False,
     save_fig=True,
 )
 
