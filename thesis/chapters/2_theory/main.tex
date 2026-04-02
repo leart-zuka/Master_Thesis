@@ -140,29 +140,38 @@ Adopting standard quantum computing notation, the uncoupled state of the atom is
 
 For an input state $\ket{0,\pi}$, meaning the atom is prepared in the uncoupled state $\ket{0}$ and a $\pi$-polarized photon is sent in, the photon will be able to enter the cavity and (ideally) exit through the OC mirror, with a $\pi$ phase-shift. For the input state $\ket{1,\pi}$, the Vacuum Rabi splitting shifts the cavity resonance away from the photon frequency, causing it to be reflected without a phase shift. When sending a $\ket{V}$ photon, it will get reflected off of the OC mirror regardless, due to the birefringence of the cavity. This results in the following reflections:
 
-\begin{align*}
-	\ket{0,\pi} & \rightarrow-\ket{0,\pi} \\
-	\ket{0,V}   & \rightarrow\ket{0,V}    \\
-	\ket{1,\pi} & \rightarrow\ket{1,\pi}  \\
-	\ket{1,V}   & \rightarrow\ket{1,V}    \\
-\end{align*}
+\begin{equation}
+	\label{eq:reflection_cpf}
+	\begin{split}
+		\ket{0,\pi} & \rightarrow-\ket{0,\pi} \\
+		\ket{0,V}   & \rightarrow\ket{0,V}    \\
+		\ket{1,\pi} & \rightarrow\ket{1,\pi}  \\
+		\ket{1,V}   & \rightarrow\ket{1,V}
+	\end{split}
+\end{equation}
 
 This output from the atom-photon reflection gives us a \textit{Controlled Phase Flip} (CPF) gate. This conditional phase shift allows the construction of a universal quantum gate that can be transformed into any two-qubit gate using rotations of the individual qubits, which in the case of the photon can be done via retardation waveplates.
 
 Rotating the photonic basis states to:
 
-\begin{align*}
-	\ket{+} & = \frac{\ket{V} + \ket{\pi}}{\sqrt{2}} \\
-	\ket{-} & = \frac{\ket{V} - \ket{\pi}}{\sqrt{2}}
-\end{align*}
+\begin{equation}
+	\label{eq:cnot_basis}
+	\begin{split}
+		\ket{+} & = \frac{\ket{V} + \ket{\pi}}{\sqrt{2}} \\
+		\ket{-} & = \frac{\ket{V} - \ket{\pi}}{\sqrt{2}}
+	\end{split}
+\end{equation}
 
 and keeping the atom either in the coupled ($\ket{1}$) or uncoupled case ($\ket{0}$), results in the following reflection:
 
-\begin{align*}
-	\ket{0,+} & \rightarrow \ket{0,-} \\
-	\ket{0,-} & \rightarrow \ket{0,+} \\
-	\ket{1,+} & \rightarrow \ket{1,+} \\
-	\ket{1,-} & \rightarrow \ket{1,-} \\
-\end{align*}
+\begin{equation}
+	\label{eq:reflection_cnot}
+	\begin{split}
+		\ket{0,+} & \rightarrow \ket{0,-} \\
+		\ket{0,-} & \rightarrow \ket{0,+} \\
+		\ket{1,+} & \rightarrow \ket{1,+} \\
+		\ket{1,-} & \rightarrow \ket{1,-}
+	\end{split}
+\end{equation}
 
-In the new photonic basis $\left\{\ket{+},\ket{-}\right\}$, the CPF gate is equivalent to a controlled-NOT (CNOT) gate, with the atom as the controlling qubit and the photon polarization as the target qubit. The photon polarization is flipped ($\ket{+}\leftrightarrow\ket{-}$) when the atom is in $\ket{0}$, and left unchanged when the atom is in $\ket{1}$.
+In the new photonic basis $\left\{\ket{+},\ket{-}\right\}$, the CPF gate is equivalent to a \textit{Controlled-NOT} (CNOT) gate, with the atom as the controlling qubit and the photon polarization as the target qubit. The photon polarization is flipped ($\ket{+}\leftrightarrow\ket{-}$) when the atom is in $\ket{0}$, and left unchanged when the atom is in $\ket{1}$.
