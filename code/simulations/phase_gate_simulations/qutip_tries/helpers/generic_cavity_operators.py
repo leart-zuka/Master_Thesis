@@ -170,3 +170,18 @@ class InitialStates:
             qt.fock(self.cavity.photon_dim, 0),
             self.atom.state_1,
         )
+
+    def psi_atom_dark(self) -> qt.Qobj:
+        return qt.tensor(
+            qt.fock(self.cavity.photon_dim, 0),
+            qt.fock(self.cavity.photon_dim, 0),
+            self.atom.state_dark,
+        )
+
+    def rho_mixed(self, p_0=1.0, p_1=0.0, p_dark=0.0) -> qt.Qobj:
+        assert abs(p_0 + p_1 + p_dark - 1.0) < 1e-10
+        return (
+            p_0 * qt.ket2dm(self.psi_atom_0())
+            + p_1 * qt.ket2dm(self.psi_atom_1())
+            + p_dark * qt.ket2dm(self.psi_atom_dark())
+        )
