@@ -1,45 +1,47 @@
 \chapter{Photonic Qubit Path}
 
+This chapter describes the optical beam path used to deliver photonic qubits to the atom-cavity system and analyze them after reflection. The central challenge is that the birefringent cavity introduces a polarization-dependent amplitude mismatch requiring external compensation to achieve the optimal CNOT gate overlap.
+
 \section{Polarization-Dependent Losses}\label{section:polarization_dependent_losses}
 
-Looking at equation \eqref{eq:analytical_reflection}, it is apparent that the reflection amplitude for a photon that gets reflected from an atom-cavity system, is highly dependent on specific system parameters. In this case those are the coupling strength $g$, the decay rate of the photons $\kappa$ and the outcoupling ratio $\kappa_{OC}$, as well as the two mode-matching parameters $\mu_{fr}$ and $\mu_{fc}$. Furthermore, one needs to also take into account the birefringence of the cavity itself, thus making the parameter $\Delta_{\text{biref}}$ also very important (here: $\Delta_{\text{biref}}=2\pi\cdot 500\text{MHz}$). Looking at the reflection scheme for \eqref{eq:reflection_cnot} in the basis defined in \eqref{eq:cnot_basis}, it becomes apparent that in order to achieve the highest possible overlap with an ideal CNOT gate, the reflection amplitudes $|r_{\pi}|$ and $|r_{V}|$, must (ideally) be the same. However, for the cavity parameters realized in this system (characterized in section \ref{section:experimental_parameters_for_gate}), this condition is not fulfilled.
+The reflection amplitude of a photon incident on an atom-cavity system, given by equation \eqref{eq:analytical_reflection}, depends sensitively on the system parameters: the coupling strength $g$, the decay rate of the photons $\kappa$, the outcoupling ratio $\kappa_{OC}$, the two mode-matching parameters $\mu_{fr}$ and $\mu_{fc}$, and the birefringence of the cavity itself $\Delta_{\text{biref}}=2\pi\cdot 500\text{MHz}$. Looking at the reflection scheme for \eqref{eq:reflection_cnot} in the basis defined in \eqref{eq:cnot_basis}, it becomes apparent that in order to achieve the highest possible overlap with an ideal CNOT gate, the reflection amplitudes $|r_{\pi}|$ and $|r_{V}|$, must (ideally) be the same. However, for the cavity parameters realized in this system (characterized in section \ref{section:experimental_parameters_for_gate}), this condition is not fulfilled.
 
 As mentioned before, the $V$ mode of the birefringent cavity is detuned by $\Delta_{\text{biref}}=2\pi\cdot 500\text{MHz}$ from the $\pi$-mode, to which the atomic transition is resonantly coupled. This leads to a $V$ polarized photon, getting reflected from the first OC mirror without entering the cavity due to being far off-resonant. This then leads to the $V$ polarized portion of both the CNOT input basis states, having a much larger relative reflection amplitude when compared to the $\pi$ polarized portion.
 
-A $\pi$-polarized photon on the other hand interacts with the atom inside the cavity. In the coupled case $\ket{1}$, the Vacuum Rabi Splitting shifts the dressed-state resonances to $\omega_c\pm g$. This then leads to the photon getting reflected off the OC mirror, but not perfectly, due to finite cooperativity. In the uncoupled state $\ket{0}$, the $\pi$ polarized photon fully enters the cavity, picks up a $\pi$ phase shift, but due to intracavity losses (absorption, HR mirror leakage, imperfect mode-matching), the reflection amplitude is smaller than that of the coupled case.
+A $\pi$-polarized photon on the other hand interacts with the atom inside the cavity. In the coupled case $\ket{1}$, the Vacuum Rabi Splitting shifts the dressed-state resonances to $\omega_c\pm g$. This then leads to the photon getting reflected off the OC mirror, but not perfectly, due to finite cooperativity. In the uncoupled state $\ket{0}$, the $\pi$ polarized photon fully enters the cavity, and eventually gets reflected with a $\pi$ phase shift. But due to intracavity losses (absorption, HR mirror leakage, imperfect mode-matching), the reflection amplitude is smaller than that of the coupled case.
 
-Using \eqref{eq:analytical_reflection} and the values measured in section \ref{section:experimental_parameters_for_gate}, one gets the following values for the reflection amplitudes:
+Using \eqref{eq:analytical_reflection} and the values measured in section \ref{section:experimental_parameters_for_gate}, the following values for the reflection amplitudes are obtained:
 
 
 \begin{table}[ht]
-    \centering
-    \begin{tabular}{l|c|c|c|c}
-        \hline\hline
-        & $\ket{0,\pi}$ & $\ket{1,\pi}$ & $\ket{0,V}$ & $\ket{1,V}$ \\
-        \hline
-        $r$          & $-0.316 - 0.065i$ & $\phantom{-}0.711 - 0.013i$ & $\phantom{-}0.954 + 0.147i$ & $\phantom{-}0.908 + 0.111i$ \\[6pt]
-        $R = |r|^2$  & $0.104$           & $0.505$                      & $0.931$                      & $0.838$                      \\[6pt]
-        $\phi$ (rad) & $-2.940$          & $-0.018$                     & $\phantom{-}0.153$           & $\phantom{-}0.122$           \\
-        \hline
-    \end{tabular}
-    \caption{Reflection coefficients for the four input states of the atom-photon gate, calculated from equation~\eqref{eq:analytical_reflection} using the system parameters characterized in section~\ref{section:experimental_parameters_for_gate}. The atomic states $\ket{0}$ and $\ket{1}$ correspond to the uncoupled and coupled ground states, respectively.}
-    \label{tab:reflection_coefficients}
+	\centering
+	\begin{tabular}{l|c|c|c|c}
+		\hline\hline
+		             & $\ket{0,\pi}$     & $\ket{1,\pi}$               & $\ket{0,V}$                 & $\ket{1,V}$                 \\
+		\hline
+		$r$          & $-0.316 - 0.065i$ & $\phantom{-}0.711 - 0.013i$ & $\phantom{-}0.954 + 0.147i$ & $\phantom{-}0.908 + 0.111i$ \\[6pt]
+		$R = |r|^2$  & $0.104$           & $0.505$                     & $0.931$                     & $0.838$                     \\[6pt]
+		$\phi$ (rad) & $-2.940$          & $-0.018$                    & $\phantom{-}0.153$          & $\phantom{-}0.122$          \\
+		\hline
+	\end{tabular}
+	\caption{Reflection coefficients for the four input states of the atom-photon gate, calculated from equation~\eqref{eq:analytical_reflection} using the system parameters characterized in section~\ref{section:experimental_parameters_for_gate}. The atomic states $\ket{0}$ and $\ket{1}$ correspond to the uncoupled and coupled ground states, respectively.}
+	\label{tab:reflection_coefficients}
 \end{table}
 
-From Table \ref{tab:reflection_coefficients}, one can see that the reflection amplitude for the $V$ polarized photon, is much bigger than that of the $\pi$ polarized photon, thus giving the following relationship: $|r_{V}| >|r_{\pi,\text{coupled}}| >|r_{\pi,\text{uncoupled}}|$. It is worth noting that even though the $V$ polarized photon is effectively detuned by $\Delta_{\text{biref}}$, there is still some residual atom-state dependence, thus introducing an additional mismatch in the reflection amplitudes.
+Table \ref{tab:reflection_coefficients} shows that the reflection amplitude for the $V$ polarized photon, is much bigger than that of the $\pi$ polarized photon, thus giving the following relationship: $|r_{V}| >|r_{\pi,\text{coupled}}| >|r_{\pi,\text{uncoupled}}|$. It is worth noting that even though the $V$ polarized photon is effectively detuned by $\Delta_{\text{biref}}$, there is still some residual atom-state dependence, thus introducing an additional mismatch in the reflection amplitudes.
 
 This amplitude mismatch ultimately reduces the overlap with an ideal CNOT gate truth table. However, since the cavity parameters are fixed by the requirements of the broader \textit{CavityX} experiment, the atom-state-dependent amplitude difference cannot be addressed independently, as this would require changing the cavity itself. The following sections therefore focus on compensating the polarization-dependent mismatch, which can be corrected externally.
 
 
 \section{Inducing Losses via a Brewster Window Array}
 
-Brewster windows are a piece of uncoated UV fused silica, that when placed at the so called brewster angle relative to the incoming light, then the p-polarized portion gets transmitted without any losses, while the s-polarized portion gets partially reflected. This effectively reduces the transmission through the optical element for p-polarized light. Here, the p-polarized light is identical to the $\pi$ polarized light, whereas the s-polarized light matches that of the $V$ polarized light.
+A Brewster window is a piece of uncoated UV fused silica. When placed at the so-called Brewster angle relative to the incoming light, then the p-polarized portion gets transmitted without any losses, while the s-polarized portion gets partially reflected. This effectively reduces the transmission through the optical element for s-polarized light. Here, the p-polarized light is identical to the $\pi$ polarized light, whereas the s-polarized light matches that of the $V$ polarized light.
 
-As previously discussed in section \ref{section:polarization_dependent_losses}, in order to maximize the overlap of the measured CNOT gate truth table with that of an ideal CNOT gate, one needs to include additional polarization dependent losses in the $V$ mode, to match those the $\pi$ mode experiences.
+As previously discussed in section \ref{section:polarization_dependent_losses}, in order to maximize the overlap of the measured CNOT gate truth table with that of an ideal CNOT gate, additional polarization-dependent losses must be included in the $V$ mode, to match those the $\pi$ mode experiences.
 
-In order to achieve this an array of brewster plates were installed on a custom machined mount, which place the brewster plates at the brewster angle relative to the incoming light, so that the $V$ polarized portion of the incoming light gets attenuated prior to interacting with the atom-cavity system. This ensures that in reflection, both polarization modes have the same reflection amplitude, allowing for the observation of the flip on the photonic qubit in the CNOT basis.
+In order to achieve this an array of Brewster windows were installed on a custom machined mount, which place the Brewster windows at the Brewster angle relative to the incoming light, so that the $V$ polarized portion of the incoming light gets attenuated prior to interacting with the atom-cavity system. This ensures that in reflection, both polarization modes have the same reflection amplitude, allowing for the observation of the flip on the photonic qubit in the CNOT basis.
 
-The brewster angle can be simply calculated via:\cite{ThorlabsBW}
+The Brewster angle can be simply calculated via:\cite{ThorlabsBW}
 
 \begin{align}
 	\tan{\theta_B}                                                 & = n_t/n_i                                                                                                 \\
@@ -47,76 +49,78 @@ The brewster angle can be simply calculated via:\cite{ThorlabsBW}
 	\label{eq:brewster_window_stuff}
 \end{align}
 
-In \eqref{eq:brewster_window_stuff} $n_t$ is the optical density of the brewster window, and $n_i$ would be the optical density from which the incoming light is coming from (here: air $n_i \sim 1.004$). For light that is resonant to the 2-1' transition of the $\text{D}_2$-line of $^{87}\text{Rb}$, $n_t=1.453667$, resulting in a brewster angle $\theta_B=55.467288^{\circ}$. At the brewster angle $\theta_B$ the transmission through single brewster window were $99.98\pm0.17\%$ and $77.40\pm0.13\%$ for the H and V polarization respectively.
+In \eqref{eq:brewster_window_stuff} $n_t$ is the refractive index of the Brewster window, and $n_i$ would be the refractive index from which the incoming light is coming from (here: air $n_i \sim 1.004$). For light that is resonant to the 2-1' transition of the $\text{D}_2$-line of $^{87}\text{Rb}$, $n_t=1.453667$, resulting in a Brewster angle $\theta_B=55.467288^{\circ}$. At the Brewster angle $\theta_B$ the transmission through single Brewster window were $99.98\pm0.17\%$ and $77.40\pm0.13\%$ for the H and V polarization respectively.
 
-The custom brewster window mount as mentioned before has the main functionality of placing the elements in an array at the brewster angle $\theta_b$ relative to the incoming light. It can house up to 12 brewster windows when using the screw whole in the middle or 8 brewster windows when using the screw holes on each side of the mount. The latter allows the mount to be placed on two seperate posts, making the overall construction more mechanically stable, which eventually ended up being the configuration used in this project. Not only allowed it for a more stable setup, but since the ideal overlap laid between 6 and 7 brewster windows, adding more brewster windows, would not have resulted in further gains of the overlap between the measured and ideal truth tables.
+The custom Brewster window mount as mentioned before has the main functionality of placing the elements in an array at the Brewster angle $\theta_b$ relative to the incoming light. It can house up to 12 Brewster windows when using the screw hole in the middle or 8 Brewster windows when using the screw holes on each side of the mount. The latter allows the mount to be placed on two separate posts, making the overall construction more mechanically stable, which eventually ended up being the configuration used in this project. This configuration not only provided greater mechanical stability, but was also sufficient for the experiment, since the optimal CNOT overlap was found to lie between 6 and 7 Brewster windows.
 
 \begin{figure}[htbp]
-    \centering
-    \begin{subfigure}[b]{0.75\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{Figures/4_photonic_qubit_path/brewster_mount_3d.pdf}
-        \caption{Isometric view.}
-        \label{fig:brewster_mount_3d}
-    \end{subfigure}
+	\centering
+	\begin{subfigure}[b]{0.75\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{Figures/4_photonic_qubit_path/brewster_mount_3d.pdf}
+		\caption{Isometric view.}
+		\label{fig:brewster_mount_3d}
+	\end{subfigure}
 
-    \vspace{0.5em}
+	\vspace{0.5em}
 
-    \begin{subfigure}[b]{0.75\textwidth}
-        \centering
-        \includesvg[width=\textwidth]{Figures/4_photonic_qubit_path/brewster_mount_top_down.svg}
-        \caption{Top-down view.}
-        \label{fig:brewster_mount_top}
-    \end{subfigure}
-    \caption{Custom-machined mount for Brewster windows. The angled slots hold 
-    the silica glass at the Brewster angle of \SI{\sim55.48}{\degree}.}
-    \label{fig:brewster_mount}
+	\begin{subfigure}[b]{0.75\textwidth}
+		\centering
+		\includesvg[width=\textwidth]{Figures/4_photonic_qubit_path/brewster_mount_top_down.svg}
+		\caption{Top-down view.}
+		\label{fig:brewster_mount_top}
+	\end{subfigure}
+	\caption{Custom-machined mount for Brewster windows. The mount features two mirrored sections of angled slots, each holding up to six Brewster windows at $\sim\SI{55.48}{\degree}$.}
+	\label{fig:brewster_mount}
 \end{figure}
 
-Furthermore, the brewster window mount has two sections in which the layout of one half is mirrored to that of the other half. The reason behind this is that at each transmission through the brewster window, the optical beam path gets shifted, which significantly reduces the coupling into the cavity fiber. In order to combat this, the two halves of the mount are symmetrical to one another, so that the shift of the optical beam path on both sides cancel each other out. Although this is only the case when the total amount of brewster windows is even and both halves are balanced, at most the shift would be equal to that of a single brewster window shifting the optical beam path, which is able to be compensating by realigning the input beam into the cavity fiber.\\
+Furthermore, the Brewster window mount has two sections in which the layout of one half is mirrored to that of the other half. The reason being that each Brewster window laterally displaces the transmitted beam by a fixed amount due to refraction through the tilted plate. This significantly reduces the coupling into the cavity fiber. In order to combat this, the two halves of the mount are symmetrical to one another, so that the shift of the optical beam path on both sides cancel each other out. By reversing the tilt direction in the second half of the array, each displacement is compensated by the corresponding window in the mirrored section. Although this is only the case when the total amount of Brewster windows is even and both halves are balanced, at most the shift would be equal to that of a single Brewster window shifting the optical beam path. This can be compensated by realigning the input beam into the cavity fiber.\\
 
 \section{Photon Qubit Input-Output Path}
 
-For the atom-photon gate, weak coherent pulses are used in order to simulate the effect of single photons getting reflected from the cavity. It's therefore imperative to precisely control the power going into the cavity, and also the frequency which the light possesses. For that specific task the following setup was constructed.
+For the atom-photon gate, weak coherent pulses are used in order to simulate the effect of single photons getting reflected from the cavity. It is therefore imperative to precisely control the power going into the cavity, and also the frequency of the light. For that specific task the following setup was constructed.
 
 \begin{figure}[htbp]
-    \centering
-    \includesvg[inkscapelatex=false,width=0.65\textwidth]{Figures/4_photonic_qubit_path/aom_track.svg}
-    \caption{Double-pass AOM setup on the AOM table.}
-    \label{fig:setup_aom_table}
+	\centering
+	\includesvg[inkscapelatex=false,width=0.65\textwidth]{Figures/4_photonic_qubit_path/aom_track.svg}
+	\caption{Double-pass AOM setup on the AOM table.}
+	\label{fig:setup_aom_table}
 \end{figure}
 
-Figure \ref{fig:setup_aom_table} showcases a double-pass AOM track. The light going into the AOM track, is blue detuned to the unshifted $\text{D}_2\text{-line}$ by \notetome{include actual offset}. Part of the light (not shown here), can then be superimposed either with a stable reference frequency source like an optical frequency comb from the company \textit{MenloSystems GmbH} when the laser frequency doesn't need to be scanned, or with another laser, for when it does need to be scanned, e.g., for performing a normal-mode spectroscopy.
-The polarization of the light first gets set by a $\lambda/2$ retardation waveplate (1) in order to pass through the polarizing beam splitter (PBS, 2) in full transmission. A plano convex lense (3) focusses the light into an acousto-optic modulator (AOM,4).
-An AOM, or acousto-optic modulator, is a crystal attached to a piezoelectric transducer that can force the crystal to vibrate at a specific frequency. In a double-pass configuration like the one shown here, the AOM is going to offset the frequency of the incoming light, by two time the frequency at which the crystal inside the AOM is oscillating at.
-The zeroeth order of the transmitted light will get blocked by an iris, whereas the minus first order of the light is able to pass through. In order to now fully get reflected into the other arm of the PBS (marked in blue), the light passes through a $\lambda/4$ retardation plate (5) twice, while getting reflected and focussed back into the AOM via a plano-concave mirror (6). The light then passes two sets of ND filters (7) and polarizers plus one $\lambda/2$ and $\lambda/4$ retardation waveplates (8) which allow for the key-alignment into a polarization maintaining (PM) fiber. The two sets of ND filters, can willingly be flipped in and out of the beam path, in order to later on represent weak-coherent single-photon pulses. The light then gets sent to the atomic-table via another PM fiber.
+Figure \ref{fig:setup_aom_table} showcases a double-pass AOM track. The light going into the AOM track, is blue detuned to the unshifted $\text{D}_2\text{-line}$ by \notetome{include actual offset}. Part of the light (not shown here), can then be superimposed either with a stable reference frequency source like an optical frequency comb from the company \textit{MenloSystems GmbH} when the laser frequency does not need to be scanned, or with another laser, for when it does need to be scanned, e.g., for performing a normal-mode spectroscopy.
+The polarization of the light first gets set by a $\lambda/2$ retardation waveplate (1) in order to pass through the polarizing beam splitter (PBS, 2) in full transmission. A plano convex lens (3) focuses the light into an acousto-optic modulator (AOM,4).
+In the double-pass configuration shown here, the AOM shifts the optical frequency by twice its driving frequency, enabling continuous frequency tuning.\\
+
+The zeroth order of the transmitted light will get blocked by an iris, whereas the minus first order of the light is able to pass through. In order to now fully get reflected into the other arm of the PBS (marked in blue), the light passes through a $\lambda/4$ retardation plate (5) twice, while getting reflected and focused back into the AOM via a plano-concave mirror (6).
+
+The light then passes two sets of neutral density (ND) filters (7) (\notetome{write down attenuation for each one}) and polarizers plus one $\lambda/2$ and $\lambda/4$ retardation waveplates (8) which allow for the alignment of the light with the principal axis of the polarization-maintaining (PM) fiber. The two sets of ND filters, can be selectively inserted into or removed from the beam path, attenuating the pulses to mean photon numbers in the range $\bar{n}=0.05-2$ at the cavity input, with both inserted. The light then gets sent to the atomic-table via another PM fiber.
 
 \begin{figure}[htbp]
-    \centering
-    \makebox[\linewidth][c]{
-        \includesvg[inkscapelatex=false,width=1.3\linewidth]{Figures/4_photonic_qubit_path/setup_w_detectors_no_aom.svg}
-    }
-    \caption{Optical setup on the atom-cavity table.}
-    \label{fig:setup_cavity_table}
+	\centering
+	\makebox[\linewidth][c]{
+		\includesvg[inkscapelatex=false,width=1.3\linewidth]{Figures/4_photonic_qubit_path/setup_w_detectors_no_aom.svg}
+	}
+	\caption{Optical setup on the atom-cavity table.}
+	\label{fig:setup_cavity_table}
 \end{figure}
 
-Once the light goes from the AOM table to the atom table, one is met with the setup shown in Figure \ref{fig:setup_cavity_table}. The input polarization for the atom-photon gate is able to be set via two automatically controlled retardation waveplates (2), with the light coming from the AOM table (1). In order to compensate for the polarization dependenet losses the light then passes through the array of brewster windows (3). A set of compensation waveplates (4) then ensure that the H and V polarized light interacting with the atom-cavity system, are mapped to the $\pi$ and $V$ eigenmodes of the cavity. In order to couple the light into the cavity fiber, it is reflected off of a pellicle beam splitter (7). The pellicle beam splitter transmits most of the incoming light and reflects a small portion ($\approx 1\%$), onto a mirror, through a dichroic mirror (5), which is also used in order to couple in the light of the intracavity trap (not shown here). Once the light gets reflected off of the birefringent cavity (6), it gets reflected back onto the pellicle, where it transmits with minimal losses (reflected light now in green). On is then able to set an arbitrary polarization measurement basis via two automatically controlled retardation waveplates (8). Finally the light passes through another PBS, and the two arms couple into two seperate superconducting nanowire single-photon detectors (9).\\
+Once the light goes from the AOM table to the atom table, then the setup shown in Figure \ref{fig:setup_cavity_table} is used. The input polarization for the atom-photon gate is able to be set via two automatically controlled retardation waveplates (2), with the light coming from the AOM table (1). In order to compensate for the polarization-dependent losses the light then passes through the array of Brewster windows (3). A set of compensation waveplates (4) then ensure that the H and V polarized light interacting with the atom-cavity system, are mapped to the $\pi$ and $V$ eigenmodes of the cavity. In order to couple the light into the cavity fiber, it is reflected off of a pellicle beam splitter (7). The pellicle beam splitter reflects $1\%$ of the beam onto a mirror and through a dichroic mirror (5) into the cavity fiber coupler. The dichroic mirror also serves to couple the intracavity dipole trap light (not shown) into the same fiber. The light reflected from the birefringent cavity (6), passes through the dichroic mirror and reflects off the mirror back onto the pellicle. Since the pellicle transmits $\sim99\%$ of the returning light, the reflected signal continues with minimal loss (green path) to the detection stage. An arbitrary polarization measurement basis can then be set via two automatically controlled retardation waveplates (8). Finally the light passes through another PBS, and the two arms couple into two separate superconducting nanowire single-photon detectors (SNSPDs,9). \notetome{also include detection setup specs, efficiency and dc rate} \\
 
-Before the construction of the beam path setup shown in Figure \ref{fig:setup_cavity_table}, was done via an already existing beam path, which was called the \textit{probe beam}. The meaning behind the name, stems from teh fact, that this beam path was previously only used to perform an empty-cavity spectroscopy, to determine the mode-matching and decay rate of the photons. It was then restructured to be used for the atom-photon gate.
+Prior to building the setup shown in Figure \ref{fig:setup_cavity_table}, the gate photons were routed via an existing beam path known as the probe beam, which had originally been used for empty-cavity spectroscopy to determine the mode-matching efficiency and photon decay rate.
 
 \begin{figure}[htbp]
-        \centering
-        \includesvg[inkscapelatex=false,width=\textwidth]{Figures/4_photonic_qubit_path/old_optical_path_setup_no_aom.svg}
-        \caption{Old optical setup on the atom-cavity table.}
-        \label{fig:old_setup_cavity_table}
+	\centering
+	\includesvg[inkscapelatex=false,width=\textwidth]{Figures/4_photonic_qubit_path/old_optical_path_setup_no_aom.svg}
+	\caption{Old optical setup on the atom-cavity table.}
+	\label{fig:old_setup_cavity_table}
 \end{figure}
 
-The setup of the earlier setup can be seen in Figure \ref{fig:old_setup_cavity_table}. The light coming from the probe beam would be coupled into the cavity-fiber, through the transmission and subsequent reflection dichroic mirrors (5). Each of these mirrors is a \notetome{include product names here} from the company \notetome{include company name here}, and possess the feature of transmitting most of the incoming light and reflecting only a small portion. This setup was chosen so that both the intracavity light trap (7) and the probe beam could be coupled into the fiber simultaneously.\\
+The earlier setup can be seen in Figure \ref{fig:old_setup_cavity_table}. The light coming from the probe beam would be coupled into the cavity-fiber, through the transmission and subsequent reflection dichroic mirrors (5). Each of these mirrors is a \notetome{include product names here} from the company \notetome{include company name here}, and possess the feature of transmitting most of the incoming light and reflecting only a small portion. This setup was chosen so that both the intracavity light trap (8) with its own set of compensation waveplates (9) and the probe beam, could be coupled into the fiber simultaneously.\\
 
-The problem of this initial setup was, that precise control over the polarization and its losses is crucial, especially after reflection from the atom-cavity system. However, as it was the case with this setup, the coupling into the cavity fiber, was achieved via reflection off a dichroic mirror, which introduced additional polarization dependent losses and rotations in the s and p polarization. In order to account for extra rotations induced by the dichroic mirrors (5), another set of compensation waveplates was included right in front of the cavity fiber coupler (6). This then meant that the first set of compensation waveplates (4), was meant to account for the rotations induced by the two dichroic mirrors, thus mapping the H and V polarization of the incoming light to the s and p polarization of the two mirrors. The second set of compensation waveplates (6) then mapped the s and p polarizations of the dichroic mirrors to the $\pi$ and V mode of the cavity. However, with no means to check the polarization of the reflected light from the dichroic mirror via a polarimeter, due to spacial constraints, this setup proved to be unreliable.\\
+The problem of this initial setup was, that precise control over the polarization and its losses is crucial, especially after reflection from the atom-cavity system. However, as it was the case with this setup, the coupling into the cavity fiber, was achieved via reflection off a dichroic mirror, which introduced additional polarization-dependent losses and rotations in the s and p polarization. In order to account for extra rotations induced by the dichroic mirrors (5), another set of compensation waveplates was included right in front of the cavity fiber coupler (6). This then meant that the first set of compensation waveplates (4), was meant to account for the rotations induced by the two dichroic mirrors, thus mapping the H and V polarization of the incoming light to the s and p polarization of the two mirrors. The second set of compensation waveplates (6) then mapped the s and p polarizations of the dichroic mirrors to the $\pi$ and V mode of the cavity. However, with no means to check the polarization of the reflected light from the dichroic mirror via a polarimeter, due to spatial constraints, this setup proved to be unreliable. The measurement setup with the automatic waveplates (10) and two SNSPDs (11) would have remained the same.\\
 
-Finally, by changing to the setup shown in Figure \ref{fig:setup_cavity_table}, and instead opting to use a pellicle, which had much smaller polarization dependent losses and rotations in reflection compared to the dichroic mirrors, one was able to circumvent the issue. Furthermore, one was able to verify that the polarization dependent changes both in reflection and transmission through the pellical were minimal, thus ensuring that the correctly reflected light won't receive further penalties when going to the detectors.
+Finally, by changing to the setup shown in Figure \ref{fig:setup_cavity_table}, and instead opting to use a pellicle, which had much smaller polarization-dependent losses and rotations in reflection compared to the dichroic mirrors, this issue was resolved. Furthermore, it was verified that the polarization-dependent changes both in reflection and transmission through the pellicle were minimal, thus ensuring that the correctly reflected light will not receive further penalties when going to the detectors.
 
-\notetome{include numbers that showcase the losses for each polarization and stuff for the dichroic mirrors and also for the pellical (which are much smaller but still)}.
+\notetome{include numbers that showcase the losses for each polarization and stuff for the dichroic mirrors and also for the pellicle (which are much smaller but still)}.
 
 
