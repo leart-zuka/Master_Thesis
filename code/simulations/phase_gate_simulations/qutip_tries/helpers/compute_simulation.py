@@ -410,20 +410,27 @@ def run_sim_plus_analysis_in_cphase_basis(
 
     # Printing
     ampl_in = sum(np.nan_to_num(np.abs(field_in)) ** 2) * (tlist[1] - tlist[0])
+    dt = tlist[1] - tlist[0]
+
+    a_in = np.sum(np.nan_to_num(field_in)) * dt
     ampl_0_pi = sum(np.nan_to_num(np.abs(field_out_0_in_pi_out_pi)) ** 2) * (
         tlist[1] - tlist[0]
     )
+    r_0_pi = sum(np.nan_to_num(field_out_0_in_pi_out_pi)) * (tlist[1] - tlist[0]) / a_in
     ampl_1_pi = sum(np.nan_to_num(np.abs(field_out_1_in_pi_out_pi)) ** 2) * (
         tlist[1] - tlist[0]
     )
+    r_1_pi = sum(np.nan_to_num(field_out_1_in_pi_out_pi)) * (tlist[1] - tlist[0]) / a_in
     norm_0_pi = ampl_0_pi / ampl_in
     norm_1_pi = ampl_1_pi / ampl_in
     ampl_0_v = sum(np.nan_to_num(np.abs(field_out_0_in_v_out_v)) ** 2) * (
         tlist[1] - tlist[0]
     )
+    r_0_v = sum(np.nan_to_num(field_out_0_in_v_out_v)) * (tlist[1] - tlist[0]) / a_in
     ampl_1_v = sum(np.nan_to_num(np.abs(field_out_1_in_v_out_v)) ** 2) * (
         tlist[1] - tlist[0]
     )
+    r_1_v = sum(np.nan_to_num(field_out_1_in_v_out_v)) * (tlist[1] - tlist[0]) / a_in
     norm_0_v = ampl_0_v / ampl_in
     norm_1_v = ampl_1_v / ampl_in
 
@@ -450,14 +457,22 @@ def run_sim_plus_analysis_in_cphase_basis(
 
     # Add rows to the table
     table.add_row(
-        "Reflection Amplitude |a|²",
+        "Reflection amplitude a",
+        f"{r_0_pi:.7f}",
+        f"{r_0_v:.7f}",
+        f"{r_1_pi:.7f}",
+        f"{r_1_v:.7f}",
+    )
+
+    table.add_row(
+        "Reflectivity |a|²",
         f"{ampl_0_pi:.7f}",
         f"{ampl_0_v:.7f}",
         f"{ampl_1_pi:.7f}",
         f"{ampl_1_v:.7f}",
     )
     table.add_row(
-        "Normalized Amplitude |a|²/|a_in|²",
+        "Normalized Reflectivity |a|²/|a_in|²",
         f"{norm_0_pi * 100:.7f}%",
         f"{norm_0_v * 100:.7f}%",
         f"{norm_1_pi * 100:.7f}%",
