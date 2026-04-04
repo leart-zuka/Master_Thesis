@@ -84,9 +84,7 @@ color_c = "#2060B0"
 color_u = "#C44E2B"
 
 # ── Figure with two panels ──────────────────────────────────────────
-fig, (ax1, ax2) = plt.subplots(
-    2, 1, figsize=(7, 7.5), sharex=True, gridspec_kw={"hspace": 0.08}
-)
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4.5), gridspec_kw={"wspace": 0.32})
 
 # (a) Reflectivity
 ax1.plot(detunings, R_coupled, color=color_c, lw=1.6, label=r"$|c\rangle$ (coupled)")

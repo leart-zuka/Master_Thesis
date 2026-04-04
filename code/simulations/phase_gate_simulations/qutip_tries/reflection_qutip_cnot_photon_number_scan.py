@@ -42,8 +42,7 @@ cavity = CavitySystem(
     Delta_c_v=2 * np.pi * 0.5,
     G0_kc=2 * np.pi * 0.026,
     Kappa=2 * np.pi * 0.058,
-    # v_transmission=0.263,
-    v_transmission=0.208,
+    v_transmission=0.2955,
 )
 
 system = SystemOperators(atom=atom, cavity=cavity)
@@ -54,6 +53,7 @@ observables = Observables(ops=system, cavity=cavity)
 states = InitialStates(cavity=cavity, atom=atom)
 psi_0 = states.psi_atom_0()
 psi_1 = states.psi_atom_1()
+psi_0 = states.rho_mixed()
 
 c_ops = dissipation.collapse_operators()
 e_ops = observables.expectation_ops()
@@ -82,13 +82,14 @@ amps = convert_photon_numbers_to_amps(tlist, args_ref, photon_numbers, input_sha
 eta = 0.9 * 0.85 * 0.97
 r_dark = 1e-4
 r_dark = 3e-4
+r_dark = 1.5e-4
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Scan of Photon Numbers")
     parser.add_argument(
         "--v_polarization_transmission",
         type=float,
-        default=0.263,
+        default=0.2955,
         help="Optional V polarization transmission",
     )
     args = parser.parse_args()
@@ -98,11 +99,10 @@ if __name__ == "__main__":
         atom_dim=4,
         Delta_c_pi=2 * np.pi * 0,
         Delta_c_v=2 * np.pi * 0.5,
-        G0_kc=2 * np.pi * 0.024,
+        G0_kc=2 * np.pi * 0.026,
         Kappa=2 * np.pi * 0.058,
         v_transmission=args.v_polarization_transmission,
     )
-
     F_1 = 0.9493856157314424
 
     post_select_atom = False
@@ -194,20 +194,20 @@ if __name__ == "__main__":
     plt.ylabel("Fidelity")
     plt.title(r"Fidelity vs. mean photon numbers $\bar{n}$")
     #
-    # idx = np.argmax(other_fidelities)
-    # x_max = photon_numbers[idx]
-    # y_max = other_fidelities[idx]
-    # plt.annotate(
-    #     r"$\overline{n} = $" + f"{x_max:.3f}\nF = {y_max:.3f}",
-    #     xy=(x_max, y_max),
-    #     xytext=(
-    #         x_max,
-    #         y_max,
-    #     ),
-    #     arrowprops=dict(arrowstyle="->", lw=1.5),
-    #     fontsize=10,
-    #     bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.8),
-    # )
+    idx = np.argmax(other_fidelities)
+    x_max = photon_numbers[idx]
+    y_max = other_fidelities[idx]
+    plt.annotate(
+        r"$\overline{n} = $" + f"{x_max:.3f}\nF = {y_max:.3f}",
+        xy=(x_max, y_max),
+        xytext=(
+            x_max,
+            y_max,
+        ),
+        arrowprops=dict(arrowstyle="->", lw=1.5),
+        fontsize=10,
+        bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.8),
+    )
     photon_numbers_fig.savefig("./plots/photon_numbers_no_annotation.svg")
 
     atomic_scattering = plt.figure()

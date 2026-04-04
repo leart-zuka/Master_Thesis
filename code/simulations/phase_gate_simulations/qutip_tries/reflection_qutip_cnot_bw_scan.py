@@ -18,6 +18,8 @@ from helpers.compute_simulation import (
 
 from helpers.compute_reflection_parameters import (
     compute_signal_fidelity,
+    compute_fidelity_from_prob_matrix,
+    convert_photon_numbers_to_amps,
 )
 from rich import print
 import warnings
@@ -26,7 +28,7 @@ import warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
-tlist = np.linspace(0.0, 8000, 1000)
+tlist = np.linspace(0.0, 1000, 100)
 
 atom = AtomSystem(
     dim=4,
@@ -39,7 +41,7 @@ cavity = CavitySystem(
     atom_dim=4,
     Delta_c_pi=2 * np.pi * 0,
     Delta_c_v=2 * np.pi * 0.5,
-    G0_kc=2 * np.pi * 0.024,
+    G0_kc=2 * np.pi * 0.026,
     Kappa=2 * np.pi * 0.058,
     v_transmission=0.263,
 )
@@ -56,8 +58,27 @@ psi_1 = states.psi_atom_1()
 c_ops = dissipation.collapse_operators()
 e_ops = observables.expectation_ops()
 
-transmissions = np.linspace(0.0, 1.0, 100)
+transmissions = np.linspace(0.28, 0.35, 10)
 fidelities = np.zeros_like(transmissions)
+
+# 0.2955
+
+eta = 0.9 * 0.85 * 0.97
+r_dark = 1e-4
+r_dark = 3e-4
+r_dark = 1.5e-4
+
+args_ref = {
+    "amp": 1.0,
+    "t0": 500,
+    "tau": 70.0,
+    "tau_start": 91.0,
+    "sigma": 100.0,
+}
+
+photon_numbers = np.linspace(0.108, 1, 1)
+amps = convert_photon_numbers_to_amps(tlist, args_ref, photon_numbers, input_shape)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Scan of V polarization transmission")
@@ -69,12 +90,13 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
+    amp = amps[0]
     args = {
-        "amp": args.photon_numbers,
-        "t0": 4000,
+        "amp": amp,
+        "t0": 500,
         "tau": 70.0,
         "tau_start": 91.0,
-        "sigma": 1500.0,
+        "sigma": 100.0,
     }
     drive = DriveParams(
         Mu_fc=0.873,
@@ -99,7 +121,7 @@ if __name__ == "__main__":
             Kappa=2 * np.pi * 0.058,
             v_transmission=transmission_v,
         )
-        out_0_plus, out_0_minus, out_1_plus, out_1_minus, CNOT = (
+        out_0_plus, out_0_minus, out_1_plus, out_1_minus, p_atom, CNOT = (
             run_sim_plus_analysis_in_cnot_basis(
                 tlist=tlist,
                 cavity=cavity,
@@ -113,9 +135,11 @@ if __name__ == "__main__":
                 system=system,
                 psi_0=psi_0,
                 psi_1=psi_1,
+                eta=eta,
+                r_dc=r_dark,
             )
         )
-        fidelity = compute_signal_fidelity(CNOT)
+        fidelity = compute_fidelity_from_prob_matrix(CNOT, basis="cnot")
         fidelities[i] = fidelity
 
     bw_transmission_fig = plt.figure()
@@ -139,6 +163,6 @@ if __name__ == "__main__":
         fontsize=10,
         bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.8),
     )
-    bw_transmission_fig.savefig("./plots/Brewster_window_transmission.svg")
+    # bw_transmission_fig.savefig("./plots/Brewster_window_transmission.svg")
 
-    plt.show(block=False)
+    plt.show()
