@@ -1,3 +1,138 @@
+\chapter{Numerical Simulation of the Atom-Photon Gate}\label{appendix:qutip_simulation}
+
+This appendix describes the time-domain master-equation simulations used to determine the optimal Brewster window attenuation (section~\ref{appendix:bw_scan}) and to characterize the gate fidelity as a function of mean photon number (section~\ref{appendix:photon_number_scan}). All simulations were implemented in Python using the QuTiP framework (\notetome{include qutip citations}).
+
+\section{Simulation Model}\label{appendix:sim_model}
+
+The simulation models the full open quantum system consisting of a single $^{87}$Rb atom coupled to a birefringent Fabry-P\'{e}rot cavity supporting two polarization modes ($\pi$ and $V$). The atom is described by a four-level Hilbert space spanned by $\{\ket{0}, \ket{1}, \ket{\text{dark}}, \ket{e}\}$, where $\ket{0}$ and $\ket{1}$ are the clock qubit states, $\ket{\text{dark}}$ captures off-resonant decay channels, and $\ket{e}$ is the excited state coupled to $\ket{1}$ via the cavity mode. Each cavity mode is truncated to a Fock space of dimension $N_{\text{ph}} = 3$, yielding a total Hilbert space of dimension $3 \times 3 \times 4 = 36$.
+
+\subsection{Hamiltonian}
+
+In the rotating frame, the system Hamiltonian reads
+\begin{align}
+	\hat{H}_0 & = \Delta_{c,\pi}\, \hat{a}_\pi^\dagger \hat{a}_\pi + (\Delta_{c,\pi} + \Delta_{\text{biref}})\, \hat{a}_V^\dagger \hat{a}_V + \Delta_a\, \hat{\sigma}^\dagger \hat{\sigma},
+\end{align}
+with the atom--cavity interaction
+\begin{align}
+	\hat{H}_{\text{int}} & = g\bigl(\hat{a}_\pi \hat{\sigma}^\dagger + \hat{a}_\pi^\dagger \hat{\sigma} + \hat{a}_V \hat{\sigma}^\dagger + \hat{a}_V^\dagger \hat{\sigma}\bigr),
+\end{align}
+where $g$ is the vacuum coupling rate (identical for both modes), $\Delta_{c,\pi}$ is the cavity--laser detuning for the $\pi$ mode, $\Delta_{\text{biref}} = 2\pi \times \SI{500}{\mega\hertz}$ is the birefringent splitting, and $\Delta_a$ is the atom--laser detuning.
+
+The external drive is included via input--output theory. For input polarization $\alpha$, the time-dependent drive term takes the form
+\begin{align}
+	\hat{H}_{\text{drive}}(t) & = i\, \mu_{fc} \sqrt{\kappa_{OC}}\, \varepsilon(t) \bigl(\hat{a}_\alpha - \hat{a}_\alpha^\dagger\bigr),
+\end{align}
+where $\varepsilon(t)$ is the temporal envelope of the input pulse, $\mu_{fc}$ is the fiber--cavity mode-matching parameter, and $\kappa_{OC}$ is the outcoupling rate. For the CNOT basis states $\ket{\pm} = (\ket{V} \pm \ket{\pi})/\sqrt{2}$, both cavity modes are driven simultaneously with the appropriate relative phase and amplitude.
+
+\subsection{Dissipation}
+
+The open-system dynamics are governed by the Lindblad master equation
+\begin{align}
+	\dot{\hat{\rho}} = -i[\hat{H}, \hat{\rho}] + \sum_k \mathcal{D}[\hat{L}_k]\hat{\rho},
+\end{align}
+with collapse operators accounting for:
+\begin{itemize}
+	\item Photon loss through the outcoupling mirror: $\hat{L}_{1,2} = \sqrt{\kappa_{OC}}\, \hat{a}_{\pi,V}$,
+	\item Internal cavity losses (absorption, HR mirror leakage): $\hat{L}_{3,4} = \sqrt{\kappa_{\text{int}}}\, \hat{a}_{\pi,V}$, where $\kappa_{\text{int}} = \kappa - \kappa_{OC}$,
+	\item Spontaneous emission back to the coupled state: $\hat{L}_5 = \sqrt{p_{e \to 1}\, \gamma}\, \ket{1}\bra{e}$,
+	\item Spontaneous emission to off-resonant states: $\hat{L}_6 = \sqrt{p_{e \to \text{dark}}\, \gamma}\, \ket{\text{dark}}\bra{e}$,
+\end{itemize}
+with branching ratios $p_{e \to 1} = 1/15$ and $p_{e \to \text{dark}} = 14/15$ for the $F' = 1$ excited state of the D$_2$ line.
+
+\subsection{Output Fields and Detection Probabilities}
+
+The output field in each polarization mode is computed via the input--output relation
+\begin{align}
+	\hat{a}_{\text{out},\alpha}(t) = \mu_{fr}\, \varepsilon(t) + \mu_{fc}\sqrt{\kappa_{OC}}\, \langle \hat{a}_\alpha(t) \rangle,
+\end{align}
+where $\mu_{fr}$ is the free-space mode-matching parameter. For the CNOT basis, the output fields are transformed to the $\ket{\pm}$ basis via $\hat{a}_{\text{out},\pm} = (\hat{a}_{\text{out},V} \pm \hat{a}_{\text{out},\pi})/\sqrt{2}$.
+
+The detection probabilities at the two SNSPD detectors include corrections for dark counts and finite detection efficiency~$\eta$. The photon signal fraction is defined as
+\begin{align}
+	F_{\text{photon}} = \frac{\lambda_+ + \lambda_-}{\Gamma_+(1 + \tfrac{\Gamma_+}{2}\, p_d) + \Gamma_-(1 + \tfrac{\Gamma_-}{2}\, p_d)},
+\end{align}
+where $\lambda_\pm = \eta\, n_{\text{out},\pm}$ are the signal rates, $\Gamma_\pm = \lambda_\pm + r_{\text{dc}}$ include dark counts at rate $r_{\text{dc}}$, and $p_d$ accounts for the finite detector dead time. The final detection probabilities are then
+\begin{align}
+	P_\pm = F_{\text{photon}} \cdot R_\pm + (1 - F_{\text{photon}}) \cdot \tfrac{1}{2},
+\end{align}
+with $R_\pm = n_{\text{out},\pm}/(n_{\text{out},+} + n_{\text{out},-})$.
+
+\subsection{Simulation Parameters}\label{appendix:sim_params}
+
+The parameters used in the simulations are summarized in Table~\ref{tab:sim_params}. These correspond to the experimentally characterized values presented in section~\ref{section:experimental_parameters_for_gate}.
+
+\begin{table}[ht]
+	\centering
+	\begin{tabular}{l c c}
+		\hline\hline
+		Parameter                   & Symbol                  & Value                                 \\
+		\hline
+		Atom--cavity coupling       & $g$                     & $2\pi \times \SI{24}{\mega\hertz}$    \\
+		Total cavity decay rate     & $\kappa$                & $2\pi \times \SI{58}{\mega\hertz}$    \\
+		Outcoupling ratio           & $\kappa_{OC}/\kappa$    & $0.85$                                \\
+		Atomic decay rate           & $\gamma$                & $2\pi \times \SI{6.065}{\mega\hertz}$ \\
+		Birefringent splitting      & $\Delta_{\text{biref}}$ & $2\pi \times \SI{500}{\mega\hertz}$   \\
+		Fiber--cavity mode-matching & $\mu_{fc}$              & $0.873$                               \\
+		Free-space mode-matching    & $\mu_{fr}$              & $0.978$                               \\
+		Fock space truncation       & $N_{\text{ph}}$         & $3$                                   \\
+		\hline
+	\end{tabular}
+	\caption{Parameters used in the master-equation simulations.}
+	\label{tab:sim_params}
+\end{table}
+
+
+\section{Brewster Window Transmission Scan}\label{appendix:bw_scan}
+
+To determine the optimal number of Brewster windows for the V-mode attenuation (cf.\ section~\ref{section:polarization_dependent_losses}), the gate fidelity was computed as a function of the V-mode transmission $T_V \in [0, 1]$.
+
+For each value of $T_V$, the simulation was run in the CNOT basis: weak coherent pulses with $\ket{+}$ and $\ket{-}$ input polarizations were reflected from the atom-cavity system for both atomic qubit states $\ket{0}$ and $\ket{1}$. In the simulation, the V-mode transmission enters as a prefactor $\sqrt{T_V}$ on the V-mode drive amplitude, effectively modeling the attenuation introduced by the Brewster window array prior to the cavity.
+
+From the four resulting output fields, the $4 \times 4$ CNOT truth table was constructed by computing the detection probabilities in the $\ket{\pm}$ output basis for each input--atom combination. The columns of the truth table were then normalized to unit probability. The signal fidelity was evaluated as the column-averaged overlap between the simulated and ideal CNOT truth tables:
+\begin{align}
+	\mathcal{F}_{\text{sig}} = \frac{1}{4} \sum_{j=1}^{4} \left| \langle U_j | V_j \rangle \right|^2, \label{eq:signal_fidelity}
+\end{align}
+where $\ket{U_j}$ and $\ket{V_j}$ are the $j$-th columns of the ideal and simulated truth tables, respectively.
+
+\notetome{Include the resulting plot: Fidelity vs.\ V-mode transmission, with annotation of the optimal point. Reference the figure.}
+
+The scan reveals a clear optimum at $T_V \approx 0.26$, corresponding to a V-mode power attenuation of approximately \SI{74}{\percent}. Given the measured single-window V-mode transmission of \SI{77.40 \pm 0.13}{\percent} (section~\ref{section:polarization_dependent_losses}), this corresponds to an optimal configuration of 6 to 7 Brewster windows, since $0.774^6 \approx 0.215$ and $0.774^7 \approx 0.166$, which bracket the optimum.
+
+
+\section{Mean Photon Number Scan}\label{appendix:photon_number_scan}
+
+While the atom-photon gate is designed to operate in the single-photon regime, the use of weak coherent pulses introduces a non-zero probability of multi-photon events. This section characterizes how the gate fidelity depends on the mean photon number $\bar{n}$ of the input pulses.
+
+The mean photon number was scanned over the range $\bar{n} \in [10^{-3},\, 2]$ on a logarithmic scale. For each value of $\bar{n}$, the coherent pulse amplitude was computed from the pulse normalization as
+\begin{align}
+	\alpha = \sqrt{\frac{\bar{n}}{\int_0^T |\varepsilon_{\text{ref}}(t)|^2\, dt}},
+\end{align}
+where $\varepsilon_{\text{ref}}(t)$ is the unit-amplitude pulse envelope. The CNOT truth table was then simulated as described above and the fidelity was evaluated.
+
+Three fidelity models were compared:
+
+\begin{enumerate}
+	\item \textbf{Simulation only}: The CNOT truth table is computed directly from the master-equation simulation for the given $\bar{n}$, including dark-count mixing. The fidelity is then weighted by the probability $p_{\text{atom}}$ of the atom remaining in its initial qubit subspace after the photon pulse:
+	      \begin{align}
+		      \mathcal{F}_{\text{sim}} = \mathcal{F}_{\text{CNOT}}(\bar{n})\cdot p_{\text{atom}} + (1 - p_{\text{atom}})\cdot \tfrac{1}{2}.
+	      \end{align}
+
+	\item \textbf{Analytical model}: The single-photon gate fidelity $\mathcal{F}_1$ is taken as a fixed parameter (obtained from the $\bar{n} \to 0$ limit of the simulation). The fidelity at finite $\bar{n}$ is then modeled as
+	      \begin{align}
+		      \mathcal{F}_{\text{ana}}(\bar{n}) = \frac{1}{2} + \left(P_{\text{sig}}\, \mathcal{F}_1 + (1 - P_{\text{sig}})\cdot \tfrac{1}{2} - \frac{1}{2}\right) e^{-(1-\eta)\bar{n}},
+	      \end{align}
+	      where $P_{\text{sig}} = \eta\bar{n}/(\eta\bar{n} + r_{\text{dc}})$ is the signal-to-total click ratio and the exponential factor accounts for multi-photon scattering events that decorrelate the gate operation.
+
+	\item \textbf{Combined (simulation + analytical)}: The CNOT truth table from the simulation (including dark-count mixing) provides the low-$\bar{n}$ fidelity, which is then multiplied by the analytical multi-photon correction factor $e^{-(1-\eta)\bar{n}}$.
+\end{enumerate}
+
+The detection parameters used were: overall detection efficiency $\eta = 0.9 \times 0.85 \times 0.97 \approx 0.742$ (combining fiber coupling, SNSPD detection efficiency, and optical path transmission) and dark count rate $r_{\text{dc}} = \SI{3e-4}{}$ counts per time unit.
+
+\notetome{Include the resulting plot: Fidelity vs.\ mean photon number comparing all three models, with the trust region annotation if using photon\_dim = 3. Reference the figure.}
+
+At very low photon numbers ($\bar{n} \lesssim 10^{-2}$), dark counts dominate and the fidelity approaches $0.5$ (random guessing). As $\bar{n}$ increases, the signal-to-noise ratio improves and the fidelity rises towards the single-photon limit $\mathcal{F}_1$. For $\bar{n} \gtrsim 1$, multi-photon events begin to degrade the fidelity, as the master-equation simulation captures the nonlinear response of the atom-cavity system to multi-photon input states. The Fock space truncation at $N_{\text{ph}} = 3$ limits the quantitative reliability of the simulation to $\bar{n} \lesssim 2$; beyond this threshold, the truncated Hilbert space can no longer faithfully represent the coherent state.
+
+
 \chapter{Analytical Derivations}
 
 \section{Output Light Analysis}
@@ -5,8 +140,8 @@
 \subsection{Problem}
 From our QuTip simulation we're able to calculate the output field $a_{out}(t)$ via input output theory:
 \begin{equation}
-    a_{out}(t) = \mu_{fr}a_{in}(t) + \mu_{fc}\sqrt{\kappa_{oc}}\langle a\rangle(t)
-    \label{eq:io-theory}
+	a_{out}(t) = \mu_{fr}a_{in}(t) + \mu_{fc}\sqrt{\kappa_{oc}}\langle a\rangle(t)
+	\label{eq:io-theory}
 \end{equation}
 
 Where all the fields mentioned in \eqref{eq:io-theory}, can be in one of the following bases: $\{|\pi\rangle,|V\rangle,|+\rangle,|-\rangle\}$.
@@ -24,36 +159,36 @@ This however doesn't take into consideration our dark counts yet.
 \subsection{Detector statistics}
 If our detector fires, and gives us 1 detector click, it can come from 2 sources:
 \begin{itemize}
-    \item a dark count
-    \item a photon
+	\item a dark count
+	\item a photon
 \end{itemize}
 This we can then group up into 4 cases for each of the 2 possible sources of a click
 \begin{itemize}
-    \item $P(\text{0 Photons, 0 dark counts}) = e^{-\lambda}\cdot e^{-p_{dc}} = e^{-(\lambda+p_{dc})}$
-    \item $P(\text{1 Photon, 0 dark counts}) = \lambda e^{-\lambda}\cdot e^{-p_{dc}} = \lambda e^{-(\lambda+p_{dc})}$
-    \item $P(\text{0 Photons, 1 dark count}) = e^{-\lambda}\cdot p_{dc}e^{-p_{dc}} = p_{dc}e^{-(\lambda+p_{pc})}$
-    \item $P(\text{1 Photons, 1 dark counts}) =$ Can be ignored as this would produce 2 clicks, which we're post selecting away
+	\item $P(\text{0 Photons, 0 dark counts}) = e^{-\lambda}\cdot e^{-p_{dc}} = e^{-(\lambda+p_{dc})}$
+	\item $P(\text{1 Photon, 0 dark counts}) = \lambda e^{-\lambda}\cdot e^{-p_{dc}} = \lambda e^{-(\lambda+p_{dc})}$
+	\item $P(\text{0 Photons, 1 dark count}) = e^{-\lambda}\cdot p_{dc}e^{-p_{dc}} = p_{dc}e^{-(\lambda+p_{pc})}$
+	\item $P(\text{1 Photons, 1 dark counts}) =$ Can be ignored as this would produce 2 clicks, which we're post selecting away
 \end{itemize}
 
 Meaning that we have 2 out of our 4 possible events which then produce only 1 click, giving us the probability that each of our detectors produces 1 click:
 \begin{equation}
-    P_{\pm, click} = (\lambda_\pm + p_{dc})e^{-(\lambda_\pm+p_{dc})}
-    \label{eq:prob_click}
+	P_{\pm, click} = (\lambda_\pm + p_{dc})e^{-(\lambda_\pm+p_{dc})}
+	\label{eq:prob_click}
 \end{equation}
 
 \subsection{2 Detector Statistics}
 As mentioned before, we have 2 detectors with the same efficiency $\eta$ and the same detector dark rate $p_{dc}$. These can produce a click independent from one another, but we're only interested in the cases where \textbf{ONLY} 1 produces a click, as the photon can (ideally) only be either $|+\rangle$ or $|-\rangle$ polarized.
 \begin{align*}
-    P(\text{only}|+\rangle) &= P_{+,click}\cdot P_{-,0 clicks}\\
-                            &= (\lambda_{+} + p_{dc})e^{-(\eta(\bar{n}_{out,+} + \bar{n}_{out,-}) + 2p_{dc})}
+	P(\text{only}|+\rangle) & = P_{+,click}\cdot P_{-,0 clicks}                                                \\
+	                        & = (\lambda_{+} + p_{dc})e^{-(\eta(\bar{n}_{out,+} + \bar{n}_{out,-}) + 2p_{dc})}
 \end{align*}
 \begin{align*}
-    P(\text{only}|-\rangle) = (\lambda_{-} + p_{dc})e^{-(\eta(\bar{n}_{out,+} + \bar{n}_{out,-}) + 2p_{dc})}
+	P(\text{only}|-\rangle) = (\lambda_{-} + p_{dc})e^{-(\eta(\bar{n}_{out,+} + \bar{n}_{out,-}) + 2p_{dc})}
 \end{align*}
 
 Adding the two together gives us the probability that at just from the fact that only one detector clicked, something sort of useful came out of our output field, which we're going to call $P_{valid}$:
 $$
-P_{valid} = (\lambda_{+} + \lambda_{-} + 2p_{dc})e^{-(\eta(\bar{n}_{out,+}+\bar{n}_{out,-})+2p_{dc})}
+	P_{valid} = (\lambda_{+} + \lambda_{-} + 2p_{dc})e^{-(\eta(\bar{n}_{out,+}+\bar{n}_{out,-})+2p_{dc})}
 $$
 
 However now we need to filter out only the cases where the detector event was actually triggered by a photon and not a dark count.
@@ -61,9 +196,9 @@ However now we need to filter out only the cases where the detector event was ac
 \subsection{Photon Event Filtering}
 Here the probability that the 1 detector event in \textbf{ONLY} was caused by a photon is:
 \begin{align*}
-    P(\text{1 photon in + \& no click in -}) &= \lambda_{+} e^{-(\lambda_{+} + p_{dc})} \cdot e^{-(\lambda_{-} + p_{dc})}\\
-                                             &= \lambda_{+} e^{-(\eta(\bar{n}_{out,+}+\bar{n}_{out,-})+2p_{dc})} \\
-    P(\text{1 photon in - \& no click in +}) &=  \lambda_{-} e^{-(\eta(\bar{n}_{out,+}+\bar{n}_{out,-})+2p_{dc})}
+	P(\text{1 photon in + \& no click in -}) & = \lambda_{+} e^{-(\lambda_{+} + p_{dc})} \cdot e^{-(\lambda_{-} + p_{dc})} \\
+	                                         & = \lambda_{+} e^{-(\eta(\bar{n}_{out,+}+\bar{n}_{out,-})+2p_{dc})}          \\
+	P(\text{1 photon in - \& no click in +}) & =  \lambda_{-} e^{-(\eta(\bar{n}_{out,+}+\bar{n}_{out,-})+2p_{dc})}
 \end{align*}
 
 Thus giving us the probability that 1 click was produced in only 1 of the two detectors:
@@ -71,21 +206,21 @@ $$ P_{only} = (\lambda_{+} + \lambda_{-}) e^{-(\eta(\bar{n}_{out,+}+\bar{n}_{out
 
 This then allows us now to calculate how many of our valid clicks, were actually produced by only 1 photon event going only to 1 of the 2 detectors, essentially giving us a sort of signal-to-noise ratio:
 $$
-P_{SNR} = \frac{P_{only}}{P_{valid}} = \frac{\lambda_{+} + \lambda_{-}}{\lambda_{+} + \lambda_{-} + 2p_{dc}}
+	P_{SNR} = \frac{P_{only}}{P_{valid}} = \frac{\lambda_{+} + \lambda_{-}}{\lambda_{+} + \lambda_{-} + 2p_{dc}}
 $$
 
 \subsection{Photon Distribution}
 All that's left now is to calculate how much of our light went to the "+"-detector, and how much went to our "-"-detector, which is just like calculating the ratios of all of our events that were triggered only by photons, and the probability of the respective detector itself:
 $$
-R_{+} = \frac{P(\text{1 photon in + and no click in -})}{P_{only}} = \frac{\bar{n}_{out,+} }{\bar{n}_{out,+} + \bar{n}_{out,-}}$$
+	R_{+} = \frac{P(\text{1 photon in + and no click in -})}{P_{only}} = \frac{\bar{n}_{out,+} }{\bar{n}_{out,+} + \bar{n}_{out,-}}$$
 $$
-R_{-} = \frac{P(\text{1 photon in - and no click in +})}{P_{only}} = \frac{\bar{n}_{out,-}}{\bar{n}_{out,+} + \bar{n}_{out,-}}
+	R_{-} = \frac{P(\text{1 photon in - and no click in +})}{P_{only}} = \frac{\bar{n}_{out,-}}{\bar{n}_{out,+} + \bar{n}_{out,-}}
 $$
 
 What then ends up going into our truth table is the following:
 \begin{itemize}
-    \item For the $|+\rangle$-part = $R_{+}\cdot P_{SNR} + (1-P_{SNR})\cdot 0.5$
-    \item For the $|-\rangle$-part = $R_{-}\cdot P_{SNR} + (1-P_{SNR})\cdot 0.5$
+	\item For the $|+\rangle$-part = $R_{+}\cdot P_{SNR} + (1-P_{SNR})\cdot 0.5$
+	\item For the $|-\rangle$-part = $R_{-}\cdot P_{SNR} + (1-P_{SNR})\cdot 0.5$
 \end{itemize}
 
 \section{Driving Hamiltonian}

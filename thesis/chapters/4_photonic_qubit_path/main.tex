@@ -10,25 +10,24 @@ As mentioned before, the $V$ mode of the birefringent cavity is detuned by $\Del
 
 A $\pi$-polarized photon on the other hand interacts with the atom inside the cavity. In the coupled case $\ket{1}$, the Vacuum Rabi Splitting shifts the dressed-state resonances to $\omega_c\pm g$. This then leads to the photon getting reflected off the OC mirror, but not perfectly, due to finite cooperativity. In the uncoupled state $\ket{0}$, the $\pi$ polarized photon fully enters the cavity, and eventually gets reflected with a $\pi$ phase shift. But due to intracavity losses (absorption, HR mirror leakage, imperfect mode-matching), the reflection amplitude is smaller than that of the coupled case.
 
-Using \eqref{eq:analytical_reflection} and the values measured in section \ref{section:experimental_parameters_for_gate}, the following values for the reflection amplitudes are obtained:
-
+Using the time-domain simulation described in Appendix \notetome{include appendix chapter} with the parameters characterized in section \ref{section:experimental_parameters_for_gate}, the following reflection amplitudes are obtained
 
 \begin{table}[ht]
 	\centering
 	\begin{tabular}{l|c|c|c|c}
 		\hline\hline
-		             & $\ket{0,\pi}$     & $\ket{1,\pi}$               & $\ket{0,V}$                 & $\ket{1,V}$                 \\
+		             & $\ket{0,\pi}$   & $\ket{1,\pi}$  & $\ket{0,V}$    & $\ket{1,V}$    \\
 		\hline
-		$r$          & $-0.316 - 0.065i$ & $\phantom{-}0.711 - 0.013i$ & $\phantom{-}0.954 + 0.147i$ & $\phantom{-}0.908 + 0.111i$ \\[6pt]
-		$R = |r|^2$  & $0.104$           & $0.505$                     & $0.931$                     & $0.838$                     \\[6pt]
-		$\phi$ (rad) & $-2.940$          & $-0.018$                    & $\phantom{-}0.153$          & $\phantom{-}0.122$          \\
+		$r$          & $-0.256+0.000i$ & $0.704+0.031i$ & $0.974+0.071i$ & $0.973+0.050i$ \\[6pt]
+		$R = |r|^2$  & $0.064$         & $0.493$        & $0.953$        & $0.948$        \\[6pt]
+		$\phi$ (rad) & $3.016$         & $0.000$        & $0.000$        & $0.000$        \\
 		\hline
 	\end{tabular}
 	\caption{Reflection coefficients for the four input states of the atom-photon gate, calculated from equation~\eqref{eq:analytical_reflection} using the system parameters characterized in section~\ref{section:experimental_parameters_for_gate}. The atomic states $\ket{0}$ and $\ket{1}$ correspond to the uncoupled and coupled ground states, respectively.}
 	\label{tab:reflection_coefficients}
 \end{table}
 
-Table \ref{tab:reflection_coefficients} shows that the reflection amplitude for the $V$ polarized photon, is much bigger than that of the $\pi$ polarized photon, thus giving the following relationship: $|r_{V}| >|r_{\pi,\text{coupled}}| >|r_{\pi,\text{uncoupled}}|$. It is worth noting that even though the $V$ polarized photon is effectively detuned by $\Delta_{\text{biref}}$, there is still some residual atom-state dependence, thus introducing an additional mismatch in the reflection amplitudes.
+Table \ref{tab:reflection_coefficients} shows that the reflection amplitude for the $V$ polarized photon, is much bigger than that of the $\pi$ polarized photon, thus giving the following relationship: $|r_{V}| >|r_{\pi,\text{coupled}}| >|r_{\pi,\text{uncoupled}}|$.\\
 
 This amplitude mismatch ultimately reduces the overlap with an ideal CNOT gate truth table. However, since the cavity parameters are fixed by the requirements of the broader \textit{CavityX} experiment, the atom-state-dependent amplitude difference cannot be addressed independently, as this would require changing the cavity itself. The following sections therefore focus on compensating the polarization-dependent mismatch, which can be corrected externally.
 
@@ -51,7 +50,7 @@ The Brewster angle can be simply calculated via:\cite{ThorlabsBW}
 
 In \eqref{eq:brewster_window_stuff} $n_t$ is the refractive index of the Brewster window, and $n_i$ would be the refractive index from which the incoming light is coming from (here: air $n_i \sim 1.004$). For light that is resonant to the 2-1' transition of the $\text{D}_2$-line of $^{87}\text{Rb}$, $n_t=1.453667$, resulting in a Brewster angle $\theta_B=55.467288^{\circ}$. At the Brewster angle $\theta_B$ the transmission through single Brewster window were $99.98\pm0.17\%$ and $77.40\pm0.13\%$ for the H and V polarization respectively.
 
-The custom Brewster window mount as mentioned before has the main functionality of placing the elements in an array at the Brewster angle $\theta_b$ relative to the incoming light. It can house up to 12 Brewster windows when using the screw hole in the middle or 8 Brewster windows when using the screw holes on each side of the mount. The latter allows the mount to be placed on two separate posts, making the overall construction more mechanically stable, which eventually ended up being the configuration used in this project. This configuration not only provided greater mechanical stability, but was also sufficient for the experiment, since the optimal CNOT overlap was found to lie between 6 and 7 Brewster windows.
+The custom Brewster window mount as mentioned before has the main functionality of placing the elements in an array at the Brewster angle $\theta_b$ relative to the incoming light. It can house up to 12 Brewster windows when using the screw hole in the middle or 8 Brewster windows when using the screw holes on each side of the mount. The latter allows the mount to be placed on two separate posts, making the overall construction more mechanically stable, which eventually ended up being the configuration used in this project. This configuration not only provided greater mechanical stability, but was also sufficient for the experiment, since the optimal CNOT overlap was found to lie between 5 and 6 Brewster windows, as determined by a time-domain simulation of the atom-cavity system (see Appendix \notetome{include appendix chapter}).
 
 \begin{figure}[htbp]
 	\centering
@@ -87,7 +86,7 @@ For the atom-photon gate, weak coherent pulses are used in order to simulate the
 	\label{fig:setup_aom_table}
 \end{figure}
 
-Figure \ref{fig:setup_aom_table} showcases a double-pass AOM track. The light going into the AOM track, is blue detuned to the unshifted $\text{D}_2\text{-line}$ by \notetome{include actual offset}. Part of the light (not shown here), can then be superimposed either with a stable reference frequency source like an optical frequency comb from the company \textit{MenloSystems GmbH} when the laser frequency does not need to be scanned, or with another laser, for when it does need to be scanned, e.g., for performing a normal-mode spectroscopy.
+Figure \ref{fig:setup_aom_table} showcases a double-pass AOM track. The light going into the AOM track, is blue detuned to the 2-1' transition of the $\text{D}_2\text{-line}$ by \notetome{include actual offset}. Part of the light (not shown here), can then be superimposed either with a stable reference frequency source like an optical frequency comb from the company \textit{MenloSystems GmbH} when the laser frequency does not need to be scanned, or with another laser, for when it does need to be scanned, e.g., for performing a normal-mode spectroscopy.
 The polarization of the light first gets set by a $\lambda/2$ retardation waveplate (1) in order to pass through the polarizing beam splitter (PBS, 2) in full transmission. A plano convex lens (3) focuses the light into an acousto-optic modulator (AOM,4).
 In the double-pass configuration shown here, the AOM shifts the optical frequency by twice its driving frequency, enabling continuous frequency tuning.\\
 
