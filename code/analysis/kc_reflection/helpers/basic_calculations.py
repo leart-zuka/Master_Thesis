@@ -68,6 +68,31 @@ def calculate_power(
     return (mean_photon_number * h * frequency) / (pulse_length * total_reduction)
 
 
+def calculate_mean_photon_number(
+    frequency: float, power: float, pulse_length: float, total_reduction: float = 1.0
+):
+    """
+    This function calculates the mean photon number for a given input power (without ND filter), pulse length, pulse length, and frequency
+
+    Parameters
+    ----------
+        frequency : float
+            The frequency of the light pulse
+        power : float
+            The power required to achieve such pulses
+        pulse_length : float
+            The length of each pulse (this parameter is what is passed on towards the FPGA as a trigger with a certain length)
+        total_reduction: float
+            Reduction from ND filters
+
+    Returns
+    -------
+        mean_photon_number : float
+            The mean photon number that is contained within each pulse
+    """
+    return (power * pulse_length * total_reduction) / (h * frequency)
+
+
 def calculate_pulse_length(frequency: float, mean_photon_number: float, power: float):
     """
     This function calculates the pulse needed to achieve a pulse with a certain mean photon number, frequency and power

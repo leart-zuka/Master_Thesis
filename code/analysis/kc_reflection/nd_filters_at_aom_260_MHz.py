@@ -2,6 +2,7 @@ from helpers.basic_calculations import (
     calculate_total_reduction,
     calculate_power,
     calculate_pulse_length,
+    calculate_mean_photon_number,
 )
 from prefixed import Float
 
@@ -29,7 +30,24 @@ required_power = calculate_power(
     frequency_2_1, mean_photon_number, 1e-6, total_reduction
 )
 # print(f"Required poewr: {Float(required_power * 1 / (0.5532)):.2h}")
-required_pulse_length = calculate_pulse_length(
-    frequency_2_1, mean_photon_number, required_power * total_reduction
+# required_pulse_length = calculate_pulse_length(
+#     frequency_2_1, mean_photon_number, required_power * total_reduction
+# )
+# print(f"Required power: {Float(required_power):.2h}")
+
+
+# Measured
+
+# n=0.2
+power = 371.6e-9
+power_err = 1.376e-9
+
+mean_photon_number = calculate_mean_photon_number(
+    frequency_2_1, power, 1e-6, total_reduction
 )
-print(f"Required power: {Float(required_power):.2h}")
+mean_photon_number_err = calculate_mean_photon_number(
+    frequency_2_1, power_err, 1e-6, total_reduction
+)
+
+
+print(f"{mean_photon_number} +/- {mean_photon_number_err}")
