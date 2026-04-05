@@ -84,7 +84,7 @@ class Analyzer:
         file_name: str,
         path: str | Path | None = None,
         file_type: str = ".h5",
-        mean_kc_counts: int = 1750,
+        mean_kc_counts: int = 2000,
         no=10,
     ):
         if self.data_dir is None:
@@ -95,8 +95,8 @@ class Analyzer:
 
         # ------ We get the data ------
         self.data_arr = get_data_from_main_h5_file(base, file_name, file_type)
-        wt_kc = 0.55 * mean_kc_counts  # witness threshold short cavity
-        twot = 1.75 * mean_kc_counts  # two atom threshold
+        wt_kc = 0.50 * mean_kc_counts  # witness threshold short cavity
+        twot = 1.80 * mean_kc_counts  # two atom threshold
         atom_df = pd.DataFrame()
         data_photon_grouped = []
         data_time_grouped = []
@@ -497,8 +497,10 @@ class Analyzer:
         optical_pumping_duration = parameters["optical_pumping_duration"]
         pulse_delay = parameters["pulse_delay"]
         pulse_duration = parameters["pulse_duration"]
-        pulse_delay_SD = parameters["pulse_delay_SD"]
-        pulse_duration_SD = parameters["pulse_duration_SD"]
+        pulse_delay_SD_after = parameters["pulse_delay_SD_after"]
+        pulse_duration_SD_after = parameters["pulse_duration_SD_after"]
+        # pulse_delay_SD_before = parameters["pulse_delay_SD_before"]
+        # pulse_duration_SD_before = parameters["pulse_duration_SD_before"]
         sequence_duration = parameters["sequence_duration"]
 
         binsize = 20 * 1e-9
@@ -516,12 +518,16 @@ class Analyzer:
             optical_pumping_gate[1]
             + pulse_delay
             + pulse_duration
-            + pulse_delay_SD,  # Start of SD
+            + pulse_delay_SD_after,  # Start of SD
             optical_pumping_gate[1]
             + pulse_delay
             + pulse_duration
-            + pulse_delay_SD
-            + pulse_duration_SD,  # End of SD
+            + pulse_delay_SD_after
+            + pulse_duration_SD_after,  # End of SD
+            # optical_pumping_gate[1] + pulse_delay_SD_before,  # Start of photon pulse
+            # optical_pumping_gate[1]
+            # + pulse_delay_SD_before
+            # + pulse_duration_SD_before
         ]
 
         # plotting
@@ -558,8 +564,8 @@ class Analyzer:
         # sync fast   is qutau trigger   (aka new trial)
         # sync fast 2 is qutau trigger 3 (aka new experiment)
 
-        length = int(np.floor(len(data_arr[self.sync_fast][:-1]) / 2))
-        # length = int(np.floor(len(data_arr[self.sync_fast][:-1])))
+        # length = int(np.floor(len(data_arr[self.sync_fast][:-1]) / 2))
+        length = int(np.floor(len(data_arr[self.sync_fast][:-1])))
         print(length)
 
         for i in track(range(length)):
@@ -567,47 +573,49 @@ class Analyzer:
 
             start = t0 + write_gate[0]
             end = t0 + write_gate[1]
-            start_sd = t0 + write_gate[2]
-            end_sd = t0 + write_gate[3]
+            start_sd_after = t0 + write_gate[2]
+            end_sd_after = t0 + write_gate[3]
+            # start_sd_before = t0 + write_gate[4]
+            # end_sd_before = t0 + write_gate[5]
 
-            start_4, end_4, start_4_sd, end_4_sd = np.searchsorted(
-                data_arr[self.kc_h],
-                [start, end, start_sd, end_sd],
+            # start_4, end_4, start_4_sd_after, end_4_sd_after,start_4_sd_before, end_4_sd_before = np.searchsorted(
+            #     data_arr[self.kc_h],
+            #     [start, end, start_sd_after, end_sd_after, start_sd_before, end_sd_before]
+            # )
+
+            start_4, end_4, start_4_sd_after, end_4_sd_after = np.searchsorted(
+                data_arr[self.kc_h], [start, end, start_sd_after, end_sd_after]
             )
 
-            start_7, end_7, start_7_sd, end_7_sd = np.searchsorted(
+            start_7, end_7, start_7_sd_after, end_7_sd_after = np.searchsorted(
                 data_arr[self.kc_v],
-                [start, end, start_sd, end_sd],
+                [start, end, start_sd_after, end_sd_after],
             )
 
             n4 = end_4 - start_4
             n7 = end_7 - start_7
 
-            n4_sd = end_4_sd - start_4_sd
-            n7_sd = end_7_sd - start_7_sd
+            n4_sd = end_4_sd_after - start_4_sd_after
+            n7_sd = end_7_sd_after - start_7_sd_after
 
-            if n4 + n7:
-                if post_select_sd:
-                    if "atom_0" in file_name:
-                        if (n4_sd + n7_sd) == 0:
-                            counts_ch_4_atom_0.append(n4)
-                            counts_ch_4_atom_1.append(0)
-                            counts_ch_7_atom_0.append(n7)
-                            counts_ch_7_atom_1.append(0)
-                    elif "atom_1" in file_name:
-                        if (n4_sd + n7_sd) > 0:
-                            counts_ch_4_atom_1.append(n4)
-                            counts_ch_4_atom_0.append(0)
-                            counts_ch_7_atom_1.append(n7)
-                            counts_ch_7_atom_0.append(0)
-                else:
-                    if (n4_sd + n7_sd) == 0:
-                        counts_ch_4_atom_0.append(n4)
-                        counts_ch_7_atom_0.append(n7)
-                    else:
-                        counts_ch_4_atom_1.append(n4)
-                        counts_ch_7_atom_1.append(n7)
-                click_trials += 1
+            # ps4 = end_4_sd_before - start_4_sd_before
+            # ps7 = end_7_sd_before - start_7_sd_before
+
+            n_sd = n4_sd + n7_sd
+            # ps = ps4 + ps7
+
+            if n4 + n7 == 0:
+                continue
+
+            click_trials += 1
+
+            if n_sd > 0:
+                counts_ch_4_atom_1.append(n4)
+                counts_ch_7_atom_1.append(n7)
+            else:
+                pass
+                counts_ch_4_atom_0.append(n4)
+                counts_ch_7_atom_0.append(n7)
 
         tot_clicks_4_atom_1 = np.sum(counts_ch_4_atom_1)
         tot_clicks_7_atom_1 = np.sum(counts_ch_7_atom_1)
@@ -625,10 +633,10 @@ class Analyzer:
         P_7_atom_0 = tot_clicks_7_atom_0 / tot_clicks
         P_7_atom_1 = tot_clicks_7_atom_1 / tot_clicks
 
-        P_4_atom_0_err = np.sqrt(P_4_atom_0 * (1 - P_4_atom_0) / tot_clicks)
-        P_4_atom_1_err = np.sqrt(P_4_atom_1 * (1 - P_4_atom_1) / tot_clicks)
-        P_7_atom_0_err = np.sqrt(P_7_atom_0 * (1 - P_7_atom_0) / tot_clicks)
-        P_7_atom_1_err = np.sqrt(P_7_atom_1 * (1 - P_7_atom_1) / tot_clicks)
+        P_4_atom_0_err = np.sqrt(P_4_atom_0 * (1 - P_4_atom_0) / click_trials)
+        P_4_atom_1_err = np.sqrt(P_4_atom_1 * (1 - P_4_atom_1) / click_trials)
+        P_7_atom_0_err = np.sqrt(P_7_atom_0 * (1 - P_7_atom_0) / click_trials)
+        P_7_atom_1_err = np.sqrt(P_7_atom_1 * (1 - P_7_atom_1) / click_trials)
 
         self.data_arr = None
 
@@ -678,20 +686,23 @@ class Analyzer:
 if __name__ == "__main__":
     analyzer = Analyzer(data_dir="./")
 
-    file = "28_03_26_Resonant_Reflection_R_02_photons_atom_1_trap_on_test_basis_2"
-    # file = "28_03_26_Resonant_Reflection_L_02_photons_atom_1_trap_on_test_basis_1"
+    file = "05_04_26_Reflection_L_atom_0_2"
 
     ParamDictReflection_trap_off: ReflectionGateT = {
         "trigger_delay": 3.15e-6,
         "cooling_duration": 400e-6,
-        "optical_pumping_duration": 340e-6,
-        # "pulse_delay": 40.5e-6, # Trap off
-        "pulse_delay": 40.3e-6,  # Trap on
+        # "optical_pumping_duration": 340e-6,
+        "optical_pumping_duration": 450e-6,
+        "pulse_delay": 38.8e-6,  # Trap on
+        # "pulse_delay": 47.2e-6,  # Trap on
         "pulse_duration": 1.2e-6,
         # "pulse_delay_SD": 2e-6, # Trap off
-        "pulse_delay_SD": 1.1e-6,  # Trap on
-        "pulse_duration_SD": 7e-6,
-        "sequence_duration": 0.9e-3,
+        "pulse_delay_SD_after": 1.1e-6,  # Trap on
+        "pulse_duration_SD_after": 7.1e-6,
+        "pulse_delay_SD_before": 39.1e-6,  # Trap on
+        "pulse_duration_SD_before": 8.0e-6,
+        # "sequence_duration": 0.9e-3,
+        "sequence_duration": 1.1e-3,
     }
 
     (
@@ -710,80 +721,32 @@ if __name__ == "__main__":
         plot_histogram=False,
         post_select_sd=False,
     )
-    print(
-        f"Prob to land in ch4 and atom in 0: {P_4_atom_0 * 100:.2f}+/-{P_4_atom_0_err * 100:.2f}"
-    )
+
     print(
         f"Prob to land in ch4 and atom in 1: {P_4_atom_1 * 100:.2f}+/-{P_4_atom_1_err * 100:.2f}"
     )
     print(
-        f"Prob to land in ch7 and atom in 0: {P_7_atom_0 * 100:.2f}+/-{P_7_atom_0_err * 100:.2f}"
-    )
-    print(
         f"Prob to land in ch7 and atom in 1: {P_7_atom_1 * 100:.2f}+/-{P_7_atom_1_err * 100:.2f}"
     )
-    exit()
 
-    # cnot_files_trap_off = [ # full
-    #     "28_03_26_Resonant_Reflection_L_005_photons_atom_1_trap_on_test_basis_1",
-    #     "28_03_26_Resonant_Reflection_R_005_photons_atom_1_trap_on_test_basis_1",
-    #     "28_03_26_Resonant_Reflection_L_005_photons_atom_0_trap_on_test_basis_1",
-    #     "28_03_26_Resonant_Reflection_R_005_photons_atom_0_trap_on_test_basis_1"
-    # ]
+    print(
+        f"Prob to land in ch4 and atom in 0: {P_4_atom_0 * 100:.2f}+/-{P_4_atom_0_err * 100:.2f}"
+    )
+    print(
+        f"Prob to land in ch7 and atom in 0: {P_7_atom_0 * 100:.2f}+/-{P_7_atom_0_err * 100:.2f}"
+    )
 
-    # cnot_files_trap_off = [ # full
-    #     "28_03_26_Resonant_Reflection_L_01_photons_atom_1_trap_on_test_basis_1",
-    #     "28_03_26_Resonant_Reflection_R_01_photons_atom_1_trap_on_test_basis_1",
-    #     "28_03_26_Resonant_Reflection_L_01_photons_atom_0_trap_on_test_basis_1",
-    #     "28_03_26_Resonant_Reflection_R_01_photons_atom_0_trap_on_test_basis_1"
-    # ]
-
-    cnot_files_trap_off = [  # only use half len/2
-        "28_03_26_Resonant_Reflection_L_02_photons_atom_1_trap_on_test_basis_1",
-        "28_03_26_Resonant_Reflection_R_02_photons_atom_1_trap_on_test_basis_2",
-        "28_03_26_Resonant_Reflection_L_02_photons_atom_0_trap_on_test_basis_1",
-        "28_03_26_Resonant_Reflection_R_02_photons_atom_0_trap_on_test_basis_1",
+    cnot_files_trap_on = [  # only use half len/2
+        "05_04_26_Reflection_L_atom_1_11",
+        "05_04_26_Reflection_R_atom_1_1",
+        "05_04_26_Reflection_L_atom_0_2",
+        "05_04_26_Reflection_R_atom_0_1",
     ]
 
-    # cnot_files_trap_off = [ # full
-    #     "28_03_26_Resonant_Reflection_L_03_photons_atom_1_trap_on_test_basis_1",
-    #     "28_03_26_Resonant_Reflection_R_03_photons_atom_1_trap_on_test_basis_2",
-    #     "28_03_26_Resonant_Reflection_L_03_photons_atom_0_trap_on_test_basis_1",
-    #     "28_03_26_Resonant_Reflection_R_03_photons_atom_0_trap_on_test_basis_1"
-    # ]
-
-    # cnot_files_trap_off = [ # full
-    #     "28_03_26_Resonant_Reflection_L_04_photons_atom_1_trap_on_test_basis_2",
-    #     "28_03_26_Resonant_Reflection_R_04_photons_atom_1_trap_on_test_basis_1",
-    #     "28_03_26_Resonant_Reflection_L_04_photons_atom_0_trap_on_test_basis_2",
-    #     "28_03_26_Resonant_Reflection_R_04_photons_atom_0_trap_on_test_basis_1"
-    # ]
-
-    # cnot_files_trap_off = [ # full
-    #     "28_03_26_Resonant_Reflection_L_06_photons_atom_1_trap_on_test_basis_1",
-    #     "28_03_26_Resonant_Reflection_R_06_photons_atom_1_trap_on_test_basis_1",
-    #     "28_03_26_Resonant_Reflection_L_06_photons_atom_0_trap_on_test_basis_1",
-    #     "28_03_26_Resonant_Reflection_R_06_photons_atom_0_trap_on_test_basis_1"
-    # ]
-
-    # cnot_files_trap_off = [ # full
-    #     "28_03_26_Resonant_Reflection_L_08_photons_atom_1_trap_on_test_basis_1",
-    #     "28_03_26_Resonant_Reflection_R_08_photons_atom_1_trap_on_test_basis_1",
-    #     "28_03_26_Resonant_Reflection_L_08_photons_atom_0_trap_on_test_basis_1",
-    #     "28_03_26_Resonant_Reflection_R_08_photons_atom_0_trap_on_test_basis_1"
-    # ]
-    #
-    # cnot_files_trap_off = [  # full
-    #     "28_03_26_Resonant_Reflection_L_1_6_photons_atom_1_trap_on_test_basis_1",
-    #     "28_03_26_Resonant_Reflection_R_1_6_photons_atom_1_trap_on_test_basis_1",
-    #     "28_03_26_Resonant_Reflection_L_1_6_photons_atom_0_trap_on_test_basis_1",
-    #     "28_03_26_Resonant_Reflection_R_1_6_photons_atom_0_trap_on_test_basis_1",
-    # ]
-    #
     cnot_gate = np.zeros((4, 4))
     cnot_err = np.zeros((4, 4))
 
-    for i, file in enumerate(cnot_files_trap_off):
+    for i, file in enumerate(cnot_files_trap_on):
         (
             P_4_atom_0,
             P_4_atom_0_err,
