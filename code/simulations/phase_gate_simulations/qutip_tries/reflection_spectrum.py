@@ -131,6 +131,8 @@ for ax, label in zip([ax1, ax2], ["(a)", "(b)"]):
 # Remove x tick labels on top panel (shared axis)
 ax1.tick_params(labelbottom=False)
 
+plt.show()
+
 fig.savefig("./plots/reflectivity_phase.png", dpi=200, bbox_inches="tight")
 fig.savefig("./plots/reflectivity_phase.pdf", bbox_inches="tight")
 fig.savefig("./plots/reflectivity_phase.svg", bbox_inches="tight")

@@ -642,31 +642,38 @@ def run_sim_plus_analysis_in_cnot_basis(
         )
     )
 
+    P0_0_plus = out_0_plus.e_data["P(0)"][-1]
+    P0_0_minus = out_0_minus.e_data["P(0)"][-1]
+    P1_1_plus = out_1_plus.e_data["P(1)"][-1]
+    P1_1_minus = out_1_minus.e_data["P(1)"][-1]
+
+    p_atom = (P0_0_plus + P0_0_minus + P1_1_minus + P1_1_plus) / 4
+
     CNOT = np.array(
         [
             [
-                P_operator_1_in_plus_out_plus,
-                P_operator_1_in_minus_out_plus,
-                0,
-                0,
+                out_1_plus.e_data["P(1)"][-1] * P_operator_1_in_plus_out_plus,
+                out_1_minus.e_data["P(1)"][-1] * P_operator_1_in_minus_out_plus,
+                out_0_plus.e_data["P(1)"][-1] * P_operator_0_in_plus_out_plus,
+                out_0_minus.e_data["P(1)"][-1] * P_operator_0_in_minus_out_plus,
             ],
             [
-                P_operator_1_in_plus_out_minus,
-                P_operator_1_in_minus_out_minus,
-                0,
-                0,
+                out_1_plus.e_data["P(1)"][-1] * P_operator_1_in_plus_out_minus,
+                out_1_minus.e_data["P(1)"][-1] * P_operator_1_in_minus_out_minus,
+                out_0_plus.e_data["P(1)"][-1] * P_operator_0_in_plus_out_minus,
+                out_0_minus.e_data["P(1)"][-1] * P_operator_0_in_minus_out_minus,
             ],
             [
-                0,
-                0,
-                P_operator_0_in_plus_out_plus,
-                P_operator_0_in_minus_out_plus,
+                out_1_plus.e_data["P(0)"][-1] * P_operator_1_in_plus_out_plus,
+                out_1_minus.e_data["P(0)"][-1] * P_operator_1_in_minus_out_plus,
+                out_0_plus.e_data["P(0)"][-1] * P_operator_0_in_plus_out_plus,
+                out_0_minus.e_data["P(0)"][-1] * P_operator_0_in_minus_out_plus,
             ],
             [
-                0,
-                0,
-                P_operator_0_in_plus_out_minus,
-                P_operator_0_in_minus_out_minus,
+                out_1_plus.e_data["P(0)"][-1] * P_operator_1_in_plus_out_minus,
+                out_1_minus.e_data["P(0)"][-1] * P_operator_1_in_minus_out_minus,
+                out_0_plus.e_data["P(0)"][-1] * P_operator_0_in_plus_out_minus,
+                out_0_minus.e_data["P(0)"][-1] * P_operator_0_in_minus_out_minus,
             ],
         ]
     )

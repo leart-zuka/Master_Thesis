@@ -60,8 +60,8 @@ gate_matrices = plot_cphase_and_cnot(
     "2-1' Transition",
     params_dir,
     params_err_dir,
-    # attenuate_light,
-    special_attenuation=0.24,
+    attenuate_light,
+    special_attenuation=0.208,
     show_fig=False,
     save_fig=True,
 )
@@ -74,7 +74,7 @@ overlap = compute_fidelity_from_prob_matrix(
     gate_matrices["normalized_cnot"], basis="cnot"
 )
 print(overlap)
-# exit()
+exit()
 display_fidelity(overlap, error=process_fidelity_err)
 
 

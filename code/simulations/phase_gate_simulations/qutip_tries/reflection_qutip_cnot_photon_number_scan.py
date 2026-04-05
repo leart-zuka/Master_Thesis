@@ -51,9 +51,11 @@ dissipation = Dissipation(ops=system, cavity=cavity, atom=atom)
 observables = Observables(ops=system, cavity=cavity)
 
 states = InitialStates(cavity=cavity, atom=atom)
+
 psi_0 = states.psi_atom_0()
+psi_0 = states.rho_mixed(p_0=1, p_1=0, p_dark=0)
 psi_1 = states.psi_atom_1()
-psi_0 = states.rho_mixed()
+psi_1 = states.rho_mixed(p_0=0.062, p_1=0.938, p_dark=0)
 
 c_ops = dissipation.collapse_operators()
 e_ops = observables.expectation_ops()
@@ -147,13 +149,9 @@ if __name__ == "__main__":
         print(p_atom)
 
         atomic_state[i] = p_atom
-        other_fidelities[i] = (
-            compute_fidelity_from_prob_matrix(
-                CNOT,
-                basis="cnot",
-            )
-            * p_atom
-            + (1 - p_atom) * 0.5
+        other_fidelities[i] = compute_fidelity_from_prob_matrix(
+            CNOT,
+            basis="cnot",
         )
 
         # Pure Sim
