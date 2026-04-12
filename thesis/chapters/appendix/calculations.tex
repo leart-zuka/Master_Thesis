@@ -132,518 +132,518 @@ The detection parameters used were: overall detection efficiency $\eta = 0.9 \ti
 
 At very low photon numbers ($\bar{n} \lesssim 10^{-2}$), dark counts dominate and the fidelity approaches $0.5$ (random guessing). As $\bar{n}$ increases, the signal-to-noise ratio improves and the fidelity rises towards the single-photon limit $\mathcal{F}_1$. For $\bar{n} \gtrsim 1$, multi-photon events begin to degrade the fidelity, as the master-equation simulation captures the nonlinear response of the atom-cavity system to multi-photon input states. The Fock space truncation at $N_{\text{ph}} = 3$ limits the quantitative reliability of the simulation to $\bar{n} \lesssim 2$; beyond this threshold, the truncated Hilbert space can no longer faithfully represent the coherent state.
 
-
-\chapter{Analytical Derivations}
-
-\section{Output Light Analysis}
-
-\subsection{Problem}
-From our QuTip simulation we're able to calculate the output field $a_{out}(t)$ via input output theory:
-\begin{equation}
-	a_{out}(t) = \mu_{fr}a_{in}(t) + \mu_{fc}\sqrt{\kappa_{oc}}\langle a\rangle(t)
-	\label{eq:io-theory}
-\end{equation}
-
-Where all the fields mentioned in \eqref{eq:io-theory}, can be in one of the following bases: $\{|\pi\rangle,|V\rangle,|+\rangle,|-\rangle\}$.
-
-Now the question becomes, how is one able to analyze this output field and generate a truth table from this. For that we're going to calculate the mean photon number in the output field via:
-$$\bar{n}_{out;\{|\pi\rangle,|V\rangle,|+\rangle,|-\rangle\} } = \int |a_{out;\{ |\pi\rangle,|V\rangle,|+\rangle,|-\rangle  \}}|^2 dt$$
-
-For the problem we're going to be looking at, we're only going to consider the $|+\rangle$ and the $|-\rangle$ modes of our light, as these are the polarizations which are set in our CNOT basis, for which we want to calculate the fidelity for.
-
-\subsection{Analysis via detector}
-Now after having extracted the mean photon number in our output field for our two polarizations we need to consider the framework which we're using to analyze this output field. In our case that is the case of 2 independent detectors, where one detects the $|+\rangle$ polarized light and the other detects the $|-\rangle$ polarized light. Both detectors share the same efficiency $\eta$, and also the same dark count rate $p_{dc}$, which is the rate at with a single detector will fire even upon receiving no signal. The efficiency can be viewed as a beam splitter. Meaning, that if we were to have $\bar{n}$ photon in from of our detector that has an efficiency $\eta$, this can be treated as a perfect detector with $\eta=1$ but with a beam splitter in front of our perfect detector that will "take" away $(1-\eta)\bar{n}$ photons from our initial pulse. The rest of the icoming pulse (now: $\eta\bar{n}$) will however get detected perfectly. Since we're only interested in the cases where we have 1 detector event ($k=1$) upon receiving $\lambda=\eta\bar{n}$ photons, we can treat this problem via poisson statistics with:
-$$ P(k,\lambda)=\frac{\lambda^ke^{-\lambda}}{k!} = \lambda e^{-\lambda}$$
-This however doesn't take into consideration our dark counts yet.
-
-\subsection{Detector statistics}
-If our detector fires, and gives us 1 detector click, it can come from 2 sources:
-\begin{itemize}
-	\item a dark count
-	\item a photon
-\end{itemize}
-This we can then group up into 4 cases for each of the 2 possible sources of a click
-\begin{itemize}
-	\item $P(\text{0 Photons, 0 dark counts}) = e^{-\lambda}\cdot e^{-p_{dc}} = e^{-(\lambda+p_{dc})}$
-	\item $P(\text{1 Photon, 0 dark counts}) = \lambda e^{-\lambda}\cdot e^{-p_{dc}} = \lambda e^{-(\lambda+p_{dc})}$
-	\item $P(\text{0 Photons, 1 dark count}) = e^{-\lambda}\cdot p_{dc}e^{-p_{dc}} = p_{dc}e^{-(\lambda+p_{pc})}$
-	\item $P(\text{1 Photons, 1 dark counts}) =$ Can be ignored as this would produce 2 clicks, which we're post selecting away
-\end{itemize}
-
-Meaning that we have 2 out of our 4 possible events which then produce only 1 click, giving us the probability that each of our detectors produces 1 click:
-\begin{equation}
-	P_{\pm, click} = (\lambda_\pm + p_{dc})e^{-(\lambda_\pm+p_{dc})}
-	\label{eq:prob_click}
-\end{equation}
-
-\subsection{2 Detector Statistics}
-As mentioned before, we have 2 detectors with the same efficiency $\eta$ and the same detector dark rate $p_{dc}$. These can produce a click independent from one another, but we're only interested in the cases where \textbf{ONLY} 1 produces a click, as the photon can (ideally) only be either $|+\rangle$ or $|-\rangle$ polarized.
-\begin{align*}
-	P(\text{only}|+\rangle) & = P_{+,click}\cdot P_{-,0 clicks}                                                \\
-	                        & = (\lambda_{+} + p_{dc})e^{-(\eta(\bar{n}_{out,+} + \bar{n}_{out,-}) + 2p_{dc})}
-\end{align*}
-\begin{align*}
-	P(\text{only}|-\rangle) = (\lambda_{-} + p_{dc})e^{-(\eta(\bar{n}_{out,+} + \bar{n}_{out,-}) + 2p_{dc})}
-\end{align*}
-
-Adding the two together gives us the probability that at just from the fact that only one detector clicked, something sort of useful came out of our output field, which we're going to call $P_{valid}$:
-$$
-	P_{valid} = (\lambda_{+} + \lambda_{-} + 2p_{dc})e^{-(\eta(\bar{n}_{out,+}+\bar{n}_{out,-})+2p_{dc})}
-$$
-
-However now we need to filter out only the cases where the detector event was actually triggered by a photon and not a dark count.
-
-\subsection{Photon Event Filtering}
-Here the probability that the 1 detector event in \textbf{ONLY} was caused by a photon is:
-\begin{align*}
-	P(\text{1 photon in + \& no click in -}) & = \lambda_{+} e^{-(\lambda_{+} + p_{dc})} \cdot e^{-(\lambda_{-} + p_{dc})} \\
-	                                         & = \lambda_{+} e^{-(\eta(\bar{n}_{out,+}+\bar{n}_{out,-})+2p_{dc})}          \\
-	P(\text{1 photon in - \& no click in +}) & =  \lambda_{-} e^{-(\eta(\bar{n}_{out,+}+\bar{n}_{out,-})+2p_{dc})}
-\end{align*}
-
-Thus giving us the probability that 1 click was produced in only 1 of the two detectors:
-$$ P_{only} = (\lambda_{+} + \lambda_{-}) e^{-(\eta(\bar{n}_{out,+}+\bar{n}_{out,-})+2p_{dc})}$$
-
-This then allows us now to calculate how many of our valid clicks, were actually produced by only 1 photon event going only to 1 of the 2 detectors, essentially giving us a sort of signal-to-noise ratio:
-$$
-	P_{SNR} = \frac{P_{only}}{P_{valid}} = \frac{\lambda_{+} + \lambda_{-}}{\lambda_{+} + \lambda_{-} + 2p_{dc}}
-$$
-
-\subsection{Photon Distribution}
-All that's left now is to calculate how much of our light went to the "+"-detector, and how much went to our "-"-detector, which is just like calculating the ratios of all of our events that were triggered only by photons, and the probability of the respective detector itself:
-$$
-	R_{+} = \frac{P(\text{1 photon in + and no click in -})}{P_{only}} = \frac{\bar{n}_{out,+} }{\bar{n}_{out,+} + \bar{n}_{out,-}}$$
-$$
-	R_{-} = \frac{P(\text{1 photon in - and no click in +})}{P_{only}} = \frac{\bar{n}_{out,-}}{\bar{n}_{out,+} + \bar{n}_{out,-}}
-$$
-
-What then ends up going into our truth table is the following:
-\begin{itemize}
-	\item For the $|+\rangle$-part = $R_{+}\cdot P_{SNR} + (1-P_{SNR})\cdot 0.5$
-	\item For the $|-\rangle$-part = $R_{-}\cdot P_{SNR} + (1-P_{SNR})\cdot 0.5$
-\end{itemize}
-
-\section{Driving Hamiltonian}
-
-Since we're mainly going to be working with the \textit{mesolve} function in QuTip to simulate the dynamics of the atom-photon gate it's imperative to know what each and every part does. Next to the Jaynes-Cummings-Hamiltonian the most important part is the one explaining the \textit{photon that gets reflected from the cavity}, most notably the part before it gets reflected aka the \textit{driving Hamiltonian} $H_{d}$. For this we're going to just write down once, the dynamics of a coherent driving field which will be the foundation of my photon that shall or shall not enter the cavity.
-\newline
-
-The photon is going to come from a laser, that is going to be described as a classical oscillating electric field. That light field has an amplitude $E_0$ and a frequency $\omega_d$:
-$$
-	E(t) = E_0 \cos(\omega_d t)
-$$
-Using the euler formula we can rewrite this to:
-$$
-	E(t) = \frac{E_0}{2} (e^{i\omega_d t} + e^{-i\omega_d t})
-$$
-
-The light field operator $\hat{E}$ interacts with the light in our cavity (which get described by our creation and annihilation operators) linearly:
-$$
-	\hat{E} \propto (a + a^\dag)
-$$
-
-When now describing the \textit{driving Hamiltonian} what we're doing is just overlaping the light field operator with the oscillating electric field:
-\begin{align*}
-	H_{drive} & \propto E(t) \cdot (a+a^{\dag})                         \\
-	H_{drive} & = (e^{i\omega_d t} + e^{-i\omega_d t})\cdot(a+a^{\dag})
-\end{align*}
-
-From this we get four terms where two cancel out as they aren't energy conserving rendering us with the final expression for our driving Hamiltonian:
-\begin{empheq}[box=\mymath]{equation*}
-	H_{drive} = a^\dag e^{-i\omega_d t} + a e^{+i\omega_d t}
-\end{empheq}
-
-Where the first term adds a photon to our cavity and the other removes one. Sometimes you'll see a minus instead of a plus between the two terms, this is just due to different conventions of the light field, where people chose a $\sin$ to describe the oscillating part instead of a $\cos$, but the physics remain the same.
-
-\section{Analytical derivation for case of atom in $\ket{0}$ and photon is in $\ket{h}$}
-
-Our Hamiltonian is as follows:
-\begin{align*}
-	H = \hbar g(\ket{e}\bra{1}a_h + \ket{1}\bra{e}a_h^{\dagger})
-\end{align*}
-
-We drive the $a_h$ mode of our cavity through $a_h^{in}(t)$, thus giving us the following equation of motion for our $a_h$ cavity mode:
-
-\begin{align*}
-	\dot{a_h} & =-i[a_h,H]-(i\Delta + \frac{\kappa}{2})a_h - \sqrt{\kappa}a_h^{in}(t) \\
-\end{align*}
-Because $a_h$ commutes with $H$, the commutator is 0 and we get
-\begin{align*}
-	\rightarrow \dot{a_h} & =-(i\Delta + \frac{\kappa}{2})a_h - \sqrt{\kappa}a_h^{in}(t)
-\end{align*}
-
-We now drop the subscript $h$ as we'll only be looking at that case.
-
-Multiplying with $e^{i\omega t}$, and integrating we get:
-\begin{align*}
-	\int{dt e^{i\omega t}\dot{a}(t)} =  \underbrace{[e^{i\omega t}a(t)]_{-\infty}^{\infty}}_{=0} - \underbrace{i\omega\int{dt e^{i\omega t}a(t)}}_{=i\omega a(\omega)}
-\end{align*}
-where in the last expression we used that the integral performs a Fourier transformation.
-
-\begin{align*}
-	\Rightarrow -i\omega a(\omega) & = -(i\Delta + \frac{\kappa}{2})a(\omega) - \sqrt{\kappa}a^{in}(\omega)  \\
-	\sqrt{\kappa}a^{in}(\omega)    & = -(i\Delta + \frac{\kappa}{2} - i\omega)a(\omega)                      \\
-	\rightarrow a(\omega)          & = -\frac{\sqrt{\kappa}}{i\Delta+\frac{\kappa}{2}-i\omega}a^{in}(\omega)
-\end{align*}
-
-Now from our regular input output relation
-\begin{align*}
-	a^{out} (\omega)= a^{in}(\omega) + \kappa a(\omega)
-\end{align*}
-
-We thus get:
-
-\begin{align*}
-	a^{out} (\omega) & =a^{in}(\omega) -\frac{\sqrt{\kappa}}{i\Delta+\frac{\kappa}{2}-i\omega}a^{in}(\omega)                               \\
-	a^{out}(\omega)  & =(1-\frac{\kappa}{i\Delta+\frac{\kappa}{2}-i\omega})a^{in}(\omega)                                                  \\
-	a^{out}(\omega)  & =(1-\frac{i\Delta + \frac{\kappa}{2}-i\omega-\kappa}{i\Delta+\frac{\kappa}{2}-i\omega})a^{in}(\omega)               \\
-	a^{out}(\omega)  & =(\frac{i\Delta-\frac{\kappa}{2}-i\omega}{i\Delta+\frac{\kappa}{2}-i\omega})a^{in}(\omega)                          \\
-	                 & =\underbrace{\frac{i(\Delta-\omega)-\frac{\kappa}{2}}{i(\Delta-\omega)+\frac{\kappa}{2}}}_{h(\omega)}a^{in}(\omega)
-\end{align*}
-
-We can then use the \href{https://en.wikipedia.org/wiki/Convolution_theorem}{convolution theorem} in order to solve for $a^{out}(t)$
-
-\begin{align*}
-	a^{out}(t) = \int_{-\infty}^{\infty}d\tau \underbrace{h(t-\tau)}_{h(t) =\frac{1}{2\pi}\int_{-\infty}^{\infty}d\omega e^{-i\omega t}h(\omega)}a^{in}(\tau)
-\end{align*}
-
-Now using that $h(\omega) = 1-\frac{\kappa}{i(\Delta-\omega)+\frac{\kappa}{2}}$ we get for $h(t)$ (via partial integration):
-
-\begin{align*}
-	h(t)                   & = \delta(t) - \kappa e^{-i\delta t}e^{-\frac{\kappa}{2}t}\theta(t)                                          \\
-	\Rightarrow a^{out}(t) & = a^{in}(t) - \kappa\int_{-\infty}^{\infty}d\tau e^{-i\delta(t-\tau)}e^{-\frac{\kappa}{2}(t-\tau)}a^{in}(t)
-\end{align*}
-
-For slowly varying pulses we can now approximate that $a^{in}(\tau)\approx a^{in}(t)$ thus giving us:
-
-\begin{align*}
-	\Rightarrow a^{out}(t) & \approx a^{in}(t) - \frac{\kappa}{i\Delta+\frac{\kappa}{2}}a^{in}(t) \\
-	                       & =\frac{i\Delta-\frac{\kappa}{2}}{i\Delta+\frac{\kappa}{2}}a^{in}(t)
-\end{align*}
-
-Which for no detuning (so $\Delta=0$) gives us:
-\begin{equation}
-	a^{out}(t) =-a^{in}(t)
-\end{equation}
-
-\subsection{Lindblad Formalism}
-
-We start from the master equation:
-\begin{equation}
-	\dot{\rho} = -\frac{i}{\hbar}[H,\rho] + \sum_j \gamma_j \left( L_j \rho L_j^\dagger - \tfrac{1}{2}\{ L_j^\dagger L_j, \rho \} \right),
-\end{equation}
-
-Now, for an operator \(O\),
-\begin{align}
-	\frac{d}{dt} \langle O \rangle & = \Tr \left( O \dot{\rho} \right)                                                                                                                               \\
-	                               & = \Tr \left( O \left[ -\frac{i}{\hbar}[H,\rho] + \sum_j \gamma_j \left( L_j \rho L_j^\dagger - \tfrac{1}{2}\{ L_j^\dagger L_j, \rho \} \right) \right] \right).
-\end{align}
-
-The Hamiltonian contribution gives
-\begin{equation}
-	- \Tr \left( O \frac{i}{\hbar}[H,\rho] \right)
-	= -\frac{i}{\hbar}\Tr \left( O H \rho - O \rho H \right)
-	= -\frac{i}{\hbar}\Tr \left( [O,H]\rho \right)
-	= -\frac{i}{\hbar} \langle [O,H] \rangle.
-\end{equation}
-
-For the dissipative terms we obtain
-\begin{align}
-	\sum_j \gamma_j \Tr\Big( O L_j \rho L_j^\dagger
-	- \tfrac{1}{2} O L_j^\dagger L_j \rho
-	- \tfrac{1}{2} O \rho L_j^\dagger L_j \Big).
-\end{align}
-
-Using cyclicity of the trace:
-\begin{align}
-	 & = \sum_j \gamma_j \left( \langle L_j^\dagger O L_j \rangle
-	- \tfrac{1}{2} \langle \{ L_j^\dagger L_j, O \} \rangle \right).
-\end{align}
-
-Therefore the general equation of motion is
-\begin{equation}
-	\frac{d}{dt}\langle O \rangle
-	= -\frac{i}{\hbar}\langle [O,H] \rangle
-	+ \sum_j \gamma_j \left( \langle L_j^\dagger O L_j \rangle
-	- \tfrac{1}{2}\langle \{L_j^\dagger L_j, O \} \rangle \right).
-\end{equation}
-
-
-\subsection{Calculation of the Maxwell Bloch Equations (no lossy channels)}
-\subsubsection{Jaynes Cummings Hamiltonian}
-Assuming ground state has zero energy our Jaynes-Cummings Hamiltonian is equal to:
-\begin{equation}
-	H_{JC,S} = \underbrace{\omega_ca^\dagger a + \omega_a\sigma^\dagger\sigma}_{=H_0,S} + \underbrace{g(\sigma + \sigma^\dagger)(a +  a^\dagger)}_{=H_{int,S}} + H_{drive,S}
-\end{equation}
-where $\sigma$ is the atomic lowering operator,$\omega_a$ the atomic transition frequency between the levels $\ket{1}$ and $\ket{e}$,$a$ the photonic destruction operator, and $\omega_a$ the cavity mode resonance frequency.\\
-$H_{drive}$ in this case is the external light field which is driving our system, which in the semiclassical formalism has the following form \cite{WallsMilburn2008}:
-\begin{equation}
-	H_{drive,S} = i(\epsilon e^{-i\omega_d t} + \epsilon^* e^{i\omega_d t})(a + a^\dagger)
-\end{equation}
-
-Here, $a$ again is the photonic destruction operator, $\omega_d$ is the frequency of the driving field, and $\epsilon$ is the complex amplitude of our incoming pulse.
-
-In general going from the Schrödinger picture to the interaction picture, is achieved by converting our operators into the interaction picture via following equation:
-\begin{equation}
-	i\frac{dA_I}{dt} = [A_I(t),H_{0,S}]
-\end{equation}
-
-Furthermore, $H_{0,I} = H_{0,S}$. Equipped with this we can now calculate the expressions for operators in the interaction picture:
-
-\begin{align}
-	i\frac{da_I(t)}{dt}                                & = [a_I(t), H_{0,S}]                    \\
-	                                                   & = [a_I(t),\omega_ca^\dagger a]         \\
-	                                                   & = \omega_c a_I(t)                      \\
-	\Rightarrow \frac{da_I(t)}{dt} = -i\omega_c a_I(t) & \rightarrow a_I(t) = a e^{-i\omega_ct}
-\end{align}
-
-Where we used that:
-\begin{equation}
-	[a,H_{0,S}] = \omega_c[a,a^\dagger a] = \omega_c (\underbrace{[a,a^\dagger]}_{=1}a + a^\dagger\underbrace{[a,a]}_{=0}) = \omega_c a
-\end{equation}
-
-Now we repeat the same thing for the atomic lowering operator $\sigma$:
-
-\begin{align}
-	i\frac{d\sigma_I(t)}{dt}                                    & = \underbrace{[\sigma_I(t),H_{0,S}]}             \\
-	i\frac{d\sigma_I(t)}{dt}                                    & = \omega_a\sigma_I(t)                            \\
-	\Rightarrow \frac{d\sigma_I(t)}{dt} = -i\omega_a\sigma_I(t) & \rightarrow \sigma_I(t) = \sigma e^{-i\omega_at}
-\end{align}
-
-Now we can calculate the Hamiltonian for the interaction part and the drive part, in the interaction picture, by just plugging these operators in there, giving us:
-
-\begin{align}
-	H_{int,I}         & =\sigma a e^{-i(\omega_a-\omega_c)t} + \sigma a^\dagger e^{-i(\omega_a-\omega_c)t} +\sigma^\dagger a e^{-i(\omega_c-\omega_a)t} + \sigma^\dagger a^\dagger e^{i(\omega_c+\omega_a)t} \\
-	\xrightarrow{RWA} & = \sigma a^\dagger e^{-i(\omega_a-\omega_c)t} +\sigma^\dagger a e^{-i(\omega_c-\omega_a)t}                                                                                           \\
-	H_{drive,I}       & = i(\epsilon e^{-i\omega_d t} + \epsilon^\dagger e^{i\omega_d t})(a_I(t) + a_I^\dagger(t))                                                                                           \\
-	\xrightarrow{RWA} & = i(a \epsilon^*e^{-i(\omega_c-\omega_d)t} + a^\dagger \epsilon e^{i(\omega_c-\omega_d)t})
-\end{align}
-
-Thus giving us the total Hamiltonian in the interaction picture under the rotating wave approximation:
-
-\begin{equation}
-	H_{JC,I}\overset{\text{RWA}}{=} \omega_ca^\dagger a + \omega_a \sigma^\dagger\sigma + g(\sigma a^\dagger e^{-i(\omega_a-\omega_c)t} + \sigma^\dagger a e^{-i(\omega_c-\omega_a)t}) + i(a \epsilon^* e^{-i(\omega_c-\omega_d)t} + a^\dagger \epsilon e^{i(\omega_c-\omega_d)t})
-\end{equation}
-
-If we now transform back into the Schrödinger picture, we get:
-\begin{equation}
-	H_{JC,S} \overset{\text{RWA}}{=} \omega_ca^\dagger a + \omega_a \sigma^\dagger\sigma + g(a^\dagger\sigma + a\sigma^\dagger) + i(a \epsilon^*e^{i\omega_dt} + a^\dagger \epsilon e^{-i\omega_dt})
-\end{equation}
-
-If we now change into the rotating frame of the driving field via
-\begin{align}
-	U(t) & = \exp{i\omega_dt(a^\dagger a + \sigma^\dagger\sigma)} \\
-	H    & \rightarrow UHU^\dagger + i\dot{U}U^\dagger =: H_{RF}
-\end{align}
-
-we then get the final form of our Hamiltonian:
-\begin{empheq}[box=\fcolorbox{red}{yellow!10}]{equation}
-	H_{JC,RF} = \underbrace{(\omega_c-\omega_d)}_{=\Delta_c}a^\dagger a
-	+ \underbrace{(\omega_a-\omega_d)}_{=\Delta_a}\sigma^\dagger\sigma
-	+ g(a^\dagger\sigma + a\sigma^\dagger)
-	+ i(a\epsilon^* + a^\dagger\epsilon)
-\end{empheq}
-
-Which gives rise to 4 scenarios which I'll be covering with my project:
-\begin{center}
-	\resizebox{\linewidth}{!}{
-		\begin{tabular}{|l|l|}
-			\hline
-			\textbf{scenario}          & \textbf{meaning}                                                                                                 \\
-			\hline
-			$\Delta_a=\Delta_c=0$      & \makecell{Atom is in coupled state (here: $\ket{1}$ and we drive with a light field                              \\ that's resonant to the cavity (here: we drive $\ket{1} \leftrightarrow \ket{e}$ which would be our $\ket{\pi}$ polarized light}  \\
-			\hline
-			$\Delta_a=0;\Delta_c\neq0$ & Atom is in coupled state but we drive with light that's non-resonant to cavity (here: $\ket{V}$ polarized light) \\
-			\hline
-			$\Delta_a\neq0;\Delta_c=0$ & Atom is in uncoupled state (here: $\ket{0}$) and we drive with a light field that's resonant to the cavity       \\
-			\hline
-			$\Delta_a,\Delta_c\neq0$   & Atom is in uncoupled state and we drive with light that's non-resonant to cavity                                 \\
-			\hline
-		\end{tabular}}
-\end{center}
-
-In order to improve readability we'll be splitting the full JC Hamiltonian into three parts:
-\begin{align}
-	H_0       & = \Delta_ca^\dagger a + \Delta_a\sigma^\dagger\sigma \\
-	H_{int}   & = g(a^\dagger\sigma + a\sigma^\dagger)               \\
-	H_{drive} & = i(a\epsilon^* + a^\dagger\epsilon)
-\end{align}
-
-with following losses:
-\begin{align}
-	\gamma_1 & = \gamma, \quad L_1 = \sigma, \\
-	\gamma_2 & = \kappa, \quad L_2 = a.
-\end{align}
-
-
-\subsection{Cavity mode a}
-
-For $H_0$:
-\begin{align}
-	[a,H_0] & = \Delta_c[a,a^\dagger a] + \Delta_ca \underbrace{[a,\sigma^\dagger\sigma]}_{=0} \\
-	        & = \Delta_c (\underbrace{[a,a^\dagger]}_{=1}a + a^\dagger\underbrace{[a,a]}_{=0}) \\
-	        & = \Delta_c a
-\end{align}
-\begin{equation}
-	\boxed{
-		\Rightarrow -i\langle[a,H_0]\rangle = -i\Delta_c \langle a\rangle
-	}
-\end{equation}
-For $H_{int}$:
-\begin{align}
-	[a,H_{int}] & = g([a,a^\dagger\sigma] + [a,a\sigma^\dagger])                                                           \\
-	            & = g(a a^\dagger\sigma - a^\dagger a\sigma + \cancel{a a\sigma^\dagger} - \cancel{aa\sigma^\dagger})      \\
-	            & \rightarrow \langle aa^\dagger\sigma\rangle = \bra{n}aa^\dagger\sigma\ket{n} =(n+1) \langle\sigma\rangle \\
-	            & \rightarrow \langle a^\dagger a\sigma\rangle = \bra{n}a^\dagger a\sigma\ket{n} =n \langle\sigma\rangle
-\end{align}
-\begin{equation}
-	\boxed{
-	\Rightarrow -i\langle[a,H_{int}]\rangle = -ig\langle\sigma\rangle
-	}
-\end{equation}
-For $H_{drive}$:
-\begin{align}
-	[a,H_{drive}] & = [a,i(a\epsilon^* + a^\dagger\epsilon)]     \\
-	              & = i([a,a\epsilon^*] + [a,a^\dagger\epsilon]) \\
-	              & = i(0 + \epsilon)                            \\
-	              & = i\epsilon
-\end{align}
-\begin{equation}
-	\boxed{
-	\Rightarrow -i\langle[a,H_{drive}]\rangle = i\langle \epsilon\rangle \overset{\epsilon \in \mathds{C}}{=} i\epsilon
-	}
-\end{equation}
-If we now include the fact that:
-\begin{equation}
-	i\epsilon \mathrel{\widehat{=}} \sqrt{\kappa_{oc}}a^{in}(t)
-\end{equation}
-we are then left with:
-\begin{equation}
-	\boxed{
-	\Rightarrow-i\langle[a,H_{drive}]\rangle = -\sqrt{\kappa_{oc}}a^{in}(t)
-	}
-\end{equation}
-
-For rest of the Lindbladian:
-\begin{align}
-	D(a) & =a^\dagger a a - \frac{1}{2}\{a^\dagger a,a\}               \\
-	     & =a^\dagger a a - \frac{1}{2}(a^\dagger a a - a a^\dagger a) \\
-	     & = \frac{1}{2}a^\dagger a a - \frac{1}{2} a a^\dagger a      \\
-	     & = \frac{1}{2}(a^\dagger a a - a a^\dagger a)                \\
-	     & = \frac{1}{2}([a^\dagger,a]a)                               \\
-	     & = \frac{1}{2}(-a)                                           \\
-	     & = -\frac{1}{2} a
-\end{align}
-\begin{equation}
-	\boxed{
-		\Rightarrow \kappa\langle D(a)\rangle = -\frac{\kappa}{2} \langle a\rangle
-	}
-\end{equation}
-
-So for $\langle a\rangle(t)$ we get:
-\begin{empheq}[box=\fcolorbox{red}{yellow!10}]{align}
-	\frac{d\langle a\rangle}{dt}
-	&= -i\Delta_c\langle a\rangle - i g \langle\sigma\rangle
-	- \sqrt{\kappa_{oc}}\, a_{\text{in}}(t) - \frac{\kappa}{2}\,\langle a\rangle \notag\\
-	&= -(i\Delta_c + \tfrac{\kappa}{2})\langle a\rangle
-	- i g \langle\sigma\rangle - \sqrt{\kappa_{oc}}\, a_{\text{in}}(t)
-\end{empheq}
-
-\subsection{Atomic lowering operator $\sigma$}
-For $H_0$:
-\begin{align}
-	[\sigma,H_0] & = \Delta_a\underbrace{[\sigma,\sigma^\dagger\sigma]}_{=\underbrace{[\sigma,\sigma^\dagger]}_{=\mathds{1}}\sigma + \sigma^\dagger\underbrace{[\sigma,\sigma]}_{=0}} \\
-	             & = \Delta_a \mathds{1}\sigma
-\end{align}
-\begin{equation}
-	\boxed{
-		\Rightarrow -i\langle[\sigma,H_0]\rangle = -i\Delta_a \langle \sigma\rangle
-	}
-\end{equation}
-For $H_{int}$:
-\begin{align}
-	[\sigma,H_{int}] & = g([\sigma,a^\dagger\sigma] + [\sigma,a\sigma^\dagger])                                                              \\
-	                 & = g(\cancel{a^\dagger \sigma\sigma} - \cancel{a^\dagger\sigma\sigma} + a\sigma\sigma^\dagger - a\sigma^\dagger\sigma) \\
-	                 & = g(a\sigma\sigma^\dagger - a\sigma^\dagger\sigma)
-\end{align}
-Now we can consider that:
-\begin{empheq}[box=\fcolorbox{red}{yellow!10}]{align}
-	\sigma^\dagger\sigma &= \ket{e}\braket{1}\bra{e} = \ket{e}\bra{e} \\
-	\sigma\sigma^\dagger &= \ket{1}\braket{e}\bra{1} = \ket{1}\bra{1}
-\end{empheq}
-\begin{align}
-	[\sigma,H_{int}] & = g(a\sigma\sigma^\dagger - a\sigma^\dagger\sigma) \\
-	                 & = ga(\ket{1}\bra{1} - \ket{e}\bra{e})              \\
-	                 & = ga \sigma_z
-\end{align}
-\begin{equation}
-	\boxed{\Rightarrow -i\langle[\sigma,H_{int}]\rangle=-ig\langle a\sigma_z \rangle}
-\end{equation}
-No interaction with $H_{drive}$.\\
-For rest of Lindbladian:
-\begin{align}
-	D(\sigma) & = \underbrace{\sigma^{\dagger}\underbrace{\sigma\sigma}_{=0}}_{=0} - \frac{1}{2} \{\sigma^\dagger\sigma,\sigma\} \\
-	          & = -\frac{1}{2}\underbrace{\sigma^\dagger\sigma\sigma}_{=0} - \frac{1}{2}\sigma\sigma^\dagger\sigma               \\
-	          & = -\frac{1}{2}\sigma
-\end{align}
-\begin{equation}
-	\boxed{\gamma\langle D(\sigma)\rangle = -\frac{\gamma}{2}\langle\sigma\rangle}
-\end{equation}
-
-So for $\langle\sigma\rangle$(t) we get:
-\begin{empheq}[box=\fcolorbox{red}{yellow!10}]{align}
-	\frac{d\langle\sigma\rangle}{dt} &= -i\Delta_a\langle\sigma\rangle -ig\langle a\sigma_z\rangle -\frac{\gamma}{2}\langle\sigma\rangle \notag\\
-	&= -(i\Delta_a + \frac{\gamma}{2})\langle\sigma\rangle - ig\langle a\sigma_z\rangle
-\end{empheq}
-
-\subsection{Pauli-Z operator $\sigma_z$}
-
-For $H_0$:
-\begin{align}
-	[\sigma_z,H_0] & = \Delta_a[\sigma_z,\sigma^\dagger\sigma]                     \\
-	               & = \Delta_a[\sigma_z,\ket{e}\bra{e}]                           \\
-	               & = \Delta_a (\sigma_z \ket{e}\bra{e} - \ket{e}\bra{e}\sigma_z) \\
-	               & = \Delta_a (-\ket{e}\bra{e} + \ket{e}\bra{e})                 \\
-	               & = 0
-\end{align}
-For $H_{int}$:
-\begin{align}
-	[\sigma_z, H_{int}] & = g([\sigma_z,a^\dagger\sigma] + [\sigma_z,a\sigma^\dagger])                                               \\
-	                    & = g(a^\dagger\sigma_z\sigma - a^\dagger\sigma\sigma_z + a\sigma_z\sigma^\dagger - a\sigma^\dagger\sigma_z) \\
-	                    & = g(a^\dagger\sigma + a^\dagger\sigma -a\sigma^\dagger - a\sigma^\dagger)                                  \\
-	                    & = 2g(a^\dagger\sigma - a\sigma^\dagger)
-\end{align}
-\begin{equation}
-	\boxed{
-	\Rightarrow -i\langle[\sigma_z,H_{int}]\rangle=-2ig(\langle a^\dagger\sigma \rangle - \langle a\sigma^\dagger\rangle)
-	}
-\end{equation}
-No interaction with $H_{drive}$.
-For rest of Lindbladian:
-\begin{align}
-	D(\sigma_z) & = \sigma^\dagger\sigma_z\sigma - \frac{1}{2}\{\sigma^\dagger\sigma,\sigma\}                                                                                           \\
-	            & = \ket{e}\bra{e}  - \frac{1}{2}\underbrace{\sigma^\dagger\sigma\sigma_z}_{=-\ket{e}\bra{e}} - \frac{1}{2}\underbrace{\sigma_z\sigma^\dagger\sigma}_{=-\ket{e}\bra{e}} \\
-	            & = \ket{e}\bra{e} + \ket{e}\bra{e}                                                                                                                                     \\
-	            & = 2\ket{e}\bra{e}                                                                                                                                                     \\
-	            & = \mathds{1} - \sigma_z
-\end{align}
-\begin{equation}
-	\boxed{
-		\Rightarrow\gamma\langle D(\sigma_z)\rangle=\gamma(1-\langle\sigma_z\rangle)
-	}
-\end{equation}
-
-So for $\langle\sigma_z\rangle(t)$ we get:
-\begin{empheq}[box=\fcolorbox{red}{yellow!10}]{equation}
-	\frac{d\langle\sigma_z\rangle(t)}{dt} = -2ig(\langle a^\dagger\sigma \rangle - \langle a\sigma^\dagger\rangle) + \gamma(1-\langle\sigma_z\rangle)
-\end{empheq}
-
-The final Maxwell Bloch Equations then take the form of:
-\begin{empheq}[box=\fcolorbox{red}{yellow!10}]{align}
-	\frac{d\langle a\rangle}{dt} &= -(i\Delta_c + \tfrac{\kappa}{2})\langle a\rangle
-	- i g \langle\sigma\rangle - \sqrt{\kappa_{oc}}\, a_{\text{in}}(t) \\
-	\frac{d\langle\sigma\rangle}{dt} &= -(i\Delta_a + \tfrac{\gamma}{2})\langle\sigma\rangle
-	- i g \langle a\sigma_z\rangle \\
-	\frac{d\langle\sigma_z\rangle}{dt} &= -2i g \big(\langle a^\dagger\sigma \rangle - \langle a\sigma^\dagger\rangle\big)
-	+ \gamma \big(1 - \langle\sigma_z\rangle\big)
-\end{empheq}
+%
+% \chapter{Analytical Derivations}
+%
+% \section{Output Light Analysis}
+%
+% \subsection{Problem}
+% From our QuTip simulation we're able to calculate the output field $a_{out}(t)$ via input output theory:
+% \begin{equation}
+% 	a_{out}(t) = \mu_{fr}a_{in}(t) + \mu_{fc}\sqrt{\kappa_{oc}}\langle a\rangle(t)
+% 	\label{eq:io-theory}
+% \end{equation}
+%
+% Where all the fields mentioned in \eqref{eq:io-theory}, can be in one of the following bases: $\{|\pi\rangle,|V\rangle,|+\rangle,|-\rangle\}$.
+%
+% Now the question becomes, how is one able to analyze this output field and generate a truth table from this. For that we're going to calculate the mean photon number in the output field via:
+% $$\bar{n}_{out;\{|\pi\rangle,|V\rangle,|+\rangle,|-\rangle\} } = \int |a_{out;\{ |\pi\rangle,|V\rangle,|+\rangle,|-\rangle  \}}|^2 dt$$
+%
+% For the problem we're going to be looking at, we're only going to consider the $|+\rangle$ and the $|-\rangle$ modes of our light, as these are the polarizations which are set in our CNOT basis, for which we want to calculate the fidelity for.
+%
+% \subsection{Analysis via detector}
+% Now after having extracted the mean photon number in our output field for our two polarizations we need to consider the framework which we're using to analyze this output field. In our case that is the case of 2 independent detectors, where one detects the $|+\rangle$ polarized light and the other detects the $|-\rangle$ polarized light. Both detectors share the same efficiency $\eta$, and also the same dark count rate $p_{dc}$, which is the rate at with a single detector will fire even upon receiving no signal. The efficiency can be viewed as a beam splitter. Meaning, that if we were to have $\bar{n}$ photon in from of our detector that has an efficiency $\eta$, this can be treated as a perfect detector with $\eta=1$ but with a beam splitter in front of our perfect detector that will "take" away $(1-\eta)\bar{n}$ photons from our initial pulse. The rest of the icoming pulse (now: $\eta\bar{n}$) will however get detected perfectly. Since we're only interested in the cases where we have 1 detector event ($k=1$) upon receiving $\lambda=\eta\bar{n}$ photons, we can treat this problem via poisson statistics with:
+% $$ P(k,\lambda)=\frac{\lambda^ke^{-\lambda}}{k!} = \lambda e^{-\lambda}$$
+% This however doesn't take into consideration our dark counts yet.
+%
+% \subsection{Detector statistics}
+% If our detector fires, and gives us 1 detector click, it can come from 2 sources:
+% \begin{itemize}
+% 	\item a dark count
+% 	\item a photon
+% \end{itemize}
+% This we can then group up into 4 cases for each of the 2 possible sources of a click
+% \begin{itemize}
+% 	\item $P(\text{0 Photons, 0 dark counts}) = e^{-\lambda}\cdot e^{-p_{dc}} = e^{-(\lambda+p_{dc})}$
+% 	\item $P(\text{1 Photon, 0 dark counts}) = \lambda e^{-\lambda}\cdot e^{-p_{dc}} = \lambda e^{-(\lambda+p_{dc})}$
+% 	\item $P(\text{0 Photons, 1 dark count}) = e^{-\lambda}\cdot p_{dc}e^{-p_{dc}} = p_{dc}e^{-(\lambda+p_{pc})}$
+% 	\item $P(\text{1 Photons, 1 dark counts}) =$ Can be ignored as this would produce 2 clicks, which we're post selecting away
+% \end{itemize}
+%
+% Meaning that we have 2 out of our 4 possible events which then produce only 1 click, giving us the probability that each of our detectors produces 1 click:
+% \begin{equation}
+% 	P_{\pm, click} = (\lambda_\pm + p_{dc})e^{-(\lambda_\pm+p_{dc})}
+% 	\label{eq:prob_click}
+% \end{equation}
+%
+% \subsection{2 Detector Statistics}
+% As mentioned before, we have 2 detectors with the same efficiency $\eta$ and the same detector dark rate $p_{dc}$. These can produce a click independent from one another, but we're only interested in the cases where \textbf{ONLY} 1 produces a click, as the photon can (ideally) only be either $|+\rangle$ or $|-\rangle$ polarized.
+% \begin{align*}
+% 	P(\text{only}|+\rangle) & = P_{+,click}\cdot P_{-,0 clicks}                                                \\
+% 	                        & = (\lambda_{+} + p_{dc})e^{-(\eta(\bar{n}_{out,+} + \bar{n}_{out,-}) + 2p_{dc})}
+% \end{align*}
+% \begin{align*}
+% 	P(\text{only}|-\rangle) = (\lambda_{-} + p_{dc})e^{-(\eta(\bar{n}_{out,+} + \bar{n}_{out,-}) + 2p_{dc})}
+% \end{align*}
+%
+% Adding the two together gives us the probability that at just from the fact that only one detector clicked, something sort of useful came out of our output field, which we're going to call $P_{valid}$:
+% $$
+% 	P_{valid} = (\lambda_{+} + \lambda_{-} + 2p_{dc})e^{-(\eta(\bar{n}_{out,+}+\bar{n}_{out,-})+2p_{dc})}
+% $$
+%
+% However now we need to filter out only the cases where the detector event was actually triggered by a photon and not a dark count.
+%
+% \subsection{Photon Event Filtering}
+% Here the probability that the 1 detector event in \textbf{ONLY} was caused by a photon is:
+% \begin{align*}
+% 	P(\text{1 photon in + \& no click in -}) & = \lambda_{+} e^{-(\lambda_{+} + p_{dc})} \cdot e^{-(\lambda_{-} + p_{dc})} \\
+% 	                                         & = \lambda_{+} e^{-(\eta(\bar{n}_{out,+}+\bar{n}_{out,-})+2p_{dc})}          \\
+% 	P(\text{1 photon in - \& no click in +}) & =  \lambda_{-} e^{-(\eta(\bar{n}_{out,+}+\bar{n}_{out,-})+2p_{dc})}
+% \end{align*}
+%
+% Thus giving us the probability that 1 click was produced in only 1 of the two detectors:
+% $$ P_{only} = (\lambda_{+} + \lambda_{-}) e^{-(\eta(\bar{n}_{out,+}+\bar{n}_{out,-})+2p_{dc})}$$
+%
+% This then allows us now to calculate how many of our valid clicks, were actually produced by only 1 photon event going only to 1 of the 2 detectors, essentially giving us a sort of signal-to-noise ratio:
+% $$
+% 	P_{SNR} = \frac{P_{only}}{P_{valid}} = \frac{\lambda_{+} + \lambda_{-}}{\lambda_{+} + \lambda_{-} + 2p_{dc}}
+% $$
+%
+% \subsection{Photon Distribution}
+% All that's left now is to calculate how much of our light went to the "+"-detector, and how much went to our "-"-detector, which is just like calculating the ratios of all of our events that were triggered only by photons, and the probability of the respective detector itself:
+% $$
+% 	R_{+} = \frac{P(\text{1 photon in + and no click in -})}{P_{only}} = \frac{\bar{n}_{out,+} }{\bar{n}_{out,+} + \bar{n}_{out,-}}$$
+% $$
+% 	R_{-} = \frac{P(\text{1 photon in - and no click in +})}{P_{only}} = \frac{\bar{n}_{out,-}}{\bar{n}_{out,+} + \bar{n}_{out,-}}
+% $$
+%
+% What then ends up going into our truth table is the following:
+% \begin{itemize}
+% 	\item For the $|+\rangle$-part = $R_{+}\cdot P_{SNR} + (1-P_{SNR})\cdot 0.5$
+% 	\item For the $|-\rangle$-part = $R_{-}\cdot P_{SNR} + (1-P_{SNR})\cdot 0.5$
+% \end{itemize}
+%
+% \section{Driving Hamiltonian}
+%
+% Since we're mainly going to be working with the \textit{mesolve} function in QuTip to simulate the dynamics of the atom-photon gate it's imperative to know what each and every part does. Next to the Jaynes-Cummings-Hamiltonian the most important part is the one explaining the \textit{photon that gets reflected from the cavity}, most notably the part before it gets reflected aka the \textit{driving Hamiltonian} $H_{d}$. For this we're going to just write down once, the dynamics of a coherent driving field which will be the foundation of my photon that shall or shall not enter the cavity.
+% \newline
+%
+% The photon is going to come from a laser, that is going to be described as a classical oscillating electric field. That light field has an amplitude $E_0$ and a frequency $\omega_d$:
+% $$
+% 	E(t) = E_0 \cos(\omega_d t)
+% $$
+% Using the euler formula we can rewrite this to:
+% $$
+% 	E(t) = \frac{E_0}{2} (e^{i\omega_d t} + e^{-i\omega_d t})
+% $$
+%
+% The light field operator $\hat{E}$ interacts with the light in our cavity (which get described by our creation and annihilation operators) linearly:
+% $$
+% 	\hat{E} \propto (a + a^\dag)
+% $$
+%
+% When now describing the \textit{driving Hamiltonian} what we're doing is just overlaping the light field operator with the oscillating electric field:
+% \begin{align*}
+% 	H_{drive} & \propto E(t) \cdot (a+a^{\dag})                         \\
+% 	H_{drive} & = (e^{i\omega_d t} + e^{-i\omega_d t})\cdot(a+a^{\dag})
+% \end{align*}
+%
+% From this we get four terms where two cancel out as they aren't energy conserving rendering us with the final expression for our driving Hamiltonian:
+% \begin{empheq}[box=\mymath]{equation*}
+% 	H_{drive} = a^\dag e^{-i\omega_d t} + a e^{+i\omega_d t}
+% \end{empheq}
+%
+% Where the first term adds a photon to our cavity and the other removes one. Sometimes you'll see a minus instead of a plus between the two terms, this is just due to different conventions of the light field, where people chose a $\sin$ to describe the oscillating part instead of a $\cos$, but the physics remain the same.
+%
+% \section{Analytical derivation for case of atom in $\ket{0}$ and photon is in $\ket{h}$}
+%
+% Our Hamiltonian is as follows:
+% \begin{align*}
+% 	H = \hbar g(\ket{e}\bra{1}a_h + \ket{1}\bra{e}a_h^{\dagger})
+% \end{align*}
+%
+% We drive the $a_h$ mode of our cavity through $a_h^{in}(t)$, thus giving us the following equation of motion for our $a_h$ cavity mode:
+%
+% \begin{align*}
+% 	\dot{a_h} & =-i[a_h,H]-(i\Delta + \frac{\kappa}{2})a_h - \sqrt{\kappa}a_h^{in}(t) \\
+% \end{align*}
+% Because $a_h$ commutes with $H$, the commutator is 0 and we get
+% \begin{align*}
+% 	\rightarrow \dot{a_h} & =-(i\Delta + \frac{\kappa}{2})a_h - \sqrt{\kappa}a_h^{in}(t)
+% \end{align*}
+%
+% We now drop the subscript $h$ as we'll only be looking at that case.
+%
+% Multiplying with $e^{i\omega t}$, and integrating we get:
+% \begin{align*}
+% 	\int{dt e^{i\omega t}\dot{a}(t)} =  \underbrace{[e^{i\omega t}a(t)]_{-\infty}^{\infty}}_{=0} - \underbrace{i\omega\int{dt e^{i\omega t}a(t)}}_{=i\omega a(\omega)}
+% \end{align*}
+% where in the last expression we used that the integral performs a Fourier transformation.
+%
+% \begin{align*}
+% 	\Rightarrow -i\omega a(\omega) & = -(i\Delta + \frac{\kappa}{2})a(\omega) - \sqrt{\kappa}a^{in}(\omega)  \\
+% 	\sqrt{\kappa}a^{in}(\omega)    & = -(i\Delta + \frac{\kappa}{2} - i\omega)a(\omega)                      \\
+% 	\rightarrow a(\omega)          & = -\frac{\sqrt{\kappa}}{i\Delta+\frac{\kappa}{2}-i\omega}a^{in}(\omega)
+% \end{align*}
+%
+% Now from our regular input output relation
+% \begin{align*}
+% 	a^{out} (\omega)= a^{in}(\omega) + \kappa a(\omega)
+% \end{align*}
+%
+% We thus get:
+%
+% \begin{align*}
+% 	a^{out} (\omega) & =a^{in}(\omega) -\frac{\sqrt{\kappa}}{i\Delta+\frac{\kappa}{2}-i\omega}a^{in}(\omega)                               \\
+% 	a^{out}(\omega)  & =(1-\frac{\kappa}{i\Delta+\frac{\kappa}{2}-i\omega})a^{in}(\omega)                                                  \\
+% 	a^{out}(\omega)  & =(1-\frac{i\Delta + \frac{\kappa}{2}-i\omega-\kappa}{i\Delta+\frac{\kappa}{2}-i\omega})a^{in}(\omega)               \\
+% 	a^{out}(\omega)  & =(\frac{i\Delta-\frac{\kappa}{2}-i\omega}{i\Delta+\frac{\kappa}{2}-i\omega})a^{in}(\omega)                          \\
+% 	                 & =\underbrace{\frac{i(\Delta-\omega)-\frac{\kappa}{2}}{i(\Delta-\omega)+\frac{\kappa}{2}}}_{h(\omega)}a^{in}(\omega)
+% \end{align*}
+%
+% We can then use the \href{https://en.wikipedia.org/wiki/Convolution_theorem}{convolution theorem} in order to solve for $a^{out}(t)$
+%
+% \begin{align*}
+% 	a^{out}(t) = \int_{-\infty}^{\infty}d\tau \underbrace{h(t-\tau)}_{h(t) =\frac{1}{2\pi}\int_{-\infty}^{\infty}d\omega e^{-i\omega t}h(\omega)}a^{in}(\tau)
+% \end{align*}
+%
+% Now using that $h(\omega) = 1-\frac{\kappa}{i(\Delta-\omega)+\frac{\kappa}{2}}$ we get for $h(t)$ (via partial integration):
+%
+% \begin{align*}
+% 	h(t)                   & = \delta(t) - \kappa e^{-i\delta t}e^{-\frac{\kappa}{2}t}\theta(t)                                          \\
+% 	\Rightarrow a^{out}(t) & = a^{in}(t) - \kappa\int_{-\infty}^{\infty}d\tau e^{-i\delta(t-\tau)}e^{-\frac{\kappa}{2}(t-\tau)}a^{in}(t)
+% \end{align*}
+%
+% For slowly varying pulses we can now approximate that $a^{in}(\tau)\approx a^{in}(t)$ thus giving us:
+%
+% \begin{align*}
+% 	\Rightarrow a^{out}(t) & \approx a^{in}(t) - \frac{\kappa}{i\Delta+\frac{\kappa}{2}}a^{in}(t) \\
+% 	                       & =\frac{i\Delta-\frac{\kappa}{2}}{i\Delta+\frac{\kappa}{2}}a^{in}(t)
+% \end{align*}
+%
+% Which for no detuning (so $\Delta=0$) gives us:
+% \begin{equation}
+% 	a^{out}(t) =-a^{in}(t)
+% \end{equation}
+%
+% \subsection{Lindblad Formalism}
+%
+% We start from the master equation:
+% \begin{equation}
+% 	\dot{\rho} = -\frac{i}{\hbar}[H,\rho] + \sum_j \gamma_j \left( L_j \rho L_j^\dagger - \tfrac{1}{2}\{ L_j^\dagger L_j, \rho \} \right),
+% \end{equation}
+%
+% Now, for an operator \(O\),
+% \begin{align}
+% 	\frac{d}{dt} \langle O \rangle & = \Tr \left( O \dot{\rho} \right)                                                                                                                               \\
+% 	                               & = \Tr \left( O \left[ -\frac{i}{\hbar}[H,\rho] + \sum_j \gamma_j \left( L_j \rho L_j^\dagger - \tfrac{1}{2}\{ L_j^\dagger L_j, \rho \} \right) \right] \right).
+% \end{align}
+%
+% The Hamiltonian contribution gives
+% \begin{equation}
+% 	- \Tr \left( O \frac{i}{\hbar}[H,\rho] \right)
+% 	= -\frac{i}{\hbar}\Tr \left( O H \rho - O \rho H \right)
+% 	= -\frac{i}{\hbar}\Tr \left( [O,H]\rho \right)
+% 	= -\frac{i}{\hbar} \langle [O,H] \rangle.
+% \end{equation}
+%
+% For the dissipative terms we obtain
+% \begin{align}
+% 	\sum_j \gamma_j \Tr\Big( O L_j \rho L_j^\dagger
+% 	- \tfrac{1}{2} O L_j^\dagger L_j \rho
+% 	- \tfrac{1}{2} O \rho L_j^\dagger L_j \Big).
+% \end{align}
+%
+% Using cyclicity of the trace:
+% \begin{align}
+% 	 & = \sum_j \gamma_j \left( \langle L_j^\dagger O L_j \rangle
+% 	- \tfrac{1}{2} \langle \{ L_j^\dagger L_j, O \} \rangle \right).
+% \end{align}
+%
+% Therefore the general equation of motion is
+% \begin{equation}
+% 	\frac{d}{dt}\langle O \rangle
+% 	= -\frac{i}{\hbar}\langle [O,H] \rangle
+% 	+ \sum_j \gamma_j \left( \langle L_j^\dagger O L_j \rangle
+% 	- \tfrac{1}{2}\langle \{L_j^\dagger L_j, O \} \rangle \right).
+% \end{equation}
+%
+%
+% \subsection{Calculation of the Maxwell Bloch Equations (no lossy channels)}
+% \subsubsection{Jaynes Cummings Hamiltonian}
+% Assuming ground state has zero energy our Jaynes-Cummings Hamiltonian is equal to:
+% \begin{equation}
+% 	H_{JC,S} = \underbrace{\omega_ca^\dagger a + \omega_a\sigma^\dagger\sigma}_{=H_0,S} + \underbrace{g(\sigma + \sigma^\dagger)(a +  a^\dagger)}_{=H_{int,S}} + H_{drive,S}
+% \end{equation}
+% where $\sigma$ is the atomic lowering operator,$\omega_a$ the atomic transition frequency between the levels $\ket{1}$ and $\ket{e}$,$a$ the photonic destruction operator, and $\omega_a$ the cavity mode resonance frequency.\\
+% $H_{drive}$ in this case is the external light field which is driving our system, which in the semiclassical formalism has the following form \cite{WallsMilburn2008}:
+% \begin{equation}
+% 	H_{drive,S} = i(\epsilon e^{-i\omega_d t} + \epsilon^* e^{i\omega_d t})(a + a^\dagger)
+% \end{equation}
+%
+% Here, $a$ again is the photonic destruction operator, $\omega_d$ is the frequency of the driving field, and $\epsilon$ is the complex amplitude of our incoming pulse.
+%
+% In general going from the Schrödinger picture to the interaction picture, is achieved by converting our operators into the interaction picture via following equation:
+% \begin{equation}
+% 	i\frac{dA_I}{dt} = [A_I(t),H_{0,S}]
+% \end{equation}
+%
+% Furthermore, $H_{0,I} = H_{0,S}$. Equipped with this we can now calculate the expressions for operators in the interaction picture:
+%
+% \begin{align}
+% 	i\frac{da_I(t)}{dt}                                & = [a_I(t), H_{0,S}]                    \\
+% 	                                                   & = [a_I(t),\omega_ca^\dagger a]         \\
+% 	                                                   & = \omega_c a_I(t)                      \\
+% 	\Rightarrow \frac{da_I(t)}{dt} = -i\omega_c a_I(t) & \rightarrow a_I(t) = a e^{-i\omega_ct}
+% \end{align}
+%
+% Where we used that:
+% \begin{equation}
+% 	[a,H_{0,S}] = \omega_c[a,a^\dagger a] = \omega_c (\underbrace{[a,a^\dagger]}_{=1}a + a^\dagger\underbrace{[a,a]}_{=0}) = \omega_c a
+% \end{equation}
+%
+% Now we repeat the same thing for the atomic lowering operator $\sigma$:
+%
+% \begin{align}
+% 	i\frac{d\sigma_I(t)}{dt}                                    & = \underbrace{[\sigma_I(t),H_{0,S}]}             \\
+% 	i\frac{d\sigma_I(t)}{dt}                                    & = \omega_a\sigma_I(t)                            \\
+% 	\Rightarrow \frac{d\sigma_I(t)}{dt} = -i\omega_a\sigma_I(t) & \rightarrow \sigma_I(t) = \sigma e^{-i\omega_at}
+% \end{align}
+%
+% Now we can calculate the Hamiltonian for the interaction part and the drive part, in the interaction picture, by just plugging these operators in there, giving us:
+%
+% \begin{align}
+% 	H_{int,I}         & =\sigma a e^{-i(\omega_a-\omega_c)t} + \sigma a^\dagger e^{-i(\omega_a-\omega_c)t} +\sigma^\dagger a e^{-i(\omega_c-\omega_a)t} + \sigma^\dagger a^\dagger e^{i(\omega_c+\omega_a)t} \\
+% 	\xrightarrow{RWA} & = \sigma a^\dagger e^{-i(\omega_a-\omega_c)t} +\sigma^\dagger a e^{-i(\omega_c-\omega_a)t}                                                                                           \\
+% 	H_{drive,I}       & = i(\epsilon e^{-i\omega_d t} + \epsilon^\dagger e^{i\omega_d t})(a_I(t) + a_I^\dagger(t))                                                                                           \\
+% 	\xrightarrow{RWA} & = i(a \epsilon^*e^{-i(\omega_c-\omega_d)t} + a^\dagger \epsilon e^{i(\omega_c-\omega_d)t})
+% \end{align}
+%
+% Thus giving us the total Hamiltonian in the interaction picture under the rotating wave approximation:
+%
+% \begin{equation}
+% 	H_{JC,I}\overset{\text{RWA}}{=} \omega_ca^\dagger a + \omega_a \sigma^\dagger\sigma + g(\sigma a^\dagger e^{-i(\omega_a-\omega_c)t} + \sigma^\dagger a e^{-i(\omega_c-\omega_a)t}) + i(a \epsilon^* e^{-i(\omega_c-\omega_d)t} + a^\dagger \epsilon e^{i(\omega_c-\omega_d)t})
+% \end{equation}
+%
+% If we now transform back into the Schrödinger picture, we get:
+% \begin{equation}
+% 	H_{JC,S} \overset{\text{RWA}}{=} \omega_ca^\dagger a + \omega_a \sigma^\dagger\sigma + g(a^\dagger\sigma + a\sigma^\dagger) + i(a \epsilon^*e^{i\omega_dt} + a^\dagger \epsilon e^{-i\omega_dt})
+% \end{equation}
+%
+% If we now change into the rotating frame of the driving field via
+% \begin{align}
+% 	U(t) & = \exp{i\omega_dt(a^\dagger a + \sigma^\dagger\sigma)} \\
+% 	H    & \rightarrow UHU^\dagger + i\dot{U}U^\dagger =: H_{RF}
+% \end{align}
+%
+% we then get the final form of our Hamiltonian:
+% \begin{empheq}[box=\fcolorbox{red}{yellow!10}]{equation}
+% 	H_{JC,RF} = \underbrace{(\omega_c-\omega_d)}_{=\Delta_c}a^\dagger a
+% 	+ \underbrace{(\omega_a-\omega_d)}_{=\Delta_a}\sigma^\dagger\sigma
+% 	+ g(a^\dagger\sigma + a\sigma^\dagger)
+% 	+ i(a\epsilon^* + a^\dagger\epsilon)
+% \end{empheq}
+%
+% Which gives rise to 4 scenarios which I'll be covering with my project:
+% \begin{center}
+% 	\resizebox{\linewidth}{!}{
+% 		\begin{tabular}{|l|l|}
+% 			\hline
+% 			\textbf{scenario}          & \textbf{meaning}                                                                                                 \\
+% 			\hline
+% 			$\Delta_a=\Delta_c=0$      & \makecell{Atom is in coupled state (here: $\ket{1}$ and we drive with a light field                              \\ that's resonant to the cavity (here: we drive $\ket{1} \leftrightarrow \ket{e}$ which would be our $\ket{\pi}$ polarized light}  \\
+% 			\hline
+% 			$\Delta_a=0;\Delta_c\neq0$ & Atom is in coupled state but we drive with light that's non-resonant to cavity (here: $\ket{V}$ polarized light) \\
+% 			\hline
+% 			$\Delta_a\neq0;\Delta_c=0$ & Atom is in uncoupled state (here: $\ket{0}$) and we drive with a light field that's resonant to the cavity       \\
+% 			\hline
+% 			$\Delta_a,\Delta_c\neq0$   & Atom is in uncoupled state and we drive with light that's non-resonant to cavity                                 \\
+% 			\hline
+% 		\end{tabular}}
+% \end{center}
+%
+% In order to improve readability we'll be splitting the full JC Hamiltonian into three parts:
+% \begin{align}
+% 	H_0       & = \Delta_ca^\dagger a + \Delta_a\sigma^\dagger\sigma \\
+% 	H_{int}   & = g(a^\dagger\sigma + a\sigma^\dagger)               \\
+% 	H_{drive} & = i(a\epsilon^* + a^\dagger\epsilon)
+% \end{align}
+%
+% with following losses:
+% \begin{align}
+% 	\gamma_1 & = \gamma, \quad L_1 = \sigma, \\
+% 	\gamma_2 & = \kappa, \quad L_2 = a.
+% \end{align}
+%
+%
+% \subsection{Cavity mode a}
+%
+% For $H_0$:
+% \begin{align}
+% 	[a,H_0] & = \Delta_c[a,a^\dagger a] + \Delta_ca \underbrace{[a,\sigma^\dagger\sigma]}_{=0} \\
+% 	        & = \Delta_c (\underbrace{[a,a^\dagger]}_{=1}a + a^\dagger\underbrace{[a,a]}_{=0}) \\
+% 	        & = \Delta_c a
+% \end{align}
+% \begin{equation}
+% 	\boxed{
+% 		\Rightarrow -i\langle[a,H_0]\rangle = -i\Delta_c \langle a\rangle
+% 	}
+% \end{equation}
+% For $H_{int}$:
+% \begin{align}
+% 	[a,H_{int}] & = g([a,a^\dagger\sigma] + [a,a\sigma^\dagger])                                                           \\
+% 	            & = g(a a^\dagger\sigma - a^\dagger a\sigma + \cancel{a a\sigma^\dagger} - \cancel{aa\sigma^\dagger})      \\
+% 	            & \rightarrow \langle aa^\dagger\sigma\rangle = \bra{n}aa^\dagger\sigma\ket{n} =(n+1) \langle\sigma\rangle \\
+% 	            & \rightarrow \langle a^\dagger a\sigma\rangle = \bra{n}a^\dagger a\sigma\ket{n} =n \langle\sigma\rangle
+% \end{align}
+% \begin{equation}
+% 	\boxed{
+% 	\Rightarrow -i\langle[a,H_{int}]\rangle = -ig\langle\sigma\rangle
+% 	}
+% \end{equation}
+% For $H_{drive}$:
+% \begin{align}
+% 	[a,H_{drive}] & = [a,i(a\epsilon^* + a^\dagger\epsilon)]     \\
+% 	              & = i([a,a\epsilon^*] + [a,a^\dagger\epsilon]) \\
+% 	              & = i(0 + \epsilon)                            \\
+% 	              & = i\epsilon
+% \end{align}
+% \begin{equation}
+% 	\boxed{
+% 	\Rightarrow -i\langle[a,H_{drive}]\rangle = i\langle \epsilon\rangle \overset{\epsilon \in \mathds{C}}{=} i\epsilon
+% 	}
+% \end{equation}
+% If we now include the fact that:
+% \begin{equation}
+% 	i\epsilon \mathrel{\widehat{=}} \sqrt{\kappa_{oc}}a^{in}(t)
+% \end{equation}
+% we are then left with:
+% \begin{equation}
+% 	\boxed{
+% 	\Rightarrow-i\langle[a,H_{drive}]\rangle = -\sqrt{\kappa_{oc}}a^{in}(t)
+% 	}
+% \end{equation}
+%
+% For rest of the Lindbladian:
+% \begin{align}
+% 	D(a) & =a^\dagger a a - \frac{1}{2}\{a^\dagger a,a\}               \\
+% 	     & =a^\dagger a a - \frac{1}{2}(a^\dagger a a - a a^\dagger a) \\
+% 	     & = \frac{1}{2}a^\dagger a a - \frac{1}{2} a a^\dagger a      \\
+% 	     & = \frac{1}{2}(a^\dagger a a - a a^\dagger a)                \\
+% 	     & = \frac{1}{2}([a^\dagger,a]a)                               \\
+% 	     & = \frac{1}{2}(-a)                                           \\
+% 	     & = -\frac{1}{2} a
+% \end{align}
+% \begin{equation}
+% 	\boxed{
+% 		\Rightarrow \kappa\langle D(a)\rangle = -\frac{\kappa}{2} \langle a\rangle
+% 	}
+% \end{equation}
+%
+% So for $\langle a\rangle(t)$ we get:
+% \begin{empheq}[box=\fcolorbox{red}{yellow!10}]{align}
+% 	\frac{d\langle a\rangle}{dt}
+% 	&= -i\Delta_c\langle a\rangle - i g \langle\sigma\rangle
+% 	- \sqrt{\kappa_{oc}}\, a_{\text{in}}(t) - \frac{\kappa}{2}\,\langle a\rangle \notag\\
+% 	&= -(i\Delta_c + \tfrac{\kappa}{2})\langle a\rangle
+% 	- i g \langle\sigma\rangle - \sqrt{\kappa_{oc}}\, a_{\text{in}}(t)
+% \end{empheq}
+%
+% \subsection{Atomic lowering operator $\sigma$}
+% For $H_0$:
+% \begin{align}
+% 	[\sigma,H_0] & = \Delta_a\underbrace{[\sigma,\sigma^\dagger\sigma]}_{=\underbrace{[\sigma,\sigma^\dagger]}_{=\mathds{1}}\sigma + \sigma^\dagger\underbrace{[\sigma,\sigma]}_{=0}} \\
+% 	             & = \Delta_a \mathds{1}\sigma
+% \end{align}
+% \begin{equation}
+% 	\boxed{
+% 		\Rightarrow -i\langle[\sigma,H_0]\rangle = -i\Delta_a \langle \sigma\rangle
+% 	}
+% \end{equation}
+% For $H_{int}$:
+% \begin{align}
+% 	[\sigma,H_{int}] & = g([\sigma,a^\dagger\sigma] + [\sigma,a\sigma^\dagger])                                                              \\
+% 	                 & = g(\cancel{a^\dagger \sigma\sigma} - \cancel{a^\dagger\sigma\sigma} + a\sigma\sigma^\dagger - a\sigma^\dagger\sigma) \\
+% 	                 & = g(a\sigma\sigma^\dagger - a\sigma^\dagger\sigma)
+% \end{align}
+% Now we can consider that:
+% \begin{empheq}[box=\fcolorbox{red}{yellow!10}]{align}
+% 	\sigma^\dagger\sigma &= \ket{e}\braket{1}\bra{e} = \ket{e}\bra{e} \\
+% 	\sigma\sigma^\dagger &= \ket{1}\braket{e}\bra{1} = \ket{1}\bra{1}
+% \end{empheq}
+% \begin{align}
+% 	[\sigma,H_{int}] & = g(a\sigma\sigma^\dagger - a\sigma^\dagger\sigma) \\
+% 	                 & = ga(\ket{1}\bra{1} - \ket{e}\bra{e})              \\
+% 	                 & = ga \sigma_z
+% \end{align}
+% \begin{equation}
+% 	\boxed{\Rightarrow -i\langle[\sigma,H_{int}]\rangle=-ig\langle a\sigma_z \rangle}
+% \end{equation}
+% No interaction with $H_{drive}$.\\
+% For rest of Lindbladian:
+% \begin{align}
+% 	D(\sigma) & = \underbrace{\sigma^{\dagger}\underbrace{\sigma\sigma}_{=0}}_{=0} - \frac{1}{2} \{\sigma^\dagger\sigma,\sigma\} \\
+% 	          & = -\frac{1}{2}\underbrace{\sigma^\dagger\sigma\sigma}_{=0} - \frac{1}{2}\sigma\sigma^\dagger\sigma               \\
+% 	          & = -\frac{1}{2}\sigma
+% \end{align}
+% \begin{equation}
+% 	\boxed{\gamma\langle D(\sigma)\rangle = -\frac{\gamma}{2}\langle\sigma\rangle}
+% \end{equation}
+%
+% So for $\langle\sigma\rangle$(t) we get:
+% \begin{empheq}[box=\fcolorbox{red}{yellow!10}]{align}
+% 	\frac{d\langle\sigma\rangle}{dt} &= -i\Delta_a\langle\sigma\rangle -ig\langle a\sigma_z\rangle -\frac{\gamma}{2}\langle\sigma\rangle \notag\\
+% 	&= -(i\Delta_a + \frac{\gamma}{2})\langle\sigma\rangle - ig\langle a\sigma_z\rangle
+% \end{empheq}
+%
+% \subsection{Pauli-Z operator $\sigma_z$}
+%
+% For $H_0$:
+% \begin{align}
+% 	[\sigma_z,H_0] & = \Delta_a[\sigma_z,\sigma^\dagger\sigma]                     \\
+% 	               & = \Delta_a[\sigma_z,\ket{e}\bra{e}]                           \\
+% 	               & = \Delta_a (\sigma_z \ket{e}\bra{e} - \ket{e}\bra{e}\sigma_z) \\
+% 	               & = \Delta_a (-\ket{e}\bra{e} + \ket{e}\bra{e})                 \\
+% 	               & = 0
+% \end{align}
+% For $H_{int}$:
+% \begin{align}
+% 	[\sigma_z, H_{int}] & = g([\sigma_z,a^\dagger\sigma] + [\sigma_z,a\sigma^\dagger])                                               \\
+% 	                    & = g(a^\dagger\sigma_z\sigma - a^\dagger\sigma\sigma_z + a\sigma_z\sigma^\dagger - a\sigma^\dagger\sigma_z) \\
+% 	                    & = g(a^\dagger\sigma + a^\dagger\sigma -a\sigma^\dagger - a\sigma^\dagger)                                  \\
+% 	                    & = 2g(a^\dagger\sigma - a\sigma^\dagger)
+% \end{align}
+% \begin{equation}
+% 	\boxed{
+% 	\Rightarrow -i\langle[\sigma_z,H_{int}]\rangle=-2ig(\langle a^\dagger\sigma \rangle - \langle a\sigma^\dagger\rangle)
+% 	}
+% \end{equation}
+% No interaction with $H_{drive}$.
+% For rest of Lindbladian:
+% \begin{align}
+% 	D(\sigma_z) & = \sigma^\dagger\sigma_z\sigma - \frac{1}{2}\{\sigma^\dagger\sigma,\sigma\}                                                                                           \\
+% 	            & = \ket{e}\bra{e}  - \frac{1}{2}\underbrace{\sigma^\dagger\sigma\sigma_z}_{=-\ket{e}\bra{e}} - \frac{1}{2}\underbrace{\sigma_z\sigma^\dagger\sigma}_{=-\ket{e}\bra{e}} \\
+% 	            & = \ket{e}\bra{e} + \ket{e}\bra{e}                                                                                                                                     \\
+% 	            & = 2\ket{e}\bra{e}                                                                                                                                                     \\
+% 	            & = \mathds{1} - \sigma_z
+% \end{align}
+% \begin{equation}
+% 	\boxed{
+% 		\Rightarrow\gamma\langle D(\sigma_z)\rangle=\gamma(1-\langle\sigma_z\rangle)
+% 	}
+% \end{equation}
+%
+% So for $\langle\sigma_z\rangle(t)$ we get:
+% \begin{empheq}[box=\fcolorbox{red}{yellow!10}]{equation}
+% 	\frac{d\langle\sigma_z\rangle(t)}{dt} = -2ig(\langle a^\dagger\sigma \rangle - \langle a\sigma^\dagger\rangle) + \gamma(1-\langle\sigma_z\rangle)
+% \end{empheq}
+%
+% The final Maxwell Bloch Equations then take the form of:
+% \begin{empheq}[box=\fcolorbox{red}{yellow!10}]{align}
+% 	\frac{d\langle a\rangle}{dt} &= -(i\Delta_c + \tfrac{\kappa}{2})\langle a\rangle
+% 	- i g \langle\sigma\rangle - \sqrt{\kappa_{oc}}\, a_{\text{in}}(t) \\
+% 	\frac{d\langle\sigma\rangle}{dt} &= -(i\Delta_a + \tfrac{\gamma}{2})\langle\sigma\rangle
+% 	- i g \langle a\sigma_z\rangle \\
+% 	\frac{d\langle\sigma_z\rangle}{dt} &= -2i g \big(\langle a^\dagger\sigma \rangle - \langle a\sigma^\dagger\rangle\big)
+% 	+ \gamma \big(1 - \langle\sigma_z\rangle\big)
+% \end{empheq}
