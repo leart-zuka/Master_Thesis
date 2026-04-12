@@ -99,7 +99,7 @@ def channels_histo(
             )  # 2-2' pumping dark counts
 
         for j, gate in enumerate(gates):
-            ax.axvline(gate * 1e3, color=gateColors[j], label=j)
+            ax.axvline(gate * 1e3, color=gateColors[j],label=j)
     ax.set_xlabel("Time (ms)", fontsize=afs)
 
     f.suptitle(filename + " - Trace Histogram")
@@ -107,7 +107,6 @@ def channels_histo(
     plt.tight_layout()
 
     return f
-
 
 def plot_gate_3d(
     matrix,
@@ -177,32 +176,14 @@ def plot_gate_3d(
             cx = xi + width / 2
             cy = yi + depth / 2
             # Vertical line
-            ax.plot(
-                [cx, cx],
-                [cy, cy],
-                [h - err, h + err],
-                color="black",
-                linewidth=0.5,
-                zorder=10,
-            )
+            ax.plot([cx, cx], [cy, cy], [h - err, h + err],
+                    color="black", linewidth=0.5, zorder=10)
             # Top cap
-            ax.plot(
-                [cx - cap_size, cx + cap_size],
-                [cy, cy],
-                [h + err, h + err],
-                color="black",
-                linewidth=0.5,
-                zorder=10,
-            )
+            ax.plot([cx - cap_size, cx + cap_size], [cy, cy], [h + err, h + err],
+                    color="black", linewidth=0.5, zorder=10)
             # Bottom cap
-            ax.plot(
-                [cx - cap_size, cx + cap_size],
-                [cy, cy],
-                [h - err, h - err],
-                color="black",
-                linewidth=0.5,
-                zorder=10,
-            )
+            ax.plot([cx - cap_size, cx + cap_size], [cy, cy], [h - err, h - err],
+                    color="black", linewidth=0.5, zorder=10)
 
     ax.set_xticks(np.arange(4) + width / 2)
     ax.set_yticks(np.arange(4) + depth / 2)
@@ -210,14 +191,13 @@ def plot_gate_3d(
     ax.set_xticklabels(joint_basis, rotation=45, ha="right")
     ax.set_yticklabels(joint_basis)
 
-    ax.set_xlabel("Output", labelpad=15)
-    ax.set_ylabel("Input", labelpad=15)
-
+    ax.set_xlabel("Output")
+    ax.set_ylabel("Input")
     ax.set_zlabel("Probability")
     ax.set_zlim(0, 1.05)
 
     ax.set_title(
-        f"{title}\n$Overlap = {fidelity * 100:.2f} \\pm {fidelity_err * 100:.2f}$",
+        f"{title}\n$Overlap = {fidelity*100:.2f} \\pm {fidelity_err*100:.2f}$",
         fontsize=20,
         y=1.15,
         bbox=dict(
@@ -237,4 +217,3 @@ def plot_gate_3d(
 
     if show_fig:
         plt.show()
-
