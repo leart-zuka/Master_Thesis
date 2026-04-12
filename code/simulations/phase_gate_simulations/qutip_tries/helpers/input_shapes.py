@@ -4,6 +4,14 @@ from typing import Dict
 from typing import Union, Callable
 
 
+def input_shape_rect(t, args):
+    """Rectangular (Heaviside) pulse: constant amplitude between t0 - tau/2 and t0 + tau/2."""
+    amp = args["amp"]
+    t0 = args["t0"]
+    tau = args["tau"]  # total pulse duration
+    return np.where((t >= t0 - tau / 2) & (t <= t0 + tau / 2), amp, 0.0)
+
+
 def input_shape(t, args):
     amp = args["amp"]
     t0 = args["t0"]

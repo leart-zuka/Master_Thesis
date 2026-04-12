@@ -2,7 +2,7 @@ import argparse
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from helpers.input_shapes import input_shape
+from helpers.input_shapes import input_shape, input_shape_rect
 
 from helpers.generic_cavity_operators import (
     AtomSystem,
@@ -42,7 +42,7 @@ cavity = CavitySystem(
     Delta_c_v=2 * np.pi * 0.5,
     G0_kc=2 * np.pi * 0.026,
     Kappa=2 * np.pi * 0.058,
-    v_transmission=0.2955,
+    v_transmission=0.208,
 )
 
 system = SystemOperators(atom=atom, cavity=cavity)
@@ -55,7 +55,7 @@ states = InitialStates(cavity=cavity, atom=atom)
 psi_0 = states.psi_atom_0()
 psi_0 = states.rho_mixed(p_0=1, p_1=0, p_dark=0)
 psi_1 = states.psi_atom_1()
-psi_1 = states.rho_mixed(p_0=0.062, p_1=0.938, p_dark=0)
+psi_1 = states.rho_mixed(p_0=0.12, p_1=0.88, p_dark=0)
 
 c_ops = dissipation.collapse_operators()
 e_ops = observables.expectation_ops()
@@ -64,6 +64,7 @@ e_ops = observables.expectation_ops()
 # photon_numbers = np.linspace(2, 1, 20)
 # photon_numbers = np.logspace(2, 6, 20)
 photon_numbers = np.concatenate([[0], np.logspace(-3, 0.3, 19)])
+photon_numbers = np.concatenate([[0], np.logspace(-3, 1, 19)])
 fidelities = np.zeros_like(photon_numbers)
 fidelities_analytical = np.zeros_like(photon_numbers)
 fidelities_pure_sim = np.zeros_like(photon_numbers)
@@ -85,13 +86,14 @@ eta = 0.9 * 0.85 * 0.97
 r_dark = 1e-4
 r_dark = 3e-4
 r_dark = 1.5e-4
+r_dark = 5e-5
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Scan of Photon Numbers")
     parser.add_argument(
         "--v_polarization_transmission",
         type=float,
-        default=0.2955,
+        default=0.208,
         help="Optional V polarization transmission",
     )
     args = parser.parse_args()
@@ -105,9 +107,6 @@ if __name__ == "__main__":
         Kappa=2 * np.pi * 0.058,
         v_transmission=args.v_polarization_transmission,
     )
-    F_1 = 0.9493856157314424
-
-    post_select_atom = False
 
     for i, (n_bar, amp) in enumerate(zip(photon_numbers, amps)):
         print(f"Computing Signal Fidelity ⟨n⟩ = {n_bar:.3e}, amp = {amp:.3e}; Step {i}")
@@ -154,36 +153,6 @@ if __name__ == "__main__":
             basis="cnot",
         )
 
-        # Pure Sim
-        if post_select_atom:
-            fidelities_pure_sim[i] = compute_signal_fidelity(CNOT)
-        else:
-            Fidelity_plus_noise = compute_fidelity_from_prob_matrix(
-                mix_with_noise(CNOT, eta=eta, n_bar=n_bar, p_dark=r_dark), basis="cnot"
-            )
-            fidelities_pure_sim[i] = Fidelity_plus_noise * p_atom + (1 - p_atom) * 0.5
-
-        # Analytical
-        P_sig = (eta * n_bar) / (eta * n_bar + r_dark)
-        Fidelity_low_plus_high_photon_analytical = 0.5 + (
-            (P_sig * F_1 + (1 - P_sig) * 0.5) - 0.5
-        ) * np.exp(-(1 - eta) * n_bar)
-        fidelities_analytical[i] = (
-            Fidelity_low_plus_high_photon_analytical * p_atom + (1 - p_atom) * 0.5
-        )
-
-        # Sim + Analytical
-        CNOT_w_noise = mix_with_noise(CNOT, eta=eta, n_bar=n_bar, p_dark=r_dark)
-        Fidelity_low_photon = compute_fidelity_from_prob_matrix(
-            CNOT_w_noise, basis="cnot"
-        )
-        Fidelity_low_plus_high_photon_plus_sim = 0.5 + (
-            Fidelity_low_photon - 0.5
-        ) * np.exp(-(1 - eta) * n_bar)
-        fidelities[i] = (
-            Fidelity_low_plus_high_photon_plus_sim * p_atom + (1 - p_atom) * 0.5
-        )
-
     photon_numbers_fig = plt.figure()
     plt.plot(photon_numbers, other_fidelities, label=r"$F_{sim}$")
     plt.legend()
@@ -208,70 +177,70 @@ if __name__ == "__main__":
     )
     photon_numbers_fig.savefig("./plots/photon_numbers_no_annotation.svg")
 
-    atomic_scattering = plt.figure()
-    plt.plot(
-        photon_numbers,
-        atomic_state,
-        label="Mean Probability of atom being in |1> after photon pulse",
-    )
-    plt.legend()
-    plt.xlabel("Mean Photon numbers")
-    plt.xscale("log")
-    plt.ylabel("P(|1>)")
-    plt.title("Atomic Scattering vs. Photon Numbers")
-    # atomic_scattering.savefig("./plots/atomic_scattering.svg")
-
-    # --- Configuration ---
-    # With photon_dim=4, the simulation begins to lose accuracy at n_bar ~ 1
-    # and is completely invalid by n_bar ~ 5.
-    trust_threshold = 2.0
-
-    # --- Plotting Comparison ---
-    comparisson = plt.figure(figsize=(10, 6))
-
-    # Plot the lines
-    plt.plot(photon_numbers, fidelities, label="Sim + Analytical", lw=2)
-    plt.plot(
-        photon_numbers,
-        fidelities_analytical,
-        label=f"Analytical ($F_1$ = {F_1:.3f})",
-        linestyle="--",
-    )
-    plt.plot(photon_numbers, fidelities_pure_sim, label="Sim (Master Eq)", alpha=0.7)
-    plt.plot(photon_numbers, other_fidelities, label="Coh->Fock")
-    # if max(photon_numbers) > trust_threshold:
-    #     # Add the "Trust Mask"
-    #     plt.axvspan(
-    #         trust_threshold,
-    #         photon_numbers[-1],
-    #         color="gray",
-    #         alpha=0.2,
-    #         label="Unreliable Region",
-    #     )
-    #     plt.axvline(trust_threshold, color="red", linestyle=":", alpha=0.6)
+    # atomic_scattering = plt.figure()
+    # plt.plot(
+    #     photon_numbers,
+    #     atomic_state,
+    #     label="Mean Probability of atom being in |1> after photon pulse",
+    # )
+    # plt.legend()
+    # plt.xlabel("Mean Photon numbers")
+    # plt.xscale("log")
+    # plt.ylabel("P(|1>)")
+    # plt.title("Atomic Scattering vs. Photon Numbers")
+    # # atomic_scattering.savefig("./plots/atomic_scattering.svg")
     #
-    #     # Annotation for the threshold
-    #     plt.text(
-    #         trust_threshold * 1.1,
-    #         0.35,
-    #         "Hilbert Space\nTruncation Limit",
-    #         color="red",
-    #         fontsize=9,
-    #         fontweight="bold",
-    #     )
+    # # --- Configuration ---
+    # # With photon_dim=4, the simulation begins to lose accuracy at n_bar ~ 1
+    # # and is completely invalid by n_bar ~ 5.
+    # trust_threshold = 2.0
     #
-    # Formatting
-    plt.xscale("log")
-    plt.xlabel(r"Mean Photon Numbers ($\overline{n}$)")
-    plt.ylabel("Fidelity")
-    plt.legend(loc="lower left")
-    plt.title("Comparison: Logic Failure vs. System Saturation")
-    plt.grid(True, which="both", ls="-", alpha=0.1)
-
-    comparisson.savefig("./plots/comparisson_masked.svg")
+    # # --- Plotting Comparison ---
+    # comparisson = plt.figure(figsize=(10, 6))
+    #
+    # # Plot the lines
+    # plt.plot(photon_numbers, fidelities, label="Sim + Analytical", lw=2)
+    # plt.plot(
+    #     photon_numbers,
+    #     fidelities_analytical,
+    #     label=f"Analytical ($F_1$ = {F_1:.3f})",
+    #     linestyle="--",
+    # )
+    # plt.plot(photon_numbers, fidelities_pure_sim, label="Sim (Master Eq)", alpha=0.7)
+    # plt.plot(photon_numbers, other_fidelities, label="Coh->Fock")
+    # # if max(photon_numbers) > trust_threshold:
+    # #     # Add the "Trust Mask"
+    # #     plt.axvspan(
+    # #         trust_threshold,
+    # #         photon_numbers[-1],
+    # #         color="gray",
+    # #         alpha=0.2,
+    # #         label="Unreliable Region",
+    # #     )
+    # #     plt.axvline(trust_threshold, color="red", linestyle=":", alpha=0.6)
+    # #
+    # #     # Annotation for the threshold
+    # #     plt.text(
+    # #         trust_threshold * 1.1,
+    # #         0.35,
+    # #         "Hilbert Space\nTruncation Limit",
+    # #         color="red",
+    # #         fontsize=9,
+    # #         fontweight="bold",
+    # #     )
+    # #
+    # # Formatting
+    # plt.xscale("log")
+    # plt.xlabel(r"Mean Photon Numbers ($\overline{n}$)")
+    # plt.ylabel("Fidelity")
+    # plt.legend(loc="lower left")
+    # plt.title("Comparison: Logic Failure vs. System Saturation")
+    # plt.grid(True, which="both", ls="-", alpha=0.1)
+    #
+    # comparisson.savefig("./plots/comparisson_masked.svg")
 
     comb_array = np.array([photon_numbers, other_fidelities])
-    # df = pd.DataFrame(comb_array.T, columns=["Photon Numbers", "Fidelities"])
-    # df.to_csv("./sim_data.csv")
+    df = pd.DataFrame(comb_array.T, columns=["Photon Numbers", "Overlaps"])
+    df.to_csv("./sim_data.csv")
 
     plt.show()

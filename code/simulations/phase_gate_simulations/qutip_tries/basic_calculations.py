@@ -69,12 +69,11 @@ gate_matrices = plot_cphase_and_cnot(
 process_fidelity = compute_process_fidelity(gate_matrices["normalized_cnot"])
 process_fidelity_err = compute_process_fidelity(gate_matrices["cnot_matrix_err"])
 print(gate_matrices["normalized_cnot"])
-# exit()
 overlap = compute_fidelity_from_prob_matrix(
     gate_matrices["normalized_cnot"], basis="cnot"
 )
 print(overlap)
-exit()
+
 display_fidelity(overlap, error=process_fidelity_err)
 
 

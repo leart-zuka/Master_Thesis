@@ -689,12 +689,13 @@ def run_sim_plus_analysis_in_cnot_basis(
     P1_1_minus = out_1_minus.e_data["P(1)"][-1]
 
     p_atom = (P0_0_plus + P0_0_minus + P1_1_minus + P1_1_plus) / 4
+    p_atom_1 = (P1_1_minus + P1_1_plus) / 2
 
     return (
         out_0_plus,
         out_0_minus,
         out_1_plus,
         out_1_minus,
-        p_atom,
+        p_atom_1,
         CNOT,
     )
