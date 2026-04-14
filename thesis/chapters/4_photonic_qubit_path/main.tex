@@ -1,4 +1,4 @@
-\chapter{Photonic Qubit Path}
+\chapter{Photonic Qubit Path} \label{chapter:photonic_qubit_path}
 
 This chapter describes the optical beam path used to deliver photonic qubits to the atom-cavity system and analyze them after reflection. The central challenge is that the birefringent cavity introduces a polarization-dependent amplitude mismatch requiring external compensation to achieve the optimal CNOT gate overlap.
 
@@ -10,7 +10,7 @@ As mentioned before, the $V$ mode of the birefringent cavity is detuned by $\Del
 
 A $\pi$-polarized photon on the other hand interacts with the atom inside the cavity. In the coupled case $\ket{1}$, the Vacuum Rabi Splitting shifts the dressed-state resonances to $\omega_c\pm g$. This then leads to the photon getting reflected off the OC mirror, but not perfectly, due to finite cooperativity. In the uncoupled state $\ket{0}$, the $\pi$ polarized photon fully enters the cavity, and eventually gets reflected with a $\pi$ phase shift. But due to intracavity losses (absorption, HR mirror leakage, imperfect mode-matching), the reflection amplitude is smaller than that of the coupled case.
 
-Using the time-domain simulation described in Appendix \notetome{include appendix chapter} with the parameters characterized in section \ref{section:experimental_parameters_for_gate}, the following reflection amplitudes are obtained
+Using the time-domain simulation described in Appendix \ref{appendix:qutip_simulation} with the parameters characterized in section \ref{section:experimental_parameters_for_gate}, the following reflection amplitudes are obtained:
 
 \begin{table}[ht]
 	\centering
@@ -50,7 +50,7 @@ The Brewster angle can be simply calculated via:\cite{ThorlabsBW}
 
 In \eqref{eq:brewster_window_stuff} $n_t$ is the refractive index of the Brewster window, and $n_i$ would be the refractive index from which the incoming light is coming from (here: air $n_i \sim 1.004$). For light that is resonant to the 2-1' transition of the $\text{D}_2$-line of $^{87}\text{Rb}$, $n_t=1.453667$, resulting in a Brewster angle $\theta_B=55.467288^{\circ}$. At the Brewster angle $\theta_B$ the transmission through single Brewster window were $99.98\pm0.17\%$ and $77.40\pm0.13\%$ for the H and V polarization respectively.
 
-The custom Brewster window mount as mentioned before has the main functionality of placing the elements in an array at the Brewster angle $\theta_b$ relative to the incoming light. It can house up to 12 Brewster windows when using the screw hole in the middle or 8 Brewster windows when using the screw holes on each side of the mount. The latter allows the mount to be placed on two separate posts, making the overall construction more mechanically stable, which eventually ended up being the configuration used in this project. This configuration not only provided greater mechanical stability, but was also sufficient for the experiment, since the optimal CNOT overlap was found to lie between 5 and 6 Brewster windows, as determined by a time-domain simulation of the atom-cavity system (see Appendix \notetome{include appendix chapter}).
+The custom Brewster window mount as mentioned before has the main functionality of placing the elements in an array at the Brewster angle $\theta_b$ relative to the incoming light. It can house up to 12 Brewster windows when using the screw hole in the middle or 8 Brewster windows when using the screw holes on each side of the mount. The latter allows the mount to be placed on two separate posts, making the overall construction more mechanically stable, which eventually ended up being the configuration used in this project. This configuration not only provided greater mechanical stability, but was also sufficient for the experiment, since the optimal CNOT overlap was found to lie between 6 and 7 Brewster windows, as determined by a time-domain simulation of the atom-cavity system (see Appendix \ref{appendix:bw_scan}).
 
 \begin{figure}[htbp]
 	\centering

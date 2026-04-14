@@ -1,6 +1,6 @@
 \chapter{Numerical Simulation of the Atom-Photon Gate}\label{appendix:qutip_simulation}
 
-This appendix describes the time-domain master-equation simulations used to determine the optimal Brewster window attenuation (section~\ref{appendix:bw_scan}) and to characterize the gate fidelity as a function of mean photon number (section~\ref{appendix:photon_number_scan}). All simulations were implemented in Python using the QuTiP framework (\notetome{include qutip citations}).
+This appendix describes the time-domain master-equation simulations used to determine the optimal Brewster window attenuation (section~\ref{appendix:bw_scan}) and to characterize the gate fidelity as a function of mean photon number (section~\ref{appendix:photon_number_scan}). All simulations were implemented in Python using the QuTiP framework \cite{qutip5}.
 
 \section{Simulation Model}\label{appendix:sim_model}
 
@@ -67,7 +67,7 @@ The parameters used in the simulations are summarized in Table~\ref{tab:sim_para
 		\hline\hline
 		Parameter                   & Symbol                  & Value                                 \\
 		\hline
-		Atom--cavity coupling       & $g$                     & $2\pi \times \SI{24}{\mega\hertz}$    \\
+		Atom--cavity coupling       & $g$                     & $2\pi \times \SI{26}{\mega\hertz}$    \\
 		Total cavity decay rate     & $\kappa$                & $2\pi \times \SI{58}{\mega\hertz}$    \\
 		Outcoupling ratio           & $\kappa_{OC}/\kappa$    & $0.85$                                \\
 		Atomic decay rate           & $\gamma$                & $2\pi \times \SI{6.065}{\mega\hertz}$ \\
@@ -88,16 +88,21 @@ To determine the optimal number of Brewster windows for the V-mode attenuation (
 
 For each value of $T_V$, the simulation was run in the CNOT basis: weak coherent pulses with $\ket{+}$ and $\ket{-}$ input polarizations were reflected from the atom-cavity system for both atomic qubit states $\ket{0}$ and $\ket{1}$. In the simulation, the V-mode transmission enters as a prefactor $\sqrt{T_V}$ on the V-mode drive amplitude, effectively modeling the attenuation introduced by the Brewster window array prior to the cavity.
 
-From the four resulting output fields, the $4 \times 4$ CNOT truth table was constructed by computing the detection probabilities in the $\ket{\pm}$ output basis for each input--atom combination. The columns of the truth table were then normalized to unit probability. The signal fidelity was evaluated as the column-averaged overlap between the simulated and ideal CNOT truth tables:
+From the four resulting output fields, the $4 \times 4$ CNOT truth table was constructed by computing the detection probabilities in the $\ket{\pm}$ output basis for each input--atom combination. The columns of the truth table were then normalized to unit probability. The overlap was evaluated as the column-averaged overlap between the simulated and ideal CNOT truth tables:
 \begin{align}
-	\mathcal{F}_{\text{sig}} = \frac{1}{4} \sum_{j=1}^{4} \left| \langle U_j | V_j \rangle \right|^2, \label{eq:signal_fidelity}
+	\text{Overlap} = \frac{1}{4} \sum_{j=1}^{4} \left| \langle U_j | V_j \rangle \right|^2, \label{eq:overlap}
 \end{align}
 where $\ket{U_j}$ and $\ket{V_j}$ are the $j$-th columns of the ideal and simulated truth tables, respectively.
 
-\notetome{Include the resulting plot: Fidelity vs.\ V-mode transmission, with annotation of the optimal point. Reference the figure.}
+\begin{figure}
+	\centering
+	\includesvg[width=\linewidth]{Figures/appendix/v_transmission_cnot_overlap.svg}
+	\caption{Simulated CNOT gate overlap $\mathcal{F}$ as a function of the V-mode cavity transmission $T_\mathrm{V}$, obtained from a master-equation simulation of the atom--photon gate protocol. The dashed line marks the optimal transmission $T_\mathrm{V}^* \approx 0.24$}
+	\label{fig:bw_scan_sim}
+\end{figure}
 
-The scan reveals a clear optimum at $T_V \approx 0.26$, corresponding to a V-mode power attenuation of approximately \SI{74}{\percent}. Given the measured single-window V-mode transmission of \SI{77.40 \pm 0.13}{\percent} (section~\ref{section:polarization_dependent_losses}), this corresponds to an optimal configuration of 6 to 7 Brewster windows, since $0.774^6 \approx 0.215$ and $0.774^7 \approx 0.166$, which bracket the optimum.
-
+The scan shown in Figure \ref{fig:bw_scan_sim} reveals a clear optimum at $T_\mathrm{V} \approx 0.24$, corresponding to a V-mode power attenuation of approximately \SI{76}{\percent}. Given the measured single-window V-mode transmission of $(\num{77.40} \pm \num{0.13})\,\si{\percent}$ (section~\ref{sec:brewster_windows}), the na\"ive estimate $0.7738^n$ predicts an optimum between 5 and 6 Brewster windows ($0.7740^5 \approx \num{0.277}$ and $0.7740^6 \approx \num{0.215}$). However, the directly measured multi-window transmissions of $(\num{26.80} \pm \num{0.06})\,\si{\percent}$ for 6 windows and $(\num{22.47} \pm \num{0.04})\,\si{\percent}$ for 7 windows bracket $T_\mathrm{V}^*$, indicating that 6 to 7 Brewster windows realise the optimal V-mode
+attenuation in practice.
 
 \section{Mean Photon Number Scan}\label{appendix:photon_number_scan}
 

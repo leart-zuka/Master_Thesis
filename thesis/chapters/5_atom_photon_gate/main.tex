@@ -1,8 +1,56 @@
 \chapter{Atom-Photon Gate}
 
-\section{Experimental Parameters relevant for the gate mechanism } \label{section:experimental_parameters_for_gate}
-\subsection{Cavity coupling and losses}
-\subsection{Brewster plate attenuation}
+Using the setup explained in chapter \ref{chapter:photonic_qubit_path}, one can use it to first characterize important experimental parameters in order to estimate the cavity coupling aswell as its losses when reflecting light off of the atom-cavity system. Furthermore using these values, the overlap with an ideal CPF/CNOT gate truth table can then be estimated and compared to the measured values.
+
+\section{Experimental Parameters relevant for the gate mechanism} \label{section:experimental_parameters_for_gate}
+
+In order to get an estimate how high overlap of the experimentally measureable CNOT gate with the ideal CNOT gate is, one first needs to determine various experimental parameters. Using the experimental parameters one can then calculate the reflectivity for each of the input states of the atom-photon gate, and use those to calculate a theoretical overlap with an ideal CPF/CNOT gate.
+
+\subsection{Cavity coupling and losses} \label{sec:cav_coupling}
+
+The first set of experimental parameters to extract are the total cavity decay rate $\kappa$, the mode-matching parameters $\mu_{fr}$ and $\mu_{fc}$, and the atom-cavity coupling strength $g$. These are obtained from two complementary spectroscopy measurements on the locked cavity: an empty-cavity spectroscopy (without a trapped atom) to determine $\kappa$, $\mu_{fr}$, and $\mu_{fc}$, and a normal-mode spectroscopy (with a coupled atom) to extract $g$.
+
+For the empty-cavity measurement, the probe laser is scanned across the $\pi$-mode resonance of the cavity while being phase-modulated at \SI{300}{\mega\hertz} by an electro-optic modulator (EOM). The EOM sidebands appear as additional peaks in the transmission spectrum, separated by a known frequency from the carrier, and thereby provide an absolute time-to-frequency calibration of the scan axis. The $\pi$-mode of the cavity is locked during the measurement to the $F=2,m_F=0\leftrightarrow F'=1,m_F=0$ transision, and both the transmitted and reflected signals are recorded simultaneously. Since no atom is loaded, the coupling term in equation \eqref{eq:analytical_reflection} vanishes ($g = 0$).
+
+The transmission spectrum is fitted with a sum of Lorentzian lineshapes. Each resonance peak is described by a cavity transfer function of the form:
+
+\begin{equation}
+	T(\omega) = \left|\frac{A}{i(\omega - \omega_c) + \kappa}\right|^2,
+	\label{eq:lorentzian_transmission}
+\end{equation}
+
+where $A$ is a fit amplitude, $\omega_c$ the resonance frequency, and $\kappa$ the half-width at half maximum (HWHM) of the cavity mode. The full linewidth $2\kappa$ is extracted from the fit and averaged over multiple successive cavity scans, yielding $2\kappa = 2\pi \times \SI{116.19\pm0.37}{MHz}$.
+
+The reflection spectrum is fitted using the empty-cavity limit of Eq.~\eqref{eq:analytical_reflection}. Setting $g = 0$ and absorbing a relative phase into the mode-matching coefficient $\mu_{fc}$, the normalized reflection amplitude simplifies to:
+
+\begin{equation}
+	r(\omega) = \mu_{fr}\,e^{i\phi_{fr}}
+	- \left(\mu_{fc}\,e^{i\phi_{fc}}\right)^2
+	\frac{2\kappa_{\text{oc}}}{i(\omega - \omega_c) + \kappa}\,,
+	\label{eq:empty_cavity_reflection}
+\end{equation}
+
+where $\phi_{fr}$ and $\phi_{fc}$ account for residual phase offsets in the fiber path. The fit yields the fiber-cavity mode-matching parameter $\mu_{fc} = 0.873\pm0.002$ and the free-space mode-matching parameter $\mu_{fr} = 0.978\pm0.006$. The outcoupling ratio $\kappa_{\text{oc}}/\kappa = 0.85$ is held fixed during the fit, as this value has been consistently measured across multiple cavity assemblies over several years. The resulting fit parameters are summarized in Table \ref{tab:cavity_parameters}, and representative transmission and reflection spectra with their respective fits are shown in Figure \ref{fig:empty_cavity_spectroscopy}.
+
+\begin{figure}[htbp]
+	\centering
+	\includesvg[inkscapelatex=false,width=\linewidth]{Figures/5_atom_photon_gate/empty_mode_spectroscopy.svg}
+	\caption{Empty-cavity spectroscopy of the $\pi$-mode. The probe laser frequency is scanned across the cavity resonance while phase-modulated at \SI{300}{\mega\hertz} by an electro-optic modulator, producing sidebands that serve as frequency markers for the time-to-frequency calibration. \textbf{(a)}~Cavity transmission spectrum. Multiple successive scans (grey) are individually fitted with Lorentzian lineshapes (red) according to Eq.~\eqref{eq:lorentzian_transmission}, from which the full linewidth $2\kappa$ is extracted. \textbf{(b)}~Normalized cavity reflection spectrum. The reflection dips are fitted using Eq.~\eqref{eq:empty_cavity_reflection} to extract the mode-matching parameter $\mu_{fc}$. Each scan is centered on its respective resonance frequency.}
+	\label{fig:empty_cavity_spectroscopy}
+\end{figure}
+
+With $\kappa$ and the mode-matching parameters determined, the remaining unknown is the atom-cavity coupling strength $g$. This is extracted from a normal-mode spectroscopy measurement, in which the probe laser is scanned across the cavity resonance while a single atom is trapped and coupled to the $\pi$ mode.
+
+After trapping the atom it is cooled and prepared in the $F=1,m_F=0$ zeeman state via the aforementioned methods in section \ref{sec:atomic_qubit_preparation}. One can then either record the normal-mode spectroscopy for the uncoupled ($F=1,m_F=0$) or coupled state ($F=2,m_F=0$), by choosing to use a microwave drive and transfer the population from the uncoupled to the resonantly coupled state. A probe laser which is resonant to the $F=2,m_F=0\leftrightarrow F'=1,m_F=0$ is then deployed. For the normal-mode spectroscopy the probe laser has to be scanned over a large frequency range in order to fully capture the entire reflection spectrum. This is achieved by changing the locking point (the reference detuning), which then allows its frequency to changed in a controlled manner. The beat signal to which the laser will then be locked to is supplied by an arbitrary waveform generator (AWG), which continuously changes the beat frequency over a range of $(25-300)\text{MHz}$.
+
+\begin{figure}[htbp]
+	\centering
+	\includesvg[inkscapelatex=false,width=0.8\linewidth]{Figures/5_atom_photon_gate/nms_reflection_phase.svg}
+	\caption{Normal-mode spectroscopy of the atom-cavity system.\textbf{(a)}~Normalised reflectivity $|r|^{2}$ as a function of probe detuning $\Delta$ for the uncoupled state $\ket{u}$ (red) and the coupled state $\ket{c}$ (blue). The uncoupled spectrum shows the bare cavity resonance, fitted with the empty-cavity reflection coefficient. The coupled spectrum exhibits the vacuum Rabi splitting, fitted using equation \eqref{eq:analytical_reflection}, yielding a coupling strength of $g = 2\pi \times \SI{25.9(5)}{MHz}$. \textbf{(b)}~Phase $\arg(r)$ of the reflected field computed from the respective fit models. The case for the atom in the uncoupled state showcases a phase shift of $\pi$ on resonance, while the coupled system features a phase shift of 0.}
+	\label{fig:nms_reflection_phase}
+\end{figure}
+
+\subsection{Brewster plate attenuation} \label{sec:brewster_windows}
 For the characterization of the brewster windows themselves, two measurements were conducted. First, only a singular brewster plate was inserted into the custom mount to check the average attenuation across a set of brewster windows in the V polarization. This ensures that all brewster windows operate up to spec, and that the attenuation of the V polarization is happening in constant jumps. The second one, places multiple brewster windows in an array to closely resemble the setup used in the actual experiment. With this one can then used the measured powers in transmission both for H and V to determine the ideal amounts of brewster windows one would need to use in order to achieve the highest gate fidelity.
 
 

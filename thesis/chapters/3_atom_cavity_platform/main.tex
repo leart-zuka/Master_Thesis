@@ -45,29 +45,29 @@ The cavity fibers are fabricated using a $\text{CO}_2$ laser machining technique
 	\label{tab:cavity_parameters}
 	\begin{tabular}{l|c|c}
 		\hline\hline
-		Parameter                                         & Long Cavity             & Short Cavity                                 \\
+		Parameter                                         & Long Cavity             & Short Cavity                  \\
 		\hline
-		Radius of curvature of OC$_1$                     & $340\,\mu$m             & $115\,\mu$m and $283\,\mu$m                  \\
-		Radius of curvature of HR$_2$                     & $170\,\mu$m             & $96\,\mu$m and $167\,\mu$m                   \\
-		Cavity length                                     & $161\,\mu$m             & $75.7\,\mu$m                                 \\
-		Free spectral range                               & $0.93061\,$THz          & $1.98043\,$THz                               \\
-		Waist radius                                      & $3.5\,\mu$m             & $3.5\,\mu$m and $4.4\,\mu$m                  \\
-		Waist radius pos.\ from OC                        & $7.7\,\mu$m             & $25.8\,\mu$m and $22.7\,\mu$m                \\
-		Mode waist at OC                                  & $3.6\,\mu$m             & $3.9\,\mu$m and $4.6\,\mu$m                  \\
-		Mode waist at HR                                  & $11.3\,\mu$m            & $5.9\,\mu$m and $5.2\,\mu$m                  \\
-		Mode waist at cavity center                       & $6.2\,\mu$m             & $3.5\,\mu$m and $4.4\,\mu$m                  \\
-		Mode volume ($\lambda = 780\,$nm)                 & $10200 \cdot \lambda^3$ & $1900 \cdot \lambda^3$                       \\
-		Mode matching                                     &                         & \notetome{write down actual $\mu_{fc}$ here} \\
-		$g(1' \leftrightarrow 2)/(2\pi)$ at cavity center &                         & \notetome{write down actual g here}          \\
-		Transmission through OC                           & $340\,$ppm              & $340\,$ppm                                   \\
-		Transmission through HR                           & $10\,$ppm               & $10\,$ppm                                    \\
-		Parasitic losses                                  & $80\,$ppm               & $50\,$ppm                                    \\
-		Total losses                                      & $430\,$ppm              & $400\,$ppm                                   \\
-		$\kappa/(2\pi)$                                   &                         & \notetome{write down $\kappa$ here}          \\
-		Linewidth                                         &                         & \notetome{write down LW here}                \\
-		Finesse                                           & $14089$                 & $16531$                                      \\
-		Outcoupling ratio                                 &                         & \notetome{write down outcoupling ratio here} \\
-		Eigenmodes freq.\ splitting                       & $16\,$MHz               & $505.0(5)\,$MHz                              \\
+		Radius of curvature of OC$_1$                     & $340\,\mu$m             & $115\,\mu$m and $283\,\mu$m   \\
+		Radius of curvature of HR$_2$                     & $170\,\mu$m             & $96\,\mu$m and $167\,\mu$m    \\
+		Cavity length                                     & $161\,\mu$m             & $75.7\,\mu$m                  \\
+		Free spectral range                               & $0.93061\,$THz          & $1.98043\,$THz                \\
+		Waist radius                                      & $3.5\,\mu$m             & $3.5\,\mu$m and $4.4\,\mu$m   \\
+		Waist radius pos.\ from OC                        & $7.7\,\mu$m             & $25.8\,\mu$m and $22.7\,\mu$m \\
+		Mode waist at OC                                  & $3.6\,\mu$m             & $3.9\,\mu$m and $4.6\,\mu$m   \\
+		Mode waist at HR                                  & $11.3\,\mu$m            & $5.9\,\mu$m and $5.2\,\mu$m   \\
+		Mode waist at cavity center                       & $6.2\,\mu$m             & $3.5\,\mu$m and $4.4\,\mu$m   \\
+		Mode volume ($\lambda = 780\,$nm)                 & $10200 \cdot \lambda^3$ & $1900 \cdot \lambda^3$        \\
+		Mode matching                                     &                         & 0.873                         \\
+		$g(1' \leftrightarrow 2)/(2\pi)$ at cavity center &                         & 26 MHz                        \\
+		Transmission through OC                           & $340\,$ppm              & $340\,$ppm                    \\
+		Transmission through HR                           & $10\,$ppm               & $10\,$ppm                     \\
+		Parasitic losses                                  & $80\,$ppm               & $50\,$ppm                     \\
+		Total losses                                      & $430\,$ppm              & $400\,$ppm                    \\
+		$\kappa/(2\pi)$                                   &                         & 58 MHz                        \\
+		Linewidth                                         &                         & 116 MHz                       \\
+		Finesse                                           & $14089$                 & $16531$                       \\
+		Outcoupling ratio                                 &                         & 49.3 MHz                      \\
+		Eigenmodes freq.\ splitting                       & $16\,$MHz               & $505.0(5)\,$MHz               \\
 		\hline\hline
 	\end{tabular}
 	\caption{\notetome{write down table title and also notes regarding the subscripts in there}}
@@ -100,7 +100,7 @@ At the end of the MOT cycle, the MOT coils, beams and the UV light are switched 
 		UV diode current                                                                 & \SI{140}{mA}                    \\
 		MOT beams' diameter                                                              & \SI{12}{mm}                     \\ \midrule
 		\multicolumn{2}{c}{\textbf{Loading phase}}                                                                         \\ \midrule
-		Duration                                                                         & \notetome{check time for MOT}   \\
+		Duration                                                                         & \SI{1}{s}                       \\
 		Cooling laser detuning from $5S_{1/2}, F = 2 \leftrightarrow 5P_{3/2}, F' = 3$   & \notetome{check detuning again} \\
 		Repumping laser detuning from $5S_{1/2}, F = 1 \leftrightarrow 5P_{3/2}, F' = 2$ & \SI{0}{MHz}                     \\
 		Cooling laser power                                                              & \SI{20}{mW}                     \\
@@ -138,10 +138,8 @@ In order to achieve maximum cavity coupling, the galvo scans its amplitude, rota
 	\item Once the fluorescence counts drop below the (noise-threshold), meaning that the atom has been moved out of the cavity center, the integral of the fluorescence counts is evaluated. If the integral is within a certain range, the FPGA will set the voltage at which maximum fluorescence counts were detected. If the integral is out of range (too low: atom was badly coupled anyway; too high: multiple atoms were in one node), the galvo keeps scanning until it either finds a new atom or reaches the maximum amplitude, causing the MOT and single-atom positioning loop to start again.
 \end{enumerate}
 
-A different atom-positioning algorithm was employed in the past (e.g. the one used in Gianvito Chiarella's thesis \cite{GianvitoC2026}), where the FPGA only scanned up to the point where the maximum fluorescence counts were reached. This past algorithm could load two atoms which were badly coupled to the cavity since a doubly-loaded node was indistinguishable from a well-coupled single atom. By completing the scan over the entire fluorescence counts curve, one is able to properly ensure single atoms are being trapped.
-\notetome{Mention something like the g2 or some metric that shows how this algorithm performs and also how it improved over the last algorithm, also do same measurement as gianvito in his thesis to showcase the loading algorithm cuz coool}
 
-\section{Atomic Qubit Preparation}
+\section{Atomic Qubit Preparation} \label{sec:atomic_qubit_preparation}
 
 For the atom-photon gate, the single atoms must be prepared in the two $m_F=0$ ground states of the $\text{D}_2\text{-line}$, those being $5 S_{1/2}, F=1, m_F = 0$ for the uncoupled state, and $5 S_{1/2}, F=2, m_F = 0$ for the coupled state.
 
@@ -175,4 +173,4 @@ Once the frequency for the $F=1,m_F=0 \leftrightarrow F=2,m_F=0$ transition is k
 
 where $P_1$ is the initial population after optical pumping in the state $F=1,m_F=0$, $\Omega$ is the previously determined Rabi frequency, and $\chi$ is the damping rate. The result is a combination of a sinusoidal term which describes the coherent state transfer between the two levels, and an exponential factor representing the dissipative mechanism which damps the oscillations.
 
-By scanning the length of the $\pi$ pulse at a constant MW frequency, one can determine the ideal time it takes for a state to coherently transfer from $F=1,m_F=0$ to $F=2,m_F=0$. Figure \ref{fig: rabi flop} shows the resulting Rabi oscillations for an atom prepared in $F=1,m_F=0$ and transferred to the $F=2,m_F=0$ state. Fitting equation \eqref{eq:rabi_oscillation_model}: \notetome{write down fit params}
+By scanning the length of the $\pi$ pulse at a constant MW frequency, one can determine the ideal time it takes for a state to coherently transfer from $F=1,m_F=0$ to $F=2,m_F=0$. Figure \ref{fig:rabi_flop} shows the resulting Rabi oscillations for an atom prepared in $F=1,m_F=0$ and transferred to the $F=2,m_F=0$ state. Fitting equation \eqref{eq:rabi_oscillation_model}: \notetome{write down fit params}

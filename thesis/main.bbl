@@ -3019,43 +3019,126 @@
       \verb https://www.thorlabs.com/brewster-windows
       \endverb
     \endentry
-    \entry{WallsMilburn2008}{book}{}{}
-      \name{author}{2}{}{%
-        {{hash=a416f93c6ef972517e2b484cdd1d9913}{%
-           family={Walls},
-           familyi={W\bibinitperiod},
-           given={D.\bibnamedelimi F.},
-           giveni={D\bibinitperiod\bibinitdelim F\bibinitperiod}}}%
-        {{hash=514ccdb42f45be431e1bd6620ad2230c}{%
-           family={Milburn},
+    \entry{qutip5}{article}{}{}
+      \name{author}{18}{}{%
+        {{hash=19c3cae04382ac15e825aa079d176d0c}{%
+           family={Lambert},
+           familyi={L\bibinitperiod},
+           given={Neill},
+           giveni={N\bibinitperiod}}}%
+        {{hash=c852c6ca2e9af77e925d38e295539cb2}{%
+           family={Gigu{`e}re},
+           familyi={G\bibinitperiod},
+           given={Eric},
+           giveni={E\bibinitperiod}}}%
+        {{hash=4cc5fc4cf4573f73338928c850d20f97}{%
+           family={Menczel},
            familyi={M\bibinitperiod},
-           given={G.\bibnamedelimi J.},
-           giveni={G\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+           given={Paul},
+           giveni={P\bibinitperiod}}}%
+        {{hash=470f4babcad599bde2790c8b2f473c0f}{%
+           family={Li},
+           familyi={L\bibinitperiod},
+           given={Boxi},
+           giveni={B\bibinitperiod}}}%
+        {{hash=f902ac16544cf546c52d6a3f54d5ad71}{%
+           family={Hopf},
+           familyi={H\bibinitperiod},
+           given={Patrick},
+           giveni={P\bibinitperiod}}}%
+        {{hash=e83ba8459bc3c95aac43d1626ebfa072}{%
+           family={Su{'a}rez},
+           familyi={S\bibinitperiod},
+           given={Gerardo},
+           giveni={G\bibinitperiod}}}%
+        {{hash=c5c027ea7120d03e7ed94973441ffcfd}{%
+           family={Gali},
+           familyi={G\bibinitperiod},
+           given={Marc},
+           giveni={M\bibinitperiod}}}%
+        {{hash=41ed78a462ad7ac7bc9c602b8d0506f5}{%
+           family={Lishman},
+           familyi={L\bibinitperiod},
+           given={Jake},
+           giveni={J\bibinitperiod}}}%
+        {{hash=739680c69aba91c7ac61ff2a301ca502}{%
+           family={Gadhvi},
+           familyi={G\bibinitperiod},
+           given={Rushiraj},
+           giveni={R\bibinitperiod}}}%
+        {{hash=fe973b9933041bffc46e120f8fe6f6a7}{%
+           family={Agarwal},
+           familyi={A\bibinitperiod},
+           given={Rochisha},
+           giveni={R\bibinitperiod}}}%
+        {{hash=65c5bc213a08f0f6c913964d96504797}{%
+           family={Galicia},
+           familyi={G\bibinitperiod},
+           given={Asier},
+           giveni={A\bibinitperiod}}}%
+        {{hash=951442746a56f8b2f546856fe970e943}{%
+           family={Shammah},
+           familyi={S\bibinitperiod},
+           given={Nathan},
+           giveni={N\bibinitperiod}}}%
+        {{hash=06cf066393e7354610bc8d607b38e75a}{%
+           family={Nation},
+           familyi={N\bibinitperiod},
+           given={Paul},
+           giveni={P\bibinitperiod}}}%
+        {{hash=e5316d76b303a1ea72437b38bb3e5a86}{%
+           family={Johansson},
+           familyi={J\bibinitperiod},
+           given={J.\bibnamedelimi R.},
+           giveni={J\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
+        {{hash=cf9e8f14f772309d5570684ba03ad71e}{%
+           family={Ahmed},
+           familyi={A\bibinitperiod},
+           given={Shahnawaz},
+           giveni={S\bibinitperiod}}}%
+        {{hash=3b493d5188e1a119a1fb7567482cb5ca}{%
+           family={Cross},
+           familyi={C\bibinitperiod},
+           given={Simon},
+           giveni={S\bibinitperiod}}}%
+        {{hash=53fc4df9709ee1a1947b08cdcdccf7a2}{%
+           family={Pitchford},
+           familyi={P\bibinitperiod},
+           given={Alexander},
+           giveni={A\bibinitperiod}}}%
+        {{hash=2cfaf55a849299a0fe647e070cffada8}{%
+           family={Nori},
+           familyi={N\bibinitperiod},
+           given={Franco},
+           giveni={F\bibinitperiod}}}%
       }
-      \list{location}{1}{%
-        {Berlin, Heidelberg}%
-      }
-      \list{publisher}{1}{%
-        {Springer}%
-      }
-      \strng{namehash}{e9f189678e5e06e79c90d4c4b4e3f1f4}
-      \strng{fullhash}{e9f189678e5e06e79c90d4c4b4e3f1f4}
-      \strng{fullhashraw}{e9f189678e5e06e79c90d4c4b4e3f1f4}
-      \strng{bibnamehash}{e9f189678e5e06e79c90d4c4b4e3f1f4}
-      \strng{authorbibnamehash}{e9f189678e5e06e79c90d4c4b4e3f1f4}
-      \strng{authornamehash}{e9f189678e5e06e79c90d4c4b4e3f1f4}
-      \strng{authorfullhash}{e9f189678e5e06e79c90d4c4b4e3f1f4}
-      \strng{authorfullhashraw}{e9f189678e5e06e79c90d4c4b4e3f1f4}
+      \strng{namehash}{7ce80b99850a2e2504e43aec6247ba5d}
+      \strng{fullhash}{bf694a3252cddcf72f111320b4326560}
+      \strng{fullhashraw}{bf694a3252cddcf72f111320b4326560}
+      \strng{bibnamehash}{7ce80b99850a2e2504e43aec6247ba5d}
+      \strng{authorbibnamehash}{7ce80b99850a2e2504e43aec6247ba5d}
+      \strng{authornamehash}{7ce80b99850a2e2504e43aec6247ba5d}
+      \strng{authorfullhash}{bf694a3252cddcf72f111320b4326560}
+      \strng{authorfullhashraw}{bf694a3252cddcf72f111320b4326560}
       \field{sortinit}{5}
       \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{edition}{2nd}
-      \field{isbn}{978-3-540-28574-8}
-      \field{title}{Quantum Optics}
-      \field{year}{2008}
+      \field{issn}{0370-1573}
+      \field{journaltitle}{Physics Reports}
+      \field{title}{QuTiP 5: The Quantum Toolbox in {Python}}
+      \field{volume}{1153}
+      \field{year}{2026}
+      \field{pages}{1\bibrangedash 62}
+      \range{pages}{62}
       \verb{doi}
-      \verb 10.1007/978-3-540-28574-8
+      \verb 10.1016/j.physrep.2025.10.001
+      \endverb
+      \verb{urlraw}
+      \verb https://www.sciencedirect.com/science/article/pii/S0370157325002704
+      \endverb
+      \verb{url}
+      \verb https://www.sciencedirect.com/science/article/pii/S0370157325002704
       \endverb
     \endentry
   \enddatalist
