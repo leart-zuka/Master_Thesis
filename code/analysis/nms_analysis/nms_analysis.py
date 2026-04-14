@@ -153,7 +153,7 @@ ax1.plot(
     lw=2,
     alpha=0.6,
     zorder=2,
-    label=r"$|u\rangle$ (uncoupled)",
+    label=r"$|0\rangle$ (uncoupled)",
 )
 ax1.plot(
     xfit,
@@ -162,7 +162,7 @@ ax1.plot(
     lw=2,
     alpha=0.6,
     zorder=2,
-    label=r"$|c\rangle$ (coupled)",
+    label=r"$|1\rangle$ (coupled)",
 )
 ax1.set_ylabel(r"Reflectivity $|r|^2$", fontsize=14)
 ax1.legend(fontsize=11, loc="upper right", framealpha=0.9)
@@ -172,8 +172,8 @@ ax1.tick_params(labelbottom=False)
 ax1.text(0.03, 0.95, r"$\mathbf{(a)}$", transform=ax1.transAxes, fontsize=15, va="top")
 
 # (b) Phase
-ax2.plot(xfit, phase_uc, color=c_uc, lw=2, alpha=0.7, label=r"$|u\rangle$ (uncoupled)")
-ax2.plot(xfit, phase_c, color=c_c, lw=2, alpha=0.7, label=r"$|c\rangle$ (coupled)")
+ax2.plot(xfit, phase_uc, color=c_uc, lw=2, alpha=0.7, label=r"$|0\rangle$ (uncoupled)")
+ax2.plot(xfit, phase_c, color=c_c, lw=2, alpha=0.7, label=r"$|1\rangle$ (coupled)")
 ax2.set_xlabel(r"Detuning $\Delta$ (MHz)", fontsize=14)
 ax2.set_ylabel(r"Phase $\arg(r)$ (rad)", fontsize=14)
 ax2.legend(fontsize=11, loc="lower right", framealpha=0.9)
