@@ -1,16 +1,18 @@
 \chapter{Atom-Photon Gate}
 
-Using the setup explained in chapter \ref{chapter:photonic_qubit_path}, one can use it to first characterize important experimental parameters in order to estimate the cavity coupling aswell as its losses when reflecting light off of the atom-cavity system. Furthermore using these values, the overlap with an ideal CPF/CNOT gate truth table can then be estimated and compared to the measured values.
+Using the setup explained in chapter \ref{chapter:photonic_qubit_path}, one can use it to first characterize important experimental parameters in order to estimate the cavity coupling as well as its losses when reflecting light off of the atom-cavity system. Furthermore using these values, the overlap with an ideal CPF/CNOT gate truth table can then be estimated and compared to the measured values.
+
+Section \ref{section:experimental_parameters_for_gate} of this chapter goes over the experimental parameters which are relevant for the gate mechanism and how they were determined. Section \ref{sec:ap_gate} then reports on the performance of the atom-photon gate both in the CPF basis as well as the CNOT basis, alongside a comparison between the experimental results and simulated results regarding the Brewster window and photon number respectively.  
 
 \section{Experimental Parameters relevant for the gate mechanism} \label{section:experimental_parameters_for_gate}
 
-In order to get an estimate how high overlap of the experimentally measureable CNOT gate with the ideal CNOT gate is, one first needs to determine various experimental parameters. Using the experimental parameters one can then calculate the reflectivity for each of the input states of the atom-photon gate, and use those to calculate a theoretical overlap with an ideal CPF/CNOT gate.
+In order to estimate the overlap between the experimentally realizable and ideal CNOT gate, one first needs to determine various experimental parameters. Using the experimental parameters one can then calculate the reflectivity for each of the input states of the atom-photon gate, and use those to calculate a theoretical overlap with an ideal CPF/CNOT gate.
 
 \subsection{Cavity coupling and losses} \label{sec:cav_coupling}
 
 The first set of experimental parameters to extract are the total cavity decay rate $\kappa$, the mode-matching parameters $\mu_{fr}$ and $\mu_{fc}$, and the atom-cavity coupling strength $g$. These are obtained from two complementary spectroscopy measurements on the locked cavity: an empty-cavity spectroscopy (without a trapped atom) to determine $\kappa$, $\mu_{fr}$, and $\mu_{fc}$, and a normal-mode spectroscopy (with a coupled atom) to extract $g$.
 
-For the empty-cavity measurement, the probe laser is scanned across the $\pi$-mode resonance of the cavity while being phase-modulated at \SI{300}{\mega\hertz} by an electro-optic modulator (EOM). The EOM sidebands appear as additional peaks in the transmission spectrum, separated by a known frequency from the carrier, and thereby provide an absolute time-to-frequency calibration of the scan axis. The $\pi$-mode of the cavity is locked during the measurement to the $F=2,m_F=0\leftrightarrow F'=1,m_F=0$ transision, and both the transmitted and reflected signals are recorded simultaneously. Since no atom is loaded, the coupling term in equation \eqref{eq:analytical_reflection} vanishes ($g = 0$).
+For the empty-cavity measurement, the probe laser is scanned across the $\pi$-mode resonance of the cavity while being phase-modulated at \SI{300}{\mega\hertz} by an electro-optic modulator (EOM). The EOM sidebands appear as additional peaks in the transmission spectrum, separated by a known frequency from the carrier, and thereby provide an absolute time-to-frequency calibration of the scan axis. The $\pi$-mode of the cavity is locked during the measurement to the $F=2,m_F=0\leftrightarrow F'=1,m_F=0$ transition, and both the transmitted and reflected signals are recorded simultaneously. Since no atom is loaded, the coupling term in equation \eqref{eq:analytical_reflection} vanishes ($g = 0$).
 
 The transmission spectrum is fitted with a sum of Lorentzian lineshapes. Each resonance peak is described by a cavity transfer function of the form:
 
@@ -30,7 +32,7 @@ The reflection spectrum is fitted using the empty-cavity limit of Eq.~\eqref{eq:
 	\label{eq:empty_cavity_reflection}
 \end{equation}
 
-where $\phi_{fr}$ and $\phi_{fc}$ account for residual phase offsets in the fiber path. The fit yields the fiber-cavity mode-matching parameter $\mu_{fc} = 0.873\pm0.002$ and the free-space mode-matching parameter $\mu_{fr} = 0.978\pm0.006$. The outcoupling ratio $\kappa_{\text{oc}}/\kappa = 0.85$ is held fixed during the fit, as this value has been consistently measured across multiple cavity assemblies over several years. The resulting fit parameters are summarized in Table \ref{tab:cavity_parameters}, and representative transmission and reflection spectra with their respective fits are shown in Figure \ref{fig:empty_cavity_spectroscopy}.
+where $\phi_{fr}$ and $\phi_{fc}$ account for residual phase offsets in the fiber path. The fit yields the fiber-cavity mode-matching parameter $\mu_{fc} = 0.873\pm0.002$ and the free-space mode-matching parameter $\mu_{fr} = 0.978\pm0.006$. The outcoupling ratio $\kappa_{\text{oc}}/\kappa = 0.85$ is held fixed during the fit, as this value has been consistently measured across multiple cavity assemblies over several years. The resulting fit parameters are summarized in Table \ref{tab:cavity_parameters} in section \ref{sec:cavity_system}, and representative transmission and reflection spectra with their respective fits are shown in Figure \ref{fig:empty_cavity_spectroscopy}.
 
 \begin{figure}[htbp]
 	\centering
@@ -41,19 +43,79 @@ where $\phi_{fr}$ and $\phi_{fc}$ account for residual phase offsets in the fibe
 
 With $\kappa$ and the mode-matching parameters determined, the remaining unknown is the atom-cavity coupling strength $g$. This is extracted from a normal-mode spectroscopy measurement, in which the probe laser is scanned across the cavity resonance while a single atom is trapped and coupled to the $\pi$ mode.
 
-After trapping the atom it is cooled and prepared in the $F=1,m_F=0$ zeeman state via the aforementioned methods in section \ref{sec:atomic_qubit_preparation}. One can then either record the normal-mode spectroscopy for the uncoupled ($F=1,m_F=0$) or coupled state ($F=2,m_F=0$), by choosing to use a microwave drive and transfer the population from the uncoupled to the resonantly coupled state. A probe laser which is resonant to the $F=2,m_F=0\leftrightarrow F'=1,m_F=0$ is then deployed. For the normal-mode spectroscopy the probe laser has to be scanned over a large frequency range in order to fully capture the entire reflection spectrum. This is achieved by changing the locking point (the reference detuning), which then allows its frequency to changed in a controlled manner. The beat signal to which the laser will then be locked to is supplied by an arbitrary waveform generator (AWG), which continuously changes the beat frequency over a range of $(25-300)\text{MHz}$.
+After trapping the atom it is cooled and prepared in the $F=1,m_F=0$ Zeeman state via the aforementioned methods in section \ref{sec:atomic_qubit_preparation}. One can then either record the normal-mode spectroscopy for the uncoupled ($F=1,m_F=0$) or coupled state ($F=2,m_F=0$), by choosing to use a microwave drive and transfer the population from the uncoupled to the resonantly coupled state. A probe laser which is resonant to the $F=2,m_F=0\leftrightarrow F'=1,m_F=0$ transition is then deployed. 
+
+For the normal-mode spectroscopy the probe laser has to be scanned over a large frequency range in order to fully capture the entire reflection spectrum. This is achieved by changing the locking point (the reference detuning), which then allows its frequency to be changed in a controlled manner. The beat signal to which the laser will then be locked to, is supplied by an arbitrary waveform generator (AWG), which continuously changes the frequency over a range of $\SIrange{25}{300}{\mega\hertz}$. Here, locking the laser to a beat frequency of $\SI{25}{\mega\hertz}$ would make the probe laser red-detuned to the $2-1'$ transition, whereas a beat frequency of $\SI{300}{\mega\hertz}$ would make it blue-detuned to the respective transition.
 
 \begin{figure}[htbp]
 	\centering
 	\includesvg[inkscapelatex=false,width=0.8\linewidth]{Figures/5_atom_photon_gate/nms_reflection_phase.svg}
-	\caption{Normal-mode spectroscopy of the atom-cavity system.\textbf{(a)}~Normalised reflectivity $|r|^{2}$ as a function of probe detuning $\Delta$ for the uncoupled state $\ket{u}$ (red) and the coupled state $\ket{c}$ (blue). The uncoupled spectrum shows the bare cavity resonance, fitted with the empty-cavity reflection coefficient. The coupled spectrum exhibits the vacuum Rabi splitting, fitted using equation \eqref{eq:analytical_reflection}, yielding a coupling strength of $g = 2\pi \times \SI{25.9(5)}{MHz}$. \textbf{(b)}~Phase $\arg(r)$ of the reflected field computed from the respective fit models. The case for the atom in the uncoupled state showcases a phase shift of $\pi$ on resonance, while the coupled system features a phase shift of 0.}
+	\caption{Normal-mode spectroscopy of the atom-cavity system. \textbf{(a)}~Normalized reflectivity $|r|^{2}$ as a function of probe detuning $\Delta$ for the uncoupled state $\ket{0}$ (red) and the coupled state $\ket{1}$ (blue). The uncoupled spectrum shows the bare cavity resonance, fitted with the empty-cavity reflection coefficient, as the uncoupled state is off-resonant from the probe, so the system behaves as an empty cavity. The coupled spectrum exhibits the vacuum Rabi splitting, fitted using equation \eqref{eq:analytical_reflection}, yielding a coupling strength of $g = 2\pi \times \SI{25.9(5)}{MHz}$. \textbf{(b)}~Phase $\arg(r)$ of the reflected field computed from the respective fit models. The case for the atom in the uncoupled state showcases a phase shift of $\pi$ on resonance, while the coupled system features a phase shift of 0.}
 	\label{fig:nms_reflection_phase}
 \end{figure}
 
+From the fit in Figure \ref{fig:nms_reflection_phase} an atom-cavity coupling $g=2\pi\times (25.9\pm0.5)$MHz can be extracted.
+
+With these parameters in hand, the next step is determining the optimal V-mode attenuation.
+
 \subsection{Brewster plate attenuation} \label{sec:brewster_windows}
-For the characterization of the brewster windows themselves, two measurements were conducted. First, only a singular brewster plate was inserted into the custom mount to check the average attenuation across a set of brewster windows in the V polarization. This ensures that all brewster windows operate up to spec, and that the attenuation of the V polarization is happening in constant jumps. The second one, places multiple brewster windows in an array to closely resemble the setup used in the actual experiment. With this one can then used the measured powers in transmission both for H and V to determine the ideal amounts of brewster windows one would need to use in order to achieve the highest gate fidelity.
 
+Using the values determined in section \ref{section:experimental_parameters_for_gate}, one can simulate the reflection amplitudes for each of the input states of the gate using the time-domain simulation described in Appendix \ref{appendix:qutip_simulation}. Using the simulation results, one can simulate the ideal attenuation of the almost ideally reflected V polarized portion of the input light, in order to achieve the highest possible overlap with the ideal CNOT truth table (\ref{appendix:bw_scan}). From the simulated overlap, one deduces that the optimal transmission of the V polarized light is at $T_V\approx24\%$. Using this information, the ideal number of Brewster windows can thus be determined.
 
-\section{Atom-Photon gate performance}
-\subsection{Gate Truth Tables}
-\subsection{Generation of Bell States}
+For the characterization of the Brewster windows themselves, two measurements were conducted. First, only a singular Brewster plate was inserted into the custom mount to check the average attenuation across a set of Brewster windows in the V polarization. This ensures that all Brewster windows operate up to spec, and that the attenuation of the V polarization is happening in constant jumps. At the Brewster angle $\theta_B$ the transmission through single Brewster window were $99.98\pm0.17\%$ and $77.40\pm0.13\%$ for the H and V polarization respectively.
+
+The second characterization that needed to be performed, places multiple Brewster windows in an array to closely resemble the setup used in the actual experiment. In this configuration, one can then measure the powers in transmission both for H and V to determine the ideal amounts of Brewster windows one would need to use in order to achieve the highest gate fidelity.
+
+\begin{figure}[htbp]
+    \centering
+    \includesvg[inkscapelatex=false,width=0.8\linewidth]{Figures/5_atom_photon_gate/bw_transmission.svg}
+    \caption{Measured transmission of H- and V-polarized light through $N$ Brewster windows placed in series at Brewster's angle. The H-polarization transmits near-unity for all configurations, while the V-polarization is progressively attenuated. The dashed line indicates the target V-mode transmission of \SI{24.0}{\percent} for optimal overlap with the ideal CNOT truth table.}
+\label{fig:bw_multiple}
+\end{figure}
+
+In Figure \ref{fig:bw_multiple}, one can see that the configuration for the optimal overlap with the ideal CNOT truth table lies between 6--7 Brewster windows.
+
+\section{Atom-Photon gate performance} \label{sec:ap_gate}
+
+This section will now go over the measurements for the gate truth tables. First the experimental protocol for the measurement as well as the resulting truth tables will be showcased in section \ref{sec:truth_tables}. Afterward, the overlap of the measured truth table will be characterized as a function of the amount of Brewster windows installed in the custom mount and the mean input photon number in sections \ref{sec:results_bw_scan} and \ref{sec:results_photon_number_scan} respectively. \notetome{maybe mention bell states depending if I can get that to work}. Lastly in section \ref{sec:imperfections}, an analysis of the limitation and imperfections of the setup will be given and how one could improve the overlap even further.
+
+\subsection{Gate Truth Tables} \label{sec:truth_tables}
+
+The measurement of the gate truth table starts with the preparation of the atom. Using the protocol outlined in chapter \ref{sec:atomic_qubit_preparation}, one can choose to then prepare the atom in the coupled state $\ket{F=2,m_f=0}=\ket{1}$ by deploying a microwave $\pi$-pulse, or leave the atom in the uncoupled $\ket{F=1,m_f=0}=\ket{0}$ state. Once the atom is prepared in one of the atomic eigenstates, a gated faint laser pulse will be sent to the cavity, which for the following measurements will have an input mean photon number of $\bar{n}\approx0.1$. As explained in chapter \ref{chapter:theory}, depending on the choice of the photonic qubit eigenbasis, one chooses to either realize a CPF gate (basis: $\ket{\pi}$ and $\ket{V}$) or a CNOT gate (basis: $\ket{\pm}=\frac{\ket{V}\pm{\ket{\pi}}}{\sqrt{2}}$). For the CPF basis, this basis is the basis of the H and V, as both of them can be mapped to the $\pi$ and V-mode of the birefringent cavity via the first set of compensation waveplates shown in Figure \ref{fig:setup_cavity_table}. For the CNOT basis, one can then just use a set of orthogonal polarizations that are a superposition of H and V. In this case the CNOT basis was chosen to be the R and L basis. The choice for this eigenbasis will be explained in more detail in section \ref{sec:imperfections}. Once the photon pulse has been reflected off of the cavity, a state detection (SD) beam is deployed which produces SD-counts if the atom is in coupled state $\ket{1}$, or none if the atom is in the uncoupled state $\ket{0}$. A detailed protocol of the protocol is shown in figure
+
+\begin{figure}[htbp]
+    \centering
+    \includesvg[inkscapelatex=false,width=\textwidth]{Figures/5_atom_photon_gate/experimental_sequence.svg}
+    \caption{Experimental sequence for a single trial of the gate truth table measurement. Each trial begins with \SI{\approx 400}{\mu\second} of cooling, followed by optical pumping using two lasers addressing the $1 \to 1'$ and $2 \to 2'$ transitions simultaneously. The $1 \to 1'$ laser is switched off after \SI{290}{\mu\second}, with the $2 \to 2'$ laser remaining on for an additional \SI{50}{\mu\second}, preparing the atom in the $\ket{F=1,\, m_F=0}$ state. To prepare the atom in the coupled state $\ket{1}$, an optional microwave $\pi$ pulse transfers population from $\ket{0}$ to $\ket{1}$ (dashed box). A weak coherent pulse of \SI{1}{\mu\second} duration and mean input photon number $\bar{n}\approx0.1$ then probes the atom--cavity system, implementing the gate interaction. Finally, fluorescence-based state detection over \SI{8}{\mu\second} determines the atomic output state. Time axis is not to scale.}
+    \label{fig:experimental_protocol}
+\end{figure}
+
+By then setting the detection waveplates from Figure \ref{fig:setup_cavity_table} to measure the same basis as the input, one is able to measure the following truth tables for teh CPF and CNOT gates:
+
+\begin{figure}[t]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includesvg[inkscapelatex=false, width=\textwidth]{Figures/5_atom_photon_gate/cpf_gate_truth_table_pi_v_basis.svg}
+        \caption{CPF gate in the $\pi/V$ basis.}
+        \label{fig:cpf_truth_table}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includesvg[inkscapelatex=false, width=\textwidth]{Figures/5_atom_photon_gate/cnot_truth_table_r_l_01_photons.svg}
+        \caption{CNOT gate in the $R/L$ basis.}
+        \label{fig:cnot_truth_table}
+    \end{subfigure}
+    \caption{Measured truth tables of the atom-photon quantum gate. ...}
+    \label{fig:gate_truth_tables}
+\end{figure}
+
+\subsection{Brewster window Scan} \label{sec:results_bw_scan}
+
+\subsection{Mean photon number Scan} \label{sec:results_photon_number_scan}
+
+\subsection{Generation of Bell States} \label{sec:bs_states}
+
+\subsection{Limitations and imperfections}\label{sec:imperfections}
+
