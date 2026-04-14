@@ -584,8 +584,7 @@ class Analyzer:
             # )
 
             start_4, end_4, start_4_sd_after, end_4_sd_after = np.searchsorted(
-                data_arr[self.kc_h],
-                [start, end, start_sd_after, end_sd_after]
+                data_arr[self.kc_h], [start, end, start_sd_after, end_sd_after]
             )
 
             start_7, end_7, start_7_sd_after, end_7_sd_after = np.searchsorted(
@@ -605,7 +604,7 @@ class Analyzer:
             n_sd = n4_sd + n7_sd
             # ps = ps4 + ps7
 
-            if n4+n7 == 0 or n4+n7 > 1:
+            if n4 + n7 == 0 or n4 + n7 > 1:
                 continue
 
             click_trials += 1
@@ -617,7 +616,6 @@ class Analyzer:
                 # pass
                 counts_ch_4_atom_0.append(n4)
                 counts_ch_7_atom_0.append(n7)
-
 
         tot_clicks_4_atom_1 = np.sum(counts_ch_4_atom_1)
         tot_clicks_7_atom_1 = np.sum(counts_ch_7_atom_1)
@@ -640,11 +638,11 @@ class Analyzer:
         P_7_atom_0_err = np.sqrt(P_7_atom_0 * (1 - P_7_atom_0) / click_trials)
         P_7_atom_1_err = np.sqrt(P_7_atom_1 * (1 - P_7_atom_1) / click_trials)
 
-        efficiency = click_trials/length
+        efficiency = click_trials / length
         try:
-            efficiency_err = np.sqrt(efficiency*(1-efficiency)/click_trials)
+            efficiency_err = np.sqrt(efficiency * (1 - efficiency) / click_trials)
         except Exception as e:
-            efficiency_err=0
+            efficiency_err = 0
 
         self.data_arr = None
 
@@ -658,7 +656,7 @@ class Analyzer:
             P_7_atom_1,
             P_7_atom_1_err,
             efficiency,
-            efficiency_err
+            efficiency_err,
         )
 
     def data_good_atoms(
@@ -703,7 +701,7 @@ if __name__ == "__main__":
         "cooling_duration": 400e-6,
         "optical_pumping_duration": 340e-6,
         "pulse_delay": 38.4e-6,  # Trap on
-        "pulse_duration": 1.2e-6, # 1mus pulse
+        "pulse_duration": 1.2e-6,  # 1mus pulse
         "pulse_delay_SD_after": 1.5e-6,  # Trap on
         "pulse_duration_SD_after": 8e-6,
         "sequence_duration": 1.1e-3,
@@ -766,7 +764,7 @@ if __name__ == "__main__":
             P_7_atom_1,
             P_7_atom_1_err,
             efficiency,
-            efficiency_err
+            efficiency_err,
         ) = analyzer.reflection_analysis(
             file_name=file,
             path="./",
@@ -795,6 +793,6 @@ if __name__ == "__main__":
         fidelity_indices=[(0, 0), (1, 1), (2, 3)],
         atom_basis=["|1⟩", "|0⟩"],
         photon_basis=["R", "L"],
-        # save_fig=True,
-        show_fig=True,
+        save_fig=True,
+        # show_fig=True,
     )

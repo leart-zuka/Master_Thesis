@@ -2762,17 +2762,17 @@ class AtomAnalysis:
             [60, 30, 10, 5, 5.0],
         )
 
-        popt, pcov = curve_fit(
-            R_coupled_star,
-            freq_NMS,
-            list_SDmean[0],
-            p0=p0_r,
-            sigma=list_err_SDmean[0],
-            absolute_sigma=True,
-            bounds=bounds_r,
-            maxfev=100000,
-        )
-        pcov = np.sqrt(np.diag(pcov))
+        # popt, pcov = curve_fit(
+        #     R_coupled_star,
+        #     freq_NMS,
+        #     list_SDmean[0],
+        #     p0=p0_r,
+        #     sigma=list_err_SDmean[0],
+        #     absolute_sigma=True,
+        #     bounds=bounds_r,
+        #     maxfev=100000,
+        # )
+        # pcov = np.sqrt(np.diag(pcov))
 
         plt.rcParams.update({"font.size": 14})
         phfig = plt.figure(figsize=[12, 8])
@@ -2786,26 +2786,26 @@ class AtomAnalysis:
         #     % (popt[2], popt[3], popt[4], popt[5], popt[6], popt[7])
         # )
 
-        phfig.suptitle(
-            "\n Memory Spectroscopy with KC @ +500MHz detuning"
-            "\n g: %.1f MHz +/- %.3f "
-            "\n fres: %.3f +/- %.3f "
-            "\n A: %.3f +/- %.3f"
-            "\n offset: %.3f +/- %.3f "
-            "\n a: %.3f +/- %.3f "
-            % (
-                popt[0],
-                pcov[0],
-                popt[1],
-                pcov[1],
-                popt[2],
-                pcov[2],
-                popt[3],
-                pcov[3],
-                popt[4],
-                pcov[4],
-            )
-        )
+        # phfig.suptitle(
+        #     "\n Memory Spectroscopy with KC @ +500MHz detuning"
+        #     "\n g: %.1f MHz +/- %.3f "
+        #     "\n fres: %.3f +/- %.3f "
+        #     "\n A: %.3f +/- %.3f"
+        #     "\n offset: %.3f +/- %.3f "
+        #     "\n a: %.3f +/- %.3f "
+        #     % (
+        #         popt[0],
+        #         pcov[0],
+        #         popt[1],
+        #         pcov[1],
+        #         popt[2],
+        #         pcov[2],
+        #         popt[3],
+        #         pcov[3],
+        #         popt[4],
+        #         pcov[4],
+        #     )
+        # )
         x = np.asarray(freq_NMS)
         y = np.asarray(list_SDmean[0])
         yerr = np.asarray(list_err_SDmean[0])
@@ -2828,14 +2828,14 @@ class AtomAnalysis:
             marker="o",
             label="Measurement data",
         )
-        ax.plot(
-            freq_NMS,
-            R_coupled_star(freq_NMS, *popt),
-            label="Model fit",
-            color="red",
-            linewidth=3,
-            linestyle="-.",
-        )
+        # ax.plot(
+        #     freq_NMS,
+        #     R_coupled_star(freq_NMS, *popt),
+        #     label="Model fit",
+        #     color="red",
+        #     linewidth=3,
+        #     linestyle="-.",
+        # )
         ax.set_ylabel("Reflection (a.u.)")
         ax.legend()
         # ax.plot(model_time, emg(model_time, 0.0297, 36, 8.9,0.038), label='lmu photon simulated', color='green', linewidth = 3, linestyle = '--')
@@ -2844,7 +2844,7 @@ class AtomAnalysis:
         ax.set_xlabel("Frequency (MHz)")
         plt.tight_layout()
         plt.show()
-        phfig.savefig(f"{filename}_reflection_spectrum.jpg")
+        # phfig.savefig(f"{filename}_reflection_spectrum.jpg")
 
         #
         # if self.dataSave:
@@ -3965,7 +3965,7 @@ if __name__ == "__main__":
     # ------ Definition of data sources and destinations------
     path: str = os.path.abspath(os.path.dirname(__file__))
     file_list = [
-        "15_03_26_KC_NMS_25_300_200_points_1_2",
+        "15_03_26_KC_NMS_25_300_200_points_1_9",
     ]
     filetype: str = ".h5"
 
