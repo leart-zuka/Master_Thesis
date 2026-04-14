@@ -780,6 +780,7 @@ if __name__ == "__main__":
         cnot_err[3][i] = P_7_atom_0_err
 
     print(cnot_gate)
+    print(cnot_err)
 
     plot_gate_3d(
         cnot_gate.T,
