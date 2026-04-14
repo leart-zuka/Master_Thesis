@@ -1,7 +1,5 @@
-import argparse
 import numpy as np
-import pandas as pd
-from helpers.input_shapes import input_shape, input_shape_rect
+from helpers.input_shapes import input_shape
 
 from helpers.generic_cavity_operators import (
     AtomSystem,
@@ -37,7 +35,7 @@ cavity = CavitySystem(
     atom_dim=4,
     Delta_c_pi=2 * np.pi * 0,
     Delta_c_v=2 * np.pi * 0.5,
-    G0_kc=2 * np.pi * 0.026,
+    G0_kc=2 * np.pi * 0.010,
     Kappa=2 * np.pi * 0.058,
     v_transmission=0.208,
 )
@@ -65,9 +63,8 @@ args_ref = {
     "sigma": 100.0,
 }
 
-photon_numbers = np.array([0.2])
-# amps = convert_photon_numbers_to_amps(tlist, args_ref, photon_numbers, input_shape)
-amps = convert_photon_numbers_to_amps(tlist, args_ref, photon_numbers, input_shape_rect)
+photon_numbers = np.array([4])
+amps = convert_photon_numbers_to_amps(tlist, args_ref, photon_numbers, input_shape)
 eta = 0.9 * 0.85 * 0.97
 r_dark = 1.5e-4
 
@@ -94,8 +91,7 @@ args = {
     Mu_fr=0.978,
     e_obs=e_ops,
     c_obs=c_ops,
-    # input_shape=input_shape,
-    input_shape=input_shape_rect,
+    input_shape=input_shape,
     args=args,
     system=system,
     psi_0=psi_0,

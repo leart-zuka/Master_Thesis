@@ -2,6 +2,7 @@ import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 from helpers.input_shapes import input_shape
+import pandas as pd
 
 from helpers.generic_cavity_operators import (
     DriveParams,
@@ -17,7 +18,6 @@ from helpers.compute_simulation import (
 )
 
 from helpers.compute_reflection_parameters import (
-    compute_signal_fidelity,
     compute_fidelity_from_prob_matrix,
     convert_photon_numbers_to_amps,
 )
@@ -43,7 +43,7 @@ cavity = CavitySystem(
     Delta_c_v=2 * np.pi * 0.5,
     G0_kc=2 * np.pi * 0.026,
     Kappa=2 * np.pi * 0.058,
-    v_transmission=0.263,
+    v_transmission=0.208,
 )
 
 system = SystemOperators(atom=atom, cavity=cavity)
@@ -52,21 +52,20 @@ dissipation = Dissipation(ops=system, cavity=cavity, atom=atom)
 observables = Observables(ops=system, cavity=cavity)
 
 states = InitialStates(cavity=cavity, atom=atom)
-psi_0 = states.psi_atom_0()
-psi_1 = states.psi_atom_1()
+psi_0 = states.rho_mixed(p_0=1, p_1=0, p_dark=0)
+psi_1 = states.rho_mixed(p_0=0.12, p_1=0.88, p_dark=0)
+
 
 c_ops = dissipation.collapse_operators()
 e_ops = observables.expectation_ops()
 
-transmissions = np.linspace(0.28, 0.35, 10)
+transmissions = np.linspace(0.00, 1, 30)
 fidelities = np.zeros_like(transmissions)
 
 # 0.2955
 
 eta = 0.9 * 0.85 * 0.97
-r_dark = 1e-4
-r_dark = 3e-4
-r_dark = 1.5e-4
+r_dark = 5e-5
 
 args_ref = {
     "amp": 1.0,
@@ -85,7 +84,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--photon_numbers",
         type=float,
-        default=0.042,
+        default=0.108,
         help="Optional specific amplitude for specific photon numbers",
     )
     args = parser.parse_args()
@@ -108,7 +107,7 @@ if __name__ == "__main__":
 
     for i, transmission_v in enumerate(transmissions):
         print(
-            f"Computing Signal Fidelity for transmission of V pol. of: {
+            f"Computing Overlap for transmission of V pol. T = {
                 transmission_v
             }; Step no. {i}"
         )
@@ -143,11 +142,11 @@ if __name__ == "__main__":
         fidelities[i] = fidelity
 
     bw_transmission_fig = plt.figure()
-    plt.plot(transmissions, fidelities, label=r"$F_{signal}$")
+    plt.plot(transmissions, fidelities, label="Overlap")
     plt.legend()
     plt.xlabel("Transmission for V polarization")
-    plt.ylabel("Signal Fidelity")
-    plt.title("Signal Fidelity vs. different transmissions of V polarized light")
+    plt.ylabel("Overlap")
+    plt.title("Overlap vs. different transmissions of V polarized light")
 
     idx = np.argmax(fidelities)
     x_max = transmissions[idx]
@@ -163,6 +162,11 @@ if __name__ == "__main__":
         fontsize=10,
         bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.8),
     )
-    # bw_transmission_fig.savefig("./plots/Brewster_window_transmission.svg")
+    # bw_trans
+    comb_array = np.array([transmissions, fidelities])
+    df = pd.DataFrame(comb_array.T, columns=["Transmissions", "Overlaps"])
+    df.to_csv("./sim_data_bw_scan_scan.csv")
+
+    bw_transmission_fig.savefig("./plots/Brewster_window_transmission.svg")
 
     plt.show()

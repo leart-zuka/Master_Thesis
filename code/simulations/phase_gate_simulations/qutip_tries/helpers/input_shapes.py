@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import Dict
-from typing import Union, Callable
+from typing import Callable
 
 
 def input_shape_rect(t, args):
@@ -46,13 +46,11 @@ def to_plus_minus_basis(alpha_pi, alpha_v):
 
 
 if __name__ == "__main__":
-    tlist = np.linspace(0, 10000, 1000)
-    args = {"amp": 1, "t0": 10000, "tau": 70.0, "tau_start": 91.0, "sigma": 1.0}
+    tlist = np.linspace(0, 1000, 1000)
+    args = {"amp": 1, "t0": 100, "tau": 100.0, "tau_start": 10.0, "sigma": 10.0}
     input_field = input_shape(tlist, args)
-    area = np.trapezoid(input_field, tlist)
-    print(area)
-    norm_input_field = input_field / area
+    input_field_real = real_input_shape(tlist, args)
     plt.plot(tlist, input_field, label="input")
-    plt.plot(tlist, norm_input_field, label="normalized input")
+    plt.plot(tlist, input_field_real, label="real input")
     plt.legend()
     plt.show()
