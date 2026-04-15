@@ -68,7 +68,7 @@ data = get_data_from_main_h5_file(path="./", file_name=file_name)
 if not data:
     print("No data loaded.")
     exit()
-bin_width = 5e-3
+bin_width = 20e-3
 min_loading_time = 3.0
 window_size = 200
 
@@ -113,12 +113,24 @@ for atom_idx in range(len(data) - 1):
     time_plot = time_axis[mask]
     counts_plot = counts[mask]
     smoothed_plot = smoothed[mask]
-
+    if atom_idx != 6:
+        continue
+    df = pd.DataFrame(
+        {
+            "time_s": time_plot,
+            "counts": counts_plot,
+            "smoothed": smoothed_plot,
+        }
+    )
+    df.to_csv(f"atom_{atom_idx}_loading.csv", index=False)
     print(f"Showing atom {atom_idx} / {len(data) - 1} — gap: {gap:.2f} s")
     print("Close the plot window to continue to the next atom.")
 
     fig, ax = plt.subplots(figsize=(10, 4))
-    ax.scatter(time_plot, counts_plot, alpha=0.5, color="black")
+    # ax.bar(time_plot, counts_plot, alpha=0.5, color="black")
+    ax.bar(
+        time_plot, counts_plot, width=bin_width, align="edge", color="black", alpha=0.7
+    )
     ax.set_xlabel("Time (s)")
     ax.set_ylabel(f"Fluorescence counts (#/{bin_width * 1000}ms)")
     ax.set_title(
