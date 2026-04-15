@@ -77,7 +77,7 @@ In Figure \ref{fig:bw_multiple}, one can see that the configuration for the opti
 
 \section{Atom-Photon gate performance} \label{sec:ap_gate}
 
-This section will now go over the measurements for the gate truth tables. First the experimental protocol for the measurement as well as the resulting truth tables will be showcased in section \ref{sec:truth_tables}. Afterward, the overlap of the measured truth table will be characterized as a function of the amount of Brewster windows installed in the custom mount and the mean input photon number in sections \ref{sec:results_bw_scan} and \ref{sec:results_photon_number_scan} respectively. \notetome{maybe mention bell states depending if I can get that to work}. Lastly in section \ref{sec:imperfections}, an analysis of the limitation and imperfections of the setup will be given and how one could improve the overlap even further.
+This section will now go over the measurements for the gate truth tables. First the experimental protocol for the measurement as well as the resulting truth tables will be showcased in section \ref{sec:truth_tables}. Afterward, the overlap of the measured truth table will be characterized as a function of the amount of Brewster windows installed in the custom mount and the mean input photon number in section \ref{sec:photon_number_and_bw_scan}. \notetome{maybe mention bell states depending if I can get that to work}. Lastly in section \ref{sec:imperfections}, an analysis of the limitation and imperfections of the setup will be given and how one could improve the overlap even further.
 
 \subsection{Gate Truth Tables} \label{sec:truth_tables}
 
@@ -90,18 +90,89 @@ The measurement of the gate truth table starts with the preparation of the atom.
 	\label{fig:experimental_protocol}
 \end{figure}
 
-By then setting the detection waveplates from Figure \ref{fig:setup_cavity_table} to measure the same basis as the input, one is able to measure the following truth tables for teh CPF and CNOT gates:
+By then setting the detection waveplates from Figure \ref{fig:setup_cavity_table} to measure the same basis as the input, post-selecting on the cases where a only a single photon was reflected during the photon-gate pulse, one is able to measure the truth tables for the CPF and CNOT gates shown in Figure \ref{fig:gate_truth_tables}.
 
 \begin{figure}[htbp]
 	\centering
 	\includesvg[width=\linewidth]{Figures/5_atom_photon_gate/gate_truth_tables_2x2.svg}
+	\caption{Measured truth tables of the atom-photon quantum gate with a mean input photon number of $\bar{n} \approx 0.1$.
+		(a),~(b)~Three-dimensional bar charts showing the normalized output-state probabilities for all four input-state combinations.
+		Semi-transparent blue bars indicate the ideal gate operation.
+		(c),~(d)~Corresponding matrix representations with numerical values and statistical uncertainties.
+		The left column shows the controlled-phase (CPF) gate in the $\ket{\pi}/\ket{V}$ eigenbasis, where the ideal operation is the identity on the computational basis states.
+		The right column shows the controlled-NOT (CNOT) gate in the $\ket{R}/\ket{L}$ eigenbasis, where the photon polarization is flipped when the atom is in the uncoupled state $\ket{0}$.
+		The atomic output state is determined via fluorescence-based state detection following the protocol shown in Figure~\ref{fig:experimental_protocol}.}
+	\label{fig:gate_truth_tables}
 \end{figure}
 
-\subsection{Brewster window Scan} \label{sec:results_bw_scan}
+The truth tables for the CPF and CNOT gates showed an overlap of $92.41\pm0.52 \%$ and $88.15\pm0.86\%$ with the ideal truth tables respectively.
 
-\subsection{Mean photon number Scan} \label{sec:results_photon_number_scan}
+\subsection{Mean photon number and Brewster window scan} \label{sec:photon_number_and_bw_scan}
+
+As an addition to the truth table measurements, it's also interesting to find out what the behaviour of the overlap with the ideal CNOT truth table is, when changing the input power and thus mean photon number $\bar{n}$ or the attenuation of the V polarized portion of the input light by changing the amount of Brewster windows. Both of these scans were simulated using QuTip \cite{qutip5} with the exact details of the simulation outlined in Appendix \ref{appendix:qutip_simulation}. The simulated scans are then compared to the experimentally determined overlaps, in order to showcase the limitations of the simulation itself and how well it reflects the actual experiment. A comparison between for each respective scan and its comparisson can be seen in Figure \ref{fig:comparrison_sim_experiment}.
+
+\begin{figure}[htpb]
+	\centering
+	\includesvg[width=\linewidth]{Figures/5_atom_photon_gate/sim_comparison_plots.svg}
+	\caption{Comparison of the measured population overlap with the QuTiP master-equation simulation.
+		(a)~Population overlap as a function of the $V$-mode transmission, controlled by the number of intracavity Brewster windows.
+		The three experimental points correspond to seven, five, and one Brewster windows (from left to right), with the mean input photon number fixed at $\bar{n} \approx 0.1$.
+		(b)~Population overlap as a function of the mean input photon number $\bar{n}$, measured with seven Brewster windows installed.
+		The overlap peaks near $\bar{n} \approx 0.1$ and decreases for both lower photon numbers, where vacuum contributions dominate, and higher photon numbers, where multi-photon components degrade the gate fidelity.
+		Solid lines show the simulation results; markers indicate experimental data.}
+	\label{fig:comparrison_sim_experiment}
+\end{figure}
+
+Comparing the experimental data to the overlaps which were simulated it becomes apparent that outside of imperfections coming from the atom-cavity system (which will be discussed in further detail in section \ref{sec:imperfections}), one can see that the data for teh brewster window scan shows the same general trend as the simulated curve. As for the photon number scan, there seems to be a good overlap up until a mean photon number of $\bar{n}\approx 1$, where the experimental data seems to show a much quicker drop in overlap when compared to the simulation. This indicates, while the simulation works great for lower mean input photon numbers, it seems to not be influenced as strongly by higher mean input photon numbers as the experimental data would suggest.
 
 \subsection{Generation of Bell States} \label{sec:bs_states}
 
+\notetome{yeah try to analyze the data and hope it works lul}
+
 \subsection{Limitations and imperfections}\label{sec:imperfections}
+The measured gate overlap falls short of unity due to several independent imperfections, each contributing at a different scale. This section identifies and discusses the dominant sources, ordered roughly by their impact on the gate performance.
+
+
+\subsubsection{Asymmetric reflection amplitudes}
+\label{subsubsec:asymmetric_reflectivities}
+
+% ---- MAIN POINT: |r| mismatch on the pi mode ----
+
+An ideal controlled-phase gate requires that the cavity reflects photons with equal amplitude for both atomic states, differing only in the acquired phase. As shown in Table~\ref{tab:reflection_coefficients}, this condition is not met for the $\pi$-polarized mode: the uncoupled state $\ket{0}$ yields a reflectivity of $R_{0,\pi} = \num{0.064}$, while the coupled state $\ket{1}$ yields $R_{1,\pi} = \num{0.493}$. The large asymmetry arises because the system does not operate deep in the strong-coupling, single-sided-cavity regime where the empty-cavity reflection approaches unity. Instead, the cavity parameters place the uncoupled reflectivity well below the coupled one, so that even before any V-mode attenuation is applied, the two $\pi$-mode amplitudes are far from matched.
+
+This mismatch directly limits the maximal overlap with the ideal CNOT truth table. Mitigating it would require a fundamentally different set of cavity parameters — for example, a higher mirror reflectivity on the incoupling side to push the empty-cavity reflectivity closer to unity — which would necessitate replacing the cavity altogether. Alternative routes include using a different atomic transition with a larger coupling strength on the available mode, or repositioning the fiber tips via the piezo-controlled mounts to modify the atom-cavity coupling $g$. None of these changes are trivial, and the current cavity parameters therefore set a hard ceiling on the achievable gate overlap.
+
+A related but far less significant limitation is the discrete nature of the V-mode attenuation. The overlap is maximized at a specific V-mode attenuation that matches the $\pi$-mode reflectivity, but the Brewster windows used in the setup change the attenuation in fixed steps set by the window material, placing the current operating point roughly \SI{2}{\percent} away from the theoretical optimum. As visible in Figure~\ref{fig:comparrison_sim_experiment}(a), the overlap curve is relatively flat near its maximum, so this offset has a negligible effect compared to the other imperfections discussed below. Nonetheless, for a future implementation targeting near-unity overlap, a continuously tunable V-mode attenuator would eliminate this residual limitation entirely.
+
+
+\subsubsection{Imperfect atomic state preparation}
+\label{subsubsec:state_preparation}
+
+The gate protocol assumes that the atom is initialized in the coupled state $\ket{F=2, m_F=0}=\ket{1} $ with unit probability. Experimentally, the preparation proceeds in two steps: Zeeman optical pumping into $\ket{F{=}1, m_F{=}0}=\ket{0}$, followed by a resonant microwave $\pi$ pulse that transfers the population to $\ket{F{=}2, m_F{=}0}$. Neither step is perfect. The combined preparation probability in the present dataset is approximately \SI{90}{\percent}, meaning that roughly \SI{10}{\percent} of trials begin with the atom still in the uncoupled state $\ket{0}$.
+
+Because an incorrectly prepared atom does not interact with the cavity mode in the intended way, these trials contribute incoherently to the measurement and directly reduce the observed overlap. The effect is substantial: even if every other aspect of the gate were ideal, a \SI{10}{\percent} preparation error would already cap the overlap well below unity. Improving the Zeeman pumping — for instance by optimizing the pumping light polarization, duration, or magnetic field alignment — and improving the microwave pulse fidelity would therefore yield a significant and relatively straightforward gain in gate performance.
+
+
+\subsubsection{Thermal sensitivity of the detection basis}
+\label{subsubsec:thermal_sensitivity}
+
+Extracting the gate overlap requires measuring the reflected photon in a well-defined polarization basis, set by the wave plates and polarizing beam splitter before the detectors. However since the length of the cavity is sensitive to thermal drifts, this also makes the reflection from the atom-cavity setup and thus the polarization rotation very sensitive. The dominant heat source is the UV lamp used for the loading of atoms during the MOT loading sequence. When the UV lamp is active, birefringent elements and fiber components along the beam path undergo a slow thermal drift that rotates the polarization basis away from its calibrated orientation, degrading the measured extinction ratio between the two detection channels.
+
+This effect is directly visible in the data: \notetome{reference the UV-lamp extinction plot here — show extinction degrading after UV on, and recovering after cooldown}. After the lamp is switched off and the system is allowed to cool, the extinction ratio recovers, although much slower than if the lamp is turned on. Because the gate measurement window follows shortly after atom loading — and thus shortly after UV exposure — the residual thermal offset can introduce a systematic error in the measured overlap that varies from run to run depending on the thermal history. This can be mitigated by reducing the MOT loading time down to $\SI{1}{\second}$, as this is where the trapping probability for a single atom is sufficiently high, while keeping the time that the UV lamp is turned on at a minimum. However, even with these precautions in place, one still managed to see some residual thermal drifts after each measurement, forcing one to let the system cool down after each measurement ($\SI{1.5}{\minute}$ measurement time vs. $\SI{\ge5}{\minute}$ cooldown) in order to be able to start each measurement run with the same extinction.
+
+
+\subsubsection{Fluctuations in atom-cavity coupling}
+\label{subsubsec:coupling_fluctuations}
+
+The atom is confined in an intracavity dipole trap, but its position is not perfectly fixed between successive trapping events. Small variations in the trapping position translate directly into variations in the atom-cavity coupling strength $g$, which depends on the local cavity mode amplitude at the atom's location. Since the reflection coefficients, the scattering rate, and consequently the gate overlap all depend on $g$, run-to-run position fluctuations introduce scatter around the value predicted by the simulation, which assumes a single fixed coupling strength.
+
+This effect explains why some experimental data points in Figure~\ref{fig:comparrison_sim_experiment} lie slightly above and others slightly below the simulated curve. A better-coupled atom yields a higher reflectivity contrast and therefore a higher overlap, while a worse-coupled atom yields the opposite. The fluctuations also affect the optical pumping efficiency, since the coupling to the pumping light likewise depends on the atom's position. As long as the distribution of trapping positions is centered near the assumed value, the experimental data are expected to scatter around the simulation without systematic bias, which is consistent with the observed trend.
+
+
+\subsubsection{Deviation at high mean photon numbers}
+\label{subsubsec:high_photon_deviation}
+
+At high mean photon numbers, the experimental data deviate from the simulation strongly, while at low photon numbers they all lie on the simulated curve (Figure~\ref{fig:comparrison_sim_experiment}(b)). While both the experiment and simulation show a degradation of the overlap with increasing photon number due to atom-induced scattering, the experimentally observed scattering is higher than the simulation predicts, leading to a steeper drop in overlap than expected.
+
+Two mechanisms likely contribute to this discrepancy. First, the atom position fluctuations discussed in section~\ref{subsubsec:coupling_fluctuations} have a larger impact at high photon numbers, where even a small change in $g$ modifies the scattering rate appreciably because the total number of scattering events scales with the intracavity photon number. Second, at very high intracavity intensities, radiation pressure from the circulating photons can displace the atom within the trap during the gate pulse itself. Such a displacement changes $g$ dynamically over the course of a single trial, leading to excess scattering beyond what a fixed-$g$ simulation predicts. The combination of these two effects — static position uncertainty amplified by high photon numbers, and dynamic position kicks during the pulse — accounts for the growing discrepancy between experiment and simulation in the high-photon-number regime.
 

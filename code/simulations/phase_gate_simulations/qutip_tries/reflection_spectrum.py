@@ -92,6 +92,7 @@ ax1.plot(
     detunings, R_uncoupled, color=color_u, lw=1.6, label=r"$|u\rangle$ (uncoupled)"
 )
 ax1.set_ylabel(r"Reflectivity $|r|^2$")
+ax1.set_xlabel(r"Detuning $\Delta$ (GHz)")
 ax1.set_xlim(-0.25, 0.25)
 ax1.set_ylim(0, 1.0)
 ax1.axvline(x=0, color="0.8", lw=0.5, zorder=0, ls="--")

@@ -125,8 +125,8 @@ The reflection amplitude in \eqref{eq:analytical_reflection} depends on the detu
 \begin{figure}
 	\centering
 	\includesvg[width=\linewidth]{Figures/2_theory/reflectivity_phase.svg}
+	\caption{Reflectivity $|r|^2$~(a) and phase $\arg(r)$~(b) of the reflection coefficient as a function of detuning $\Delta$ between the probe light and the cavity resonance, for the coupled state $\ket{c}$ (blue) and the uncoupled state $\ket{u}$ (red). The coupled state exhibits vacuum Rabi splitting, visible as the double-dip structure in reflectivity and the associated phase features around resonance. At zero detuning, the uncoupled state $\ket{u}$ acquires a pi phase shift, whereas the coupled state $\ket{c}$ does not. Parameters used are $(g,\,\kappa,\,\gamma)/2\pi = (26,\,58,\,3.0)$\,\si{\mega\hertz}, with output-coupler fraction $\kappa_\text{oc}/\kappa = 0.85$ and mode matching parameters $\mu_\text{rf} = 0.978$, $\mu_\text{fc} = 0.873$.}
 	\label{fig:reflection_phase_spectrum}
-	\caption{\notetome{still write the caption}}
 \end{figure}
 
 \section{Atom-State-Dependent Cavity Reflection}
@@ -138,7 +138,9 @@ Looking at \eqref{eq:analytical_reflection} one can see that the behavior of the
 	\label{eq:analytical_reflection_zero_detuning}
 \end{equation}
 
-In the event of an uncoupled atom-cavity system (effectively $g=0$), which would be achieved by preparing the atom in the $\ket{u}$ state, the reflection coefficient $r<0$. This would imply a relative phase shift of $\pi$ between the reflected and incoming light field ($a_{out}(t) \approx -a_{in}(t)$). Preparing the atom in the coupled state $\ket{c}$ however, the Vacuum Rabi Splitting shifts the cavity resonances to $\omega_c\pm g$, so the cavity appears off-resonant for a photon at $\omega_c$. The photon is therefore reflected from the OC mirror without entering the cavity, acquiring no phase shift, which is mirrored by a reflection coefficient of $r>0$ ($a_{out}(t) \approx a_{in}(t)$). A $V$ polarized photon, being far detuned from the cavity resonance by $\Delta_{\text{biref}}$, is reflected without entering the cavity and acquires no phase shift, regardless of the atomic state.
+In the event of an uncoupled atom-cavity system (effectively $g=0$), which would be achieved by preparing the atom in the $\ket{u}$ state, the reflection coefficient $r<0$. This would imply a relative phase shift of $\pi$ between the reflected and incoming light field ($a_{out}(t) \approx -a_{in}(t)$). Preparing the atom in the coupled state $\ket{c}$ however, the Vacuum Rabi Splitting shifts the cavity resonances to $\omega_c\pm g$, so the cavity appears off-resonant for a photon at $\omega_c$. The photon is therefore reflected from the OC mirror without entering the cavity, acquiring no phase shift, which is mirrored by a reflection coefficient of $r>0$ ($a_{out}(t) \approx a_{in}(t)$). This behavior is shown in Figure \ref{fig:reflection_phase_spectrum}.
+
+A $V$ polarized photon, being far detuned from the cavity resonance by $\Delta_{\text{biref}}$, is reflected without entering the cavity and acquires no phase shift, regardless of the atomic state.
 This state-dependent phase shift of the output field depending on the state of the atom, enables the realisation of a quantum atom-photon gate with the atom being the controlling qubit and the photon being the target qubit.\cite{DuanKimble2004}
 
 Adopting standard quantum computing notation, the uncoupled state of the atom is the $\ket{0}$ state, and the coupled one the $\ket{1}$ state. The photon, either $\pi\text{-polarized}$ or V-polarized, is represented as the input states $\ket{\pi}$ and $\ket{V}$. Furthermore, for all input states, the input drive is resonant with the $\pi$ mode of the birefringent cavity.
