@@ -41,7 +41,6 @@ The cavity fibers are fabricated using a $\text{CO}_2$ laser machining technique
 
 \begin{table}[ht]
 	\centering
-	\label{tab:cavity_parameters}
 	\begin{tabular}{l|c|c}
 		\hline\hline
 		Parameter                                         & Long Cavity             & Short Cavity                  \\
@@ -70,6 +69,7 @@ The cavity fibers are fabricated using a $\text{CO}_2$ laser machining technique
 		\hline\hline
 	\end{tabular}
 	\caption{Cavity parameters.}
+	\label{tab:cavity_parameters}
 \end{table}
 
 \section{Trapping of a Single Atom}
@@ -141,10 +141,10 @@ In order to achieve maximum cavity coupling, the galvo scans its amplitude, rota
 Figure \ref{fig:atom_loading} gives a visual overview of the trace during the positioning sequence.
 
 \begin{figure}[htpb]
-    \centering
-    \includesvg[width=0.8\linewidth]{Figures/3_setup/atom_loading.svg}
-    \caption{Typical trace in which fluorescence counts are recorded during the atom positioning procedure as a function of time. The MOT release sets the time = 0s. Around time 0.1s, an atom is trapped in the 852 nm trap and is not coupled to the cavity (1). Around time 0.5 s, the positioning procedure begins, in which the galvo is swept in one direction. During this time, the counts are recorded (2). Once the maximum coupling position is reached (3), the positioning sequence is interrupted, and the atom is kept in place while being cooled (4)}
-    \label{fig:atom_loading}
+	\centering
+	\includesvg[width=0.8\linewidth]{Figures/3_setup/atom_loading.svg}
+	\caption{Typical trace in which fluorescence counts are recorded during the atom positioning procedure as a function of time. The MOT release sets the time = 0s. Around time 0.1s, an atom is trapped in the 852 nm trap and is not coupled to the cavity (1). Around time 0.5 s, the positioning procedure begins, in which the galvo is swept in one direction. During this time, the counts are recorded (2). Once the maximum coupling position is reached (3), the positioning sequence is interrupted, and the atom is kept in place while being cooled (4)}
+	\label{fig:atom_loading}
 \end{figure}
 
 \section{Atomic Qubit Preparation} \label{sec:atomic_qubit_preparation}
@@ -171,11 +171,11 @@ Finding the transition frequency is done by performing a microwave spectroscopy 
 The resulting MW spectrum shown in \ref{fig:mw_spectroscopy} then shows three peaks, which correspond to the $F=1, m_F=0 \leftrightarrow F=2,m_F=0$ and $F=1,m_F=0\leftrightarrow F=2,m_F=\pm1$ transitions. From this one can infer that the optical pumping into the $F=1,m_F=0$ is done with an efficiency of $97(1)\%$.\cite{GianvitoC2026}
 
 \begin{figure}[htpb]
-    \centering
-    \includesvg[width=\linewidth]{Figures/3_setup/MWSpec_F1mf0_thesis_style.svg}
-    \caption{Resulting MW spectrum when the atom is initialized in $F=1,m_F=0$. The colored yellow, green, and blue colored sections represent the transitions from $F=1,m_F=0$ to $F=2,m_F=-1$, $F=2,m_F=0$, and $F=2,m_F=+1$ respectively.}
-    \label{fig:mw_spectroscopy}
-    
+	\centering
+	\includesvg[width=\linewidth]{Figures/3_setup/MWSpec_F1mf0_thesis_style.svg}
+	\caption{Resulting MW spectrum when the atom is initialized in $F=1,m_F=0$. The colored yellow, green, and blue colored sections represent the transitions from $F=1,m_F=0$ to $F=2,m_F=-1$, $F=2,m_F=0$, and $F=2,m_F=+1$ respectively.}
+	\label{fig:mw_spectroscopy}
+
 \end{figure}
 
 Once the frequency for the $F=1,m_F=0 \leftrightarrow F=2,m_F=0$ transition is known, one can coherently manipulate the atomic population in the ground state. By tuning the MW on resonance, one can drive Rabi oscillations \cite{OpticalResonanceAndTwoLevelAtoms} between two ground states, where the population evolution in the Zeeman state of $F=2$ can be modeled as:\cite{RabiOscillationModel}
@@ -187,11 +187,11 @@ Once the frequency for the $F=1,m_F=0 \leftrightarrow F=2,m_F=0$ transition is k
 
 where $P_1$ is the initial population after optical pumping in the state $F=1,m_F=0$, $\Omega$ is the previously determined Rabi frequency, and $\chi$ is the damping rate. The result is a combination of a sinusoidal term which describes the coherent state transfer between the two levels, and an exponential factor representing the dissipative mechanism which damps the oscillations.
 
-By scanning the length of the $\pi$ pulse at a constant MW frequency, one can determine the ideal time it takes for a state to coherently transfer from $F=1,m_F=0$ to $F=2,m_F=0$. Figure \ref{fig:rabi_flop} shows the resulting Rabi oscillations for an atom prepared in $F=1,m_F=0$ and transferred to the $F=2,m_F=0$ state. Using a drive with a frequency of $\SI{30.7}{\mega\hertz}$ and a length of $\SI{37.07\pm0.05}{\mu\second}$, one is able to prepare the atom in the $F=2,m_F=0$ state with a probability of $\sim90\%$.
+By scanning the length of the $\pi$ pulse at a constant MW frequency, one can determine the ideal time it takes for a state to coherently transfer from $F=1,m_F=0$ to $F=2,m_F=0$. Figure \ref{fig:rabi_flop} shows the resulting Rabi oscillations for an atom prepared in $F=1,m_F=0$ and transferred to the $F=2,m_F=0$ state. Using a drive with a frequency of $\SI{30.7}{\mega\hertz}$ and a length of $\SI{37.07\pm0.05}{\mu\second}$, one is able to prepare the atom in the $F=2,m_F=0$ state with a probability of $\sim88\%$.
 
 \begin{figure}[htpb]
-    \centering
-    \includesvg[width=\linewidth]{Figures/3_setup/rabiflop.svg}
-    \caption{Rabi oscillations for the $F=1,m_F=0\leftrightarrow F=2,m_F=0$ transition. The solid line represents then fit given by \eqref{eq:rabi_oscillation_model} to the data points.}
-    \label{fig:rabi_flop}
+	\centering
+	\includesvg[width=\linewidth]{Figures/3_setup/rabiflop.svg}
+	\caption{Rabi oscillations for the $F=1,m_F=0\leftrightarrow F=2,m_F=0$ transition. The solid line represents then fit given by \eqref{eq:rabi_oscillation_model} to the data points.}
+	\label{fig:rabi_flop}
 \end{figure}

@@ -161,4 +161,3 @@ if __name__ == "__main__":
     for ds in DATASETS:
         print(f"Processing: {ds['file_name']}")
         analyse_and_plot(**ds)
-

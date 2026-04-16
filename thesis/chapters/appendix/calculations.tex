@@ -1,13 +1,13 @@
 \chapter{Numerical Simulation of the Atom-Photon Gate}\label{appendix:qutip_simulation}
- 
+
 This appendix describes the time-domain master-equation simulations used to determine the optimal Brewster window attenuation (section~\ref{appendix:bw_scan}) and to characterize the gate fidelity as a function of mean photon number (section~\ref{appendix:photon_number_scan}). All simulations were implemented in Python using the QuTiP framework \cite{qutip5}.
- 
+
 \section{Simulation Model}\label{appendix:sim_model}
- 
+
 The simulation models the full open quantum system consisting of a single $^{87}$Rb atom coupled to a birefringent Fabry-P\'{e}rot cavity supporting two polarization modes ($\pi$ and $V$). The atom is described by a four-level Hilbert space spanned by $\{\ket{0}, \ket{1}, \ket{\text{dark}}, \ket{e}\}$, where $\ket{0}$ and $\ket{1}$ are the clock qubit states, $\ket{\text{dark}}$ captures off-resonant decay channels, and $\ket{e}$ is the excited state coupled to $\ket{1}$ via the cavity mode. Each cavity mode is truncated to a Fock space of dimension $N_{\text{ph}}$, yielding a total Hilbert space of dimension $N_{\text{ph}} \times N_{\text{ph}} \times 4$.
- 
+
 \subsection{Hamiltonian}
- 
+
 In the rotating frame, the system Hamiltonian reads
 \begin{align}
 	\hat{H}_0 & = \Delta_{c,\pi}\, \hat{a}_\pi^\dagger \hat{a}_\pi + (\Delta_{c,\pi} + \Delta_{\text{biref}})\, \hat{a}_V^\dagger \hat{a}_V + \Delta_a\, \hat{\sigma}^\dagger \hat{\sigma},
@@ -17,23 +17,23 @@ with the atom--cavity interaction
 	\hat{H}_{\text{int}} & = g\bigl(\hat{a}_\pi \hat{\sigma}^\dagger + \hat{a}_\pi^\dagger \hat{\sigma} + \hat{a}_V \hat{\sigma}^\dagger + \hat{a}_V^\dagger \hat{\sigma}\bigr),
 \end{align}
 where $g$ is the vacuum coupling rate (identical for both modes), $\Delta_{c,\pi}$ is the cavity--laser detuning for the $\pi$ mode, $\Delta_{\text{biref}} = 2\pi \times \SI{500}{\mega\hertz}$ is the birefringent splitting, and $\Delta_a$ is the atom--laser detuning.
- 
+
 The external drive is included via input--output theory. For the CNOT basis states $\ket{\pm} = (\ket{V} \pm \ket{\pi})/\sqrt{2}$, both cavity modes are driven simultaneously with the appropriate relative phase and amplitude. The time-dependent drive Hamiltonian takes the form
 \begin{align}
 	\hat{H}_{\text{drive}}^{(\pm)}(t) & = \frac{i\, \mu_{fc} \sqrt{\kappa_{OC}}}{\sqrt{2}}\, \varepsilon(t) \Bigl[\bigl(\hat{a}_\pi - \hat{a}_\pi^\dagger\bigr) \pm \sqrt{T_V}\bigl(\hat{a}_V - \hat{a}_V^\dagger\bigr)\Bigr],
 \end{align}
 where $\varepsilon(t)$ is the temporal envelope of the input pulse, $\mu_{fc}$ is the fiber--cavity mode-matching parameter, $\kappa_{OC}$ is the outcoupling rate, and $T_V$ is the V-mode power transmission set by the Brewster window array.
- 
+
 \subsection{Initial States and Imperfect State Preparation}
- 
+
 The initial state of the system is a product of the atomic state and the cavity vacuum. For the atomic qubit state $\ket{0}$, the atom is initialized in a pure state $\hat{\rho}_0 = \ket{0}\bra{0}$. To account for imperfect optical pumping and microwave transfer, the nominal $\ket{1}$ initial state is modeled as a density matrix mixture
 \begin{align}
 	\hat{\rho}_1 = p_1 \ket{1}\bra{1} + (1 - p_1)\ket{0}\bra{0}, \label{eq:imperfect_prep}
 \end{align}
 with $p_1 = 0.88$. The full initial state for each simulation run is then $\hat{\rho}_{\text{init}} = \hat{\rho}_{\text{atom}} \otimes \ket{0_\pi}\bra{0_\pi} \otimes \ket{0_V}\bra{0_V}$.
- 
+
 \subsection{Dissipation}
- 
+
 The open-system dynamics are governed by the Lindblad master equation
 \begin{align}
 	\dot{\hat{\rho}} = -i[\hat{H}, \hat{\rho}] + \sum_k \mathcal{D}[\hat{L}_k]\hat{\rho},
@@ -46,9 +46,9 @@ with collapse operators accounting for:
 	\item Spontaneous emission to off-resonant states: $\hat{L}_6 = \sqrt{p_{e \to \text{dark}}\, \gamma}\, \ket{\text{dark}}\bra{e}$,
 \end{itemize}
 with branching ratios $p_{e \to 1} = 1/15$ and $p_{e \to \text{dark}} = 14/15$ for the $F' = 1$ excited state of the D$_2$ line.
- 
+
 \subsection{Output Fields and Detection Probabilities}
- 
+
 The quantum output photon number in each polarization mode is computed via the input--output relation. The mean output field amplitude is
 \begin{align}
 	\alpha_{\text{out},\alpha}(t) = \mu_{fr}\, \alpha_{\text{in},\alpha}(t) + \mu_{fc}\sqrt{\kappa_{OC}}\, \langle \hat{a}_\alpha(t) \rangle,
@@ -58,91 +58,91 @@ where $\mu_{fr}$ is the free-space mode-matching parameter. The quantum output p
 	n_{\text{out},\alpha}^{(q)}(t) = |\alpha_{\text{out},\alpha}(t)|^2 + |\mu_{fc}|^2 \kappa_{OC}\bigl(\langle \hat{a}_\alpha^\dagger \hat{a}_\alpha \rangle - |\langle \hat{a}_\alpha \rangle|^2\bigr). \label{eq:quantum_output}
 \end{align}
 For the CNOT basis, the output fields are transformed via $n_{\text{out},\pm}^{(q)} = (n_{\text{out},V}^{(q)} \pm n_{\text{out},\pi}^{(q)})/2$.
- 
+
 The detection probabilities at the two SNSPD detectors include corrections for dark counts and finite detection efficiency $\eta$.
- 
+
 \subsection{CNOT Truth Table Construction}\label{appendix:truth_table}
- 
+
 The CNOT truth table is a $4 \times 4$ matrix whose columns correspond to the four input configurations $\{\ket{1,+},\, \ket{1,-},\, \ket{0,+},\, \ket{0,-}\}$ and whose rows correspond to the four output configurations $\{\ket{1,+},\, \ket{1,-},\, \ket{0,+},\, \ket{0,-}\}$, where the first label denotes the atomic state and the second label the photonic polarization. Each entry is the joint probability of observing a given photonic detection outcome \emph{and} the atom being found in a given qubit state after the gate pulse. Concretely, the entry for output $\ket{a', p'}$ given input $\ket{a, p}$ reads
 \begin{align}
 	\text{CNOT}_{(a',p'),(a,p)} = P_{\text{atom}}(a' \,|\, a,p)\;\cdot\; P_{\text{det}}(p' \,|\, a,p), \label{eq:cnot_entry}
 \end{align}
 where $P_{\text{atom}}(a' \,|\, a,p)$ is the probability that the atom occupies qubit state $\ket{a'}$ at the end of the pulse (extracted from the final density matrix), and $P_{\text{det}}(p' \,|\, a,p)$ is the photonic detection probability in output port $p'$. Each column is then normalized to unit probability.
- 
+
 This construction ensures that spontaneous scattering events---which can flip the atomic qubit state during the gate pulse---are reflected as errors in the truth table, rather than being accounted for as a separate correction factor.
- 
+
 The average probability for the atom to remain in its initial qubit state is
 \begin{align}
 	p_{\text{atom}} = \frac{1}{4}\sum_{a \in \{0,1\},\; p \in \{+,-\}} P_{\text{atom}}(a \,|\, a,p),
 \end{align}
 which provides a direct measure of the atomic state preservation across all input configurations.
- 
+
 \subsection{Simulation Parameters}\label{appendix:sim_params}
- 
+
 The parameters used in the simulations are summarized in Table~\ref{tab:sim_params}. These correspond to the experimentally characterized values presented in section~\ref{section:experimental_parameters_for_gate}.
- 
+
 \begin{table}[ht]
 	\centering
 	\begin{tabular}{l c c}
 		\hline\hline
-		Parameter                       & Symbol                  & Value                                 \\
+		Parameter                   & Symbol                  & Value                                 \\
 		\hline
-		Atom--cavity coupling           & $g$                     & $2\pi \times \SI{26}{\mega\hertz}$    \\
-		Total cavity decay rate         & $\kappa$                & $2\pi \times \SI{58}{\mega\hertz}$    \\
-		Outcoupling ratio               & $\kappa_{OC}/\kappa$    & $0.85$                                \\
-		Atomic decay rate               & $\gamma$                & $2\pi \times \SI{6.065}{\mega\hertz}$ \\
-		Birefringent splitting          & $\Delta_{\text{biref}}$ & $2\pi \times \SI{500}{\mega\hertz}$   \\
-		Fiber--cavity mode-matching     & $\mu_{fc}$              & $0.873$                               \\
-		Free-space mode-matching        & $\mu_{fr}$              & $0.978$                               \\
-		State preparation fidelity      & $p_1$                   & $0.88$                                \\
-		Detection efficiency            & $\eta$                  & $0.742$                               \\
-		Dark count rate                 & $r_{\text{dc}}$         & $5 \times 10^{-5}$                    \\
+		Atom--cavity coupling       & $g$                     & $2\pi \times \SI{25.9}{\mega\hertz}$  \\
+		Total cavity decay rate     & $\kappa$                & $2\pi \times \SI{58}{\mega\hertz}$    \\
+		Outcoupling ratio           & $\kappa_{OC}/\kappa$    & $0.85$                                \\
+		Atomic decay rate           & $\gamma$                & $2\pi \times \SI{6.065}{\mega\hertz}$ \\
+		Birefringent splitting      & $\Delta_{\text{biref}}$ & $2\pi \times \SI{500}{\mega\hertz}$   \\
+		Fiber--cavity mode-matching & $\mu_{fc}$              & $0.873$                               \\
+		Free-space mode-matching    & $\mu_{fr}$              & $0.978$                               \\
+		State preparation fidelity  & $p_1$                   & $0.88$                                \\
+		Detection efficiency        & $\eta$                  & $0.742$                               \\
+		Dark count rate             & $r_{\text{dc}}$         & $5 \times 10^{-5}$                    \\
 		\hline
 	\end{tabular}
 	\caption{Parameters used in the master-equation simulations. The detection efficiency is the product of fiber coupling ($0.9$), SNSPD efficiency ($0.85$), and optical path transmission ($0.97$).}
 	\label{tab:sim_params}
 \end{table}
- 
- 
+
+
 \section{Brewster Window Transmission Scan}\label{appendix:bw_scan}
- 
+
 To determine the optimal number of Brewster windows for the V-mode attenuation (cf.\ section~\ref{section:polarization_dependent_losses}), the gate fidelity was computed as a function of the V-mode transmission $T_V \in [0, 1]$.
- 
+
 For each value of $T_V$, the simulation was run in the CNOT basis: weak coherent pulses with $\ket{+}$ and $\ket{-}$ input polarizations were reflected from the atom-cavity system for both atomic qubit states $\ket{0}$ and $\ket{1}$. In the simulation, the V-mode transmission enters as a prefactor $\sqrt{T_V}$ on the V-mode drive amplitude, effectively modeling the attenuation introduced by the Brewster window array prior to the cavity. The Fock space truncation was set to $N_{\text{ph}} = 3$ for this scan.
- 
+
 From the four resulting output fields, the $4 \times 4$ CNOT truth table was constructed as described in section~\ref{appendix:truth_table}, including the atomic state probability weighting. The columns of the truth table were then normalized to unit probability. The overlap was evaluated as the column-averaged overlap between the simulated and ideal CNOT truth tables:
 \begin{align}
 	\text{Overlap} = \frac{1}{4} \sum_{j=1}^{4} \left| \langle U_j | V_j \rangle \right|^2, \label{eq:overlap}
 \end{align}
 where $\ket{U_j}$ and $\ket{V_j}$ are the $j$-th columns of the ideal and simulated truth tables, respectively.
- 
+
 \begin{figure}
 	\centering
 	\includesvg[width=\linewidth]{Figures/appendix/v_transmission_cnot_overlap.svg}
 	\caption{Simulated CNOT gate overlap as a function of the V-mode cavity transmission $T_\mathrm{V}$, obtained from a master-equation simulation of the atom--photon gate protocol. The dashed line marks the optimal transmission $T_\mathrm{V}^* \approx 0.24$.}
 	\label{fig:bw_scan_sim}
 \end{figure}
- 
+
 The scan shown in Figure \ref{fig:bw_scan_sim} reveals a clear optimum at $T_\mathrm{V} \approx 0.24$, corresponding to a V-mode power attenuation of approximately \SI{76}{\percent}. Given the measured single-window V-mode transmission of $(\num{77.40} \pm \num{0.13})\,\si{\percent}$ (section~\ref{sec:brewster_windows}), the na\"ive estimate $0.7738^n$ predicts an optimum between 5 and 6 Brewster windows ($0.7740^5 \approx \num{0.277}$ and $0.7740^6 \approx \num{0.215}$). However, the directly measured multi-window transmissions of $(\num{26.80} \pm \num{0.06})\,\si{\percent}$ for 6 windows and $(\num{22.47} \pm \num{0.04})\,\si{\percent}$ for 7 windows bracket $T_\mathrm{V}^*$, indicating that 6 to 7 Brewster windows realise the optimal V-mode attenuation in practice.
- 
+
 \section{Mean Photon Number Scan}\label{appendix:photon_number_scan}
- 
+
 While the atom-photon gate is designed to operate in the single-photon regime, the use of weak coherent pulses introduces a non-zero probability of multi-photon events. This section characterizes how the gate overlap depends on the mean photon number $\bar{n}$ of the input pulses.
- 
+
 The mean photon number was scanned over the range $\bar{n} \in [10^{-5},\, 10]$ on a logarithmic scale. For each value of $\bar{n}$, the coherent pulse amplitude was computed from the pulse normalization as
 \begin{align}
 	\alpha = \sqrt{\frac{\bar{n}}{\int_0^T |\varepsilon_{\text{ref}}(t)|^2\, dt}},
 \end{align}
 where $\varepsilon_{\text{ref}}(t)$ is the unit-amplitude pulse envelope. The CNOT truth table was then constructed as described in section~\ref{appendix:truth_table}, including the atomic state probability weighting, and the overlap with the ideal CNOT truth table was evaluated using \eqref{eq:overlap}. The V-mode transmission was fixed at $T_V = 0.2247$ and the Fock space truncation was set to $N_{\text{ph}} = 3$ for this scan.
- 
+
 \begin{figure}
 	\centering
-    \includesvg[width=\linewidth]{Figures/appendix/photon_number_scan.svg}
+	\includesvg[width=\linewidth]{Figures/appendix/photon_number_scan.svg}
 	\caption{Simulated CNOT gate overlap as a function of the mean input photon number $\bar{n}$. The V-mode transmission is fixed at $T_V = 0.2247$ and the Fock space is truncated at $N_{\text{ph}} = 3$. The dashed line marks the optimal mean photon number $\bar{n}^* \approx 0.10$, at which the overlap reaches a maximum of $\approx 0.865$.}
 	\label{fig:photon_number_scan}
 \end{figure}
- 
-The result is shown in Figure~\ref{fig:photon_number_scan}. At very low photon numbers ($\bar{n} \lesssim 10^{-3}$), dark counts dominate the detected signal and the overlap approaches $0.5$, corresponding to random guessing. As $\bar{n}$ increases, the signal-to-noise ratio improves and the overlap rises towards the single-photon limit. For $\bar{n} \gtrsim 1$, multi-photon events begin to degrade the overlap, as the master-equation simulation captures the nonlinear response of the atom-cavity system to multi-photon input states. 
+
+The result is shown in Figure~\ref{fig:photon_number_scan}. At very low photon numbers ($\bar{n} \lesssim 10^{-3}$), dark counts dominate the detected signal and the overlap approaches $0.5$, corresponding to random guessing. As $\bar{n}$ increases, the signal-to-noise ratio improves and the overlap rises towards the single-photon limit. For $\bar{n} \gtrsim 1$, multi-photon events begin to degrade the overlap, as the master-equation simulation captures the nonlinear response of the atom-cavity system to multi-photon input states.
 %  
 % It should be noted that the simulation assumes a fixed atom--cavity coupling $g$ throughout the gate pulse. In practice, spontaneous scattering events impart momentum kicks to the atom, displacing it within the intracavity standing wave and thereby reducing the effective coupling strength. This effect becomes significant at higher mean photon numbers where the scattering probability per pulse is no longer negligible, and is expected to cause the simulation to overestimate the gate overlap in this regime.
 

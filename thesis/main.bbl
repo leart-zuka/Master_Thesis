@@ -2432,6 +2432,295 @@
       \verb https://doi.org/10.1038/s41567-020-0855-3
       \endverb
     \endentry
+    \entry{Reiserer2014}{article}{}{}
+      \name{author}{4}{}{%
+        {{hash=a732b2b50a46287f8b50c73e321fda42}{%
+           family={Reiserer},
+           familyi={R\bibinitperiod},
+           given={Andreas},
+           giveni={A\bibinitperiod}}}%
+        {{hash=5d423c4ea998407b27c2b1131151133c}{%
+           family={Kalb},
+           familyi={K\bibinitperiod},
+           given={Norbert},
+           giveni={N\bibinitperiod}}}%
+        {{hash=587788e55695ee0af69d9a91fc254c31}{%
+           family={Rempe},
+           familyi={R\bibinitperiod},
+           given={Gerhard},
+           giveni={G\bibinitperiod}}}%
+        {{hash=da5a52f00f0a90347dbef85f137c796d}{%
+           family={Ritter},
+           familyi={R\bibinitperiod},
+           given={Stephan},
+           giveni={S\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Nature Publishing Group}%
+      }
+      \strng{namehash}{0b6040392e74de42721086d4fb992054}
+      \strng{fullhash}{60dc2ac65706a1e220bcee3cc6e4570b}
+      \strng{fullhashraw}{60dc2ac65706a1e220bcee3cc6e4570b}
+      \strng{bibnamehash}{0b6040392e74de42721086d4fb992054}
+      \strng{authorbibnamehash}{0b6040392e74de42721086d4fb992054}
+      \strng{authornamehash}{0b6040392e74de42721086d4fb992054}
+      \strng{authorfullhash}{60dc2ac65706a1e220bcee3cc6e4570b}
+      \strng{authorfullhashraw}{60dc2ac65706a1e220bcee3cc6e4570b}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{14764687}
+      \field{issue}{7495}
+      \field{journaltitle}{Nature}
+      \field{month}{4}
+      \field{title}{A quantum gate between a flying optical photon and a single trapped atom}
+      \field{volume}{508}
+      \field{year}{2014}
+      \field{pages}{237\bibrangedash 240}
+      \range{pages}{4}
+      \verb{doi}
+      \verb 10.1038/nature13177
+      \endverb
+      \verb{urlraw}
+      \verb https://www.nature.com/articles/nature13177
+      \endverb
+      \verb{url}
+      \verb https://www.nature.com/articles/nature13177
+      \endverb
+    \endentry
+    \entry{Welte2018}{article}{}{}
+      \name{author}{5}{}{%
+        {{hash=16373a7e3ecccc34d2b9441051cf53a7}{%
+           family={Welte},
+           familyi={W\bibinitperiod},
+           given={Stephan},
+           giveni={S\bibinitperiod}}}%
+        {{hash=340165213192d1052dd74325e3d38d84}{%
+           family={Hacker},
+           familyi={H\bibinitperiod},
+           given={Bastian},
+           giveni={B\bibinitperiod}}}%
+        {{hash=44ef75ba1eaa18c9508dc8d6c1a1e92c}{%
+           family={Daiss},
+           familyi={D\bibinitperiod},
+           given={Severin},
+           giveni={S\bibinitperiod}}}%
+        {{hash=da5a52f00f0a90347dbef85f137c796d}{%
+           family={Ritter},
+           familyi={R\bibinitperiod},
+           given={Stephan},
+           giveni={S\bibinitperiod}}}%
+        {{hash=587788e55695ee0af69d9a91fc254c31}{%
+           family={Rempe},
+           familyi={R\bibinitperiod},
+           given={Gerhard},
+           giveni={G\bibinitperiod}}}%
+      }
+      \strng{namehash}{ab317ac964512070636cf1ac55f76419}
+      \strng{fullhash}{0cb1709f17dc651c984aef4e45cb67f2}
+      \strng{fullhashraw}{0cb1709f17dc651c984aef4e45cb67f2}
+      \strng{bibnamehash}{ab317ac964512070636cf1ac55f76419}
+      \strng{authorbibnamehash}{ab317ac964512070636cf1ac55f76419}
+      \strng{authornamehash}{ab317ac964512070636cf1ac55f76419}
+      \strng{authorfullhash}{0cb1709f17dc651c984aef4e45cb67f2}
+      \strng{authorfullhashraw}{0cb1709f17dc651c984aef4e45cb67f2}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Phys. Rev. X}
+      \field{title}{Photon-Mediated Quantum Gate between Two Neutral Atoms in an Optical Cavity}
+      \field{volume}{8}
+      \field{year}{2018}
+      \field{pages}{011018}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.1103/PhysRevX.8.011018
+      \endverb
+    \endentry
+    \entry{Hacker2016}{article}{}{}
+      \name{author}{5}{}{%
+        {{hash=340165213192d1052dd74325e3d38d84}{%
+           family={Hacker},
+           familyi={H\bibinitperiod},
+           given={Bastian},
+           giveni={B\bibinitperiod}}}%
+        {{hash=16373a7e3ecccc34d2b9441051cf53a7}{%
+           family={Welte},
+           familyi={W\bibinitperiod},
+           given={Stephan},
+           giveni={S\bibinitperiod}}}%
+        {{hash=e6b56de39395996a705da41bacbece43}{%
+           family={Ballance},
+           familyi={B\bibinitperiod},
+           given={Gerhard},
+           giveni={G\bibinitperiod}}}%
+        {{hash=93b262695d1dfac165e972a466eda98c}{%
+           family={Dürr},
+           familyi={D\bibinitperiod},
+           given={Stephan},
+           giveni={S\bibinitperiod}}}%
+        {{hash=587788e55695ee0af69d9a91fc254c31}{%
+           family={Rempe},
+           familyi={R\bibinitperiod},
+           given={Gerhard},
+           giveni={G\bibinitperiod}}}%
+      }
+      \strng{namehash}{9e6026fc82287af6f935a5a5cd710b46}
+      \strng{fullhash}{fd58273ff719275aa27903e42ab2fa6a}
+      \strng{fullhashraw}{fd58273ff719275aa27903e42ab2fa6a}
+      \strng{bibnamehash}{9e6026fc82287af6f935a5a5cd710b46}
+      \strng{authorbibnamehash}{9e6026fc82287af6f935a5a5cd710b46}
+      \strng{authornamehash}{9e6026fc82287af6f935a5a5cd710b46}
+      \strng{authorfullhash}{fd58273ff719275aa27903e42ab2fa6a}
+      \strng{authorfullhashraw}{fd58273ff719275aa27903e42ab2fa6a}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Nature}
+      \field{title}{A photon--photon quantum gate based on a single atom in an optical resonator}
+      \field{volume}{536}
+      \field{year}{2016}
+      \field{pages}{193\bibrangedash 196}
+      \range{pages}{4}
+      \verb{doi}
+      \verb 10.1038/nature18592
+      \endverb
+    \endentry
+    \entry{TieckeEtAl2014}{article}{}{}
+      \name{author}{6}{}{%
+        {{hash=7f00f9fc1506df059b6b76be12e7ab23}{%
+           family={Tiecke},
+           familyi={T\bibinitperiod},
+           given={T.\bibnamedelimi G.},
+           giveni={T\bibinitperiod\bibinitdelim G\bibinitperiod}}}%
+        {{hash=cd73d2a1224ea92c8ec865582cefe63e}{%
+           family={Thompson},
+           familyi={T\bibinitperiod},
+           given={J.\bibnamedelimi D.},
+           giveni={J\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
+        {{hash=1a502dea6f30b084faa5b26ffe1c9cf2}{%
+           family={Leon},
+           familyi={L\bibinitperiod},
+           given={N.\bibnamedelimi P.},
+           giveni={N\bibinitperiod\bibinitdelim P\bibinitperiod},
+           prefix={de},
+           prefixi={d\bibinitperiod}}}%
+        {{hash=e6d355cf6145a5b421dec336eb944bbc}{%
+           family={Liu},
+           familyi={L\bibinitperiod},
+           given={L.\bibnamedelimi R.},
+           giveni={L\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
+        {{hash=84a8024069b7b4b9428b74e89d943270}{%
+           family={Vuletić},
+           familyi={V\bibinitperiod},
+           given={V.},
+           giveni={V\bibinitperiod}}}%
+        {{hash=152c9d776244752eaba344fc6d7d8f91}{%
+           family={Lukin},
+           familyi={L\bibinitperiod},
+           given={M.\bibnamedelimi D.},
+           giveni={M\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
+      }
+      \strng{namehash}{9cfd1f75024ec01880ae1ef42034aba6}
+      \strng{fullhash}{bf6262c26b5164d083ba5b8de2187013}
+      \strng{fullhashraw}{bf6262c26b5164d083ba5b8de2187013}
+      \strng{bibnamehash}{9cfd1f75024ec01880ae1ef42034aba6}
+      \strng{authorbibnamehash}{9cfd1f75024ec01880ae1ef42034aba6}
+      \strng{authornamehash}{9cfd1f75024ec01880ae1ef42034aba6}
+      \strng{authorfullhash}{bf6262c26b5164d083ba5b8de2187013}
+      \strng{authorfullhashraw}{bf6262c26b5164d083ba5b8de2187013}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Strongly coupling a photon to a single atom trapped in the near field of a nanoscale photonic crystal cavity results in a light switch which can be turned on and off with a single photon.}
+      \field{issn}{1476-4687}
+      \field{journaltitle}{Nature}
+      \field{month}{4}
+      \field{number}{7495}
+      \field{title}{Nanophotonic quantum phase switch with a single atom}
+      \field{volume}{508}
+      \field{year}{2014}
+      \field{pages}{241\bibrangedash 244}
+      \range{pages}{4}
+      \verb{doi}
+      \verb 10.1038/nature13188
+      \endverb
+      \verb{urlraw}
+      \verb https://doi.org/10.1038/nature13188
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.1038/nature13188
+      \endverb
+    \endentry
+    \entry{Drmota2025}{article}{}{}
+      \name{author}{8}{}{%
+        {{hash=aa19020aec00d5931d67e19603dbe87f}{%
+           family={Drmota},
+           familyi={D\bibinitperiod},
+           given={P.},
+           giveni={P\bibinitperiod}}}%
+        {{hash=6ec812f9535608e02e41a6d1ec7f58dd}{%
+           family={Main},
+           familyi={M\bibinitperiod},
+           given={D.},
+           giveni={D\bibinitperiod}}}%
+        {{hash=48e01918a0b7f7ce3b423a9e6dd76ed2}{%
+           family={Nadlinger},
+           familyi={N\bibinitperiod},
+           given={D.\bibnamedelimi P.},
+           giveni={D\bibinitperiod\bibinitdelim P\bibinitperiod}}}%
+        {{hash=070c2c902afb9295f36a9af8dde0dc60}{%
+           family={Nichol},
+           familyi={N\bibinitperiod},
+           given={B.\bibnamedelimi C.},
+           giveni={B\bibinitperiod\bibinitdelim C\bibinitperiod}}}%
+        {{hash=fa185a8abba3afc65561c21a8a3c0553}{%
+           family={Ainley},
+           familyi={A\bibinitperiod},
+           given={E.\bibnamedelimi M.},
+           giveni={E\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+        {{hash=8977572ff574716edf5ef6d7b4aa8eb6}{%
+           family={Leung},
+           familyi={L\bibinitperiod},
+           given={D.},
+           giveni={D\bibinitperiod}}}%
+        {{hash=7df2fadcd10d4e40fa32a187d029092f}{%
+           family={Ballance},
+           familyi={B\bibinitperiod},
+           given={C.\bibnamedelimi J.},
+           giveni={C\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+        {{hash=877cd7312ee525c62a91cfb1e6736351}{%
+           family={Lucas},
+           familyi={L\bibinitperiod},
+           given={D.\bibnamedelimi M.},
+           giveni={D\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+      }
+      \strng{namehash}{59b51d98b14bddcced0e8082c395eeb7}
+      \strng{fullhash}{dd485ed652baca08e197a49e65f092e0}
+      \strng{fullhashraw}{dd485ed652baca08e197a49e65f092e0}
+      \strng{bibnamehash}{59b51d98b14bddcced0e8082c395eeb7}
+      \strng{authorbibnamehash}{59b51d98b14bddcced0e8082c395eeb7}
+      \strng{authornamehash}{59b51d98b14bddcced0e8082c395eeb7}
+      \strng{authorfullhash}{dd485ed652baca08e197a49e65f092e0}
+      \strng{authorfullhashraw}{dd485ed652baca08e197a49e65f092e0}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Nature}
+      \field{title}{Distributed quantum computing across an optical network link}
+      \field{volume}{638}
+      \field{year}{2025}
+      \field{pages}{383\bibrangedash 388}
+      \range{pages}{6}
+      \verb{doi}
+      \verb 10.1038/s41586-024-08404-x
+      \endverb
+    \endentry
     \entry{RempeReiserer2015}{article}{}{}
       \name{author}{2}{}{%
         {{hash=a732b2b50a46287f8b50c73e321fda42}{%
@@ -2456,8 +2745,8 @@
       \strng{authornamehash}{ffe5b982e64f03fb6872d7eac8f03acc}
       \strng{authorfullhash}{ffe5b982e64f03fb6872d7eac8f03acc}
       \strng{authorfullhashraw}{ffe5b982e64f03fb6872d7eac8f03acc}
-      \field{sortinit}{2}
-      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{issue}{4}
@@ -2499,8 +2788,8 @@
       \strng{authornamehash}{cc9f717b0ab3876e759aa6ecae1f4fc6}
       \strng{authorfullhash}{cc9f717b0ab3876e759aa6ecae1f4fc6}
       \strng{authorfullhashraw}{cc9f717b0ab3876e759aa6ecae1f4fc6}
-      \field{sortinit}{2}
-      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Proceedings of the IEEE}
@@ -2632,8 +2921,8 @@
       \strng{authornamehash}{b4ae8a90d59cde0073f8b603aa67e6d9}
       \strng{authorfullhash}{b4ae8a90d59cde0073f8b603aa67e6d9}
       \strng{authorfullhashraw}{b4ae8a90d59cde0073f8b603aa67e6d9}
-      \field{sortinit}{3}
-      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{issue}{6}
@@ -2693,8 +2982,8 @@
       \strng{authornamehash}{b7c5c29cc194868a63ce1f967c844ecb}
       \strng{authorfullhash}{bb5c7515054c0fbda04d17e95880c11c}
       \strng{authorfullhashraw}{bb5c7515054c0fbda04d17e95880c11c}
-      \field{sortinit}{3}
-      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{issue}{8}
@@ -2713,73 +3002,6 @@
       \endverb
       \verb{url}
       \verb https://link.aps.org/doi/10.1103/PhysRevB.78.085307
-      \endverb
-    \endentry
-    \entry{TieckeEtAl2014}{article}{}{}
-      \name{author}{6}{}{%
-        {{hash=7f00f9fc1506df059b6b76be12e7ab23}{%
-           family={Tiecke},
-           familyi={T\bibinitperiod},
-           given={T.\bibnamedelimi G.},
-           giveni={T\bibinitperiod\bibinitdelim G\bibinitperiod}}}%
-        {{hash=cd73d2a1224ea92c8ec865582cefe63e}{%
-           family={Thompson},
-           familyi={T\bibinitperiod},
-           given={J.\bibnamedelimi D.},
-           giveni={J\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
-        {{hash=1a502dea6f30b084faa5b26ffe1c9cf2}{%
-           family={Leon},
-           familyi={L\bibinitperiod},
-           given={N.\bibnamedelimi P.},
-           giveni={N\bibinitperiod\bibinitdelim P\bibinitperiod},
-           prefix={de},
-           prefixi={d\bibinitperiod}}}%
-        {{hash=e6d355cf6145a5b421dec336eb944bbc}{%
-           family={Liu},
-           familyi={L\bibinitperiod},
-           given={L.\bibnamedelimi R.},
-           giveni={L\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
-        {{hash=84a8024069b7b4b9428b74e89d943270}{%
-           family={Vuletić},
-           familyi={V\bibinitperiod},
-           given={V.},
-           giveni={V\bibinitperiod}}}%
-        {{hash=152c9d776244752eaba344fc6d7d8f91}{%
-           family={Lukin},
-           familyi={L\bibinitperiod},
-           given={M.\bibnamedelimi D.},
-           giveni={M\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
-      }
-      \strng{namehash}{9cfd1f75024ec01880ae1ef42034aba6}
-      \strng{fullhash}{bf6262c26b5164d083ba5b8de2187013}
-      \strng{fullhashraw}{bf6262c26b5164d083ba5b8de2187013}
-      \strng{bibnamehash}{9cfd1f75024ec01880ae1ef42034aba6}
-      \strng{authorbibnamehash}{9cfd1f75024ec01880ae1ef42034aba6}
-      \strng{authornamehash}{9cfd1f75024ec01880ae1ef42034aba6}
-      \strng{authorfullhash}{bf6262c26b5164d083ba5b8de2187013}
-      \strng{authorfullhashraw}{bf6262c26b5164d083ba5b8de2187013}
-      \field{sortinit}{3}
-      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{abstract}{Strongly coupling a photon to a single atom trapped in the near field of a nanoscale photonic crystal cavity results in a light switch which can be turned on and off with a single photon.}
-      \field{issn}{1476-4687}
-      \field{journaltitle}{Nature}
-      \field{month}{4}
-      \field{number}{7495}
-      \field{title}{Nanophotonic quantum phase switch with a single atom}
-      \field{volume}{508}
-      \field{year}{2014}
-      \field{pages}{241\bibrangedash 244}
-      \range{pages}{4}
-      \verb{doi}
-      \verb 10.1038/nature13188
-      \endverb
-      \verb{urlraw}
-      \verb https://doi.org/10.1038/nature13188
-      \endverb
-      \verb{url}
-      \verb https://doi.org/10.1038/nature13188
       \endverb
     \endentry
     \entry{DominikNThesis2021}{thesis}{}{}
@@ -2804,8 +3026,8 @@
       \strng{authornamehash}{a6e7ddb61d1f9c6716ee6d1639275dc0}
       \strng{authorfullhash}{a6e7ddb61d1f9c6716ee6d1639275dc0}
       \strng{authorfullhashraw}{a6e7ddb61d1f9c6716ee6d1639275dc0}
-      \field{sortinit}{3}
-      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Nondestructive detection of photonic qubits with single atoms in crossed fiber cavities}
@@ -2841,8 +3063,8 @@
       \strng{authornamehash}{e7caae181382d3c929159b8205dd3731}
       \strng{authorfullhash}{e7caae181382d3c929159b8205dd3731}
       \strng{authorfullhashraw}{e7caae181382d3c929159b8205dd3731}
-      \field{sortinit}{3}
-      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Quantum-Network-ready Source of Heralded Atom-Photon Entanglement}
@@ -2903,8 +3125,8 @@
       \strng{authornamehash}{cd77a48f4316b3bd45ca5c381e90e4b1}
       \strng{authorfullhash}{cd77a48f4316b3bd45ca5c381e90e4b1}
       \strng{authorfullhashraw}{cd77a48f4316b3bd45ca5c381e90e4b1}
-      \field{sortinit}{4}
-      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{month}{5}
