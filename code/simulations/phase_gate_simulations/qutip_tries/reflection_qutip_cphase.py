@@ -59,7 +59,7 @@ args = {
     "sigma": 100.0,
 }
 
-photon_numbers = np.logspace(0, 0, 1)
+photon_numbers = np.array([4])
 
 amps = convert_photon_numbers_to_amps(tlist, args, photon_numbers, input_shape)
 

@@ -34,7 +34,7 @@ atom = AtomSystem(
 )
 
 cavity = CavitySystem(
-    photon_dim=4,
+    photon_dim=3,
     atom_dim=4,
     Delta_c_pi=2 * np.pi * 0,
     Delta_c_v=2 * np.pi * 0.5,
@@ -45,7 +45,9 @@ cavity = CavitySystem(
 
 system = SystemOperators(atom=atom, cavity=cavity)
 
-dissipation = Dissipation(ops=system, cavity=cavity, atom=atom)
+dissipation = Dissipation(
+    ops=system, cavity=cavity, atom=atom, include_off_resonant_F3=True
+)
 observables = Observables(ops=system, cavity=cavity)
 
 states = InitialStates(cavity=cavity, atom=atom)
@@ -59,6 +61,7 @@ e_ops = observables.expectation_ops()
 photon_numbers = np.concatenate([[0], np.logspace(-5, 1, 19)])
 overlaps = np.zeros_like(photon_numbers)
 atomic_state = np.zeros_like(photon_numbers)
+
 args_ref = {
     "amp": 1.0,
     "t0": 500,
@@ -84,7 +87,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     cavity = CavitySystem(
-        photon_dim=4,
+        photon_dim=3,
         atom_dim=4,
         Delta_c_pi=2 * np.pi * 0,
         Delta_c_v=2 * np.pi * 0.5,
@@ -130,7 +133,6 @@ if __name__ == "__main__":
 
         print(CNOT)
         print(compute_fidelity_from_prob_matrix(CNOT, basis="cnot"))
-        print(p_atom)
 
         atomic_state[i] = p_atom
         overlaps[i] = compute_fidelity_from_prob_matrix(
@@ -163,6 +165,6 @@ if __name__ == "__main__":
 
     comb_array = np.array([photon_numbers, overlaps])
     df = pd.DataFrame(comb_array.T, columns=["Photon Numbers", "Overlaps"])
-    df.to_csv("./sim_data_photon_number_scan_photon_dim_4.csv")
+    df.to_csv("./sim_data_photon_number_scan_photon_extra_f3_scattering.csv")
 
     plt.show()

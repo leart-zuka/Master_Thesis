@@ -35,14 +35,16 @@ cavity = CavitySystem(
     atom_dim=4,
     Delta_c_pi=2 * np.pi * 0,
     Delta_c_v=2 * np.pi * 0.5,
-    G0_kc=2 * np.pi * 0.010,
+    G0_kc=2 * np.pi * 0.026,
     Kappa=2 * np.pi * 0.058,
     v_transmission=0.208,
 )
 
 system = SystemOperators(atom=atom, cavity=cavity)
 
-dissipation = Dissipation(ops=system, cavity=cavity, atom=atom)
+dissipation = Dissipation(
+    ops=system, cavity=cavity, atom=atom, include_off_resonant_F3=True
+)
 observables = Observables(ops=system, cavity=cavity)
 
 states = InitialStates(cavity=cavity, atom=atom)
@@ -55,24 +57,28 @@ psi_1 = states.rho_mixed(p_0=0.12, p_1=0.880, p_dark=0)
 c_ops = dissipation.collapse_operators()
 e_ops = observables.expectation_ops()
 
+
 args_ref = {
-    "amp": 1.0,
+    "amp": 1,
     "t0": 500,
-    "tau": 70.0,
-    "tau_start": 91.0,
+    "tau": 10.0,
+    "tau_start": 10.0,
     "sigma": 100.0,
 }
 
-photon_numbers = np.array([4])
+
+photon_numbers = np.array(
+    [0.1]
+)  # insert array of length 1 with the mean input photon number you want to test
 amps = convert_photon_numbers_to_amps(tlist, args_ref, photon_numbers, input_shape)
 eta = 0.9 * 0.85 * 0.97
-r_dark = 1.5e-4
+r_dark = 5e-5
 
 args = {
     "amp": amps[0],
     "t0": 500,
-    "tau": 70.0,
-    "tau_start": 91.0,
+    "tau": 10.0,
+    "tau_start": 10.0,
     "sigma": 100.0,
 }
 
@@ -101,5 +107,4 @@ args = {
 )
 
 print(CNOT)
-print(p_atom)
 print(compute_fidelity_from_prob_matrix(CNOT, basis="cnot"))
