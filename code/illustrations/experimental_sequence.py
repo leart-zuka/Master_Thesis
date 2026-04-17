@@ -208,7 +208,7 @@ def dur(ts, te, txt, row=0):
 dur(t_cool_s, t_cool_e, r"$\approx\!400\;\mu$s")
 dur(t_op_s, t_op11_e, r"$290\;\mu$s")
 dur(t_op_s, t_op22_e, r"$340\;\mu$s", row=1)
-dur(t_mw_s, t_mw_e, r"$\sim\!30\;\mu$s")
+dur(t_mw_s, t_mw_e, r"$\sim\!37\;\mu$s")
 dur(t_ph_s, t_ph_e, r"$1\;\mu$s")
 dur(t_sd_s, t_sd_e, r"$8\;\mu$s")
 
@@ -221,6 +221,5 @@ plt.tight_layout()
 plt.savefig("experimental_sequence.svg", bbox_inches="tight", transparent=True)
 plt.savefig("experimental_sequence.pdf", bbox_inches="tight", transparent=True)
 plt.savefig("experimental_sequence.png", dpi=150, bbox_inches="tight")
-plt.show()
+# plt.show()
 print("Done.")
-
