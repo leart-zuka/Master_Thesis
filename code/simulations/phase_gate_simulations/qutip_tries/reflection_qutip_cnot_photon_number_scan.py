@@ -59,6 +59,7 @@ c_ops = dissipation.collapse_operators()
 e_ops = observables.expectation_ops()
 
 photon_numbers = np.concatenate([[0], np.logspace(-5, 1, 19)])
+photon_numbers = np.logspace(-5, 1, 20)
 overlaps = np.zeros_like(photon_numbers)
 atomic_state = np.zeros_like(photon_numbers)
 
@@ -129,6 +130,8 @@ if __name__ == "__main__":
             psi_1=psi_1,
             eta=eta,
             r_dc=r_dark,
+            dissipation=dissipation,
+            kappa_fs=2 * np.pi * 0.058,
         )
 
         print(CNOT)
@@ -161,7 +164,7 @@ if __name__ == "__main__":
         fontsize=10,
         bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.8),
     )
-    photon_numbers_fig.savefig("./plots/photon_numbers_no_annotation_photon_dim_4.svg")
+    photon_numbers_fig.savefig("./plots/photon_numbers_extra_scattering.svg")
 
     comb_array = np.array([photon_numbers, overlaps])
     df = pd.DataFrame(comb_array.T, columns=["Photon Numbers", "Overlaps"])

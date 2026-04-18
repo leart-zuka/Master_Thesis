@@ -115,9 +115,12 @@ class Dissipation:
     ops: SystemOperators
     cavity: CavitySystem
     atom: AtomSystem
+    include_off_resonant_F3: bool = False
+    Delta_F3: float = 2 * np.pi * 0.4236  # GHz, F'=3 above F'=1
+    g_F3_over_G0: float = 3.0  # CG ratio: sqrt((3/10)/(1/30)) = 3
 
     def collapse_operators(self) -> List[qt.Qobj]:
-        return [
+        base = [
             np.sqrt(self.cavity.Kappa_oc) * self.cavity.a_pi,
             np.sqrt(self.cavity.Kappa_oc) * self.cavity.a_v,
             np.sqrt(self.cavity.Kappa_internal) * self.cavity.a_pi,
@@ -125,6 +128,53 @@ class Dissipation:
             np.sqrt(self.atom.p_e_to_1 * self.atom.Gamma) * self.ops.sigma,
             np.sqrt(self.atom.p_e_to_dark * self.atom.Gamma) * self.ops.sigma_bad,
         ]
+
+        if self.include_off_resonant_F3:
+            eye_v = qt.qeye(self.cavity.photon_dim)
+            eye_pi = qt.qeye(self.cavity.photon_dim)
+
+            # Atomic transfer operators (in atom subspace first, then lifted)
+            op_1_to_dark = self.atom.state_dark * self.atom.state_1.dag()
+            op_1_to_1 = self.atom.state_1 * self.atom.state_1.dag()
+
+            sigma_1_to_dark = qt.tensor(eye_v, eye_pi, op_1_to_dark)
+            P1_full = qt.tensor(eye_v, eye_pi, op_1_to_1)
+
+            # Adiabatic elimination prefactor: (g_F'3 / Delta_F'3)
+            g_F3 = self.g_F3_over_G0 * self.cavity.G0_kc
+            coupling = g_F3 / self.Delta_F3
+
+            # Branching from |F'=3, m'=0>: 3/5 back to |1>, 2/5 to |dark>
+            p_to_dark = 2.0 / 5.0
+            p_back_to_1 = 3.0 / 5.0
+
+            # L = sqrt(p * Gamma) * (g_F3/Delta_F3) * |final><1| * a_pi
+            L_to_dark = (
+                np.sqrt(p_to_dark * self.atom.Gamma)
+                * coupling
+                * sigma_1_to_dark
+                * self.cavity.a_pi
+            )
+            L_elastic = (
+                np.sqrt(p_back_to_1 * self.atom.Gamma)
+                * coupling
+                * P1_full
+                * self.cavity.a_pi
+            )
+            base.extend([L_to_dark, L_elastic])
+
+        return base
+
+    def free_space_scattering_op(self) -> qt.Qobj:
+        """
+        Returns the operator |dark><1| that represents free-space scattering
+        from |1> directly out of the qubit manifold. This must be combined
+        with a time-dependent rate function in the c_ops list passed to mesolve.
+        """
+        eye_v = qt.qeye(self.cavity.photon_dim)
+        eye_pi = qt.qeye(self.cavity.photon_dim)
+        op_1_to_dark = self.atom.state_dark * self.atom.state_1.dag()
+        return qt.tensor(eye_v, eye_pi, op_1_to_dark)
 
 
 @dataclass

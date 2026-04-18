@@ -4,6 +4,7 @@ from helpers.generic_cavity_operators import (
     SystemOperators,
     AtomSystem,
     DriveParams,
+    Dissipation,
 )
 from helpers.plotting import plot_drive_pi_and_v
 from helpers.generic_computations import (
@@ -31,6 +32,8 @@ def simulate(
     drive: DriveParams,
     c_ops: list[qt.Qobj],
     e_ops: Dict[str, qt.Qobj],
+    dissipation: Dissipation = None,  # NEW: optional reference for free-space term
+    kappa_fs: float = 0.0,
 ) -> qt.Result:
     """
     Time-domain simulation of a driven atom–cavity system with
@@ -178,11 +181,24 @@ def simulate(
     else:
         raise ValueError(f"Unknown polarization: {DriveParams.polarization}")
 
+    c_ops_full = list(c_ops)
+
+    if kappa_fs > 0 and dissipation is not None:
+        L_fs = dissipation.free_space_scattering_op()
+        sqrt_kfs = np.sqrt(kappa_fs)
+        _shape = drive.input_shape
+        _args = drive.args
+
+        def fs_coeff(t):
+            return sqrt_kfs * _shape(t, _args)
+
+        c_ops_full.append([L_fs, fs_coeff])
+
     result = qt.mesolve(
         H,
         psi,
         tlist,
-        c_ops,
+        c_ops_full,
         e_ops,
         drive.args,
         options=qt.Options(
@@ -530,6 +546,8 @@ def run_sim_plus_analysis_in_cnot_basis(
     psi_1: qt.Qobj,
     eta: float,
     r_dc: float,
+    dissipation: Dissipation = None,
+    kappa_fs: float = 0.0,
 ):
     drive_plus = DriveParams(
         Mu_fc=Mu_fc,
@@ -547,6 +565,8 @@ def run_sim_plus_analysis_in_cnot_basis(
         drive=drive_plus,
         c_ops=c_obs,
         e_ops=e_obs,
+        dissipation=dissipation,
+        kappa_fs=kappa_fs,
     )
 
     out_1_plus = simulate(
@@ -558,6 +578,8 @@ def run_sim_plus_analysis_in_cnot_basis(
         drive=drive_plus,
         c_ops=c_obs,
         e_ops=e_obs,
+        dissipation=dissipation,
+        kappa_fs=kappa_fs,
     )
 
     drive_minus = DriveParams(
@@ -576,6 +598,8 @@ def run_sim_plus_analysis_in_cnot_basis(
         drive=drive_minus,
         c_ops=c_obs,
         e_ops=e_obs,
+        dissipation=dissipation,
+        kappa_fs=kappa_fs,
     )
 
     out_1_minus = simulate(
@@ -587,6 +611,8 @@ def run_sim_plus_analysis_in_cnot_basis(
         drive=drive_minus,
         c_ops=c_obs,
         e_ops=e_obs,
+        dissipation=dissipation,
+        kappa_fs=kappa_fs,
     )
 
     # Output field part

@@ -104,6 +104,8 @@ args = {
     psi_1=psi_1,
     eta=eta,
     r_dc=r_dark,
+    dissipation=dissipation,
+    kappa_fs=2 * np.pi * 0.058,
 )
 
 print(CNOT)
