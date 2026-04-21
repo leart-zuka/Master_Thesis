@@ -24,6 +24,170 @@ from helper.numba_functions import (
 from helper.plotting import channels_histo, plot_gate_3d
 from helper.analysis_types import NormalModeSpectroscopyT, ReflectionGateT
 from typing import Callable, Literal
+from mpl_toolkits.mplot3d import Axes3D
+
+PhotonBasis = Literal["Vpi", "RL"]
+
+_U_Vpi_to_RL = (1 / np.sqrt(2)) * np.array(
+    [
+        [1, 1],  # |V> component of |R>, |L>
+        [1j, -1j],  # |pi> component of |R>, |L>
+    ],
+    dtype=complex,
+)
+
+
+def _change_photon_basis(rho_Vpi: np.ndarray) -> np.ndarray:
+    """Transform 4x4 atom-photon rho from {V,pi} photon basis to {R,L}."""
+    U_photon = _U_Vpi_to_RL  # 2x2
+    U_full = np.kron(np.eye(2), U_photon)  # 4x4 acting on (atom)x(photon)
+    return U_full.conj().T @ rho_Vpi @ U_full
+
+
+def city_plot(
+    rho: np.ndarray,
+    *,
+    photon_basis: PhotonBasis = "RL",
+    target: np.ndarray | None = None,
+    title: str = "",
+    value: Literal["abs", "real", "imag"] = "abs",
+    figsize: tuple[float, float] = (8, 6),
+    save_path: str | None = None,
+) -> plt.Figure:
+    """
+    Render a 3D bar-chart city plot of a 4x4 density matrix.
+
+    Parameters
+    ----------
+    rho : 4x4 complex density matrix in the {|0V>, |0pi>, |1V>, |1pi>} basis
+          (as produced by density_matrix_from_stokes + project_to_physical).
+    photon_basis : "Vpi" to plot as-is, "RL" to first rotate the photon to
+          the R/L basis. Atom always stays in {|0>, |1>}.
+    target : optional 4x4 ideal density matrix in the same basis; if given,
+          drawn as open wireframe bars behind the solid data bars, Welte-style.
+    value : which component of each matrix element to plot as bar height.
+    """
+    if photon_basis == "RL":
+        rho_plot = _change_photon_basis(rho)
+        labels = [r"$|0R\rangle$", r"$|0L\rangle$", r"$|1R\rangle$", r"$|1L\rangle$"]
+        if target is not None:
+            target_plot = _change_photon_basis(target)
+    else:
+        rho_plot = rho
+        labels = [
+            r"$|0V\rangle$",
+            r"$|0\pi\rangle$",
+            r"$|1V\rangle$",
+            r"$|1\pi\rangle$",
+        ]
+        target_plot = target
+
+    def _extract(m: np.ndarray) -> np.ndarray:
+        if value == "abs":
+            return np.abs(m)
+        if value == "real":
+            return m.real
+        if value == "imag":
+            return m.imag
+        raise ValueError(f"Unknown value mode {value!r}")
+
+    heights = _extract(rho_plot)
+
+    fig = plt.figure(figsize=figsize)
+    ax = fig.add_subplot(111, projection="3d")
+
+    # Bar positions
+    _xpos, _ypos = np.meshgrid(np.arange(4), np.arange(4), indexing="ij")
+    xpos = _xpos.flatten()
+    ypos = _ypos.flatten()
+    zpos = np.zeros_like(xpos, dtype=float)
+    dx = dy = 0.7 * np.ones_like(xpos, dtype=float)
+    dz = heights.flatten()
+
+    # Solid data bars
+    ax.bar3d(
+        xpos, ypos, zpos, dx, dy, dz, color="crimson", alpha=0.8, edgecolor="black"
+    )
+
+    # Optional wireframe target bars
+    if target_plot is not None:
+        tgt_heights = _extract(target_plot).flatten()
+        for xi, yi, hi in zip(xpos, ypos, tgt_heights):
+            if abs(hi) < 1e-9:
+                continue
+            # Draw a rectangular wireframe at the target height
+            _draw_wireframe_bar(ax, xi, yi, hi, dx[0], dy[0])
+
+    ax.set_xticks(np.arange(4) + 0.35)
+    ax.set_yticks(np.arange(4) + 0.35)
+    ax.set_xticklabels(labels)
+    ax.set_yticklabels(labels)
+    ax.set_zlim(0, max(0.55, dz.max() * 1.1))
+    ax.set_zlabel(
+        {
+            "abs": r"$|\rho_{ij}|$",
+            "real": r"$\mathrm{Re}\,\rho_{ij}$",
+            "imag": r"$\mathrm{Im}\,\rho_{ij}$",
+        }[value]
+    )
+    if title:
+        ax.set_title(title)
+
+    if save_path:
+        fig.savefig(save_path, dpi=200, bbox_inches="tight")
+
+    return fig
+
+
+def _draw_wireframe_bar(ax, x: float, y: float, h: float, dx: float, dy: float) -> None:
+    """Draw the 12 edges of a rectangular bar as blue lines."""
+    # Corners of the box footprint (counter-clockwise)
+    corners_bottom = [
+        (x, y, 0),
+        (x + dx, y, 0),
+        (x + dx, y + dy, 0),
+        (x, y + dy, 0),
+    ]
+    corners_top = [(cx, cy, h) for (cx, cy, _) in corners_bottom]
+
+    edges = []
+    # Bottom
+    for i in range(4):
+        edges.append((corners_bottom[i], corners_bottom[(i + 1) % 4]))
+    # Top
+    for i in range(4):
+        edges.append((corners_top[i], corners_top[(i + 1) % 4]))
+    # Verticals
+    for i in range(4):
+        edges.append((corners_bottom[i], corners_top[i]))
+
+    for p0, p1 in edges:
+        xs = [p0[0], p1[0]]
+        ys = [p0[1], p1[1]]
+        zs = [p0[2], p1[2]]
+        ax.plot(xs, ys, zs, color="blue", linewidth=1.0, alpha=0.6)
+
+
+# ---------------------------------------------------------------------------
+# Convenience wrapper
+# ---------------------------------------------------------------------------
+
+
+def plot_bell_state_tomography(
+    rho: np.ndarray,
+    target: np.ndarray,
+    inp: Literal["R", "L"],
+    save_path: str | None = None,
+) -> plt.Figure:
+    """Thesis-ready default: |rho| in R/L photon basis with target wireframe."""
+    return city_plot(
+        rho,
+        target=target,
+        photon_basis="RL",
+        value="abs",
+        title=f"Atom-photon Bell state ({inp}-input)",
+        save_path=save_path,
+    )
 
 
 class Analyzer:
@@ -1198,12 +1362,6 @@ def collect_all_probs(
 if __name__ == "__main__":
     analyzer = Analyzer(data_dir="./")
 
-    file = "10_04_26_Bell_State_Prep_hail_marry_2"
-    file = "10_04_26_Bell_State_Prep_hail_marry_10"
-    file = "10_04_26_Bell_State_Prep_hail_marry_4"
-    file = "10_04_26_Bell_State_Prep_hail_marry_8"
-    file = "10_04_26_Bell_State_Prep_hail_marry_2"
-
     ParamDictReflection_trap_off: ReflectionGateT = {
         "trigger_delay": 3.15e-6,
         "cooling_duration": 400e-6,
@@ -1220,3 +1378,14 @@ if __name__ == "__main__":
         params=ParamDictReflection_trap_off,
     )
     results = run_tomography(probs)
+
+    bla = np.zeros_like(results["L"]["rho"])
+    for inp in ("R", "L"):
+        rho = results[inp]["rho"]
+        psi = results[inp]["target"]
+        target = np.outer(psi, psi.conj())
+        fig = plot_bell_state_tomography(
+            rho, target, inp, save_path=f"bell_state_{inp}.svg"
+        )
+
+    plt.show()
