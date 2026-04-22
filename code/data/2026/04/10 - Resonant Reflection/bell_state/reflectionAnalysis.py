@@ -51,7 +51,7 @@ def city_plot(
     target: np.ndarray | None = None,
     title: str = "",
     value: Literal["abs", "real", "imag"] = "abs",
-    figsize: tuple[float, float] = (8, 6),
+    figsize: tuple[float, float] = (10, 10),
     save_path: str | None = None,
 ) -> plt.Figure:
     """
@@ -122,19 +122,30 @@ def city_plot(
     ax.set_yticks(np.arange(4) + 0.35)
     ax.set_xticklabels(labels)
     ax.set_yticklabels(labels)
-    ax.set_zlim(0, max(0.55, dz.max() * 1.1))
-    ax.set_zlabel(
-        {
-            "abs": r"$|\rho_{ij}|$",
-            "real": r"$\mathrm{Re}\,\rho_{ij}$",
-            "imag": r"$\mathrm{Im}\,\rho_{ij}$",
-        }[value]
-    )
-    if title:
-        ax.set_title(title)
 
+    # ax.set_xlabel("Output", labelpad=20)
+    # ax.set_ylabel("Input", labelpad=20)
+
+    ax.set_zlim(0, max(0.50, dz.max() * 1.1))
+    # ax.set_zlabel(
+    #     {
+    #         "abs": r"$|\rho_{ij}|$",
+    #         "real": r"$\mathrm{Re}\,\rho_{ij}$",
+    #         "imag": r"$\mathrm{Im}\,\rho_{ij}$",
+    #     }[value]
+    # )
+
+    ax.set_zlabel("Absolute value", labelpad=15, rotation=90)
+
+    # fig.tight_layout()
+    # fig.subplots_adjust(left=0.05, right=0.85)
+    fig.subplots_adjust(left=0.0, right=0.78, top=0.95, bottom=0.05)
+
+    # if title:
+    #     ax.set_title(title)
+    ax.view_init(elev=15, azim=-30)
     if save_path:
-        fig.savefig(save_path, dpi=200, bbox_inches="tight")
+        fig.savefig(save_path)
 
     return fig
 
@@ -1379,13 +1390,20 @@ if __name__ == "__main__":
     )
     results = run_tomography(probs)
 
-    bla = np.zeros_like(results["L"]["rho"])
-    for inp in ("R", "L"):
-        rho = results[inp]["rho"]
-        psi = results[inp]["target"]
-        target = np.outer(psi, psi.conj())
-        fig = plot_bell_state_tomography(
-            rho, target, inp, save_path=f"bell_state_{inp}.svg"
-        )
+    inp = "L"
+    rho = results[inp]["rho"]
+    psi = results[inp]["target"]
+    target = np.outer(psi, psi.conj())
+    fig = plot_bell_state_tomography(
+        rho, target, inp, save_path=f"bell_state_{inp}.pdf"
+    )
 
-    plt.show()
+    # for inp in ("R", "L"):
+    #     rho = results[inp]["rho"]
+    #     psi = results[inp]["target"]
+    #     target = np.outer(psi, psi.conj())
+    #     fig = plot_bell_state_tomography(
+    #         rho, target, inp, save_path=f"bell_state_{inp}.svg"
+    #     )
+    #
+    # plt.show()

@@ -25,9 +25,7 @@ mpl.rcParams.update(
 )
 
 # ── Load data ────────────────────────────────────────────────────────
-df = pd.read_csv(
-    "sim_data_photon_number_scan_photon_extra_f3_scattering.csv", index_col=0
-)
+df = pd.read_csv("sim_data_photon_number_scan.csv", index_col=0)
 n_bar = df["Photon Numbers"].values
 overlap = df["Overlaps"].values
 

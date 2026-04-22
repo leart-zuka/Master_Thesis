@@ -37,7 +37,7 @@ df_bw = pd.read_csv("sim_data_bw_scan_scan.csv")
 bw_trans_th = df_bw["Transmissions"].values
 bw_overlap_th = df_bw["Overlaps"].values
 
-df_pn = pd.read_csv("sim_data_photon_number_scan_photon_extra_f3_scattering.csv")
+df_pn = pd.read_csv("sim_data_photon_number_scan.csv")
 pn_number_th = df_pn["Photon Numbers"].values
 pn_overlap_th = df_pn["Overlaps"].values
 
