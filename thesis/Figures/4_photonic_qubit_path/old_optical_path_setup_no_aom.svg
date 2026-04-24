@@ -27,11 +27,11 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showguides="true"
-     inkscape:zoom="29.590048"
-     inkscape:cx="203.14262"
-     inkscape:cy="578.20116"
-     inkscape:window-width="1876"
-     inkscape:window-height="1121"
+     inkscape:zoom="1.849378"
+     inkscape:cx="327.13702"
+     inkscape:cy="427.98173"
+     inkscape:window-width="2536"
+     inkscape:window-height="1374"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -1176,8 +1176,8 @@
    id="rect2-8" /> 
 			</g>
 		</g></g><path
-       style="opacity:1;fill:#000000;fill-opacity:0;stroke:#00da2e;stroke-width:0.199;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers;marker-end:url(#marker85)"
-       d="m 121.32453,126.4319 -8.45083,20.98557 H 71.422132"
+       style="opacity:1;fill:#000000;fill-opacity:0;stroke:#00da2e;stroke-width:0.200977;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker-end:url(#marker85);paint-order:stroke fill markers"
+       d="m 121.82465,126.43313 -8.62053,20.98317 H 70.920112"
        id="path84" /><g
        id="g10-4"
        inkscape:label="Detection Basis"
@@ -1330,7 +1330,7 @@
            y="137.291">8</tspan></text></g><g
        style="display:inline;overflow:visible"
        id="g26"
-       transform="matrix(0.15328395,0.21565799,-0.21565799,0.15328395,115.95361,145.10662)"><g
+       transform="matrix(0.15328395,0.21565799,-0.21565799,0.15328395,116.28403,145.10545)"><g
          id="Layer_1-84"
          i:layer="yes"
          i:dimmedPercent="50"
@@ -1646,7 +1646,10 @@
    height="22.677999"
    id="rect3-8-0"
    style="fill:url(#linearGradient20-0)" /> 
-		</g></g></g><g
+		</g></g></g><path
+       style="opacity:1;fill:none;fill-rule:evenodd;stroke:#08c200;stroke-width:0.201;stroke-linecap:round;paint-order:stroke fill markers;stroke-dasharray:none"
+       d="m 121.82465,126.43313 6.30364,-15.98972"
+       id="path1" /><g
        id="Layer_1-3-8-5"
        i:layer="yes"
        i:dimmedPercent="50"
@@ -3115,8 +3118,8 @@
        style="opacity:1;fill:#000000;fill-opacity:0;stroke:#ff0505;stroke-width:0.1;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
        d="m 121.32453,126.4319 6.30944,-16.20478"
        id="path76" /><path
-       style="opacity:1;fill:#000000;fill-opacity:0;stroke:#0518ff;stroke-width:0.10000001;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers;marker-start:url(#marker81)"
-       d="m 115.96462,111.70943 5.27944,14.70296 6.38991,-16.18527"
+       style="opacity:1;fill:#000000;fill-opacity:0;stroke:#0518ff;stroke-width:0.0987768;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker-start:url(#marker81);paint-order:stroke fill markers"
+       d="m 115.96313,111.54625 5.09431,14.86682 6.16581,-16.36565"
        id="path79" /><path
        style="opacity:1;fill:#000000;fill-opacity:0;stroke:#0518ff;stroke-width:0.0774475;stroke-linejoin:bevel;stroke-dasharray:0.30978999,0.0774475;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
        d="m 121.25156,126.31246 5.85712,16.32465"
@@ -3307,7 +3310,7 @@
        style="font-size:5.33333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect85);display:inline;opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.752126;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"><tspan
          x="417.71484"
          y="345.90735"
-         id="tspan1">Mirror</tspan></text><text
+         id="tspan9">Mirror</tspan></text><text
        xml:space="preserve"
        transform="scale(0.26458333)"
        id="text86"
@@ -3318,42 +3321,42 @@
        style="font-size:5.33333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect85-7);display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.752126;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"><tspan
          x="417.71484"
          y="345.90735"
-         id="tspan2">Mirror</tspan></text><text
+         id="tspan10">Mirror</tspan></text><text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,-5.8161325,47.543705)"
        id="text85-8"
        style="font-size:5.33333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect85-70);display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.752126;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"><tspan
          x="417.71484"
          y="345.90735"
-         id="tspan3">Mirror</tspan></text><text
+         id="tspan11">Mirror</tspan></text><text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,2.8722782,60.332426)"
        id="text85-41"
        style="font-size:5.33333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect85-4);display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.752126;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"><tspan
          x="417.71484"
          y="345.90735"
-         id="tspan4">Mirror</tspan></text><text
+         id="tspan12">Mirror</tspan></text><text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,-40.341849,51.924564)"
        id="text85-5"
        style="font-size:5.33333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect85-8);display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.752126;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"><tspan
          x="417.71484"
          y="345.90735"
-         id="tspan5">PBS</tspan></text><text
+         id="tspan13">PBS</tspan></text><text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,-31.159211,-27.23347)"
        id="text85-3"
        style="font-size:5.33333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect85-703);display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.752126;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"><tspan
          x="417.71484"
          y="345.90735"
-         id="tspan6">Beam Coupler</tspan></text><text
+         id="tspan14">Beam Coupler</tspan></text><text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,-24.072773,42.577473)"
        id="text85-3-9"
        style="font-size:5.33333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect85-703-4);display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.752126;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"><tspan
          x="417.71484"
          y="345.90735"
-         id="tspan7">Beam Coupler</tspan></text><text
+         id="tspan15">Beam Coupler</tspan></text><text
        xml:space="preserve"
        transform="scale(0.26458333)"
        id="text87"
@@ -3364,7 +3367,7 @@
        style="font-size:5.33333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect85-703-8);display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.752126;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"><tspan
          x="417.71484"
          y="345.90735"
-         id="tspan8">Beam Coupler</tspan></text><g
+         id="tspan16">Beam Coupler</tspan></text><g
        id="g10-9-6"
        inkscape:label="Compensation_Cavity"
        transform="rotate(-68.821495,108.09831,121.39524)"

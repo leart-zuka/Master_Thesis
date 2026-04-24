@@ -2389,9 +2389,6 @@ if __name__ == "__main__":
 
         plt.rcParams.update(
             {
-                "font.size": 11,
-                "font.family": "serif",
-                "text.usetex": True,
                 "axes.linewidth": 0.8,
                 "xtick.direction": "in",
                 "ytick.direction": "in",
@@ -2401,6 +2398,13 @@ if __name__ == "__main__":
                 "ytick.minor.visible": True,
                 "xtick.minor.size": 2,
                 "ytick.minor.size": 2,
+                # Font sizes
+                "font.size": 11,
+                "axes.labelsize": 12,
+                "axes.titlesize": 12,
+                "xtick.labelsize": 10,
+                "ytick.labelsize": 10,
+                "legend.fontsize": 10,
             }
         )
 
@@ -2431,4 +2435,4 @@ if __name__ == "__main__":
 
         fig1.savefig(os.path.join(path, filename + ".pdf"), dpi=300)
         fig1.savefig(os.path.join(path, filename + ".svg"))
-        plt.show(block=True)
+        # plt.show(block=True)

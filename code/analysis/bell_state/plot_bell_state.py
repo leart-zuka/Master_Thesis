@@ -44,18 +44,7 @@ def city_plot_and_heatmap(
 ) -> plt.Figure:
     """
     Render a side-by-side figure: 3D city plot on the left, heatmap on the right.
-
-    Parameters
-    ----------
-    rho : 4x4 complex density matrix in the {|0R>, |0L>, |1R>, |1L>} basis
-          (assumes it's already been rotated into the R/L display basis).
-    target : optional 4x4 ideal density matrix in the same basis; drawn as
-          open wireframe bars behind the solid data bars on the city plot.
-    value : which component of each matrix element to plot.
-            "abs"  -> |rho_ij|
-            "abs2" -> |rho_ij|^2
-            "real" -> Re(rho_ij)
-            "imag" -> Im(rho_ij)
+    ...
     """
 
     def _extract(m: np.ndarray) -> np.ndarray:
@@ -109,25 +98,36 @@ def city_plot_and_heatmap(
     ax3d.set_yticks(np.arange(4) + 0.35)
     ax3d.set_xticklabels(labels)
     ax3d.set_yticklabels(labels)
-    # z-axis upper limit should be set by the larger of data or target
     if target is not None:
         z_max = max(dz.max(), _extract(target).max()) * 1.1
     else:
         z_max = dz.max() * 1.1
-    ax3d.set_zlim(0, max(0.50, z_max))
+    ax3d.set_zlim(0, 0.50)
     ax3d.set_zlabel(_value_label, labelpad=15, rotation=90)
     ax3d.view_init(elev=15, azim=-30)
+
+    # (a) label — placed in figure coordinates above the 3D axis
+    # because 3D axes don't play well with axis-coordinate annotations
+    ax3d_bbox = ax3d.get_position()
+    fig.text(
+        ax3d_bbox.x0 + 0.01,
+        ax3d_bbox.y1 - 0.03,
+        "(a)",
+        fontsize=14,
+        fontweight="bold",
+        ha="left",
+        va="top",
+    )
 
     # ------------------------------------------------------------------
     # Right: 2D heatmap
     # ------------------------------------------------------------------
     ax2d = fig.add_subplot(gs[0, 1])
 
-    # Use same color scale as city plot for visual consistency
     vmax = heights.max()
     if target is not None:
         vmax = max(vmax, _extract(target).max())
-    vmax = max(vmax, 1e-9)  # guard against all-zero case
+    vmax = max(vmax, 1e-9)
 
     im = ax2d.imshow(
         heights,
@@ -137,7 +137,6 @@ def city_plot_and_heatmap(
         origin="upper",
     )
 
-    # Overlay numeric values in each cell for quantitative readability
     threshold = vmax * 0.5
     for i in range(4):
         for j in range(4):
@@ -160,7 +159,18 @@ def city_plot_and_heatmap(
     ax2d.set_xlabel("Column index")
     ax2d.set_ylabel("Row index")
 
-    # Colorbar
+    # (b) label — placed in axis coordinates, top-left corner
+    ax2d.text(
+        -0.15,
+        1.05,
+        "(b)",
+        transform=ax2d.transAxes,
+        fontsize=14,
+        fontweight="bold",
+        ha="left",
+        va="top",
+    )
+
     cbar = fig.colorbar(im, ax=ax2d, fraction=0.046, pad=0.04)
     cbar.set_label(_value_label)
 

@@ -11,7 +11,7 @@ from rich.table import Table
 from rich.console import Console
 import matplotlib.pyplot as plt
 from pathlib import Path
-from scipy.optimize import curve_fit
+from scipy.optimize import curve_fit, minimize
 from helper.fitting import R_coupled
 from dataclasses import dataclass
 from helper.numba_functions import (
@@ -25,6 +25,257 @@ from helper.plotting import channels_histo, plot_gate_3d
 from helper.analysis_types import NormalModeSpectroscopyT, ReflectionGateT
 from typing import Callable, Literal
 from mpl_toolkits.mplot3d import Axes3D
+
+
+_ATOM_KETS = {
+    "Z": {
+        "0": np.array([1, 0], dtype=complex),  # |0>
+        "1": np.array([0, 1], dtype=complex),  # |1>
+    },
+    "X": {
+        "0": np.array([1, 1], dtype=complex) / np.sqrt(2),  # |+>
+        "1": np.array([1, -1], dtype=complex) / np.sqrt(2),  # |->
+    },
+    "Y": {
+        "0": np.array([1, 1j], dtype=complex) / np.sqrt(2),  # |+i>
+        "1": np.array([1, -1j], dtype=complex) / np.sqrt(2),  # |-i>
+    },
+}
+
+# Photon kets in the {|V>, |pi>} basis (|V> is +1 of sigma_z^P by lab convention)
+_PHOTON_KETS = {
+    "HV": {
+        "ch4": np.array([0, 1], dtype=complex),  # |pi>
+        "ch7": np.array([1, 0], dtype=complex),  # |V>
+    },
+    "DA": {
+        "ch4": np.array([1, 1], dtype=complex) / np.sqrt(2),  # |D>
+        "ch7": np.array([1, -1], dtype=complex) / np.sqrt(2),  # |A>
+    },
+    "RL": {
+        "ch4": np.array([1, 1j], dtype=complex) / np.sqrt(2),  # |R>
+        "ch7": np.array([1, -1j], dtype=complex) / np.sqrt(2),  # |L>
+    },
+}
+
+
+def _projector(setting: Setting, atom_outcome: str, channel: str) -> np.ndarray:
+    """|psi_nu><psi_nu| for a given measurement outcome (atom, channel)."""
+    atom_ket = _ATOM_KETS[setting.atom][atom_outcome]
+    phot_ket = _PHOTON_KETS[setting.photon][channel]
+    joint = np.kron(atom_ket, phot_ket)
+    return np.outer(joint, joint.conj())
+
+
+# ---------------------------------------------------------------------------
+# T-matrix parametrization
+# ---------------------------------------------------------------------------
+
+
+def _t_from_params(t: np.ndarray) -> np.ndarray:
+    """Build a 4x4 lower-triangular complex T from 16 real parameters."""
+    T = np.zeros((4, 4), dtype=complex)
+    T[0, 0] = t[0]
+    T[1, 1] = t[1]
+    T[2, 2] = t[2]
+    T[3, 3] = t[3]
+    T[1, 0] = t[4] + 1j * t[5]
+    T[2, 0] = t[6] + 1j * t[7]
+    T[2, 1] = t[8] + 1j * t[9]
+    T[3, 0] = t[10] + 1j * t[11]
+    T[3, 1] = t[12] + 1j * t[13]
+    T[3, 2] = t[14] + 1j * t[15]
+    return T
+
+
+def _rho_from_params(t: np.ndarray) -> np.ndarray:
+    """rho = T^dag T / Tr(T^dag T), automatically physical."""
+    T = _t_from_params(t)
+    G = T.conj().T @ T
+    trace = np.trace(G).real
+    if trace <= 0:
+        return np.eye(4, dtype=complex) / 4
+    return G / trace
+
+
+# ---------------------------------------------------------------------------
+# Likelihood
+# ---------------------------------------------------------------------------
+
+
+def _collect_observations(
+    probs_by_row: dict[int, Probs], inp: Input
+) -> list[tuple[np.ndarray, float, float]]:
+    """Gather (projector, p_measured, sigma) for each joint outcome."""
+    obs: list[tuple[np.ndarray, float, float]] = []
+    rows_for_input = [s for s in ALL_SETTINGS if s.inp == inp]
+    for s in rows_for_input:
+        pr = probs_by_row[s.row]
+        for (atom_out, ch), (p, err) in pr.p.items():
+            proj = _projector(s, atom_out, ch)
+            sigma = max(err, 1e-6)
+            obs.append((proj, p, sigma))
+    return obs
+
+
+def _neg_log_likelihood(
+    t: np.ndarray, observations: list[tuple[np.ndarray, float, float]]
+) -> float:
+    """Gaussian NLL, dropping rho-independent constants."""
+    rho = _rho_from_params(t)
+    total = 0.0
+    for proj, p_meas, sigma in observations:
+        p_pred = np.real(np.trace(proj @ rho))
+        total += (p_pred - p_meas) ** 2 / (2.0 * sigma**2)
+    return total
+
+
+# ---------------------------------------------------------------------------
+# Top-level MLE routine
+# ---------------------------------------------------------------------------
+
+
+def mle_reconstruct(
+    probs_by_row: dict[int, Probs],
+    inp: Input,
+    *,
+    n_restarts: int = 3,
+    rng: np.random.Generator | None = None,
+    verbose: bool = False,
+) -> tuple[np.ndarray, float]:
+    """
+    Find the physical rho maximizing the Gaussian likelihood of the data.
+
+    Returns (rho, final_neg_log_likelihood).
+    """
+    if rng is None:
+        rng = np.random.default_rng(0)
+
+    observations = _collect_observations(probs_by_row, inp)
+
+    # Initial guess: maximally mixed state (T = 0.5 * I)
+    t0_identity = np.zeros(16)
+    t0_identity[:4] = 0.5
+
+    best_result = None
+    for restart in range(n_restarts):
+        t0 = (
+            t0_identity if restart == 0 else t0_identity + 0.2 * rng.standard_normal(16)
+        )
+        result = minimize(
+            _neg_log_likelihood,
+            t0,
+            args=(observations,),
+            method="L-BFGS-B",
+            options={"maxiter": 5000, "ftol": 1e-12, "gtol": 1e-10},
+        )
+        if verbose:
+            print(
+                f"  restart {restart}: nll = {result.fun:.6f}, converged = {result.success}"
+            )
+        if best_result is None or result.fun < best_result.fun:
+            best_result = result
+
+    rho = _rho_from_params(best_result.x)
+    rho = (rho + rho.conj().T) / 2  # numerical Hermiticity cleanup
+    return rho, best_result.fun
+
+
+# ---------------------------------------------------------------------------
+# Driver with MC error bars
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class MLEResult:
+    rho: np.ndarray
+    target: np.ndarray
+    target_ket: np.ndarray
+    fidelity_central: float
+    fidelity_mc_mean: float
+    fidelity_mc_std: float
+    eigenvalues: np.ndarray
+    purity: float
+    neg_log_likelihood: float
+
+
+def run_mle(
+    probs_by_row: dict[int, Probs],
+    *,
+    mc_samples: int = 200,
+    verbose: bool = True,
+) -> dict[Input, MLEResult]:
+    """Run MLE for both R and L with Monte Carlo error bars."""
+    results: dict[Input, MLEResult] = {}
+    rng = np.random.default_rng(42)
+
+    for inp in ("R", "L"):
+        if verbose:
+            print(f"\n=== MLE reconstruction for {inp}-input ===")
+
+        rho, nll = mle_reconstruct(probs_by_row, inp, verbose=verbose)
+
+        psi = target_bell(inp)
+        target_rho = np.outer(psi, psi.conj())
+        F_central = fidelity(rho, psi)
+
+        fids = []
+        if mc_samples > 0:
+            for sample_idx in range(mc_samples):
+                sampled: dict[int, Probs] = {}
+                for row, pr in probs_by_row.items():
+                    raw = {
+                        key: max(0.0, rng.normal(p, e)) for key, (p, e) in pr.p.items()
+                    }
+                    total = sum(raw.values())
+                    if total <= 0:
+                        sampled[row] = Probs(pr.p.copy())
+                    else:
+                        new_p = {
+                            key: (raw[key] / total, e) for key, (p, e) in pr.p.items()
+                        }
+                        sampled[row] = Probs(new_p)
+                try:
+                    rho_s, _ = mle_reconstruct(
+                        sampled, inp, n_restarts=1, verbose=False
+                    )
+                    fids.append(fidelity(rho_s, psi))
+                except Exception:
+                    continue
+                if verbose and (sample_idx + 1) % 25 == 0:
+                    print(
+                        f"  MC sample {sample_idx + 1}/{mc_samples} (running F = {np.mean(fids):.4f})"
+                    )
+
+        F_mc_mean = float(np.mean(fids)) if fids else F_central
+        F_mc_std = float(np.std(fids)) if fids else 0.0
+        eigs = np.linalg.eigvalsh(rho).real
+        purity = float(np.real(np.trace(rho @ rho)))
+
+        results[inp] = MLEResult(
+            rho=rho,
+            target=target_rho,
+            target_ket=psi,
+            fidelity_central=F_central,
+            fidelity_mc_mean=F_mc_mean,
+            fidelity_mc_std=F_mc_std,
+            eigenvalues=eigs,
+            purity=purity,
+            neg_log_likelihood=nll,
+        )
+
+        if verbose:
+            print(f"\n  Density matrix (MLE):")
+            print(np.array2string(rho, precision=3, suppress_small=True))
+            print(f"  Eigenvalues: {np.round(eigs, 4)}")
+            print(f"  Trace: {np.trace(rho).real:.4f}")
+            print(f"  Purity: {purity:.4f}")
+            print(f"  Fidelity (central): {F_central:.4f}")
+            print(f"  Fidelity (MC): {F_mc_mean:.4f} +/- {F_mc_std:.4f}")
+            print(f"  Final -log L: {nll:.4f}")
+
+    return results
+
 
 PhotonBasis = Literal["Vpi", "RL"]
 
@@ -1389,13 +1640,19 @@ if __name__ == "__main__":
         params=ParamDictReflection_trap_off,
     )
     results = run_tomography(probs)
+    mle_results = run_mle(probs, mc_samples=100)
+
+    # Access:
+    rho_L_mle = mle_results["L"].rho
+    F_L_mle = mle_results["L"].fidelity_mc_mean
+    F_L_err = mle_results["L"].fidelity_mc_std
 
     inp = "L"
     rho = results[inp]["rho"]
     psi = results[inp]["target"]
     target = np.outer(psi, psi.conj())
     fig = plot_bell_state_tomography(
-        rho, target, inp, save_path=f"bell_state_{inp}.pdf"
+        rho_L_mle, target, inp, save_path=f"bell_state_{inp}_mle.pdf"
     )
 
     # for inp in ("R", "L"):
