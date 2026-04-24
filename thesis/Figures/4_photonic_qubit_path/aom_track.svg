@@ -26,9 +26,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="2.403644"
-     inkscape:cx="469.07945"
-     inkscape:cy="478.64825"
+     inkscape:zoom="0.84981649"
+     inkscape:cx="533.64462"
+     inkscape:cy="321.83419"
      inkscape:window-width="2536"
      inkscape:window-height="1374"
      inkscape:window-x="0"
@@ -3894,7 +3894,7 @@
          style="font-size:17.3333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect21);display:inline;opacity:1;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;paint-order:stroke fill markers"><tspan
            x="659.83203"
            y="341.11098"
-           id="tspan6">AOM (4)</tspan></text>
+           id="tspan1">AOM (4)</tspan></text>
       <text
          xml:space="preserve"
          transform="matrix(0.26458333,0,0,0.26458333,-1.0592287,56.642764)"
@@ -3902,9 +3902,9 @@
          style="font-size:17.3333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect22);display:inline;opacity:1;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;paint-order:stroke fill markers"><tspan
            x="647.76562"
            y="190.50551"
-           id="tspan10"><tspan
+           id="tspan3"><tspan
              dx="0 9.0826521 6.4479828"
-             id="tspan9">L/4</tspan></tspan></text>
+             id="tspan2">L/4</tspan></tspan></text>
       <text
          xml:space="preserve"
          transform="matrix(0.26458333,0,0,0.26458333,-6.7831767,60.275269)"
@@ -3912,7 +3912,7 @@
          style="font-size:17.3333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect24);display:inline;opacity:1;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;paint-order:stroke fill markers"><tspan
            x="364.03125"
            y="98.562155"
-           id="tspan18">Plano-concave mirror (6)</tspan></text>
+           id="tspan4">Plano-concave mirror (6)</tspan></text>
       <text
          xml:space="preserve"
          transform="matrix(0.26458333,0,0,0.26458333,-52.024381,56.75284)"
@@ -3920,7 +3920,7 @@
          style="font-size:17.3333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect25);display:inline;opacity:1;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;paint-order:stroke fill markers"><tspan
            x="465.12695"
            y="587.81997"
-           id="tspan19">ND-filter (8)</tspan></text>
+           id="tspan5">ND-filter (7)</tspan></text>
       <text
          xml:space="preserve"
          transform="matrix(0.26458333,0,0,0.26458333,-118.97827,-0.52411746)"
@@ -3928,7 +3928,7 @@
          style="font-size:17.3333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect25-7);display:inline;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;paint-order:stroke fill markers"><tspan
            x="465.12695"
            y="587.81997"
-           id="tspan20">ND-filter (8)</tspan></text>
+           id="tspan6">ND-filter (7)</tspan></text>
       <text
          xml:space="preserve"
          transform="matrix(0.26458333,0,0,0.26458333,-3.3708231,59.17451)"
@@ -3936,11 +3936,11 @@
          style="font-size:17.3333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect26);display:inline;opacity:1;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;paint-order:stroke fill markers"><tspan
            x="481.35156"
            y="456.35317"
-           id="tspan21">compensation
+           id="tspan7">compensation
 </tspan><tspan
            x="481.35156"
            y="478.0198"
-           id="tspan22">waveplates (9)</tspan></text>
+           id="tspan8">waveplates (8)</tspan></text>
       <text
          xml:space="preserve"
          transform="matrix(0.26458333,0,0,0.26458333,-1.6646463,57.193144)"
@@ -3948,11 +3948,11 @@
          style="font-size:17.3333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect28);display:inline;opacity:1;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;paint-order:stroke fill markers"><tspan
            x="6.6191406"
            y="91.816061"
-           id="tspan24">to cavity
+           id="tspan9">to cavity
 </tspan><tspan
            x="6.6191406"
            y="113.48269"
-           id="tspan25">table</tspan></text>
+           id="tspan10">table</tspan></text>
       <rect
          style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff8b03;stroke-width:0.3;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
          id="rect29"
@@ -3979,7 +3979,7 @@
        style="font-size:13.3333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect2);display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.44378;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"><tspan
          x="685.20898"
          y="196.85039"
-         id="tspan26">Iris</tspan></text>
+         id="tspan11">Iris</tspan></text>
     <text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,-6.89985,159.4314)"
@@ -3987,7 +3987,7 @@
        style="font-size:17.3333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect2-7);display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.44378;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"><tspan
          x="685.20898"
          y="200.48989"
-         id="tspan27">Beam coupler</tspan></text>
+         id="tspan12">Beam coupler</tspan></text>
     <text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,-56.45809,49.435396)"
@@ -3995,11 +3995,11 @@
        style="font-size:17.3333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect2-7-9);display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.44378;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"><tspan
          x="685.20898"
          y="200.48989"
-         id="tspan28">Beam 
+         id="tspan18">Beam 
 </tspan><tspan
          x="685.20898"
          y="222.15652"
-         id="tspan29">coupler</tspan></text>
+         id="tspan19">coupler</tspan></text>
     <text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,-158.46244,68.843555)"
@@ -4007,11 +4007,11 @@
        style="font-size:13.3333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect2-7-9-5);display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.44378;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"><tspan
          x="685.20898"
          y="196.85039"
-         id="tspan30">Beam 
+         id="tspan20">Beam 
 </tspan><tspan
          x="685.20898"
          y="213.51701"
-         id="tspan31">coupler</tspan></text>
+         id="tspan21">coupler</tspan></text>
     <text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,-121.06931,3.7112653)"
@@ -4019,7 +4019,7 @@
        style="font-size:17.3333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect2-7-6);display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.44378;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"><tspan
          x="685.20898"
          y="200.48989"
-         id="tspan32">Beam coupler</tspan></text>
+         id="tspan22">Beam coupler</tspan></text>
     <text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,-90.207654,130.35216)"
@@ -4027,7 +4027,7 @@
        style="font-size:13.3333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect2-7-9-56);display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.44378;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"><tspan
          x="685.20898"
          y="196.85039"
-         id="tspan33">Mirror</tspan></text>
+         id="tspan23">Mirror</tspan></text>
     <text
        xml:space="preserve"
        transform="scale(0.26458333)"
@@ -4051,7 +4051,7 @@
        style="font-size:17.3333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect14);display:inline;opacity:1;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;paint-order:stroke fill markers"><tspan
          x="674.39258"
          y="661.8727"
-         id="tspan34">PBS (2)</tspan></text>
+         id="tspan24">PBS (2)</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:4.5861px;writing-mode:lr-tb;direction:ltr;opacity:1;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;paint-order:stroke fill markers"
@@ -4070,7 +4070,7 @@
        style="font-size:17.3333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect23);display:inline;opacity:1;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;paint-order:stroke fill markers"><tspan
          x="651.09375"
          y="159.30239"
-         id="tspan35">L/4 Waveplate (5)</tspan></text>
+         id="tspan25">L/4 Waveplate (5)</tspan></text>
     <text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,-67.797958,-50.292614)"
@@ -4078,10 +4078,10 @@
        style="font-size:17.3333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect26-9);display:inline;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;paint-order:stroke fill markers"><tspan
          x="481.35156"
          y="456.35317"
-         id="tspan36">compensation
+         id="tspan26">compensation
 </tspan><tspan
          x="481.35156"
          y="478.0198"
-         id="tspan37">waveplates (9)</tspan></text>
+         id="tspan27">waveplates (8)</tspan></text>
   </g>
 </svg>
