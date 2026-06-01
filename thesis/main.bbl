@@ -215,20 +215,6 @@
       \verb https://www.nobelprize.org/prizes/physics/1989/press-release/
       \endverb
     \endentry
-    \entry{MOSFET}{misc}{}{}
-      \list{language}{1}{%
-        {en}%
-      }
-      \field{sortinit}{6}
-      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
-      \field{year}{2026}
-      \verb{urlraw}
-      \verb https://www.invent.org/inductees/dawon-kahng
-      \endverb
-      \verb{url}
-      \verb https://www.invent.org/inductees/dawon-kahng
-      \endverb
-    \endentry
     \entry{Hunklinger}{book}{}{}
       \name{author}{1}{}{%
         {{hash=c9592bb4af17b965a176b10267d47259}{%
@@ -251,8 +237,8 @@
       \strng{authornamehash}{c9592bb4af17b965a176b10267d47259}
       \strng{authorfullhash}{c9592bb4af17b965a176b10267d47259}
       \strng{authorfullhashraw}{c9592bb4af17b965a176b10267d47259}
-      \field{sortinit}{7}
-      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
+      \field{sortinit}{6}
+      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{isbn}{9783486858501}
@@ -266,6 +252,20 @@
       \endverb
       \verb{url}
       \verb https://doi.org/10.1524/9783486858501
+      \endverb
+    \endentry
+    \entry{MOSFET}{misc}{}{}
+      \list{language}{1}{%
+        {en}%
+      }
+      \field{sortinit}{7}
+      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
+      \field{year}{2026}
+      \verb{urlraw}
+      \verb https://www.invent.org/inductees/dawon-kahng
+      \endverb
+      \verb{url}
+      \verb https://www.invent.org/inductees/dawon-kahng
       \endverb
     \endentry
     \entry{MooresLaw}{article}{}{}
@@ -300,6 +300,38 @@
       \endverb
       \keyw{Costs;Integrated circuit reliability;Integrated circuit technology;Space technology;Semiconductor films;Aerospace electronics;Portable computers;Home computing;Telephony;Switches}
     \endentry
+    \entry{Mollick2006}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=32446d44de47fd1bae2745b4876b9b07}{%
+           family={Mollick},
+           familyi={M\bibinitperiod},
+           given={Ethan},
+           giveni={E\bibinitperiod}}}%
+      }
+      \strng{namehash}{32446d44de47fd1bae2745b4876b9b07}
+      \strng{fullhash}{32446d44de47fd1bae2745b4876b9b07}
+      \strng{fullhashraw}{32446d44de47fd1bae2745b4876b9b07}
+      \strng{bibnamehash}{32446d44de47fd1bae2745b4876b9b07}
+      \strng{authorbibnamehash}{32446d44de47fd1bae2745b4876b9b07}
+      \strng{authornamehash}{32446d44de47fd1bae2745b4876b9b07}
+      \strng{authorfullhash}{32446d44de47fd1bae2745b4876b9b07}
+      \strng{authorfullhashraw}{32446d44de47fd1bae2745b4876b9b07}
+      \field{sortinit}{9}
+      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{IEEE Annals of the History of Computing}
+      \field{month}{7}
+      \field{number}{3}
+      \field{title}{Establishing {M}oore's {L}aw}
+      \field{volume}{28}
+      \field{year}{2006}
+      \field{pages}{62\bibrangedash 75}
+      \range{pages}{14}
+      \verb{doi}
+      \verb 10.1109/MAHC.2006.45
+      \endverb
+    \endentry
     \entry{feynman1992plenty}{article}{}{}
       \name{author}{1}{}{%
         {{hash=aac54ccf9c76aa4ba4310ed1334be7d8}{%
@@ -317,8 +349,8 @@
       \strng{authorfullhash}{aac54ccf9c76aa4ba4310ed1334be7d8}
       \strng{authorfullhashraw}{aac54ccf9c76aa4ba4310ed1334be7d8}
       \field{extraname}{1}
-      \field{sortinit}{9}
-      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Journal of Microelectromechanical Systems}
@@ -2140,8 +2172,8 @@
       \strng{authornamehash}{3434b4b9931a33441a057f2d1c265c4a}
       \strng{authorfullhash}{a3238d3d9f100b1970eb777b2082e8b1}
       \strng{authorfullhashraw}{a3238d3d9f100b1970eb777b2082e8b1}
-      \field{sortinit}{1}
-      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{abstract}{Quantum error correction1--4 provides a path to reach practical quantum computing by combining multiple physical qubits into a logical qubit, in which the logical error rate is suppressed exponentially as more qubits are added. However, this exponential suppression only occurs if the physical error rate is below a critical threshold. Here we present two below-threshold surface code memories on our newest generation of superconducting processors, Willow: a distance-7 code and a distance-5 code integrated with a real-time decoder. The logical error rate of our larger quantum memory is suppressed by a factor of $\Lambda${ \thinspace}={\thinspace}2.14{\thinspace}{\textpm}{\thinspace}0.02 when increasing the code distance by 2, culminating in a 101-qubit distance-7 code with 0.143{\%}{\thinspace}{\textpm}{ \thinspace}0.003 per cent error per cycle of error correction. This logical memory is also beyond breakeven, exceeding the lifetime of its best physical qubit by a factor of 2.4{\thinspace }{\textpm}{\thinspace}0.3. Our system maintains below-threshold performance when decoding in real time, achieving an average decoder latency of 63{\thinspace}microseconds at distance 5 up to a million cycles, with a cycle time of 1.1{\thinspace} microseconds. We also run repetition codes up to distance 29 and find that logical performance is limited by rare correlated error events, occurring approximately once every hour or 3{\thinspace}{ \texttimes}{\thinspace}109 cycles. Our results indicate device performance that, if scaled, could realize the operational requirements of large-scale fault-tolerant quantum algorithms.}
@@ -2247,6 +2279,67 @@
       \endverb
       \verb{url}
       \verb https://doi.org/10.1038/nature07127
+      \endverb
+    \endentry
+    \entry{Monroe2014}{article}{}{}
+      \name{author}{7}{}{%
+        {{hash=74ebfc3b4e582a44afe3631a345d75b2}{%
+           family={Monroe},
+           familyi={M\bibinitperiod},
+           given={C.},
+           giveni={C\bibinitperiod}}}%
+        {{hash=824a2022d1a85121974e534a7e533185}{%
+           family={Raussendorf},
+           familyi={R\bibinitperiod},
+           given={R.},
+           giveni={R\bibinitperiod}}}%
+        {{hash=fbec93d97014adbfd4846bd8738f7873}{%
+           family={Ruthven},
+           familyi={R\bibinitperiod},
+           given={A.},
+           giveni={A\bibinitperiod}}}%
+        {{hash=9c9ea89807efecf2c44b072b54e65b3c}{%
+           family={Brown},
+           familyi={B\bibinitperiod},
+           given={K.\bibnamedelimi R.},
+           giveni={K\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
+        {{hash=1d7391cb6b6af17d637353e597ce3631}{%
+           family={Maunz},
+           familyi={M\bibinitperiod},
+           given={P.},
+           giveni={P\bibinitperiod}}}%
+        {{hash=98cda514ae57ad62b47d4b50962b5572}{%
+           family={Duan},
+           familyi={D\bibinitperiod},
+           given={L.-M.},
+           giveni={L\bibinithyphendelim M\bibinitperiod}}}%
+        {{hash=b2236af712a294693dcea632d195b1fb}{%
+           family={Kim},
+           familyi={K\bibinitperiod},
+           given={J.},
+           giveni={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{17de335944f22fa365445a8b67db6e84}
+      \strng{fullhash}{1ffec152f67e1b766aa63b1efbecef18}
+      \strng{fullhashraw}{1ffec152f67e1b766aa63b1efbecef18}
+      \strng{bibnamehash}{17de335944f22fa365445a8b67db6e84}
+      \strng{authorbibnamehash}{17de335944f22fa365445a8b67db6e84}
+      \strng{authornamehash}{17de335944f22fa365445a8b67db6e84}
+      \strng{authorfullhash}{1ffec152f67e1b766aa63b1efbecef18}
+      \strng{authorfullhashraw}{1ffec152f67e1b766aa63b1efbecef18}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Physical Review A}
+      \field{number}{2}
+      \field{title}{Large-scale modular quantum-computer architecture with atomic memory and photonic interconnects}
+      \field{volume}{89}
+      \field{year}{2014}
+      \field{pages}{022317}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.1103/PhysRevA.89.022317
       \endverb
     \endentry
     \entry{ScalableQCArchitecture_silicon_based}{article}{}{}
@@ -2431,6 +2524,97 @@
       \verb{url}
       \verb https://doi.org/10.1038/s41567-020-0855-3
       \endverb
+    \endentry
+    \entry{TelecomConnectionMPQLMU}{inproceedings}{}{}
+      \name{author}{11}{}{%
+        {{hash=a04318db9605ad2bc9c6f9da0031e84e}{%
+           family={Malik},
+           familyi={M\bibinitperiod},
+           given={Pooja},
+           giveni={P\bibinitperiod}}}%
+        {{hash=659dd5a94edd00cd039d9b6d413b9e23}{%
+           family={Block},
+           familyi={B\bibinitperiod},
+           given={Tommy},
+           giveni={T\bibinitperiod}}}%
+        {{hash=9db221e027c84ad0c033c29d558fa84b}{%
+           family={Fertig},
+           familyi={F\bibinitperiod},
+           given={Florian},
+           giveni={F\bibinitperiod}}}%
+        {{hash=3d1340114e0e682ff52ccdd98241f109}{%
+           family={Zhou},
+           familyi={Z\bibinitperiod},
+           given={Yiru},
+           giveni={Y\bibinitperiod}}}%
+        {{hash=ebdf6a8a3edc28cc9c608fabbd805369}{%
+           family={Weinfurter},
+           familyi={W\bibinitperiod},
+           given={Harald},
+           giveni={H\bibinitperiod}}}%
+        {{hash=8b3ca910c1dbacd59137a1190c260676}{%
+           family={Büki},
+           familyi={B\bibinitperiod},
+           given={Maya},
+           giveni={M\bibinitperiod}}}%
+        {{hash=2189a57d4283fb4cb5aa447c839ecbd1}{%
+           family={Frank},
+           familyi={F\bibinitperiod},
+           given={Tobias},
+           giveni={T\bibinitperiod}}}%
+        {{hash=053f2a5c32ef1e144c74d3c05c2a9495}{%
+           family={Scholz},
+           familyi={S\bibinitperiod},
+           given={Marvin},
+           giveni={M\bibinitperiod}}}%
+        {{hash=e7caae181382d3c929159b8205dd3731}{%
+           family={Chiarella},
+           familyi={C\bibinitperiod},
+           given={Gianvito},
+           giveni={G\bibinitperiod}}}%
+        {{hash=dea4d0ad9b3758cb9c70c50b2742ff67}{%
+           family={Farrera},
+           familyi={F\bibinitperiod},
+           given={Pau},
+           giveni={P\bibinitperiod}}}%
+        {{hash=587788e55695ee0af69d9a91fc254c31}{%
+           family={Rempe},
+           familyi={R\bibinitperiod},
+           given={Gerhard},
+           giveni={G\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Optica Publishing Group}%
+      }
+      \strng{namehash}{3ed50a11fff6daaf699f4bb3757117f5}
+      \strng{fullhash}{a3d2728c3a193fb9ef5ee72af0bfb58d}
+      \strng{fullhashraw}{a3d2728c3a193fb9ef5ee72af0bfb58d}
+      \strng{bibnamehash}{3ed50a11fff6daaf699f4bb3757117f5}
+      \strng{authorbibnamehash}{3ed50a11fff6daaf699f4bb3757117f5}
+      \strng{authornamehash}{3ed50a11fff6daaf699f4bb3757117f5}
+      \strng{authorfullhash}{a3d2728c3a193fb9ef5ee72af0bfb58d}
+      \strng{authorfullhashraw}{a3d2728c3a193fb9ef5ee72af0bfb58d}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We demonstrate first steps toward atom-atom entanglement over 24 km of deployed fiber by distributing entanglement between a Rb-87 atom and a photon using quantum frequency conversion from 780 nm to low-loss telecom S-band.}
+      \field{booktitle}{Optica Quantum 2.0 Conference and Exhibition}
+      \field{journaltitle}{Optica Quantum 2.0 Conference and Exhibition}
+      \field{title}{Towards Entanglement Distribution in a Suburban Quantum Network}
+      \field{year}{2025}
+      \field{pages}{QW4A.4}
+      \range{pages}{-1}
+      \verb{doi}
+      \verb 10.1364/QUANTUM.2025.QW4A.4
+      \endverb
+      \verb{urlraw}
+      \verb https://opg.optica.org/abstract.cfm?URI=QUANTUM-2025-QW4A.4
+      \endverb
+      \verb{url}
+      \verb https://opg.optica.org/abstract.cfm?URI=QUANTUM-2025-QW4A.4
+      \endverb
+      \keyw{Entanglement distribution; Periodically poled lithium niobate; Photonic entanglement; Quantum communications; Quantum computation; Quantum memories}
     \endentry
     \entry{Reiserer2014}{article}{}{}
       \name{author}{4}{}{%
@@ -2656,6 +2840,96 @@
       \verb https://doi.org/10.1038/nature13188
       \endverb
     \endentry
+    \entry{Bhaskar2020}{article}{}{}
+      \name{author}{11}{}{%
+        {{hash=df7cc1244b3fa0c5c6b1b47db54576dc}{%
+           family={Bhaskar},
+           familyi={B\bibinitperiod},
+           given={M.\bibnamedelimi K.},
+           giveni={M\bibinitperiod\bibinitdelim K\bibinitperiod}}}%
+        {{hash=31c61a6295a282c552146a5dedd77e36}{%
+           family={Riedinger},
+           familyi={R\bibinitperiod},
+           given={R.},
+           giveni={R\bibinitperiod}}}%
+        {{hash=d591dd06433495f4c7b27033fdfeb870}{%
+           family={Machielse},
+           familyi={M\bibinitperiod},
+           given={B.},
+           giveni={B\bibinitperiod}}}%
+        {{hash=a498c2198567b240cd6898e69c50ff54}{%
+           family={Levonian},
+           familyi={L\bibinitperiod},
+           given={D.\bibnamedelimi S.},
+           giveni={D\bibinitperiod\bibinitdelim S\bibinitperiod}}}%
+        {{hash=1652efa28eda8dda7c628707b41d0f5d}{%
+           family={Nguyen},
+           familyi={N\bibinitperiod},
+           given={C.\bibnamedelimi T.},
+           giveni={C\bibinitperiod\bibinitdelim T\bibinitperiod}}}%
+        {{hash=fd5c0d9539e4ba2ea24fc842590f88d8}{%
+           family={Knall},
+           familyi={K\bibinitperiod},
+           given={E.\bibnamedelimi N.},
+           giveni={E\bibinitperiod\bibinitdelim N\bibinitperiod}}}%
+        {{hash=5de1ee8be02450d136e79b70ae9c7303}{%
+           family={Park},
+           familyi={P\bibinitperiod},
+           given={H.},
+           giveni={H\bibinitperiod}}}%
+        {{hash=6e235316b170b7e4b4ee3f55bd068623}{%
+           family={Englund},
+           familyi={E\bibinitperiod},
+           given={D.},
+           giveni={D\bibinitperiod}}}%
+        {{hash=f02ce93a5e6944cb598e4f9215da3f5f}{%
+           family={Lončar},
+           familyi={L\bibinitperiod},
+           given={M.},
+           giveni={M\bibinitperiod}}}%
+        {{hash=7fcbd351f1bcb2c2161c8b8e614e20c4}{%
+           family={Sukachev},
+           familyi={S\bibinitperiod},
+           given={D.\bibnamedelimi D.},
+           giveni={D\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
+        {{hash=152c9d776244752eaba344fc6d7d8f91}{%
+           family={Lukin},
+           familyi={L\bibinitperiod},
+           given={M.\bibnamedelimi D.},
+           giveni={M\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
+      }
+      \strng{namehash}{8dd3a0a2151fcc831c860efff51c3551}
+      \strng{fullhash}{5b86346117c3ce025e2cacd19c31eda8}
+      \strng{fullhashraw}{5b86346117c3ce025e2cacd19c31eda8}
+      \strng{bibnamehash}{8dd3a0a2151fcc831c860efff51c3551}
+      \strng{authorbibnamehash}{8dd3a0a2151fcc831c860efff51c3551}
+      \strng{authornamehash}{8dd3a0a2151fcc831c860efff51c3551}
+      \strng{authorfullhash}{5b86346117c3ce025e2cacd19c31eda8}
+      \strng{authorfullhashraw}{5b86346117c3ce025e2cacd19c31eda8}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{The ability to communicate quantum information over long distances is of central importance in quantum science and engineering1. Although some applications of quantum communication such as secure quantum key distribution2,3 are already being successfully deployed4--7, their range is currently limited by photon losses and cannot be extended using straightforward measure-and-repeat strategies without compromising unconditional security8. Alternatively, quantum repeaters9, which utilize intermediate quantum memory nodes and error correction techniques, can extend the range of quantum channels. However, their implementation remains an outstanding challenge10--16, requiring a combination of efficient and high-fidelity quantum memories, gate operations, and measurements. Here we use a single solid-state spin memory integrated in a nanophotonic diamond resonator17--19 to implement asynchronous photonic Bell-state measurements, which are a key component of quantum repeaters. In a proof-of-principle experiment, we demonstrate high-fidelity operation that effectively enables quantum communication at a rate that surpasses the ideal loss-equivalent direct-transmission method while operating at megahertz clock speeds. These results represent a crucial step towards practical quantum repeaters and large-scale quantum networks20,21.}
+      \field{issn}{1476-4687}
+      \field{journaltitle}{Nature}
+      \field{month}{4}
+      \field{number}{7801}
+      \field{title}{Experimental demonstration of memory-enhanced quantum communication}
+      \field{volume}{580}
+      \field{year}{2020}
+      \field{pages}{60\bibrangedash 64}
+      \range{pages}{5}
+      \verb{doi}
+      \verb 10.1038/s41586-020-2103-5
+      \endverb
+      \verb{urlraw}
+      \verb https://doi.org/10.1038/s41586-020-2103-5
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.1038/s41586-020-2103-5
+      \endverb
+    \endentry
     \entry{Drmota2025}{article}{}{}
       \name{author}{8}{}{%
         {{hash=aa19020aec00d5931d67e19603dbe87f}{%
@@ -2707,8 +2981,8 @@
       \strng{authornamehash}{59b51d98b14bddcced0e8082c395eeb7}
       \strng{authorfullhash}{dd485ed652baca08e197a49e65f092e0}
       \strng{authorfullhashraw}{dd485ed652baca08e197a49e65f092e0}
-      \field{sortinit}{2}
-      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Nature}
@@ -2826,8 +3100,8 @@
       \strng{authornamehash}{a936a93770b1daadbad99072a77e3b5d}
       \strng{authorfullhash}{a936a93770b1daadbad99072a77e3b5d}
       \strng{authorfullhashraw}{a936a93770b1daadbad99072a77e3b5d}
-      \field{sortinit}{3}
-      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Ein photonischer Quantenspeicher mit einem Atom in gekreuzten optischen Faserresonatoren}
@@ -2875,8 +3149,8 @@
       \strng{authornamehash}{f369432d96970d324a97c4e798e3efb4}
       \strng{authorfullhash}{1bfc5f75d07388e8144da13776fd63db}
       \strng{authorfullhashraw}{1bfc5f75d07388e8144da13776fd63db}
-      \field{sortinit}{3}
-      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{New Journal of Physics}
@@ -3091,8 +3365,8 @@
       \strng{authornamehash}{af294c7a976ab05e62b737bd2eb260c8}
       \strng{authorfullhash}{af294c7a976ab05e62b737bd2eb260c8}
       \strng{authorfullhashraw}{af294c7a976ab05e62b737bd2eb260c8}
-      \field{sortinit}{4}
-      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{isbn}{9780198506959}
@@ -3342,8 +3616,8 @@
       \strng{authornamehash}{7ce80b99850a2e2504e43aec6247ba5d}
       \strng{authorfullhash}{bf694a3252cddcf72f111320b4326560}
       \strng{authorfullhashraw}{bf694a3252cddcf72f111320b4326560}
-      \field{sortinit}{5}
-      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{sortinit}{6}
+      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{issn}{0370-1573}
@@ -3361,6 +3635,97 @@
       \endverb
       \verb{url}
       \verb https://www.sciencedirect.com/science/article/pii/S0370157325002704
+      \endverb
+    \endentry
+    \entry{Paris2004}{book}{}{}
+      \name{editor}{2}{}{%
+        {{hash=bd300e9b83c5011463634ca1cf167db8}{%
+           family={Paris},
+           familyi={P\bibinitperiod},
+           given={Matteo},
+           giveni={M\bibinitperiod}}}%
+        {{hash=bfa40cd438b1d54c693afa5f2901ec7a}{%
+           family={Řeháček},
+           familyi={Ř\bibinitperiod},
+           given={Jaroslav},
+           giveni={J\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Berlin, Heidelberg}%
+      }
+      \list{publisher}{1}{%
+        {Springer}%
+      }
+      \strng{namehash}{2644529eadf9de9231af980faf623946}
+      \strng{fullhash}{2644529eadf9de9231af980faf623946}
+      \strng{fullhashraw}{2644529eadf9de9231af980faf623946}
+      \strng{bibnamehash}{2644529eadf9de9231af980faf623946}
+      \strng{editorbibnamehash}{2644529eadf9de9231af980faf623946}
+      \strng{editornamehash}{2644529eadf9de9231af980faf623946}
+      \strng{editorfullhash}{2644529eadf9de9231af980faf623946}
+      \strng{editorfullhashraw}{2644529eadf9de9231af980faf623946}
+      \field{sortinit}{6}
+      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
+      \field{labelnamesource}{editor}
+      \field{labeltitlesource}{title}
+      \field{isbn}{978-3-540-22329-0}
+      \field{series}{Lecture Notes in Physics}
+      \field{title}{Quantum State Estimation}
+      \field{volume}{649}
+      \field{year}{2004}
+      \verb{doi}
+      \verb 10.1007/b98673
+      \endverb
+    \endentry
+    \entry{Maximum-Likelihood_technique}{article}{}{}
+      \name{author}{3}{}{%
+        {{hash=5509489ab50cd678d68437275b870be5}{%
+           family={Smolin},
+           familyi={S\bibinitperiod},
+           given={John\bibnamedelima A.},
+           giveni={J\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
+        {{hash=13ffee31f58f6a53a6d6969d093862dc}{%
+           family={Gambetta},
+           familyi={G\bibinitperiod},
+           given={Jay\bibnamedelima M.},
+           giveni={J\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+        {{hash=66a4586e0f679a1bc1a6ec09bf4e497b}{%
+           family={Smith},
+           familyi={S\bibinitperiod},
+           given={Graeme},
+           giveni={G\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {American Physical Society}%
+      }
+      \strng{namehash}{dd69e67fc82ccf96d3c720529d55d805}
+      \strng{fullhash}{dd69e67fc82ccf96d3c720529d55d805}
+      \strng{fullhashraw}{dd69e67fc82ccf96d3c720529d55d805}
+      \strng{bibnamehash}{dd69e67fc82ccf96d3c720529d55d805}
+      \strng{authorbibnamehash}{dd69e67fc82ccf96d3c720529d55d805}
+      \strng{authornamehash}{dd69e67fc82ccf96d3c720529d55d805}
+      \strng{authorfullhash}{dd69e67fc82ccf96d3c720529d55d805}
+      \strng{authorfullhashraw}{dd69e67fc82ccf96d3c720529d55d805}
+      \field{sortinit}{6}
+      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issue}{7}
+      \field{journaltitle}{Phys. Rev. Lett.}
+      \field{month}{2}
+      \field{title}{Efficient Method for Computing the Maximum-Likelihood Quantum State from Measurements with Additive Gaussian Noise}
+      \field{volume}{108}
+      \field{year}{2012}
+      \field{pages}{070502}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.1103/PhysRevLett.108.070502
+      \endverb
+      \verb{urlraw}
+      \verb https://link.aps.org/doi/10.1103/PhysRevLett.108.070502
+      \endverb
+      \verb{url}
+      \verb https://link.aps.org/doi/10.1103/PhysRevLett.108.070502
       \endverb
     \endentry
   \enddatalist

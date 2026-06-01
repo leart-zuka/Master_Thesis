@@ -1,8 +1,8 @@
-\chapter{Atom-Photon Gate}
+\chapter{Atom-Photon Quantum Logic Gate}
 
 Using the setup explained in chapter \ref{chapter:photonic_qubit_path}, one can characterize important experimental parameters in order to estimate the cavity coupling as well as its losses when reflecting light off the atom-cavity system. Furthermore using these values, the overlap with an ideal CPF/CNOT gate truth table can then be estimated and compared to the measured values.
 
-Section \ref{section:experimental_parameters_for_gate} of this chapter goes over the experimental parameters which are relevant for the gate mechanism and how they were determined. Section \ref{sec:ap_gate} then reports on the performance of the atom-photon gate both in the CPF basis as well as the CNOT basis, alongside a comparison between the experimental results and simulated results regarding the Brewster window scan and mean photon number scan, respectively. Lastly, an analysis of the limitations currently imposed by the system will be given in section \ref{sec:imperfections}.
+Section \ref{section:experimental_parameters_for_gate} of this chapter goes over the experimental parameters which are relevant for the gate mechanism and how they were determined. Section \ref{sec:ap_gate} reports on the performance of the atom-photon gate in both the CPF and CNOT bases, alongside a comparison between the experimental and simulated results for the Brewster window and mean photon number scans. Section \ref{sec:bs_states} then demonstrates the coherent behavior of the gate through the generation of a Bell state. Finally, an analysis of the limitations currently imposed by the system is given in Section \ref{sec:imperfections}.
 
 \section{Experimental Parameters relevant for the gate mechanism} \label{section:experimental_parameters_for_gate}
 
@@ -26,13 +26,13 @@ where $A$ is a fit amplitude, $\omega_c$ the resonance frequency, and $\kappa$ t
 The reflection spectrum is fitted using the empty-cavity limit of Eq.~\eqref{eq:analytical_reflection}. Setting $g = 0$ and absorbing a relative phase into the mode-matching coefficient $\mu_{fc}$, the normalized reflection amplitude simplifies to:
 
 \begin{equation}
-	r(\omega) = \mu_{fr}\,e^{i\phi_{fr}}
-	- \left(\mu_{fc}\,e^{i\phi_{fc}}\right)^2
+	r(\omega) = \mu_{fr}\,
+	- \mu_{fc}^2
 	\frac{2\kappa_{\text{oc}}}{i(\omega - \omega_c) + \kappa}\,,
 	\label{eq:empty_cavity_reflection}
 \end{equation}
 
-where $\phi_{fr}$ and $\phi_{fc}$ account for residual phase offsets in the fiber path. The fit yields the fiber-cavity mode-matching parameter $\mu_{fc} = 0.873\pm0.002$ and the free-space mode-matching parameter $\mu_{fr} = 0.978\pm0.006$. The outcoupling ratio $\kappa_{\text{oc}}/\kappa = 0.85$ is held fixed during the fit, as this value has been consistently measured across multiple cavity assemblies over several years. The resulting fit parameters are summarized in Table \ref{tab:cavity_parameters} in section \ref{sec:cavity_system}, and representative transmission and reflection spectra with their respective fits are shown in Figure \ref{fig:empty_cavity_spectroscopy}.
+The fit yields the fiber-cavity mode-matching parameter $\mu_{fc} = 0.873\pm0.002$ and the free-space mode-matching parameter $\mu_{fr} = 0.978\pm0.006$. The outcoupling ratio $\kappa_{\text{oc}}/\kappa = 0.85$ is held fixed during the fit, as this value has been consistently measured across multiple cavity assemblies over several years. The resulting fit parameters are summarized in Table \ref{tab:cavity_parameters} in section \ref{sec:cavity_system}, and representative transmission and reflection spectra with their respective fits are shown in Figure \ref{fig:empty_cavity_spectroscopy}.
 
 \begin{figure}[htbp]
 	\centering
@@ -50,7 +50,7 @@ For the normal-mode spectroscopy the probe laser has to be scanned over a large 
 \begin{figure}[htbp]
 	\centering
 	\includesvg[inkscapelatex=false,width=0.8\linewidth]{Figures/5_atom_photon_gate/nms_reflection_phase.svg}
-	\caption{Normal-mode spectroscopy of the atom-cavity system. \textbf{(a)}~Normalized reflectivity $|r|^{2}$ as a function of probe detuning $\Delta$ for the uncoupled state $\ket{0}$ (red) and the coupled state $\ket{1}$ (blue). The uncoupled spectrum shows the bare cavity resonance, fitted with the empty-cavity reflection coefficient, as the uncoupled state is off-resonant from the probe, so the system behaves as an empty cavity. The coupled spectrum exhibits the vacuum Rabi splitting, fitted using equation \eqref{eq:analytical_reflection}, yielding a coupling strength of $g = 2\pi \times \SI{25.9\pm0.5}{MHz}$. \textbf{(b)}~Phase $\arg(r)$ of the reflected field computed from the respective fit models. The case for the atom in the uncoupled state showcases a phase shift of $\pi$ on resonance, while the coupled system features a phase shift of 0.}
+	\caption{Normal-mode spectroscopy of the atom-cavity system. \textbf{(a)}~Normalized reflectivity $|r|^{2}$ as a function of probe detuning $\Delta$ for the uncoupled state $\ket{0}$ (red) and the coupled state $\ket{1}$ (blue). The uncoupled spectrum shows the bare cavity resonance, fitted with the empty-cavity reflection coefficient, as the uncoupled state is off-resonant from the probe, so the system behaves as an empty cavity. The coupled spectrum exhibits the vacuum Rabi splitting, fitted using equation \eqref{eq:analytical_reflection}, yielding a coupling strength of $g = 2\pi \times \SI{25.9\pm0.5}{MHz}$. \textbf{(b)}~Phase $\arg(r)$ of the reflected field simulated from the respective fit models. The case for the atom in the uncoupled state showcases a phase shift of $\pi$ on resonance, while the coupled system features a phase shift of 0.}
 	\label{fig:nms_reflection_phase}
 \end{figure}
 
@@ -77,7 +77,7 @@ In Figure \ref{fig:bw_multiple}, one can see that the configuration for the opti
 
 \section{Atom-Photon gate performance} \label{sec:ap_gate}
 
-This section will now go over the measurements for the gate truth tables. First the experimental protocol for the measurement as well as the resulting truth tables will be showcased in section \ref{sec:truth_tables}. Afterward, the overlap of the measured truth table will be characterized as a function of the amount of Brewster windows installed in the custom mount and the mean input photon number in section \ref{sec:photon_number_and_bw_scan}. \notetome{maybe mention bell states depending if I can get that to work}. Lastly in section \ref{sec:imperfections}, an analysis of the limitations and imperfections of the setup will be given and how one could improve the overlap even further.
+This section will now go over the measurements for the gate truth tables. First the experimental protocol for the measurement as well as the resulting truth tables will be showcased in section \ref{sec:truth_tables}. Afterward, the overlap of the measured truth table will be characterized as a function of the number of Brewster windows installed in the custom mount and the mean input photon number in section \ref{sec:photon_number_and_bw_scan}.
 
 \subsection{Gate Truth Tables} \label{sec:truth_tables}
 
@@ -105,11 +105,15 @@ By then setting the detection waveplates from Figure \ref{fig:setup_cavity_table
 	\label{fig:gate_truth_tables}
 \end{figure}
 
-The truth tables for the CPF and CNOT gates show an overlap of \SI{92.41(52)}{\percent} and \SI{88.15(86)}{\percent} with the ideal truth tables, respectively.
+The truth tables for the CPF and CNOT gates show an overlap of \SI{92.41(52)}{\percent} and \SI{88.15(86)}{\percent} with the ideal truth tables, respectively. The overlap is defined as
+\begin{equation}
+    \mathcal{O} = \frac{1}{4} \mathrm{Tr}\!\left(T_{\mathrm{ideal}}^{\top} \, T_{\mathrm{meas}}\right),
+\end{equation}
+where $T_{\mathrm{ideal}}$ and $T_{\mathrm{meas}}$ are the $4\times4$ ideal and measured truth table matrices, respectively. The errors are calculated by error propagation under the assumption of independent errors of different bars.
 
 \subsection{Mean photon number and Brewster window scan} \label{sec:photon_number_and_bw_scan}
 
-As an addition to the truth table measurements, it is also interesting to examine how the overlap with the ideal CNOT truth table depends on the input power (and thus on the mean input photon number $\bar{n}$) and on the V-mode attenuation set by the Brewster-window array. Both of these scans were simulated using QuTiP \cite{qutip5} with the exact details of the simulation outlined in Appendix \ref{appendix:qutip_simulation}. The simulated scans are then compared to the experimentally determined overlaps, in order to showcase the limitations of the simulation itself and how well it reflects the actual experiment. A comparison for each respective scan and its simulation can be seen in Figure \ref{fig:comparison_sim_experiment}.
+To map out the parameter space of the gate and benchmark the underlying simulation model, the overlap with the ideal CNOT truth table is measured as a function of two key control parameters: the V-mode attenuation set by the Brewster-window array, and the mean input photon number $\bar{n}$. Both of these scans were simulated using QuTiP \cite{qutip5} with the exact details of the simulation outlined in Appendix \ref{appendix:qutip_simulation}. The simulated scans are then compared to the experimentally determined overlaps, in order to showcase the limitations of the simulation itself and how well it reflects the actual experiment. A comparison for each respective scan and its simulation can be seen in Figure \ref{fig:comparison_sim_experiment}.
 
 \begin{figure}[htpb]
 	\centering
@@ -125,15 +129,36 @@ As an addition to the truth table measurements, it is also interesting to examin
 
 Comparing the experimental data to the simulated overlaps, the Brewster window scan follows the simulated trend; deviations from the curve are consistent with atom-cavity imperfections discussed in §\ref{sec:imperfections}. As for the photon number scan, the simulated and measured overlaps agree within error up until a mean photon number of $\bar{n}\approx 1$, where the experimental data shows a much quicker drop in overlap when compared to the simulation. This indicates that while the simulation reproduces the experiment well for low mean input photon numbers, it underestimates the degradation at high photon numbers, where the experimental data shows higher atomic scattering (see section \ref{subsubsec:high_photon_deviation}).
 
-\subsection{Generation of Bell States} \label{sec:bs_states}
+\section{Generation of Bell States} \label{sec:bs_states}
 
-\notetome{yeah try to analyze the data and hope it works lul}
+What distinguishes a quantum logic gate from its classical counterpart is its ability to generate entangled states from separable inputs. To demonstrate this behavior, the CNOT gate is applied to a separable input state in which the atom is prepared in a superposition, with the expected output being a Bell state. Concretely, the atom is prepared in $\ket{+_a}=\frac{1}{\sqrt{2}}(\ket{0}+\ket{1})$ via a resonant microwave $\pi/2$ pulse, after which a weak coherent pulse ($\bar{n}\approx0.1$) of $\ket{L_p}$-polarized light is reflected off the atom-cavity system. The gate action then ideally produces the Bell state $\ket{\Phi^+}$:
+\begin{equation}
+    \ket{+_a, L_p} \rightarrow \ket{\Phi^+} = \frac{1}{\sqrt{2}}\left(\ket{0_a, R_p} + \ket{1_a, L_p}\right).
+\end{equation}
+The measurement is performed with seven Brewster windows installed, matching the optimal configuration identified in section \ref{sec:photon_number_and_bw_scan}.
 
-\subsection{Limitations and imperfections}\label{sec:imperfections}
-The measured gate overlap falls short of unity due to several independent imperfections, each contributing at a different scale. This section identifies and discusses the dominant sources, ordered roughly by their impact on the gate performance.
+The joint atom-photon state is characterized via quantum-state tomography: by measuring in three measurement bases for the photon and atom separately and applying maximum-likelihood estimation~\cite{Paris2004,Maximum-Likelihood_technique}, the full density matrix and the Bell state fidelity are extracted. Figure \ref{fig:bs_state} shows the extracted density matrix.
+
+\begin{figure}[htbp]
+    \centering
+    \makebox[\linewidth][c]{%
+        \includesvg[width=1.1\linewidth]{Figures/5_atom_photon_gate/bell_state_L.svg}
+    }
+    \caption{Reconstructed density matrix of the generated Bell state $\ket{\Phi^+}$.
+   (a)~Three-dimensional city plot of $|\rho_{ij}|$, with semi-transparent blue wireframe bars indicating the ideal density matrix.
+   (b)~Corresponding heatmap with numerical values for each matrix element.}
+    \label{fig:bs_state}
+\end{figure}
+
+The reconstructed density matrix reproduces the dominant features of the ideal $\ket{\Phi^+}$ state: population is concentrated on the diagonal elements $\ket{0_a, R_p}$ and $\ket{1_a, L_p}$, with coherences of comparable magnitude connecting them. However, both the populations and coherences are reduced from their ideal value of $0.5$, and residual population has leaked into the wrong-parity states $\ket{0_a, L_p}$ and $\ket{1_a, R_p}$.
+
+The fidelity with the expected state is $F=\bra{\Phi^+}\hat{\rho}\ket{\Phi^+}=65.90\pm1.73\%$, where the standard error has been determined with the Monte Carlo technique~\cite{Paris2004}. Although this does not violate the CHSH inequality, it places the fidelity above the $50\%$ threshold confirming that entanglement was generated. This measurement represents a first demonstration of entanglement generation on the platform; a more systematic optimization of the experimental parameters and an extended integration time are expected to push the fidelity considerably higher.
+
+\section{Limitations and imperfections}\label{sec:imperfections}
+The measured gate overlap and Bell state fidelity fall short of unity due to several independent imperfections, each contributing at a different scale. This section identifies and discusses the dominant sources, ordered roughly by their impact on the gate performance.
 
 
-\subsubsection{Asymmetric reflection amplitudes}
+\subsection{Asymmetric reflection amplitudes}
 \label{subsubsec:asymmetric_reflectivities}
 
 An ideal controlled-phase gate requires that the cavity reflects photons with equal amplitude for both atomic states, differing only in the acquired phase. As shown in Table~\ref{tab:reflection_coefficients}, this condition is not met for the $\pi$-polarized mode: the uncoupled state $\ket{0}$ yields a reflectivity of $R_{0,\pi} = \num{0.064}$, while the coupled state $\ket{1}$ yields $R_{1,\pi} = \num{0.493}$. The large asymmetry arises because the system does not operate deep in the strong-coupling, single-sided-cavity regime where the empty-cavity reflection approaches unity. Instead, the cavity parameters place the uncoupled reflectivity well below the coupled one, so that even before any V-mode attenuation is applied, the two $\pi$-mode amplitudes are far from matched.
@@ -143,30 +168,31 @@ This mismatch directly limits the maximal overlap with the ideal CNOT truth tabl
 A related but far less significant limitation is the discrete nature of the V-mode attenuation. The overlap is maximized at a specific V-mode attenuation that matches the $\pi$-mode reflectivity, but the Brewster windows used in the setup change the attenuation in fixed steps set by the window material, placing the current operating point roughly \SI{2}{\percent} away from the theoretical optimum. As visible in Figure~\ref{fig:comparison_sim_experiment}(a), the overlap curve is relatively flat near its maximum, so this offset has a negligible effect compared to the other imperfections discussed below. Nonetheless, for a future implementation targeting near-unity overlap, a continuously tunable V-mode attenuator would eliminate this residual limitation entirely.
 
 
-\subsubsection{Imperfect atomic state preparation}
+\subsection{Imperfect atomic state preparation}
 \label{subsubsec:state_preparation}
 
 The gate protocol assumes that the atom is initialized in the coupled state $\ket{F{=}2, m_F{=}0}=\ket{1}$ with unit probability. Experimentally, the preparation proceeds in two steps: Zeeman optical pumping into $\ket{F{=}1, m_F{=}0}=\ket{0}$, followed by a resonant microwave $\pi$ pulse that transfers the population to $\ket{F{=}2, m_F{=}0}$. Neither step is perfect. The combined preparation probability in the present dataset is approximately \SI{88}{\percent}, meaning that roughly \SI{12}{\percent} of trials begin with the atom still in the uncoupled state $\ket{0}$.
 
-Because an incorrectly prepared atom does not interact with the cavity mode in the intended way, these trials contribute incoherently to the measurement and directly reduce the observed overlap. The effect is substantial: even if every other aspect of the gate were ideal, a \SI{12}{\percent} preparation error would already cap the overlap well below unity. Improving the Zeeman pumping -- for instance by optimizing the pumping light polarization, duration, or magnetic field alignment -- and improving the microwave pulse fidelity would therefore yield a significant and relatively straightforward gain in gate performance.
+Because an incorrectly prepared atom does not interact with the cavity mode in the intended way, these trials contribute incoherently to the measurement and directly reduce the observed overlap. The effect is substantial: even if every other aspect of the gate were ideal, a \SI{12}{\percent} preparation error would already lead to an error of $\sim6\%$. Improving the Zeeman pumping -- for instance by optimizing the pumping light polarization, duration, or magnetic field alignment -- and improving the microwave pulse fidelity would therefore yield a significant and relatively straightforward gain in gate performance.
 
-\subsubsection{Thermal sensitivity of the detection basis}
+\subsection{Thermal sensitivity of the detection basis}
 \label{subsubsec:thermal_sensitivity}
 
-Extracting the gate overlap requires measuring the reflected photon in a well-defined polarization basis, set by the wave plates and polarizing beam splitter before the detectors. In practice this basis is not perfectly stable: when the UV LED used for atom loading during the MOT sequence is active, the measured extinction ratio between the two detection channels drifts slowly away from its calibrated value, and only recovers once the lamp is switched off. This effect is directly visible in Figure~\ref{fig:extinction_drift}.
+Extracting the gate overlap requires measuring the reflected photon in a well-defined polarization basis, set by the wave plates and polarizing beam splitter before the detectors. In practice this basis is not perfectly stable: when the UV LED used for atom loading during the MOT sequence is active, the measured extinction ratio between the two detection channels slowly drifts away from its calibrated value, and only recovers once the lamp is switched off. This effect is directly visible in Figure~\ref{fig:extinction_drift}.
 
 \begin{figure}[htpb]
 	\centering
-	\includesvg[width=\linewidth]{Figures/5_atom_photon_gate/drift_combined.svg}
-	\caption{Long-term drift of the polarization extinction ratio measured on the gate photon reflection path, recorded at the two SNSPD channels of the polarization analysis stage (Ch 4 and Ch 7) when sending L polarized light. In each panel, the Ch~4 (blue) and Ch~7 (orange) count rates per \SI{25}{\milli\second} bin are shown on the left y-axis, while the corresponding extinction ratio $\eta = N_{\mathrm{Ch}\,7} / N_{\mathrm{Ch}\,4}$ is shown on the right y-axis (red). \textbf{(a)}~Drift recorded with the UV LED switched on: the extinction ratio rises sharply within the first minute and then decays monotonically as Ch~4 counts gradually increase and Ch~7 counts decrease, indicating a continuous rotation of the analysed polarization. \textbf{(b)}~Drift recorded after a 5 minute measurement where the atom was prepared in $\ket{0}$ and L polarized light was sent: Ch~4 counts decrease and Ch~7 counts increase over the full \SI{24}{\minute} measurement window, driving the extinction ratio from $\eta \approx 2$ up to $\eta \approx 23$.}
+	\includesvg[width=\linewidth]{Figures/5_atom_photon_gate/drift_combined_prob.svg}
+		\caption{Long-term drift of the polarization extinction ratio measured on the gate photon reflection path, recorded at the two SNSPD channels of the polarization analysis stage (Ch 4 and Ch 7) when sending L polarized light. In each panel, the per-bin detection probabilities $P(\mathrm{ch}\,i) = N_i / (N_4 + N_7)$ are shown for Ch~4 (blue) and Ch~7 (orange), computed from count rates smoothed in \SI{25}{\milli\second} bins. The corresponding extinction ratio is $\eta = N_{\mathrm{Ch}\,7}/N_{\mathrm{Ch}\,4} = P(\mathrm{ch}\,7)/P(\mathrm{ch}\,4)$. \textbf{(a)}~Drift recorded with the UV LED switched on: the imbalance between the two channels grows sharply within the first minute and then relaxes monotonically as $P(\mathrm{ch}\,4)$ rises and $P(\mathrm{ch}\,7)$ falls, indicating a continuous rotation of the analysed polarization. \textbf{(b)}~Drift recorded after a 5 minute measurement where the atom was prepared in $\ket{0}$ and L polarized light was sent: $P(\mathrm{ch}\,4)$ decreases steadily from approximately $0.33$ to $0.04$ while $P(\mathrm{ch}\,7)$ increases correspondingly from $0.67$ to $0.96$, which corresponds to the extinction ratio rising from $\eta \approx 2$ to $\eta \approx 23$.}
 	\label{fig:extinction_drift}
 \end{figure}
 
-The origin of this drift is thermal, but not trivially localised. Three potential heat sources are at play in the setup: the rubidium dispenser, the UV LED, and the \SI{852}{\nano\metre} vertical trap laser. The rubidium dispenser is the most disruptive of the three, inducing a large and easily resolvable shift of the cavity resonance when active \cite{GianvitoC2026}; for this reason it is only turned on briefly in the morning, and the gate measurements are started after the setup has been allowed to cool for several hours. Any residual dispenser-induced drift has therefore long decayed by the time a measurement run begins, and no separate characterisation of dispenser heating is shown here. The vertical trap laser was additionally checked by recording the extinction ratio with only the trap active during a typical measurement window; no drift was observed above the measurement noise, and the corresponding trace is omitted for the same reason. This leaves the UV LED as the only heat source whose duty cycle changes on the timescale of a single measurement run, consistent with the drift in Figure~\ref{fig:extinction_drift} being UV-correlated. However, UV illumination does not measurably shift the cavity spectrum itself \cite{GianvitoC2026}, so the drift cannot be attributed to a rotation of the birefringent eigenmodes of the cavity. The most likely remaining culprits are components in the immediate vicinity of the cavity that are not probed by the reflection spectrum -- for instance stress-induced birefringence in the cavity fiber close to its tip, or thermally induced strain in the piezo-mounted fiber holder. Pinpointing the exact component is beyond the scope of this thesis.
+The origin of this drift is thermal, but not trivially localized. Three potential heat sources are at play in the setup: the rubidium dispenser, the UV LED, and the \SI{852}{\nano\metre} vertical trap laser. The rubidium dispenser is the most disruptive of the three, inducing a large and easily resolvable shift of the cavity resonance when active~\cite{GianvitoC2026}; for this reason it is only turned on briefly in the morning, and the gate measurements are started after the setup has been allowed to cool for several hours. Any residual dispenser-induced drift has therefore long decayed by the time a measurement run begins, and no separate characterization of dispenser heating is shown here. The vertical trap laser was additionally checked by recording the extinction ratio with only the trap active during a typical measurement window; no drift was observed above the measurement noise, and the corresponding trace is omitted for the same reason. This leaves the UV LED as the only heat source whose duty cycle changes on the timescale of a single measurement run, consistent with the drift in Figure~\ref{fig:extinction_drift} being UV-correlated. However, UV illumination does not measurably shift the cavity spectrum itself \cite{GianvitoC2026}, so the drift cannot be attributed to a rotation of the birefringent eigenmodes of the cavity. The most likely remaining culprits are components in the immediate vicinity of the cavity that are not probed by the reflection spectrum -- for instance stress-induced birefringence in the cavity fiber close to its tip, or thermally induced strain in the piezo-mounted fiber holder. Pinpointing the exact component is beyond the scope of this thesis.
 
-Regardless of its microscopic origin, the drift has a practical consequence for the gate measurements. Because the gate measurement window follows shortly after atom loading -- and thus shortly after UV exposure -- the residual thermal offset can introduce a systematic error in the measured overlap that varies from run to run depending on the thermal history. This is mitigated by reducing the MOT loading time down to $\SI{1}{\second}$, as this is where the trapping probability for a single atom is sufficiently high while keeping the time that the UV lamp is turned on at a minimum. However, even with these precautions in place, residual thermal drifts were still present after each measurement, requiring a cooldown between runs ($\SI{1.5}{\minute}$ measurement time vs. ${\geq}\SI{5}{\minute}$ cooldown) so that each measurement run starts from the same extinction ratio.
+Regardless of its microscopic origin, the drift has a practical consequence for the gate measurements. Because the gate measurement window follows shortly after atom loading -- and thus shortly after UV exposure -- the residual thermal offset can introduce a systematic error in the measured overlap that varies from run to run depending on the thermal history. This is mitigated by reducing the MOT loading time down to $\SI{1}{\second}$, as this is where the trapping probability for a single atom is sufficiently high while keeping the time that the UV lamp is turned on at a minimum. 
+However, even with these precautions in place, residual thermal drifts accumulated over the course of each measurement, requiring a cooldown period between runs ($\SI{1.5}{\minute}$ measurement time vs. ${\geq}\SI{5}{\minute}$ cooldown) before the extinction ratio recovered to its initial value.
 
-\subsubsection{Fluctuations in atom-cavity coupling}
+\subsection{Fluctuations in atom-cavity coupling}
 \label{subsubsec:coupling_fluctuations}
 
 The atom is confined in an intracavity dipole trap, but its position is not perfectly fixed between successive trapping events. Small variations in the trapping position translate directly into variations in the atom-cavity coupling strength $g$, which depends on the local cavity mode amplitude at the atom's location. Since the reflection coefficients, the scattering rate, and consequently the gate overlap all depend on $g$, run-to-run position fluctuations introduce scatter around the value predicted by the simulation, which assumes a single fixed coupling strength.
@@ -174,10 +200,12 @@ The atom is confined in an intracavity dipole trap, but its position is not perf
 This effect explains why some experimental data points in Figure~\ref{fig:comparison_sim_experiment} lie slightly above and others slightly below the simulated curve. A better-coupled atom yields a higher reflectivity contrast and therefore a higher overlap, while a worse-coupled atom yields the opposite. The fluctuations also affect the optical pumping efficiency, since the coupling to the pumping light likewise depends on the atom's position. As long as the distribution of trapping positions is centered near the assumed value, the experimental data are expected to scatter around the simulation without systematic bias, which is consistent with the observed trend.
 
 
-\subsubsection{Deviation at high mean photon numbers}
+\subsection{Deviation at high mean photon numbers}
 \label{subsubsec:high_photon_deviation}
 
-At high mean photon numbers, the experimental data deviate from the simulation strongly, while at low photon numbers they all lie on the simulated curve (Figure~\ref{fig:comparison_sim_experiment}(b)). While both the experiment and simulation show a degradation of the overlap with increasing photon number due to atom-induced scattering, the experimentally observed atomic scattering is higher than the simulation predicts, leading to a steeper drop in overlap than expected.
+At high mean photon numbers, the experimental data deviate from the simulation strongly, while at low photon numbers they all lie on the simulated curve (Figure~\ref{fig:comparison_sim_experiment}(b)). While both the experiment and simulation show a degradation of the overlap with increasing photon number due to atom-induced scattering, the experimentally observed atomic scattering is higher than the simulation predicts, leading to a steeper drop in overlap than expected. The origin of this effect remains to be identified.
 
-Two mechanisms likely contribute to this discrepancy. First, the atom position fluctuations discussed in section~\ref{subsubsec:coupling_fluctuations} have a larger impact at high photon numbers, where even a small change in $g$ modifies the scattering rate appreciably, because the total number of scattering events scales with the intracavity photon number. Second, at very high intracavity intensities, radiation pressure from the circulating photons can displace the atom within the trap during the gate pulse itself. Such a displacement changes $g$ dynamically over the course of a single trial, leading to excess scattering beyond what a fixed-$g$ simulation predicts. The combination of these two effects — static position uncertainty amplified by high photon numbers, and dynamic position kicks during the pulse — accounts for the growing discrepancy between experiment and simulation in the high-photon-number regime.
+\subsection{Additional limitations of the Bell state measurement}
+\label{subsubsec:bell_state_limitations}
 
+The Bell state fidelity of \SI{65.90(1.73)}{\percent} reported in Section~\ref{sec:bs_states} lies noticeably below the CNOT truth table overlap of \SI{88.15(86)}{\percent}, despite both measurements being performed on the same system. Two factors contribute to this gap. First, the Bell state measurement is sensitive not only to the atomic populations -- the only quantity probed by the truth table measurement -- but also to the coherences between atom and photon, which are degraded by any dephasing process occurring between state preparation and readout. Second, the full tomography requires additional resonant microwave pulses to rotate the atomic state into the $X$ and $Y$ measurement bases, each of which carries a finite pulse fidelity and extends the total sequence duration. The longer measurement window also increases exposure to the thermal drifts discussed in Section~\ref{subsubsec:thermal_sensitivity}. Although a more precise breakdown of the individual contributions cannot be given at present, the fidelity is expected to improve significantly with further optimization of the experimental parameters.

@@ -91,12 +91,14 @@ The parameters used in the simulations are summarized in Table~\ref{tab:sim_para
 		Total cavity decay rate     & $\kappa$                & $2\pi \times \SI{58}{\mega\hertz}$    \\
 		Outcoupling ratio           & $\kappa_{OC}/\kappa$    & $0.85$                                \\
 		Atomic decay rate           & $\gamma$                & $2\pi \times \SI{6.065}{\mega\hertz}$ \\
-		Birefringent splitting      & $\Delta_{\text{biref}}$ & $2\pi \times \SI{500}{\mega\hertz}$   \\
+		Birefringent splitting      & $\Delta_{\text{biref}}$ & $2\pi \times \SI{505}{\mega\hertz}$   \\
 		Fiber--cavity mode-matching & $\mu_{fc}$              & $0.873$                               \\
 		Free-space mode-matching    & $\mu_{fr}$              & $0.978$                               \\
 		State preparation fidelity  & $p_1$                   & $0.88$                                \\
 		Detection efficiency        & $\eta$                  & $0.742$                               \\
 		Dark count rate             & $r_{\text{dc}}$         & $5 \times 10^{-5}$                    \\
+       Off-resonant detuning to $F'=3$       & $\Delta_{F'3}$       & $2\pi \times \SI{423.6}{\mega\hertz}$ \\
+		Free-space scattering rate coefficient & $\kappa_{\text{fs}}$ & $2\pi \times \SI{58}{\mega\hertz}$    \\ 
 		\hline
 	\end{tabular}
 	\caption{Parameters used in the master-equation simulations. The detection efficiency is the product of fiber coupling ($0.9$), SNSPD efficiency ($0.85$), and optical path transmission ($0.97$).}
@@ -127,7 +129,7 @@ The scan shown in Figure \ref{fig:bw_scan_sim} reveals a clear optimum at $T_\ma
 
 \section{Mean Photon Number Scan}\label{appendix:photon_number_scan}
 
-While the atom-photon gate is designed to operate in the single-photon regime, the use of weak coherent pulses introduces a non-zero probability of multi-photon events. This section characterizes how the gate overlap depends on the mean photon number $\bar{n}$ of the input pulses.
+While the atom-photon gate is designed to operate in the single-photon regime, the use of weak coherent pulses introduces a non-zero probability of multi-photon events that degrade the gate. This section characterizes how the gate overlap depends on the mean photon number $\bar{n}$ of the input pulses, and compares the simulation to the experimental measurement.
 
 The mean photon number was scanned over the range $\bar{n} \in [10^{-5},\, 10]$ on a logarithmic scale. For each value of $\bar{n}$, the coherent pulse amplitude was computed from the pulse normalization as
 \begin{align}
@@ -135,14 +137,18 @@ The mean photon number was scanned over the range $\bar{n} \in [10^{-5},\, 10]$ 
 \end{align}
 where $\varepsilon_{\text{ref}}(t)$ is the unit-amplitude pulse envelope. The CNOT truth table was then constructed as described in section~\ref{appendix:truth_table}, including the atomic state probability weighting, and the overlap with the ideal CNOT truth table was evaluated using \eqref{eq:overlap}. The V-mode transmission was fixed at $T_V = 0.2247$ and the Fock space truncation was set to $N_{\text{ph}} = 3$ for this scan.
 
-\begin{figure}
+\begin{figure}[htpb]
 	\centering
 	\includesvg[width=\linewidth]{Figures/appendix/photon_number_scan.svg}
-	\caption{Simulated CNOT gate overlap as a function of the mean input photon number $\bar{n}$. The V-mode transmission is fixed at $T_V = 0.2247$ and the Fock space is truncated at $N_{\text{ph}} = 3$. The dashed line marks the optimal mean photon number $\bar{n}^* \approx 0.10$, at which the overlap reaches a maximum of $\approx 0.865$.}
+	\caption{Simulated CNOT gate overlap (blue line) as a function of the mean input photon number $\bar{n}$. The V-mode transmission is fixed at $T_V = 0.2247$ and the Fock space is truncated at $N_{\text{ph}} = 3$. The simulation reproduces the experimental overlap across six orders of magnitude in $\bar{n}$, with a maximum overlap of $\approx 0.865$ at $\bar{n} \approx 0.1$.}
 	\label{fig:photon_number_scan}
 \end{figure}
 
-The result is shown in Figure~\ref{fig:photon_number_scan}. At very low photon numbers ($\bar{n} \lesssim 10^{-3}$), dark counts dominate the detected signal and the overlap approaches $0.5$, corresponding to random guessing. As $\bar{n}$ increases, the signal-to-noise ratio improves and the overlap rises towards the single-photon limit. For $\bar{n} \gtrsim 1$, multi-photon events begin to degrade the overlap, as the master-equation simulation captures the nonlinear response of the atom-cavity system to multi-photon input states.
+The result is shown in Figure~\ref{fig:photon_number_scan}. The simulation captures three distinct regimes:
+
+At very low photon numbers ($\bar{n} \lesssim 10^{-3}$), dark counts dominate the detected signal and the overlap approaches $0.5$, corresponding to random guessing. As $\bar{n}$ increases, the signal-to-noise ratio improves and the overlap rises towards a plateau at $\bar{n} \approx 10^{-1}$, where the gate operates near its single-photon limit with an overlap of $\approx 0.865$.
+For $\bar{n} \gtrsim 1$, multi-photon events begin to degrade the overlap, as the master-equation simulation captures the nonlinear response of the atom-cavity system to multi-photon input states.
+
 %  
 % It should be noted that the simulation assumes a fixed atom--cavity coupling $g$ throughout the gate pulse. In practice, spontaneous scattering events impart momentum kicks to the atom, displacing it within the intracavity standing wave and thereby reducing the effective coupling strength. This effect becomes significant at higher mean photon numbers where the scattering probability per pulse is no longer negligible, and is expected to cause the simulation to overestimate the gate overlap in this regime.
 

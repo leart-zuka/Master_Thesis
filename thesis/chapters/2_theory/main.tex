@@ -1,20 +1,20 @@
 \chapter{Theory}\label{chapter:theory}
-This chapter introduces the theoretical framework needed to understand the key points of this thesis. First a general introduction into cavity quantum electrodynamics will be given, alongside the intricacies in the setup that will modify the general theory. Afterwards the reflection from an atom-cavity system will be explored, and finally how it can be used to construct an atom photon gate.
+This chapter introduces the theoretical framework needed to understand the key points of this thesis. First a general introduction into cavity quantum electrodynamics will be given, alongside the intricacies in the setup that will modify the general theory. Afterwards the reflection from an atom-cavity system will be explored, and finally how it can be used to construct an atom-photon quantum logic gate.
 
 \section{Cavity Quantum Electrodynamics}
 
-The field of \textit{Cavity Quantum Electrodynamics} explains the interaction between a resonator (in this case a Fabry-Perot cavity), and a piece of matter with which the light inside the resonator interacts (here: a $^{87}\text{Rb}$ atom). By placing the atom between two highly-reflective mirrors forming the optical cavity, one increases the number of times a photon that is inside a cavity bounces back and forth between the two mirrors, enhancing the interaction cross-section compared to free space. The strength of this enhancement is captured by the single-atom cooperativity $C=g^2/(2\kappa\gamma)$, which must satisfy $C>1$ for deterministic light-matter interaction.\cite{RempeReiserer2015}
+The field of \textit{Cavity Quantum Electrodynamics} explains the interaction between a resonator (in this case a Fabry-Perot cavity), and electronic states within matter systems with which the light inside the resonator interacts (in this case the $D_2$ transition of $^{87}\text{Rb}$). By placing the atom between two highly-reflective mirrors forming the optical cavity, one increases the number of times a photonic field that is inside a cavity gets reflected back and forth between the two mirrors, enhancing the interaction cross-section compared to free space. The strength of this enhancement is captured by the single-atom cooperativity $C=g^2/(2\kappa\gamma)$, which must satisfy $C>1$ for efficient light-matter interaction at the single photon level~\cite{RempeReiserer2015}.
 
 The theoretical model which explains this interaction in a fully quantum mechanical picture is called the \textit{Jaynes-Cummings Model} \cite{JaynesCummings1963} and was named after Edwin Jaynes and Fred Cummings who developed it in 1963. To introduce this model, we consider a three-level emitter (i.e. the atom), which is interacting with a single cavity optical mode.
 
 The \textit{Jaynes-Cummings} (JC) Model describes the coherent exchange of energy between a quantized cavity field and a two-level transition of the atom. The cavity supports a single optical mode at frequency $\omega_c$.
 The atom, which is also located in the cavity, supports a transition frequency close to $\omega_c$, from a coupled state $\ket{c}$ to an excited state $\ket{e}$ at a frequency $\omega_a$. This transition is treated in the dipole approximation.
-In order to then complete the three-level-emitter picture, we include an uncoupled state $\ket{u}$ with which the photon does not interact due to this state not being resonantly coupled to the cavity light mode. This uncoupled state $\ket{u}$ is what enables the conditional atom-photon gate operation.
+In order to then complete the three-level-emitter picture relevant for the atom-photon gate, we include an uncoupled state $\ket{u}$. This uncoupled state, which lies \emph{outside} the JC subspace, does not interact with the photon due to this state not being resonantly coupled to the cavity light mode. The inclusion of this extra state is what enables the conditional atom-photon gate operation.
 
 \begin{figure}[htbp]
 	\centering
-	\includesvg[width=0.8\linewidth]{Figures/2_theory/jc_setup.svg}
-	\caption{(a) Basic physical situation considered in cQED. A three-level emitter, e.g., a single atom, is located in an optical cavvity, schmeatically represented by two facing mirrors. The atom exchanges energy with the optical field at a rate $2g$. The decay rate of photons out of the resonator is $2\kappa = 2\kappa_{\text{out}}+2\kappa_{\text{loss}}$. The atomic polarization dewcay rate is $\gamma$ (b) Atomic energy level scheme. The transition frequency between the coupled ground state $\ket{c}$ and the excited state $\ket{e}$ is $\omega_a$. The cavity resonance frequency is $\omega_c$. Atom and cavity are detuned by $\Delta_{ac} = \omega_a - \omega_c$. The third, uncoupled level $\ket{u}$ is detuned from $\ket{c}$ by $\Delta_u$.\cite{RempeReiserer2015}}
+	\includesvg[inkscapelatex=false,width=0.8\linewidth]{Figures/2_theory/jc_setup.svg}
+	\caption{(a) Basic physical situation considered in cQED. A three-level emitter, e.g., a single atom, is located in an optical cavvity, schmeatically represented by two facing mirrors. The atom exchanges energy with the optical field at a rate $2g$. The decay rate of photons out of the resonator is $2\kappa = 2\kappa_{\text{out}}+2\kappa_{\text{loss}}$. The atomic polarization decay rate is $\gamma$ (b) Atomic energy level scheme. The transition frequency between the coupled ground state $\ket{c}$ and the excited state $\ket{e}$ is $\omega_a$. The cavity resonance frequency is $\omega_c$. Atom and cavity are detuned by $\Delta_{ac} = \omega_a - \omega_c$. The third, uncoupled level $\ket{u}$ is detuned from $\ket{c}$ by $\Delta_u$. Figure taken from~\cite{RempeReiserer2015}.}
 \end{figure}
 
 
@@ -46,8 +46,8 @@ The main take-away from \eqref{eq:jc_hamiltonian_eigenenergies} is that on reson
 
 \begin{figure}[h]
 	\centering
-	\includesvg[width=0.8\linewidth]{Figures/2_theory/energy_splitting_jc.svg}
-	\caption{The Jaynes-Cummings ladder of the dressed energy eigentstates $\ket{N,\pm}$ of a strongly coupled atom-cavity system, where the cavity frequency is kept fixed and the emiter frequency is scanned over the resonance. Compared to the uncoupled situation (gray), the coupled states (black) exhibit pronounced avoided level crossings. At zero detuning, the levels are separated by $2g\sqrt{N}$.\cite{RempeReiserer2015}}
+	\includesvg[inkscapelatex=false,width=0.8\linewidth]{Figures/2_theory/energy_splitting_jc.svg}
+	\caption{The Jaynes-Cummings ladder of the dressed energy eigentstates $\ket{N,\pm}$ of a strongly coupled atom-cavity system, where the cavity frequency is kept fixed and the emiter frequency is scanned over the resonance. Compared to the uncoupled situation (gray), the coupled states (black) exhibit pronounced avoided level crossings. At zero detuning, the levels are separated by $2g\sqrt{N}$.Figure taken from~\cite{RempeReiserer2015}.}
 \end{figure}
 
 
@@ -94,14 +94,15 @@ This then gives a definition of the JC Hamiltonian with respect to an external d
 
 \section{Reflection from an Atom-Cavity System}
 
-For quantum information processing, it is essential that the photonic qubit is preserved upon reflection from the cavity. This requires that light entering through the first mirror — called the outcoupling (OC) mirror — also exits through the same mirror, rather than being lost through the opposing highly reflective (HR) mirror. The HR mirror on the other hand must have maximum reflection, making the cavity one sided, so the light exits predominantly through the OC mirror. The total losses can thus be divided into the following parts:
+For quantum information processing with photonic qubits, the cavity must be designed so that photons enter and leave through a single well-defined external mode. This is achieved by making one mirror highly transmissive --- the outcoupling (OC) mirror --- while keeping the opposing mirror highly reflective (HR). Photons then enter and exit predominantly through the OC mirror. The total cavity decay rate decomposes into contributions from each loss channel:
 
 \begin{equation}
 	\kappa = \kappa_{oc} + \kappa_{HR} + \kappa_{paras}
 	\label{eq:cavity_coupling}
 \end{equation}
 
-In \eqref{eq:cavity_coupling}, $\kappa_{oc}$ and $\kappa_{HR}$ describes the rate at which light couples into and out of the cavity through the OC and HR mirror respectively, whereas $\kappa_{paras}$ describes the rate of losses due to absorption at the mirror surfaces. In order for the light to enter and leave through the OC mirror, one needs to ensure that $\kappa_{oc}\gg \kappa_{HR},\kappa_{paras}$. The escape probability of the photon is then defined by the outcoupling ratio $\frac{\kappa_{oc}}{\kappa}$.\\
+In \eqref{eq:cavity_coupling}, $\kappa_{oc}$ and $\kappa_{HR}$ describes the rate at which light couples into and out of the cavity through the OC and HR mirror respectively, whereas $\kappa_{paras}$ describes the rate of losses due to absorption at the mirror surfaces.
+For single-sided operations one needs to ensure that $\kappa_{oc}\gg \kappa_{HR},\kappa_{paras}$. The escape probability of the photon is then defined by the outcoupling ratio $\frac{\kappa_{oc}}{\kappa}$.\\
 
 Another important quantity is the matching of the spatial modes of the light when coupling into the cavity. As the incoming light gets coupled into the cavity, a mismatch between the spatial modes in transmission and reflection can occur. This lowers the efficiency at which the light can couple to the cavity itself. The mode matching is then given by the overlap integral of the mode functions for the light one is investigating. In this case it is important to quantify the mode matching between the reflected light at the first cavity and the incoming light ($\mu_{fr}$) as well as the one for the incoming light and the optical mode inside of the cavity ($\mu_{fc}$).\\
 
@@ -109,7 +110,7 @@ The field incident on the cavity is treated as an input field. This then can be 
 When driving the system only from one side, as it is the case here, the relation between input and output becomes:\cite{GardinerColletIO1985}
 
 \begin{equation}
-	a_{out}(t) = \mu_{fr}a_{in}(t) + \mu_{fc}\sqrt{\kappa_{oc}}\langle a\rangle(t)
+	\hat{a}_{\text{out}}(t) = \mu_{fr}\,\hat{a}_{\text{in}}(t) + \mu_{fc}\sqrt{\kappa_{oc}}\,\hat{a}(t)
 	\label{eq:io_theory}
 \end{equation}
 
@@ -124,7 +125,7 @@ The reflection amplitude in \eqref{eq:analytical_reflection} depends on the detu
 
 \begin{figure}
 	\centering
-	\includesvg[width=\linewidth]{Figures/2_theory/reflectivity_phase.svg}
+	\includesvg[inkscapelatex=false,width=\linewidth]{Figures/2_theory/reflectivity_phase.svg}
 	\caption{Reflectivity $|r|^2$~(a) and phase $\arg(r)$~(b) of the reflection coefficient as a function of detuning $\Delta$ between the probe light and the cavity resonance, for the coupled state $\ket{c}$ (blue) and the uncoupled state $\ket{u}$ (red). The coupled state exhibits vacuum Rabi splitting, visible as the double-dip structure in reflectivity and the associated phase features around resonance. At zero detuning, the uncoupled state $\ket{u}$ acquires a pi phase shift, whereas the coupled state $\ket{c}$ does not. Parameters used are $(g,\,\kappa,\,\gamma)/2\pi = (26,\,58,\,3.0)$\,\si{\mega\hertz}, with output-coupler fraction $\kappa_\text{oc}/\kappa = 0.85$ and mode matching parameters $\mu_\text{rf} = 0.978$, $\mu_\text{fc} = 0.873$.}
 	\label{fig:reflection_phase_spectrum}
 \end{figure}
@@ -138,7 +139,7 @@ Looking at \eqref{eq:analytical_reflection} one can see that the behavior of the
 	\label{eq:analytical_reflection_zero_detuning}
 \end{equation}
 
-In the event of an uncoupled atom-cavity system (effectively $g=0$), which would be achieved by preparing the atom in the $\ket{u}$ state, the reflection coefficient $r<0$. This would imply a relative phase shift of $\pi$ between the reflected and incoming light field ($a_{out}(t) \approx -a_{in}(t)$). Preparing the atom in the coupled state $\ket{c}$ however, the Vacuum Rabi Splitting shifts the cavity resonances to $\omega_c\pm g$, so the cavity appears off-resonant for a photon at $\omega_c$. The photon is therefore reflected from the OC mirror without entering the cavity, acquiring no phase shift, which is mirrored by a reflection coefficient of $r>0$ ($a_{out}(t) \approx a_{in}(t)$). This behavior is shown in Figure \ref{fig:reflection_phase_spectrum}.
+In the event of an uncoupled atom-cavity system (effectively $g=0$), which would be achieved by preparing the atom in the $\ket{u}$ state, the reflection coefficient $r<0$. This would imply a relative phase shift of $\pi$ between the reflected and incoming light field ($a_{out}(t) \approx -a_{in}(t)$). Preparing the atom in the coupled state $\ket{c}$ however, the Vacuum Rabi Splitting shifts the resonances of the atom-cavity system to $\omega_c\pm g$, so the cavity appears off-resonant for a photon at $\omega_c$. The photon is therefore reflected from the OC mirror without entering the cavity, acquiring no phase shift, which is mirrored by a reflection coefficient of $r>0$ ($a_{out}(t) \approx a_{in}(t)$). This behavior is shown in Figure \ref{fig:reflection_phase_spectrum}.
 
 A $V$ polarized photon, being far detuned from the cavity resonance by $\Delta_{\text{biref}}$, is reflected without entering the cavity and acquires no phase shift, regardless of the atomic state.
 This state-dependent phase shift of the output field depending on the state of the atom, enables the realisation of a quantum atom-photon gate with the atom being the controlling qubit and the photon being the target qubit.\cite{DuanKimble2004}

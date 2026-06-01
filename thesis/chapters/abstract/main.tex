@@ -1,19 +1,5 @@
 \chapter*{\centering Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
 
-
-Single atoms coupled to optical cavities provide a powerful platform for photonic quantum information processing.
-Minimizing the influence of external factors like magnetic field fluctuations is a key goal in this endeavor.
-In this work, I investigate a novel gate protocol that employs a single $^{87}Rb$ atom prepared in a magnetic-field-insensitive clock qubit and coupled to a high-finesse birefringent Fabry–Perot cavity.
-The cavity’s high birefringence creates two well-separated polarization eigenmodes, enabling polarization-selective reflectivity that depends on the atomic qubit state.
-This allows for the implementation of a controlled phase (CPHASE) gate between the atomic clock states and our photonic qubits.
-By rotating the basis of the photonic qubit, one is then able to realize an atom-photon controlled-NOT (CNOT) gate.
-\\
-
-\textbf{Show some results here and talk about how well it works and also how one might be able to use the gate}
-\\
-
-
-I present simulations based on input–output theory and master-equation modeling that quantify the conditional reflection amplitudes, gate truth table, and resulting fidelities under realistic experimental imperfections such as finite mode matching, cavity loss channels, and multiphoton contributions.
-Our results indicate that atom-state-dependent phase shifts on the photonic qubit are achievable in the current system, providing a viable path toward a robust, high-fidelity, cavity-assisted atom–photon quantum gate.
-
+Single atoms coupled to optical cavities provide a powerful platform for quantum information processing. Minimizing the influence of external factors, which would otherwise compromise coherence and gate fidelity is a key goal in this endeavor. For instance, spin qubits encoded in magnetically sensitive states suffer from dephasing due to ambient magnetic field fluctuations, motivating the use of magnetic-field-insensitive clock states. In this work, I investigate an atom-photon gate protocol that employs a single $^{87}Rb$ atom prepared in the clock states of the $5S_{1/2}$ hyperfine ground manifold coupled to a high-finesse birefringent Fabry–Pérot cavity. The cavity’s high birefringence creates two well-separated polarization eigenmodes, of which only one is resonantly coupled to the atomic qubit transition. The reflectivity from the atom-cavity system thus becomes dependent on the state of the atom and the polarization of the incoming photon, with the atom acting as the control qubit and the photon as the target qubit. Using this I implemented a controlled-phase-flip (CPF) gate between the atomic and the photonic qubits. By then preparing the photonic qubit in a superposition of the cavity's polarization eigenmodes, I realize an atom-photon controlled--NOT (CNOT) gate. I present simulations based on input–output theory and master-equation modeling that quantify the conditional reflection amplitudes and gate truth tables under realistic experimental imperfections such as finite mode matching, intracavity losses, multiphoton contributions, and atomic scattering.
+Experimentally, I measure an overlap of \SI{92.41\pm0.52}{\percent} and \SI{88.15\pm0.86}{\percent} with the ideal truth tables for the CPF and CNOT gates, respectively, which is in good agreement with the simulations. Using the gate to entangle the atomic and photonic qubits, I further measure a Bell state fidelity of \SI{65.90\pm1.73}{\percent}, exceeding the classical threshold of \SI{50}{\percent} and confirming the generation of atom-photon entanglement. This represents a key building block for future quantum network protocols.
