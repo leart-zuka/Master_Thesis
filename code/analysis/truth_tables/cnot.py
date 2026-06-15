@@ -185,17 +185,8 @@ def plot_heatmap(ax, matrix, err, labels):
 
 
 # ── BUILD FIGURE ──
-fig = plt.figure(figsize=(11, 5))
-gs = fig.add_gridspec(
-    1,
-    2,
-    hspace=0.3,
-    wspace=0.30,
-    bottom=0.10,
-    top=0.95,
-    left=0.05,
-    right=0.95,
-)
+fig = plt.figure(figsize=(14, 7))
+gs = fig.add_gridspec(1, 2, width_ratios=[1.4, 1.0], figure=fig)
 
 ax1 = fig.add_subplot(gs[0, 0], projection="3d")
 plot_3d_bars(ax1, cnot_truth_table, cnot_truth_table_err, cnot_labels, cnot_ideal)
