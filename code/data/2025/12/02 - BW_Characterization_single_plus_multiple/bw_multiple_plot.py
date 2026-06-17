@@ -39,7 +39,7 @@ ax.errorbar(
 target_TV = 24.0
 ax.axhline(
     target_TV,
-    color="grey",
+    color="green",
     linestyle="--",
     linewidth=0.8,
     label=f"Target $T_V = {target_TV}\%$",
@@ -53,7 +53,7 @@ ax.legend(frameon=False)
 ax.tick_params(direction="in", which="both", top=True, right=True)
 
 fig.tight_layout()
-fig.savefig("bw_transmission.pdf", bbox_inches="tight")
-fig.savefig("bw_transmission.svg", bbox_inches="tight")
-fig.savefig("bw_transmission.png", dpi=200, bbox_inches="tight")
+fig.savefig("bw_transmission_presentation.pdf", bbox_inches="tight")
+fig.savefig("bw_transmission_presentation.svg", bbox_inches="tight")
+fig.savefig("bw_transmission_presentation.png", dpi=200, bbox_inches="tight")
 print("Plot saved.")
