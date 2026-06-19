@@ -8,7 +8,7 @@ The reflection amplitude of a photon incident on an atom-cavity system, given by
 
 As mentioned before, the $V$ mode of the birefringent cavity is detuned by $\Delta_{\text{biref}}=2\pi\cdot 500\text{MHz}$ from the $\pi$-mode, to which the atomic transition is resonantly coupled. This leads to a $V$ polarized photon, getting reflected from the first OC mirror without entering the cavity due to being far off-resonant. This then leads to the $V$ polarized component of both the CNOT input basis states, having a much larger relative reflection amplitude when compared to the $\pi$ polarized portion.
 
-A $\pi$-polarized photon, on the other hand, interacts with the atom inside the cavity, making the reflection amplitude dependent on the atomic state. In the coupled case $\ket{1}$, the vacuum Rabi splitting shifts the dressed-state resonances to approximately $\omega_c\pm g$. This then leads to the photon being reflected off the OC mirror, but not perfectly, due to finite cooperativity. In the uncoupled state $\ket{0}$, the $\pi$-polarized photon fully enters the cavity, undergoes many round trips, and transmits back out teh OC mirror with a relative phase shift of $\pi$ compared to teh input field, on a timescale set by $1/\kappa_{OC}$. But due to intracavity losses (absorption, HR mirror leakage, imperfect mode-matching), the reflection amplitude is smaller than that of the coupled case.
+A $\pi$-polarized photon, on the other hand, interacts with the atom inside the cavity, making the reflection amplitude dependent on the atomic state. In the coupled case $\ket{1}$, the vacuum Rabi splitting shifts the dressed-state resonances to approximately $\omega_c\pm g$. This then leads to the photon being reflected off the OC mirror, but not perfectly, due to finite cooperativity. In the uncoupled state $\ket{0}$, the $\pi$-polarized photon fully enters the cavity, undergoes many round trips, and transmits back out the OC mirror with a relative phase shift of $\pi$ compared to the input field, on a timescale set by $1/\kappa_{OC}$. But due to intracavity losses (absorption, HR mirror leakage, imperfect mode-matching), the reflection amplitude is smaller than that of the coupled case.
 
 Using the time-domain simulation described in Appendix \ref{appendix:qutip_simulation} with the parameters characterized in section \ref{section:experimental_parameters_for_gate}, the following reflection amplitudes are obtained:
 
@@ -23,7 +23,7 @@ Using the time-domain simulation described in Appendix \ref{appendix:qutip_simul
 		$\phi$ (rad) & $3.016$         & $0.000$        & $0.000$        & $0.000$        \\
 		\hline
 	\end{tabular}
-    \caption{Reflection coefficients for the four input states of the atom-photon gate, simulated via a time-domain simulation outlined in Appendix \ref{appendix:qutip_simulation} using the system parameters characterized in section~\ref{section:experimental_parameters_for_gate}. The atomic states $\ket{0}$ and $\ket{1}$ correspond to the uncoupled and coupled ground states, respectively.}
+	\caption{Reflection coefficients for the four input states of the atom-photon gate, simulated via a time-domain simulation outlined in Appendix \ref{appendix:qutip_simulation} using the system parameters characterized in section~\ref{section:experimental_parameters_for_gate}. The atomic states $\ket{0}$ and $\ket{1}$ correspond to the uncoupled and coupled ground states, respectively.}
 	\label{tab:reflection_coefficients}
 \end{table}
 
@@ -110,7 +110,7 @@ Prior to building the setup shown in Figure \ref{fig:setup_cavity_table}, the ga
 \begin{figure}[htbp]
 	\centering
 	\includesvg[inkscapelatex=false,width=\textwidth]{Figures/4_photonic_qubit_path/old_optical_path_setup_no_aom.svg}
-	\caption{Old optical setup on the atom-cavity table. The input photon is highlighted in red, the reflected photon is highlighted in green, and the $\SI{772}{\nano\metre}$ short cavity trap ligth is highlighted in blue.}
+	\caption{Old optical setup on the atom-cavity table. The input photon is highlighted in red, the reflected photon is highlighted in green, and the $\SI{772}{\nano\metre}$ short cavity trap light is highlighted in blue.}
 	\label{fig:old_setup_cavity_table}
 \end{figure}
 
