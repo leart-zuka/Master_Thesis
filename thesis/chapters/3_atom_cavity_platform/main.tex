@@ -1,10 +1,10 @@
 \chapter{Atom-Cavity platform}
 
-The system uses a single $^{87}\text{Rb}$ coupled to a birefringent Fabry-Perot cavity inside an ultra-high vacuum (UHV) chamber. The optical beam path used for the realization of the atom-photon gate is part of a much larger setup. The full setup, named \textit{CavityX}, consists of two Fabry-Perot cavities arranged in an X formation. For the atom-photon gate, parts of the setup like the magneto-optical trap, the 850 nm red-detuned trap laser, and the microwave antennas integrated into the UHV chamber are crucial. Other components, most notably the second cavity, are not within the scope of this thesis, but will be discussed in the outlook.
+The system uses a single $^{87}\text{Rb}$ atom coupled to a birefringent Fabry-Perot cavity inside an ultra-high vacuum (UHV) chamber. The optical beam path used for the realization of the atom-photon gate is part of a much larger setup. The full setup, named \textit{CavityX}, consists of two Fabry-Perot cavities arranged in an X formation. For the atom-photon gate, parts of the setup like the magneto-optical trap, the 850 nm red-detuned trap laser, and the microwave antennas integrated into the UHV chamber are crucial. Other components, most notably the second cavity, are not within the scope of this thesis, but will be discussed in the outlook.
 
 \section{Cavity system}\label{sec:cavity_system}
 
-At the heart of the CavityX system are the two crossed fiber cavities which are named the "short" cavity (SC) and the "long" cavity (LC). The two cavities differ in two ways. The two cavities differ in two ways. First, the short cavity is physically shorter than the long one ($\SI{79}{\micro\metre}$ vs. $\SI{161}{\micro\metre}$). Second, the long cavity was designed to minimize birefringence, while the short cavity was designed to maximize it. Each cavity fiber is held in place by an in-house built holder shown in figure \ref{fig:cavities_setup}.
+At the heart of the CavityX system are the two crossed fiber cavities which are named the "short" cavity (SC) and the "long" cavity (LC). The two cavities differ in two ways. First, the short cavity is physically shorter than the long one ($\SI{79}{\micro\metre}$ vs. $\SI{161}{\micro\metre}$). Second, the long cavity was designed to minimize birefringence, while the short cavity was designed to maximize it. Each cavity fiber is held in place by an in-house built holder shown in figure \ref{fig:cavities_setup}.
 
 \begin{figure}[htpb]
 	\centering
@@ -16,7 +16,7 @@ At the heart of the CavityX system are the two crossed fiber cavities which are 
 
 Each cavity is formed by two opposing fibers --- one single-mode (SM) and one multi-mode (MM) --- as shown in Figure~\ref{fig:cavities_setup}(b). The incoming light is coupled in and out via the SM fiber. In order to ensure that most of the coupled light exits through the SM fiber, different mirror coatings are used for the fiber surfaces. The MM fiber surfaces are coated with a highly reflective dielectric coating, while the opposing SM fiber has a dielectric coating with a lower reflectivity (\SI{10}{ppm} transmission vs. \SI{340}{ppm} transmission). This asymmetric design ensures the cavity is single-sided, causing most of the coupled-in light to then exit the cavity through the same fiber through which it entered the system~\cite{GianvitoC2026}.
 
-The cavity fibers are fabricated using a $\text{CO}_2$ laser machining technique by previous member of the Quantum Dynamics division at MPQ. The process of machining technique is descibed in Manuel Brekenfeld's thesis~\cite{ManuelBThesis2023}. Changing the beam profile of the $\text{CO}_2$ laser allows for the fabrication of elliptical surfaces, as is the case for the short cavity. This leads to a cavity mode splitting, i.e., cavity birefringence, as shown in figure \ref{fig:cavity_transmission_profiles} \\
+The cavity fibers are fabricated using a $\text{CO}_2$ laser machining technique by a previous member of the Quantum Dynamics division at MPQ. The process of machining technique is described in Manuel Brekenfeld's thesis~\cite{ManuelBThesis2023}. Changing the beam profile of the $\text{CO}_2$ laser allows for the fabrication of elliptical surfaces, as is the case for the short cavity. This leads to a cavity mode splitting, i.e., cavity birefringence, as shown in figure \ref{fig:cavity_transmission_profiles} \\
 
 \begin{figure}[htpb]
 	\centering
@@ -29,29 +29,29 @@ The cavity fibers are fabricated using a $\text{CO}_2$ laser machining technique
 	\centering
 	\begin{tabular}{l|c}
 		\hline\hline
-		Parameter                                                      & Short Cavity                  \\
+		Parameter                                         & Short Cavity                  \\
 		\hline
-		Radius of curvature of OC$_1$                                  & $115\,\mu$m and $283\,\mu$m   \\
-		Radius of curvature of HR$_2$                                  & $96\,\mu$m and $167\,\mu$m    \\
-		Cavity length                                                  & $75.7\,\mu$m                  \\
-		Free spectral range                                         & $1.98043\,$THz                \\
-		Waist radius                                                  & $3.5\,\mu$m and $4.4\,\mu$m   \\
-		Waist radius pos.\ from OC                                    & $25.8\,\mu$m and $22.7\,\mu$m \\
-		Mode waist at OC                                              & $3.9\,\mu$m and $4.6\,\mu$m   \\
-		Mode waist at HR                                             & $5.9\,\mu$m and $5.2\,\mu$m   \\
-		Mode waist at cavity center                                 & $3.5\,\mu$m and $4.4\,\mu$m   \\
+		Radius of curvature of OC$_1$                     & $115\,\mu$m and $283\,\mu$m   \\
+		Radius of curvature of HR$_2$                     & $96\,\mu$m and $167\,\mu$m    \\
+		Cavity length                                     & $75.7\,\mu$m                  \\
+		Free spectral range                               & $1.98043\,$THz                \\
+		Waist radius                                      & $3.5\,\mu$m and $4.4\,\mu$m   \\
+		Waist radius pos.\ from OC                        & $25.8\,\mu$m and $22.7\,\mu$m \\
+		Mode waist at OC                                  & $3.9\,\mu$m and $4.6\,\mu$m   \\
+		Mode waist at HR                                  & $5.9\,\mu$m and $5.2\,\mu$m   \\
+		Mode waist at cavity center                       & $3.5\,\mu$m and $4.4\,\mu$m   \\
 		Mode volume ($\lambda = 780\,$nm)                 & $1900 \cdot \lambda^3$        \\
-		Mode matching                                                 & 0.873                         \\
-		$g(1' \leftrightarrow 2)/(2\pi)$ at cavity center                       & 25.9(5) MHz                        \\
-		Transmission through OC                                        & $340\,$ppm                    \\
-		Transmission through HR                                       & $10\,$ppm                     \\
-		Parasitic losses                                               & $50\,$ppm                     \\
-		Total losses                                                  & $400\,$ppm                    \\
-		$\kappa/(2\pi)$                                                      & 58 MHz                        \\
-		Linewidth                                                              & 116 MHz                       \\
-		Finesse                                                       & $16531$                       \\
-		Outcoupling ratio $\kappa_{oc}/\kappa$                                & 0.85                          \\
-		Eigenmodes freq.\ splitting                                    & $505.0(5)\,$MHz               \\
+		Mode matching                                     & 0.873                         \\
+		$g(1' \leftrightarrow 2)/(2\pi)$ at cavity center & 25.9(5) MHz                   \\
+		Transmission through OC                           & $340\,$ppm                    \\
+		Transmission through HR                           & $10\,$ppm                     \\
+		Parasitic losses                                  & $50\,$ppm                     \\
+		Total losses                                      & $400\,$ppm                    \\
+		$\kappa/(2\pi)$                                   & 58 MHz                        \\
+		Linewidth                                         & 116 MHz                       \\
+		Finesse                                           & $16531$                       \\
+		Outcoupling ratio $\kappa_{oc}/\kappa$            & 0.85                          \\
+		Eigenmodes freq.\ splitting                       & $505.0(5)\,$MHz               \\
 		\hline\hline
 	\end{tabular}
 	\caption{Cavity parameters.}
@@ -81,21 +81,21 @@ At the end of the MOT cycle, the MOT coils, beams and the UV light are switched 
 	\label{tab:mot_parameters}
 	\begin{tabular}{@{}lr@{}}
 		\toprule
-		MOT coil current                                                                 & \SI{23.5}{A}                    \\
-		UV diode current                                                                 & \SI{140}{mA}                    \\
-		MOT beams' diameter                                                              & \SI{12}{mm}                     \\ \midrule
-		\multicolumn{2}{c}{\textbf{Loading phase}}                                                                         \\ \midrule
-		Duration                                                                         & \SI{1}{s}                       \\
-		Cooling laser detuning from $5S_{1/2}, F = 2 \leftrightarrow 5P_{3/2}, F' = 3$   & \SI{-13}{MHz} \\
-		Repumping laser detuning from $5S_{1/2}, F = 1 \leftrightarrow 5P_{3/2}, F' = 2$ & \SI{0}{MHz}                     \\
-		Cooling laser power                                                              & \SI{20}{mW}                     \\
-		Repumping laser power                                                            & \SI{250}{\mu\watt}              \\ \midrule
-		\multicolumn{2}{c}{\textbf{Molasses phase}}                                                                        \\ \midrule
-		Duration                                                                         & \SI{1}{ms}                      \\
-		Cooling laser detuning from $5S_{1/2}, F = 2 \leftrightarrow 5P_{3/2}, F' = 3$   & \SI{-31}{MHz}                   \\
-		Repumping laser detuning from $5S_{1/2}, F = 1 \leftrightarrow 5P_{3/2}, F' = 2$ & \SI{-20}{MHz}                   \\
-		Cooling laser ramp-down power                                                    & \SI{1.7}{mW}                    \\
-		Repumping laser power                                                            & \SI{250}{\mu\watt}              \\ \bottomrule
+		MOT coil current                                                                 & \SI{23.5}{A}       \\
+		UV diode current                                                                 & \SI{140}{mA}       \\
+		MOT beams' diameter                                                              & \SI{12}{mm}        \\ \midrule
+		\multicolumn{2}{c}{\textbf{Loading phase}}                                                            \\ \midrule
+		Duration                                                                         & \SI{1}{s}          \\
+		Cooling laser detuning from $5S_{1/2}, F = 2 \leftrightarrow 5P_{3/2}, F' = 3$   & \SI{-13}{MHz}      \\
+		Repumping laser detuning from $5S_{1/2}, F = 1 \leftrightarrow 5P_{3/2}, F' = 2$ & \SI{0}{MHz}        \\
+		Cooling laser power                                                              & \SI{20}{mW}        \\
+		Repumping laser power                                                            & \SI{250}{\mu\watt} \\ \midrule
+		\multicolumn{2}{c}{\textbf{Molasses phase}}                                                           \\ \midrule
+		Duration                                                                         & \SI{1}{ms}         \\
+		Cooling laser detuning from $5S_{1/2}, F = 2 \leftrightarrow 5P_{3/2}, F' = 3$   & \SI{-31}{MHz}      \\
+		Repumping laser detuning from $5S_{1/2}, F = 1 \leftrightarrow 5P_{3/2}, F' = 2$ & \SI{-20}{MHz}      \\
+		Cooling laser ramp-down power                                                    & \SI{1.7}{mW}       \\
+		Repumping laser power                                                            & \SI{250}{\mu\watt} \\ \bottomrule
 		\addlinespace[1ex]
 		\multicolumn{2}{p{0.9\textwidth}}{\small Parameters used for the MOT loading phase. The UV diode and the MOT coils are permanently on the whole time. The cooling and repumping laser power is measured behind a polarizing beam splitter, which separates the horizontal MOT beam from the top-diagonal ones.}
 	\end{tabular}
@@ -114,10 +114,10 @@ The first one is the intracavity laser of the short cavity which has a wavelengt
 The second laser is the \SI{852}{nm} vertical trap laser, that's shone in from the above the cavities' crossing point. The laser is linearly polarized along the long cavity axis, and focussed to a diameter of about $\SI{20}{\mu\metre}$. It is then transmitted through the chamber and collimated to a mode diameter of 1cm. Lastly it gets transmitted through a dichroic element, a set of retardation waveplates, a piece of silica glass mounted to a galvanometer scanner (galvo), to then get retroreflected in a cat-eye configuration. Due to the laser being far detuned from the $D_1$ and $D_2$ lines of the atom, it forms a trapping standing wave, where the atoms are confined in the antinodes, i.e., interference maxima.\\
 
 \begin{figure}[htpb]
-    \centering
-    \includesvg[inkscapelatex=false,width=\linewidth]{Figures/3_setup/cavityX.svg}
-    \caption{Overview of experimental setup used in this work. According to the reference frame, the z, the x, and the y axes are, respectively, the vertical trap, the long Cavity (not shown here), and the short Cavity axes. The dashed arrows and the dashed circle indicate the laser beams’ polarization.}
-    \label{fig:cavx_entire_laser_setup}
+	\centering
+	\includesvg[inkscapelatex=false,width=\linewidth]{Figures/3_setup/cavityX.svg}
+	\caption{Overview of experimental setup used in this work. According to the reference frame, the z, the x, and the y axes are, respectively, the vertical trap, the long Cavity (not shown here), and the short Cavity axes. The dashed arrows and the dashed circle indicate the laser beams’ polarization.}
+	\label{fig:cavx_entire_laser_setup}
 \end{figure}
 
 In order to achieve maximum cavity coupling, the galvo scans its amplitude, rotating the silica glass and thereby modifying the beam's angle of refraction, which shifts the standing-wave antinodes vertically. While this is happening, the fluorescence counts coming from the atom during the cooling phase are collected via the short cavity and detected with superconducting nanowire single-photon detectors (SNSPDs). The fluorescence counts are monitored in real time by an FPGA, which also controls the galvo scan amplitude. One can use this determine the height and thus the maximum coupling position of the atom from the fluorescence counts. In order to ensure that only a single atom was trapped instead of two weakly coupled atoms, the FPGA sequence is as follows:
@@ -183,6 +183,6 @@ By scanning the length of the $\pi$ pulse at a constant MW frequency, one can de
 \begin{figure}[htpb]
 	\centering
 	\includesvg[width=0.7\linewidth]{Figures/3_setup/rabiflop.svg}
-	\caption{Rabi oscillations for the $F=1,m_F=0\leftrightarrow F=2,m_F=0$ transition. The solid line represents then fit given by \eqref{eq:rabi_oscillation_model} to the data points.}
+	\caption{Rabi oscillations for the $F=1,m_F=0\leftrightarrow F=2,m_F=0$ transition. The solid line represents the fit given by \eqref{eq:rabi_oscillation_model} to the data points.}
 	\label{fig:rabi_flop}
 \end{figure}
