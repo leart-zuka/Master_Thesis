@@ -1,6 +1,6 @@
 \chapter{Atom-Photon Quantum Logic Gate}
 
-Using the setup explained in chapter \ref{chapter:photonic_qubit_path}, one can characterize important experimental parameters in order to estimate the cavity coupling as well as its losses when reflecting light off the atom-cavity system. Furthermore using these values, the overlap with an ideal CPF/CNOT gate truth table can then be estimated and compared to the measured values.
+Using the setup explained in chapter \ref{chapter:photonic_qubit_path}, one can characterize important experimental parameters in order to estimate the cavity coupling as well as its losses when reflecting light off the atom-cavity system. Furthermore, using these values, the overlap with an ideal CPF/CNOT gate truth table can then be estimated and compared to the measured values.
 
 Section \ref{section:experimental_parameters_for_gate} of this chapter goes over the experimental parameters which are relevant for the gate mechanism and how they were determined. Section \ref{sec:ap_gate} reports on the performance of the atom-photon gate in both the CPF and CNOT bases, alongside a comparison between the experimental and simulated results for the Brewster window and mean photon number scans. Section \ref{sec:bs_states} then demonstrates the coherent behavior of the gate through the generation of a Bell state. Finally, an analysis of the limitations currently imposed by the system is given in Section \ref{sec:imperfections}.
 
@@ -62,7 +62,7 @@ With these parameters in hand, the next step is determining the optimal V-mode a
 
 Using the values determined in section \ref{sec:cav_coupling}, one can simulate the reflection amplitudes for each of the input states of the gate using the time-domain simulation described in Appendix \ref{appendix:qutip_simulation}. Using the simulation results, one can simulate the ideal attenuation of the almost ideally reflected V polarized portion of the input light, in order to achieve the highest possible overlap with the ideal CNOT truth table (Appendix \ref{appendix:bw_scan}). From the simulated overlap, one deduces that the optimal transmission of the V polarized light is at $T_V\approx24\%$. Using this information, the ideal number of Brewster windows can thus be determined.
 
-For the characterization of the Brewster windows themselves, two measurements were conducted. First, only a singular Brewster plate was inserted into the custom mount to check the average attenuation across a set of Brewster windows in the V polarization. This ensures that all Brewster windows operate up to spec, and that the attenuation of the V polarization is happening in constant jumps. At the Brewster angle $\theta_B$ the transmission through a single Brewster window was $99.98\pm0.17\%$ and $77.40\pm0.13\%$ for the H and V polarization respectively.
+For the characterization of the Brewster windows themselves, two measurements were conducted. First, only a single Brewster plate was inserted into the custom mount to check the average attenuation across a set of Brewster windows in the V polarization. This ensures that all Brewster windows operate up to spec, and that the attenuation of the V polarization is happening in constant jumps. At the Brewster angle $\theta_B$ the transmission through a single Brewster window was $99.98\pm0.17\%$ and $77.40\pm0.13\%$ for the H and V polarization respectively.
 
 The second characterization that needed to be performed places multiple Brewster windows in an array to closely resemble the setup used in the actual experiment. In this configuration, one can then measure the powers in transmission both for H and V to determine the ideal amounts of Brewster windows one would need to use in order to achieve the highest gate fidelity.
 
@@ -90,7 +90,7 @@ The measurement of the gate truth table starts with the preparation of the atom.
 	\label{fig:experimental_protocol}
 \end{figure}
 
-By then setting the detection waveplates from Figure \ref{fig:setup_cavity_table} to measure the same basis as the input, post-selecting on the cases where only a single photon was reflected during the photon-gate pulse, one is able to measure the truth tables for the CPF and CNOT gates shown in Figure \ref{fig:gate_truth_tables}.
+By then setting the detection waveplates from Figure \ref{fig:setup_cavity_table} to measure the same basis as the input, and post-selecting on the cases where only a single photon was reflected during the photon-gate pulse, one is able to measure the truth tables for the CPF and CNOT gates shown in Figure \ref{fig:gate_truth_tables}.
 
 \begin{figure}[htbp]
 	\centering
@@ -107,7 +107,7 @@ By then setting the detection waveplates from Figure \ref{fig:setup_cavity_table
 
 The truth tables for the CPF and CNOT gates show an overlap of \SI{92.41(52)}{\percent} and \SI{88.15(86)}{\percent} with the ideal truth tables, respectively. The overlap is defined as
 \begin{equation}
-    \mathcal{O} = \frac{1}{4} \mathrm{Tr}\!\left(T_{\mathrm{ideal}}^{\top} \, T_{\mathrm{meas}}\right),
+	\mathcal{O} = \frac{1}{4} \mathrm{Tr}\!\left(T_{\mathrm{ideal}}^{\top} \, T_{\mathrm{meas}}\right),
 \end{equation}
 where $T_{\mathrm{ideal}}$ and $T_{\mathrm{meas}}$ are the $4\times4$ ideal and measured truth table matrices, respectively. The errors are calculated by error propagation under the assumption of independent errors of different bars.
 
@@ -133,21 +133,21 @@ Comparing the experimental data to the simulated overlaps, the Brewster window s
 
 What distinguishes a quantum logic gate from its classical counterpart is its ability to generate entangled states from separable inputs. To demonstrate this behavior, the CNOT gate is applied to a separable input state in which the atom is prepared in a superposition, with the expected output being a Bell state. Concretely, the atom is prepared in $\ket{+_a}=\frac{1}{\sqrt{2}}(\ket{0}+\ket{1})$ via a resonant microwave $\pi/2$ pulse, after which a weak coherent pulse ($\bar{n}\approx0.1$) of $\ket{L_p}$-polarized light is reflected off the atom-cavity system. The gate action then ideally produces the Bell state $\ket{\Phi^+}$:
 \begin{equation}
-    \ket{+_a, L_p} \rightarrow \ket{\Phi^+} = \frac{1}{\sqrt{2}}\left(\ket{0_a, R_p} + \ket{1_a, L_p}\right).
+	\ket{+_a, L_p} \rightarrow \ket{\Phi^+} = \frac{1}{\sqrt{2}}\left(\ket{0_a, R_p} + \ket{1_a, L_p}\right).
 \end{equation}
 The measurement is performed with seven Brewster windows installed, matching the optimal configuration identified in section \ref{sec:photon_number_and_bw_scan}.
 
 The joint atom-photon state is characterized via quantum-state tomography: by measuring in three measurement bases for the photon and atom separately and applying maximum-likelihood estimation~\cite{Paris2004,Maximum-Likelihood_technique}, the full density matrix and the Bell state fidelity are extracted. Figure \ref{fig:bs_state} shows the extracted density matrix.
 
 \begin{figure}[htbp]
-    \centering
-    \makebox[\linewidth][c]{%
-        \includesvg[width=1.1\linewidth]{Figures/5_atom_photon_gate/bell_state_L.svg}
-    }
-    \caption{Reconstructed density matrix of the generated Bell state $\ket{\Phi^+}$.
-   (a)~Three-dimensional city plot of $|\rho_{ij}|$, with semi-transparent blue wireframe bars indicating the ideal density matrix.
-   (b)~Corresponding heatmap with numerical values for each matrix element.}
-    \label{fig:bs_state}
+	\centering
+	\makebox[\linewidth][c]{%
+		\includesvg[width=1.1\linewidth]{Figures/5_atom_photon_gate/bell_state_L.svg}
+	}
+	\caption{Reconstructed density matrix of the generated Bell state $\ket{\Phi^+}$.
+		(a)~Three-dimensional city plot of $|\rho_{ij}|$, with semi-transparent blue wireframe bars indicating the ideal density matrix.
+		(b)~Corresponding heatmap with numerical values for each matrix element.}
+	\label{fig:bs_state}
 \end{figure}
 
 The reconstructed density matrix reproduces the dominant features of the ideal $\ket{\Phi^+}$ state: population is concentrated on the diagonal elements $\ket{0_a, R_p}$ and $\ket{1_a, L_p}$, with coherences of comparable magnitude connecting them. However, both the populations and coherences are reduced from their ideal value of $0.5$, and residual population has leaked into the wrong-parity states $\ket{0_a, L_p}$ and $\ket{1_a, R_p}$.
@@ -183,13 +183,13 @@ Extracting the gate overlap requires measuring the reflected photon in a well-de
 \begin{figure}[htpb]
 	\centering
 	\includesvg[width=\linewidth]{Figures/5_atom_photon_gate/drift_combined_prob.svg}
-		\caption{Long-term drift of the polarization extinction ratio measured on the gate photon reflection path, recorded at the two SNSPD channels of the polarization analysis stage (Ch 4 and Ch 7) when sending L polarized light. In each panel, the per-bin detection probabilities $P(\mathrm{ch}\,i) = N_i / (N_4 + N_7)$ are shown for Ch~4 (blue) and Ch~7 (orange), computed from count rates smoothed in \SI{25}{\milli\second} bins. The corresponding extinction ratio is $\eta = N_{\mathrm{Ch}\,7}/N_{\mathrm{Ch}\,4} = P(\mathrm{ch}\,7)/P(\mathrm{ch}\,4)$. \textbf{(a)}~Drift recorded with the UV LED switched on: the imbalance between the two channels grows sharply within the first minute and then relaxes monotonically as $P(\mathrm{ch}\,4)$ rises and $P(\mathrm{ch}\,7)$ falls, indicating a continuous rotation of the analysed polarization. \textbf{(b)}~Drift recorded after a 5 minute measurement where the atom was prepared in $\ket{0}$ and L polarized light was sent: $P(\mathrm{ch}\,4)$ decreases steadily from approximately $0.33$ to $0.04$ while $P(\mathrm{ch}\,7)$ increases correspondingly from $0.67$ to $0.96$, which corresponds to the extinction ratio rising from $\eta \approx 2$ to $\eta \approx 23$.}
+	\caption{Long-term drift of the polarization extinction ratio measured on the gate photon reflection path, recorded at the two SNSPD channels of the polarization analysis stage (Ch 4 and Ch 7) when sending L polarized light. In each panel, the per-bin detection probabilities $P(\mathrm{ch}\,i) = N_i / (N_4 + N_7)$ are shown for Ch~4 (blue) and Ch~7 (orange), computed from count rates smoothed in \SI{25}{\milli\second} bins. The corresponding extinction ratio is $\eta = N_{\mathrm{Ch}\,7}/N_{\mathrm{Ch}\,4} = P(\mathrm{ch}\,7)/P(\mathrm{ch}\,4)$. \textbf{(a)}~Drift recorded with the UV LED switched on: the imbalance between the two channels grows sharply within the first minute and then relaxes monotonically as $P(\mathrm{ch}\,4)$ rises and $P(\mathrm{ch}\,7)$ falls, indicating a continuous rotation of the analysed polarization. \textbf{(b)}~Drift recorded after a 5 minute measurement where the atom was prepared in $\ket{0}$ and L polarized light was sent: $P(\mathrm{ch}\,4)$ decreases steadily from approximately $0.33$ to $0.04$ while $P(\mathrm{ch}\,7)$ increases correspondingly from $0.67$ to $0.96$, which corresponds to the extinction ratio rising from $\eta \approx 2$ to $\eta \approx 23$.}
 	\label{fig:extinction_drift}
 \end{figure}
 
 The origin of this drift is thermal, but not trivially localized. Three potential heat sources are at play in the setup: the rubidium dispenser, the UV LED, and the \SI{852}{\nano\metre} vertical trap laser. The rubidium dispenser is the most disruptive of the three, inducing a large and easily resolvable shift of the cavity resonance when active~\cite{GianvitoC2026}; for this reason it is only turned on briefly in the morning, and the gate measurements are started after the setup has been allowed to cool for several hours. Any residual dispenser-induced drift has therefore long decayed by the time a measurement run begins, and no separate characterization of dispenser heating is shown here. The vertical trap laser was additionally checked by recording the extinction ratio with only the trap active during a typical measurement window; no drift was observed above the measurement noise, and the corresponding trace is omitted for the same reason. This leaves the UV LED as the only heat source whose duty cycle changes on the timescale of a single measurement run, consistent with the drift in Figure~\ref{fig:extinction_drift} being UV-correlated. However, UV illumination does not measurably shift the cavity spectrum itself \cite{GianvitoC2026}, so the drift cannot be attributed to a rotation of the birefringent eigenmodes of the cavity. The most likely remaining culprits are components in the immediate vicinity of the cavity that are not probed by the reflection spectrum -- for instance stress-induced birefringence in the cavity fiber close to its tip, or thermally induced strain in the piezo-mounted fiber holder. Pinpointing the exact component is beyond the scope of this thesis.
 
-Regardless of its microscopic origin, the drift has a practical consequence for the gate measurements. Because the gate measurement window follows shortly after atom loading -- and thus shortly after UV exposure -- the residual thermal offset can introduce a systematic error in the measured overlap that varies from run to run depending on the thermal history. This is mitigated by reducing the MOT loading time down to $\SI{1}{\second}$, as this is where the trapping probability for a single atom is sufficiently high while keeping the time that the UV lamp is turned on at a minimum. 
+Regardless of its microscopic origin, the drift has a practical consequence for the gate measurements. Because the gate measurement window follows shortly after atom loading -- and thus shortly after UV exposure -- the residual thermal offset can introduce a systematic error in the measured overlap that varies from run to run depending on the thermal history. This is mitigated by reducing the MOT loading time down to $\SI{1}{\second}$, as this is where the trapping probability for a single atom is sufficiently high while keeping the time that the UV lamp is turned on at a minimum.
 However, even with these precautions in place, residual thermal drifts accumulated over the course of each measurement, requiring a cooldown period between runs ($\SI{1.5}{\minute}$ measurement time vs. ${\geq}\SI{5}{\minute}$ cooldown) before the extinction ratio recovered to its initial value.
 
 \subsection{Fluctuations in atom-cavity coupling}
