@@ -1,5 +1,5 @@
 \chapter{Theory}\label{chapter:theory}
-This chapter introduces the theoretical framework needed to understand the key points of this thesis. First a general introduction into cavity quantum electrodynamics will be given, alongside the intricacies in the setup that will modify the general theory. Afterwards the reflection from an atom-cavity system will be explored, and finally how it can be used to construct an atom-photon quantum logic gate.
+This chapter introduces the theoretical framework needed to understand the key points of this thesis. First, a general introduction into cavity quantum electrodynamics will be given, alongside the intricacies in the setup that will modify the general theory. Afterwards the reflection from an atom-cavity system will be explored, and finally how it can be used to construct an atom-photon quantum logic gate.
 
 \section{Cavity Quantum Electrodynamics}
 
@@ -31,7 +31,7 @@ The three terms in \eqref{eq:jc_hamiltonian_simple} describe the energy of the c
 
 The operators $\hat{a}^\dag$ and $\hat{a}$ are the creation and annihilation operators of the cavity light modes, whereas $\hat{\sigma}_{ce}^{\dag}=\ket{e}\bra{c}$ and $\hat{\sigma}_{ce}=\ket{c}\bra{e}$ are the atomic raising and lowering operators, respectively.
 
-The form of \eqref{eq:jc_hamiltonian_simple} assumes the so called \textit{Rotating-Wave Approximation} in which fast oscillating terms at optical frequencies can be neglected.
+The form of \eqref{eq:jc_hamiltonian_simple} assumes the so-called \textit{Rotating-Wave Approximation} in which fast oscillating terms at optical frequencies can be neglected.
 
 Solving for the eigenenergies of the system one is left with:
 
@@ -47,7 +47,7 @@ The main take-away from \eqref{eq:jc_hamiltonian_eigenenergies} is that on reson
 \begin{figure}[h]
 	\centering
 	\includesvg[inkscapelatex=false,width=0.8\linewidth]{Figures/2_theory/energy_splitting_jc.svg}
-	\caption{The Jaynes-Cummings ladder of the dressed energy eigentstates $\ket{N,\pm}$ of a strongly coupled atom-cavity system, where the cavity frequency is kept fixed and the emiter frequency is scanned over the resonance. Compared to the uncoupled situation (gray), the coupled states (black) exhibit pronounced avoided level crossings. At zero detuning, the levels are separated by $2g\sqrt{N}$.Figure taken from~\cite{RempeReiserer2015}.}
+	\caption{The Jaynes-Cummings ladder of the dressed energy eigenstates $\ket{N,\pm}$ of a strongly coupled atom-cavity system, where the cavity frequency is kept fixed and the emitter frequency is scanned over the resonance. Compared to the uncoupled situation (gray), the coupled states (black) exhibit pronounced avoided level crossings. At zero detuning, the levels are separated by $2g\sqrt{N}$. Figure taken from~\cite{RempeReiserer2015}.}
 \end{figure}
 
 
@@ -101,7 +101,7 @@ For quantum information processing with photonic qubits, the cavity must be desi
 	\label{eq:cavity_coupling}
 \end{equation}
 
-In \eqref{eq:cavity_coupling}, $\kappa_{oc}$ and $\kappa_{HR}$ describes the rate at which light couples into and out of the cavity through the OC and HR mirror respectively, whereas $\kappa_{paras}$ describes the rate of losses due to absorption at the mirror surfaces.
+In \eqref{eq:cavity_coupling}, $\kappa_{oc}$ and $\kappa_{HR}$ describe the rate at which light couples into and out of the cavity through the OC and HR mirror respectively, whereas $\kappa_{paras}$ describes the rate of losses due to absorption at the mirror surfaces.
 For single-sided operations one needs to ensure that $\kappa_{oc}\gg \kappa_{HR},\kappa_{paras}$. The escape probability of the photon is then defined by the outcoupling ratio $\frac{\kappa_{oc}}{\kappa}$.\\
 
 Another important quantity is the matching of the spatial modes of the light when coupling into the cavity. As the incoming light gets coupled into the cavity, a mismatch between the spatial modes in transmission and reflection can occur. This lowers the efficiency at which the light can couple to the cavity itself. The mode matching is then given by the overlap integral of the mode functions for the light one is investigating. In this case it is important to quantify the mode matching between the reflected light at the first cavity and the incoming light ($\mu_{fr}$) as well as the one for the incoming light and the optical mode inside of the cavity ($\mu_{fc}$).\\
@@ -126,7 +126,7 @@ The reflection amplitude in \eqref{eq:analytical_reflection} depends on the detu
 \begin{figure}
 	\centering
 	\includesvg[inkscapelatex=false,width=\linewidth]{Figures/2_theory/reflectivity_phase.svg}
-	\caption{Reflectivity $|r|^2$~(a) and phase $\arg(r)$~(b) of the reflection coefficient as a function of detuning $\Delta$ between the probe light and the cavity resonance, for the coupled state $\ket{c}$ (blue) and the uncoupled state $\ket{u}$ (red). The coupled state exhibits vacuum Rabi splitting, visible as the double-dip structure in reflectivity and the associated phase features around resonance. At zero detuning, the uncoupled state $\ket{u}$ acquires a pi phase shift, whereas the coupled state $\ket{c}$ does not. Parameters used are $(g,\,\kappa,\,\gamma)/2\pi = (26,\,58,\,3.0)$\,\si{\mega\hertz}, with output-coupler fraction $\kappa_\text{oc}/\kappa = 0.85$ and mode matching parameters $\mu_\text{rf} = 0.978$, $\mu_\text{fc} = 0.873$.}
+	\caption{Reflectivity $|r|^2$~(a) and phase $\arg(r)$~(b) of the reflection coefficient as a function of detuning $\Delta$ between the probe light and the cavity resonance, for the coupled state $\ket{c}$ (blue) and the uncoupled state $\ket{u}$ (red). The coupled state exhibits vacuum Rabi splitting, visible as the double-dip structure in reflectivity and the associated phase features around resonance. At zero detuning, the uncoupled state $\ket{u}$ acquires a $\pi$ phase shift, whereas the coupled state $\ket{c}$ does not. Parameters used are $(g,\,\kappa,\,\gamma)/2\pi = (26,\,58,\,3.0)$\,\si{\mega\hertz}, with output-coupler fraction $\kappa_\text{oc}/\kappa = 0.85$ and mode matching parameters $\mu_\text{rf} = 0.978$, $\mu_\text{fc} = 0.873$.}
 	\label{fig:reflection_phase_spectrum}
 \end{figure}
 
