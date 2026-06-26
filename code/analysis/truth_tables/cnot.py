@@ -38,13 +38,19 @@ ideal_face = "#8bbae0"
 ideal_alpha = 0.20
 ideal_edge = "#6a9ec4"
 
+# ── FONT SIZES ──
+TICK_FS = 12
+LABEL_FS = 14
+PANEL_FS = 16
+TEXT_FS = 11  # in-cell numbers on heatmap
+
 plt.rcParams.update(
     {
         "font.family": "serif",
         "mathtext.fontset": "cm",
-        "axes.labelsize": 9,
-        "xtick.labelsize": 7.5,
-        "ytick.labelsize": 7.5,
+        "axes.labelsize": LABEL_FS,
+        "xtick.labelsize": TICK_FS,
+        "ytick.labelsize": TICK_FS,
     }
 )
 
@@ -115,20 +121,26 @@ def plot_3d_bars(ax, matrix, err, labels, ideal):
 
     tick_pos = np.arange(n) + 0.5
     ax.set_xticks(tick_pos)
-    ax.set_xticklabels(labels, rotation=-25, ha="left", fontsize=7)
+    ax.set_xticklabels(
+        labels, rotation=-20, ha="center", fontsize=TICK_FS, rotation_mode="anchor"
+    )
     ax.set_yticks(tick_pos)
-    ax.set_yticklabels(labels, rotation=25, ha="right", fontsize=7)
+    ax.set_yticklabels(
+        labels, rotation=20, ha="center", fontsize=TICK_FS, rotation_mode="anchor"
+    )
     ax.set_zlim(0, 1.0)
     ax.set_zticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
     ax.zaxis.set_major_formatter(mticker.FormatStrFormatter("%.1f"))
-    ax.tick_params(axis="z", labelsize=7, pad=1)
+    ax.tick_params(axis="z", labelsize=TICK_FS, pad=1)
+    ax.tick_params(axis="x", pad=14)
+    ax.tick_params(axis="y", pad=14)
 
-    ax.set_xlabel("Output states", labelpad=10, fontsize=8)
-    ax.set_ylabel("Input states", labelpad=10, fontsize=8)
-    ax.set_zlabel("Normalized probability", labelpad=2, fontsize=8)
+    ax.set_xlabel("Output states", labelpad=32, fontsize=LABEL_FS)
+    ax.set_ylabel("Input states", labelpad=32, fontsize=LABEL_FS)
+    ax.set_zlabel("Normalized probability", labelpad=20, fontsize=LABEL_FS)
 
     ax.view_init(elev=25, azim=-50)
-    ax.set_box_aspect(None, zoom=0.85)
+    ax.set_box_aspect(None, zoom=0.78)
 
     ax.xaxis.pane.set_facecolor((0.95, 0.95, 0.95, 0.5))
     ax.yaxis.pane.set_facecolor((0.90, 0.90, 0.90, 0.5))
@@ -163,17 +175,17 @@ def plot_heatmap(ax, matrix, err, labels):
                 txt,
                 ha="center",
                 va="center",
-                fontsize=7.5,
+                fontsize=TEXT_FS,
                 fontweight=fontw,
                 color=color,
                 linespacing=1.3,
             )
     ax.set_xticks(np.arange(n))
-    ax.set_xticklabels(labels, fontsize=8)
+    ax.set_xticklabels(labels, fontsize=TICK_FS)
     ax.set_yticks(np.arange(n))
-    ax.set_yticklabels(labels, fontsize=8)
-    ax.set_xlabel("Input states", fontsize=9)
-    ax.set_ylabel("Output states", fontsize=9)
+    ax.set_yticklabels(labels, fontsize=TICK_FS)
+    ax.set_xlabel("Input states", fontsize=LABEL_FS)
+    ax.set_ylabel("Output states", fontsize=LABEL_FS)
     for edge in np.arange(-0.5, n, 1):
         ax.axhline(edge, color="white", linewidth=2)
         ax.axvline(edge, color="white", linewidth=2)
@@ -184,43 +196,38 @@ def plot_heatmap(ax, matrix, err, labels):
     return im
 
 
-# ── BUILD FIGURE ──
-fig = plt.figure(figsize=(14, 7))
-gs = fig.add_gridspec(1, 2, width_ratios=[1.4, 1.0], figure=fig)
+# ── FIGURE (a): 3D bars ──
+fig_a = plt.figure(figsize=(10, 8))
+ax_a = fig_a.add_subplot(111, projection="3d")
+plot_3d_bars(ax_a, cnot_truth_table, cnot_truth_table_err, cnot_labels, cnot_ideal)
+ax_a.text2D(
+    0.05,
+    0.95,
+    "(a)",
+    transform=ax_a.transAxes,
+    fontsize=PANEL_FS,
+    fontweight="bold",
+    va="top",
+)
+fig_a.savefig("cnot_truth_table_3d.svg", bbox_inches="tight")
+fig_a.savefig("cnot_truth_table_3d.png", bbox_inches="tight", dpi=250)
+plt.close(fig_a)
 
-ax1 = fig.add_subplot(gs[0, 0], projection="3d")
-plot_3d_bars(ax1, cnot_truth_table, cnot_truth_table_err, cnot_labels, cnot_ideal)
+# ── FIGURE (b): heatmap ──
+fig_b, ax_b = plt.subplots(figsize=(7, 6))
+im_b = plot_heatmap(ax_b, cnot_truth_table, cnot_truth_table_err, cnot_labels)
+ax_b.text(
+    -0.15,
+    1.12,
+    "(b)",
+    transform=ax_b.transAxes,
+    fontsize=PANEL_FS,
+    fontweight="bold",
+    va="top",
+)
+fig_b.subplots_adjust(left=0.15, right=0.95, top=0.90, bottom=0.15)
+fig_b.savefig("cnot_truth_table_heatmap.svg", bbox_inches="tight")
+fig_b.savefig("cnot_truth_table_heatmap.png", bbox_inches="tight", dpi=250)
+plt.close(fig_b)
 
-ax2 = fig.add_subplot(gs[0, 1])
-im = plot_heatmap(ax2, cnot_truth_table, cnot_truth_table_err, cnot_labels)
-
-for ax_obj, label in zip([ax1, ax2], ["(a)", "(b)"]):
-    if hasattr(ax_obj, "zaxis"):
-        ax_obj.text2D(
-            0.05,
-            0.95,
-            label,
-            transform=ax_obj.transAxes,
-            fontsize=11,
-            fontweight="bold",
-            va="top",
-        )
-    else:
-        ax_obj.text(
-            -0.15,
-            1.12,
-            label,
-            transform=ax_obj.transAxes,
-            fontsize=11,
-            fontweight="bold",
-            va="top",
-        )
-
-# cbar_ax = fig.add_axes([0.15, 0.015, 0.7, 0.012])
-# cbar = fig.colorbar(im, cax=cbar_ax, pad=0.3, orientation="horizontal")
-# cbar.set_label("Normalized probability", fontsize=9)
-# cbar.ax.tick_params(labelsize=8)
-
-plt.savefig("cnot_truth_table.svg", bbox_inches="tight")
-plt.savefig("cnot_truth_table.png", bbox_inches="tight", dpi=250)
-print("CNOT figure done")
+print("CNOT figures done")
