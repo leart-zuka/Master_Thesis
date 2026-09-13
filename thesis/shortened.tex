@@ -51,29 +51,29 @@
 % ============ Motivation ============
 \section*{Motivation}
 
-Quantum networks aim to link spatially separated quantum processors into a single, more powerful and more secure architecture by distributing entanglement between stationary qubits via photons. Each network node must be able to perform three elementary tasks: store a photonic qubit as a stationary qubit, transmit stationary-qubit information back onto a photon, and \emph{process} quantum information locally through a deterministic quantum logic gate. The \textit{CavityX} platform at the Max Planck Institute of Quantum Optics realizes such a node using a single \isotope[87]{Rb} atom coupled to a birefringent fiber Fabry--P\'erot cavity. It has previously demonstrated heralded atom--photon entanglement (\SI{87}{\percent} fidelity) and photon-to-atom state storage (\SI{94.7}{\percent} fidelity) -- the first two node primitives. This thesis supplies the missing third primitive by realizing a deterministic atom--photon quantum gate, following the protocol proposed by Duan and Kimble [1].
+Quantum networks aim to link spatially separated quantum processors into a single, more powerful and more secure architecture by distributing entanglement between stationary qubits via flying qubits (in this case photons). Each network node must be able to perform three elementary tasks: store the incoming information of a photonic qubic onto a stationary qubits (storage), generate entanglement between the stationary and photonic qubit, and \emph{process} quantum information locally through a deterministic quantum logic gate. The \textit{CavityX} platform at the Max Planck Institute of Quantum Optics aims at realizing such a node using a single \isotope[87]{Rb} atom coupled to a birefringent fiber Fabry--P\'erot cavity. It has previously demonstrated photon-to-atom state storage (\SI{94.7}{\percent} fidelity) and the generation of heralded atom--photon entanglement (\SI{87}{\percent} fidelity) -- the first two node primitives. This thesis supplies the missing third primitive by realizing a deterministic atom--photon quantum gate, following the protocol proposed by Duan and Kimble [1].
 
-A further design goal is robustness: qubits encoded in magnetically sensitive atomic states dephase due to ambient field fluctuations. This work instead encodes the atomic qubit in the magnetic-field-insensitive \emph{clock states} of the \isotope[87]{Rb} $5S_{1/2}$ ground manifold, which is possible because -- unlike in prior realizations of the Duan--Kimble protocol [2] -- the required polarization selectivity is provided by the cavity's birefringence rather than by Zeeman splitting.
+A further design goal is robustness: qubits encoded in magnetically sensitive atomic states dephase due to ambient magnetic field fluctuations. This work instead encodes the atomic qubit in the magnetic-field-insensitive \emph{clock states} of the \isotope[87]{Rb} $5S_{1/2}$ ground manifold, which is possible because -- unlike in prior realizations of the Duan--Kimble protocol [2] -- the required polarization selectivity is provided by the cavity's birefringence rather than by Zeeman splitting.
 
 % ============ Working principle ============
 \section*{Working Principle}
 
-The cavity's two linear polarization eigenmodes are split by $\Delta_{\text{biref}} \approx 2\pi\times\SI{505}{\mega\hertz}$. Only the $\pi$-polarized mode is resonant with the atomic $\pi$-transition; the orthogonal $V$-mode is far detuned and reflects off the empty cavity regardless of the atomic state. A $\pi$-polarized photon reflecting off the atom-cavity system therefore picks up an atom-state-dependent phase: a $\pi$ phase shift if the atom is in the uncoupled clock state $\ket{0}=\ket{F{=}1,m_F{=}0}$, and no phase shift if the atom is in the coupled clock state $\ket{1}=\ket{F{=}2,m_F{=}0}$ (Fig.~1). Because the atom is the control qubit and the photon polarization is the target qubit, this state-dependent reflection directly implements a controlled-phase-flip (CPF) gate in the photonic $\{\ket{V},\ket{\pi}\}$ basis. Preparing the photon instead in a superposition of $V$ and $\pi$ -- realized experimentally using circular polarization, $\ket{R/L} = (\ket{V}\pm\ket{\pi})/\sqrt{2}$ -- converts the same interaction into a controlled-NOT (CNOT) gate.
+The cavity's two linear polarization eigenmodes are split by $\Delta_{\text{biref}} \approx 2\pi\times\SI{505}{\mega\hertz}$. Only the $\pi$-polarized mode is resonant with the atomic $\pi$-transition. The orthogonal $V$-mode on the other hand is far detuned and reflects off the empty cavity regardless of the atomic state. A $\pi$-polarized photon reflecting off the atom-cavity system therefore picks up an atom-state-dependent phase: a $\pi$ phase shift if the atom is in the uncoupled clock state $\ket{0}=\ket{F{=}1,m_F{=}0}$, and no phase shift if the atom is in the coupled clock state $\ket{1}=\ket{F{=}2,m_F{=}0}$ (Fig.~1). Because the atom is the control qubit and the photon polarization is the target qubit, this state-dependent reflection directly implements a controlled-phase-flip (CPF) gate in the photonic $\{\ket{\pi},\ket{V}\}$ basis. Preparing the photon instead in a superposition of $\pi$ and $V$ -- realized experimentally using circular polarization, $\ket{R/L} = (\ket{V}\pm\ket{\pi})/\sqrt{2}$ -- converts the same interaction into a controlled-NOT (CNOT) gate.
 
 \begin{figure}[!htb]
 	\centering
-	\includesvg[inkscapelatex=false,width=\linewidth]{Figures/2_theory/reflectivity_phase.svg}
-	\caption{Simulated reflectivity (a) and phase (b) of the $\pi$-polarized cavity mode versus probe detuning, for the atom in the coupled state $\ket{c}=\ket{1}$ (blue) and uncoupled state $\ket{u}=\ket{0}$ (red). On resonance the reflected photon acquires a phase of $0$ or $\pi$ depending on the atomic state -- the mechanism underlying the CPF gate.}
+	\includesvg[inkscapelatex=false,width=\linewidth]{Figures/5_atom_photon_gate/nms_reflection_phase_horizontal.svg}
+	\caption{Normal-mode spectroscopy of the atom-cavity system. (a) Measured reflectivity $|r|^2$ versus probe detuning $\Delta$ for the atom in the uncoupled state $\ket{0}$ (red) and coupled state $\ket{1}$ (blue), with fits to the analytical model above; the coupled spectrum shows the vacuum Rabi splitting from which $g$ is extracted. (b) Phase $\arg(r)$ computed from the same fitted model, showing the predicted $\pi$-phase-shift asymmetry between the two atomic states.}
 \end{figure}
 
-Because the $V$-mode reflects with near-unity amplitude while the $\pi$-mode reflectivity is reduced by intracavity losses, an array of Brewster-angled UV-fused-silica windows was installed in the input path to attenuate the $V$-polarized component and balance the two reflection amplitudes, maximizing the gate overlap with the ideal truth table.
+Because the $V$-mode reflects with near-unity amplitude while the $\pi$-mode reflectivity is reduced by intracavity losses, an array of Brewster windows was installed in the input path to attenuate the $V$-polarized component and balance the two reflection amplitudes, maximizing the CNOT gate overlap with the ideal truth table.
 
 % ============ Results ============
 \section*{Experimental Results}
 
 The atom--cavity coupling strength was determined from normal-mode spectroscopy to be $g = 2\pi\times(25.9\pm0.5)\,\si{\mega\hertz}$, consistent with a master-equation simulation used to identify the optimal operating point: a mean input photon number of $\bar{n}\approx0.1$ and seven Brewster windows ($T_V\approx\SI{24}{\percent}$). Operating at this point, the gate truth tables were measured by preparing the atom and photon in each of the four computational basis-state combinations and reading out the joint output state (Fig.~2). The measured truth tables overlap with the ideal CPF and CNOT gates by
 \[
-\mathcal{O}_{\text{CPF}} = (92.41\pm0.52)\,\%, \qquad \mathcal{O}_{\text{CNOT}} = (88.15\pm0.86)\,\%,
+	\mathcal{O}_{\text{CPF}} = (92.41\pm0.52)\,\%, \qquad \mathcal{O}_{\text{CNOT}} = (88.15\pm0.86)\,\%,
 \]
 in good agreement with simulation. The dominant infidelity contributions are the residual asymmetry between the coupled and uncoupled $\pi$-mode reflectivities ($\sim\SI{5}{\percent}$, set by the current cavity cooperativity) and imperfect preparation of the coupled atomic clock state ($\sim\SI{6}{\percent}$).
 
@@ -85,19 +85,25 @@ in good agreement with simulation. The dominant infidelity contributions are the
 
 To confirm the coherent, entangling action of the gate rather than merely its classical input--output behavior, an atom--photon Bell state $\ket{\Phi^+}$ was generated from a separable input and characterized via quantum state tomography, yielding a fidelity of $(65.90\pm1.73)\,\%$ -- exceeding the \SI{50}{\percent} threshold required to certify entanglement, and thus confirming genuine atom--photon entanglement generated by the gate.
 
+\begin{figure}[!htb]
+	\centering
+	\includesvg[width=\linewidth]{Figures/5_atom_photon_gate/bell_state_L.svg}
+	\caption{Magnitude of the reconstructed atom--photon density matrix $|\rho_{ij}|$ for the generated Bell state $\ket{\Phi^+}$, obtained via quantum state tomography. Population and coherence are concentrated on the $\{\ket{0,R},\ket{1,L}\}$ subspace, as expected for $\ket{\Phi^+}$, with residual leakage into the wrong-parity states.}
+\end{figure}
+
 % ============ Outlook ============
 \section*{Conclusion and Outlook}
 
-This thesis experimentally realizes a deterministic atom--photon CPF/CNOT gate on the CavityX platform, completing the set of primitives -- storage, transmission, and now processing -- required for a functional quantum-network node, while encoding the atomic qubit in magnetic-field-insensitive clock states for improved robustness. Immediate next steps are a systematic optimization of the atomic state-preparation fidelity to improve the Bell-state fidelity, followed by inter-node protocols such as quantum state teleportation over the existing \SI{24}{\kilo\metre} fiber link between MPQ Garching and LMU Munich [3]. Longer term, the same gate mechanism enables a photon--photon gate mediated by the single atom, and -- by combining it with the platform's quantum-memory capability -- the heralded generation of entanglement between temporally separated photons.
+This thesis experimentally realizes a deterministic atom--photon CPF/CNOT gate on the CavityX platform, completing the set of primitives -- storage, entanglement generation, and now processing -- required for a functional quantum-network node, while encoding the atomic qubit in magnetic-field-insensitive clock states for improved robustness. The next steps would be to systematically optimize the atomic state-preparation fidelity to improve the Bell-state fidelity, followed by inter-node protocols such as quantum state teleportation over the existing \SI{24}{\kilo\metre} fiber link between MPQ Garching and LMU Munich [3]. Longer term, the same gate mechanism enables a photon--photon gate mediated by the single atom, and -- by combining it with the platform's quantum-memory capability -- the heralded generation of entanglement between temporally separated photons.
 
 \vspace{0.3em}
 {\small
-\textbf{References}
-\begin{enumerate}[label={[\arabic*]},leftmargin=2.0em,itemsep=0pt,topsep=2pt]
-	\item L.-M. Duan, H. J. Kimble, \emph{Phys. Rev. Lett.} \textbf{92}, 127902 (2004).
-	\item A. Reiserer, N. Kalb, G. Rempe, S. Ritter, \emph{Nature} \textbf{508}, 237 (2014).
-	\item M. Brekenfeld \emph{et al.}, MPQ--LMU quantum-network fiber link (Munich, \SI{24}{\kilo\metre}).
-\end{enumerate}
+	\textbf{References}
+	\begin{enumerate}[label={[\arabic*]},leftmargin=2.0em,itemsep=0pt,topsep=2pt]
+		\item L.-M. Duan, H. J. Kimble, \emph{Phys. Rev. Lett.} \textbf{92}, 127902 (2004).
+		\item A. Reiserer, N. Kalb, G. Rempe, S. Ritter, \emph{Nature} \textbf{508}, 237 (2014).
+		\item M. Büki \emph{et al.}, \emph{Phys. Rev. Lett.} \textbf{137}, 090803 (2026)
+	\end{enumerate}
 }
 
 \end{document}

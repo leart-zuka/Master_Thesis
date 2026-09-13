@@ -106,7 +106,82 @@ r_c = r_coupled_complex(xfit + x0_c, g_fit, f_res_c)
 R_c_curve = (A_c * np.abs(r_c) ** 2 + off_c) / offset_c
 phase_c = np.angle(r_c)
 
-# ── Plot: stacked ──
+c_uc = "#c0592b"
+c_c = "#2060b0"
+
+
+def plot_reflectivity(ax, show_legend=True):
+    ax.errorbar(
+        det_uc,
+        sd_uc_norm,
+        yerr=err_uc_norm,
+        fmt="o",
+        markersize=4,
+        capsize=0,
+        elinewidth=0.8,
+        color=c_uc,
+        markeredgecolor=c_uc,
+        alpha=0.7,
+        zorder=3,
+    )
+    ax.errorbar(
+        det_c,
+        sd_c_norm,
+        yerr=err_c_norm,
+        fmt="o",
+        markersize=4,
+        capsize=0,
+        elinewidth=0.8,
+        color=c_c,
+        markeredgecolor=c_c,
+        alpha=0.7,
+        zorder=3,
+    )
+    ax.plot(
+        xfit,
+        R_uc_curve,
+        color=c_uc,
+        lw=2,
+        alpha=0.6,
+        zorder=2,
+        label=r"$|0\rangle$ (uncoupled)",
+    )
+    ax.plot(
+        xfit,
+        R_c_curve,
+        color=c_c,
+        lw=2,
+        alpha=0.6,
+        zorder=2,
+        label=r"$|1\rangle$ (coupled)",
+    )
+    ax.set_ylabel(r"Reflectivity $|r|^2$", fontsize=14)
+    ax.set_xlim(-100, 100)
+    ax.set_ylim(0, 1)
+    if show_legend:
+        ax.legend(fontsize=11, loc="upper right", framealpha=0.9)
+
+
+def plot_phase(ax, show_legend=True, show_ylabel=True):
+    ax.plot(
+        xfit, phase_uc, color=c_uc, lw=2, alpha=0.7, label=r"$|0\rangle$ (uncoupled)"
+    )
+    ax.plot(xfit, phase_c, color=c_c, lw=2, alpha=0.7, label=r"$|1\rangle$ (coupled)")
+    ax.set_xlabel(r"Detuning $\Delta$ (MHz)", fontsize=14)
+    if show_ylabel:
+        ax.set_ylabel(r"Phase $\arg(r)$ (rad)", fontsize=14)
+    ax.set_xlim(-100, 100)
+    ax.set_yticks([-np.pi, -np.pi / 2, 0, np.pi / 2, np.pi])
+    ax.set_yticklabels([r"$-\pi$", r"$-\pi/2$", r"$0$", r"$\pi/2$", r"$\pi$"])
+    ax.set_ylim(-np.pi - 0.3, np.pi + 0.3)
+    ax.axhline(0, color="gray", ls="-", lw=0.5, alpha=0.3)
+    ax.axhline(np.pi, color="gray", ls="-", lw=0.5, alpha=0.3)
+    ax.axhline(-np.pi, color="gray", ls="-", lw=0.5, alpha=0.3)
+    if show_legend:
+        ax.legend(fontsize=11, loc="lower right", framealpha=0.9)
+
+
+# ── Plot 1: stacked (original, tall/narrow) ──
 
 fig, (ax1, ax2) = plt.subplots(
     2,
@@ -116,76 +191,32 @@ fig, (ax1, ax2) = plt.subplots(
     gridspec_kw={"height_ratios": [1, 0.75], "hspace": 0.06},
 )
 
-c_uc = "#c0592b"
-c_c = "#2060b0"
-
-# (a) Reflectivity
-ax1.errorbar(
-    det_uc,
-    sd_uc_norm,
-    yerr=err_uc_norm,
-    fmt="o",
-    markersize=4,
-    capsize=0,
-    elinewidth=0.8,
-    color=c_uc,
-    markeredgecolor=c_uc,
-    alpha=0.7,
-    zorder=3,
-)
-ax1.errorbar(
-    det_c,
-    sd_c_norm,
-    yerr=err_c_norm,
-    fmt="o",
-    markersize=4,
-    capsize=0,
-    elinewidth=0.8,
-    color=c_c,
-    markeredgecolor=c_c,
-    alpha=0.7,
-    zorder=3,
-)
-ax1.plot(
-    xfit,
-    R_uc_curve,
-    color=c_uc,
-    lw=2,
-    alpha=0.6,
-    zorder=2,
-    label=r"$|0\rangle$ (uncoupled)",
-)
-ax1.plot(
-    xfit,
-    R_c_curve,
-    color=c_c,
-    lw=2,
-    alpha=0.6,
-    zorder=2,
-    label=r"$|1\rangle$ (coupled)",
-)
-ax1.set_ylabel(r"Reflectivity $|r|^2$", fontsize=14)
-ax1.legend(fontsize=11, loc="upper right", framealpha=0.9)
-ax1.set_xlim(-100, 100)
-ax1.set_ylim(0, 1)
+plot_reflectivity(ax1)
 ax1.tick_params(labelbottom=False)
 ax1.text(0.03, 0.95, r"$\mathbf{(a)}$", transform=ax1.transAxes, fontsize=15, va="top")
 
-# (b) Phase
-ax2.plot(xfit, phase_uc, color=c_uc, lw=2, alpha=0.7, label=r"$|0\rangle$ (uncoupled)")
-ax2.plot(xfit, phase_c, color=c_c, lw=2, alpha=0.7, label=r"$|1\rangle$ (coupled)")
-ax2.set_xlabel(r"Detuning $\Delta$ (MHz)", fontsize=14)
-ax2.set_ylabel(r"Phase $\arg(r)$ (rad)", fontsize=14)
-ax2.legend(fontsize=11, loc="lower right", framealpha=0.9)
-ax2.set_xlim(-100, 100)
-ax2.set_yticks([-np.pi, -np.pi / 2, 0, np.pi / 2, np.pi])
-ax2.set_yticklabels([r"$-\pi$", r"$-\pi/2$", r"$0$", r"$\pi/2$", r"$\pi$"])
-ax2.set_ylim(-np.pi - 0.3, np.pi + 0.3)
-ax2.axhline(0, color="gray", ls="-", lw=0.5, alpha=0.3)
-ax2.axhline(np.pi, color="gray", ls="-", lw=0.5, alpha=0.3)
-ax2.axhline(-np.pi, color="gray", ls="-", lw=0.5, alpha=0.3)
+plot_phase(ax2)
 ax2.text(0.03, 0.95, r"$\mathbf{(b)}$", transform=ax2.transAxes, fontsize=15, va="top")
 
 fig.savefig("nms_reflection_phase.svg", bbox_inches="tight")
 fig.savefig("nms_reflection_phase.png", dpi=200, bbox_inches="tight")
+
+# ── Plot 2: side by side (wide/short, saves vertical space) ──
+
+fig2, (bx1, bx2) = plt.subplots(
+    1,
+    2,
+    figsize=(12, 4.5),
+    gridspec_kw={"wspace": 0.28},
+)
+
+plot_reflectivity(bx1)
+bx1.set_xlabel(r"Detuning $\Delta$ (MHz)", fontsize=14)
+bx1.text(0.05, 0.95, r"$\mathbf{(a)}$", transform=bx1.transAxes, fontsize=15, va="top")
+
+plot_phase(bx2)
+bx2.text(0.05, 0.95, r"$\mathbf{(b)}$", transform=bx2.transAxes, fontsize=15, va="top")
+
+fig2.savefig("nms_reflection_phase_horizontal.svg", bbox_inches="tight")
+fig2.savefig("nms_reflection_phase_horizontal.png", dpi=200, bbox_inches="tight")
 # plt.show()
